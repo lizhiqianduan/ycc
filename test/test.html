@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <style>
+        body{background-color: #ccc;}
+    </style>
+
+</head>
+<body>
+<canvas id="t" width="800" height="600">
+
+</canvas>
+</body>
+</html>
+
+<script src="../build/ycc.min.js"></script>
+<script>
+    var t = document.getElementById("t");
+    var ctx = t.getContext("2d");
+
+    var ycc = new Ycc.App(ctx, t.width, t.height);
+    ycc.stroke_line([0,0],[100,50]);
+
+    ycc.stroke_font("sfs",{
+        fontSize:"66px",
+        x:100,
+        y:0
+    });
+
+    ycc.fill_font("111",{
+        fontSize:"66px",
+        x:200,
+        y:0
+    });
+
+    ycc.stroke_circle({
+        x:350,y:50,radius:40,
+        startAngle:0,endAngle:120
+    });
+    ycc.stroke_circle({
+        x:450,y:50,radius:40,
+        startAngle:0,endAngle:120,
+        close:true
+    });
+    ycc.fill_circle({
+        x:550,y:50,radius:40,
+        startAngle:0,endAngle:-120
+    });
+    ycc.fill_circle({
+        x:650,y:50,radius:40,
+        startAngle:0,endAngle:-120,
+        close:true
+    });
+
+    ycc.stroke_rect([0,100],[80,200]);
+    ycc.fill_rect([100,100],[160,200]);
+
+    ycc.draw_image("222.bmp",[200,100]);
+    ycc.draw_image("222.bmp",[350,100],{width:200});
+
+
+</script>
