@@ -49,5 +49,5 @@ ycc.render(rootNode);
 <!-- other code -->
 ```
         目前项目处于开发过程中，如果你有兴趣、有想法，期待你的加入！
-我的联系方式:lizhiqianduan@gmail.com
+我的联系方式:lizhiqianduan@gmail.com <br>
 我的个人网站:http://www.lizhiqianduan.com
