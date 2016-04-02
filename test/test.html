@@ -4,61 +4,85 @@
     <meta charset="UTF-8">
     <title></title>
     <style>
+        *{margin: 0;padding: 0;}
         body{background-color: #ccc;}
     </style>
 
 </head>
 <body>
-<canvas id="t" width="800" height="600">
+<canvas id="t" width="800" height="600"></canvas>
+<div style="width:200px;height: 100px; background-color: blue;border:10px solid;"></div>
 
-</canvas>
 </body>
 </html>
 
-<script src="../build/ycc.min.js"></script>
+<script src="../build/ycc.js"></script>
 <script>
     var t = document.getElementById("t");
     var ctx = t.getContext("2d");
 
     var ycc = new Ycc.App(ctx, t.width, t.height);
-    ycc.stroke_line([0,0],[100,50]);
+    Ycc.painter.stroke_line([0,0],[100,50]);
 
-    ycc.stroke_font("sfs",{
+    Ycc.painter.stroke_font("sfs",{
         fontSize:"66px",
         x:100,
         y:0
     });
 
-    ycc.fill_font("111",{
+    Ycc.painter.fill_font("111",{
         fontSize:"66px",
         x:200,
         y:0
     });
 
-    ycc.stroke_circle({
+    Ycc.painter.stroke_circle({
         x:350,y:50,radius:40,
         startAngle:0,endAngle:120
     });
-    ycc.stroke_circle({
+    Ycc.painter.stroke_circle({
         x:450,y:50,radius:40,
         startAngle:0,endAngle:120,
         close:true
     });
-    ycc.fill_circle({
+    Ycc.painter.fill_circle({
         x:550,y:50,radius:40,
         startAngle:0,endAngle:-120
     });
-    ycc.fill_circle({
+    Ycc.painter.fill_circle({
         x:650,y:50,radius:40,
         startAngle:0,endAngle:-120,
         close:true
     });
 
-    ycc.stroke_rect([0,100],[80,200]);
-    ycc.fill_rect([100,100],[160,200]);
+    Ycc.painter.stroke_rect([0,100],[80,200]);
+    Ycc.painter.fill_rect([100,100],[160,200]);
 
-    ycc.draw_image("222.bmp",[200,100]);
-    ycc.draw_image("222.bmp",[350,100],{width:200});
+    Ycc.painter.draw_image("222.bmp",[200,100]);
+    Ycc.painter.draw_image("222.bmp",[350,100],{width:200});
+
+
+    Ycc.painter.clear();
+    var style = {
+        left:20,
+        top:40,
+        width:50,
+        height:50,
+        borderWidth:12,
+        borderTopWidth:10,
+        borderBottomWidth:20,
+        borderLeftWidth:30,
+        borderRightWidth:40,
+        backgroundColor:"red"
+    };
+    var child = new Ycc.Node(style);
+    Ycc.painter.paint_div(Ycc.Node.get_node_attr(child));
+
+
+
+
+
+
 
 
 </script>

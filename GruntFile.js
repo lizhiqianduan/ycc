@@ -10,7 +10,12 @@ module.exports = function(grunt){
                     separator: ';'
                 },
                 target: {
-                    src: ['src/ycc.utils.js','src/ycc.js'],
+                    src: [
+                        'src/ycc.init.js',
+                        'src/ycc.utils.js',
+                        'src/ycc.node.js',
+                        'src/ycc.painter.js',
+                        'src/ycc.js'],
                     dest: 'build/ycc.js'
                 }
 
@@ -23,7 +28,8 @@ module.exports = function(grunt){
             }
         }
         ,watch:{
-            files:"./src/*.js",
+            files:["./src/*.js","GruntFile.js"],
+
             tasks: ["concat","uglify"]
         }
 
@@ -36,4 +42,5 @@ module.exports = function(grunt){
     grunt.loadNpmTasks('grunt-contrib-watch');
     // 默认被执行的任务列表。
     grunt.registerTask('default', ['watch']);
+    grunt.registerTask('build', ['concat','uglify']);
 };

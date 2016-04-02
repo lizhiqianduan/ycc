@@ -1,16 +1,30 @@
 /**
  * Created by xiaohei on 2016/4/1.
  */
-var Ycc = window.Ycc = function(){};
 
 (function(Ycc){
     Ycc.utils = {};
 
-//合并两个对象
-    Ycc.utils.extend = function(obj1, obj2) {
+    // 继承
+    Ycc.utils.inherits = function(FatherConstructor,SonConstructor){
+        var that = this;
+        function Son(){
+            if(that.isFn(SonConstructor)){
+                SonConstructor.call(this,"");
+            }
+            FatherConstructor.call(this,"");
+        }
+
+        Son.prototype = FatherConstructor.prototype;
+        return Son;
+    };
+
+
+    //合并两个对象
+    Ycc.utils.extend = function(target_obj, obj2) {
         var newobj = {};
-        for (var i in obj1) {
-            newobj[i] = obj1[i];
+        for (var i in target_obj) {
+            newobj[i] = target_obj[i];
             if (obj2 && obj2[i] != null) {
                 newobj[i] = obj2[i];
             }
@@ -64,8 +78,8 @@ var Ycc = window.Ycc = function(){};
      *
      */
     Ycc.utils.dotAddDot = function(dot1, dot2) {
-        var isArray = this.utils.isArray;
-        if (!isArray(dot1) || !isArray(dot2)) {
+//        var isArray = this.isArray;
+        if (!this.isArray(dot1) || !this.isArray(dot2)) {
             console.log('%c Function addOffset params wrong', 'color:red');
             return dot1;
         }

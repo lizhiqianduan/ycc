@@ -4,7 +4,7 @@
 var node = new Ycc.Node();
 console.log(node);
 ```
-####Node Attribute
+####Node Attributes
 * node.style 节点的css样式
 
 默认支持如下的一些样式
@@ -40,6 +40,6 @@ console.log(node);
 * node.node_id 节点的唯一标示
 * node.tagName 节点的标签名
 
-####Node Public Method
+####Node Public Methods
 * node.add_child(node)  添加子节点
 * node.del_child(child_id)  删除子节点
