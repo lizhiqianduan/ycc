@@ -6,7 +6,9 @@ console.log(node);
 ```
 ####Node Attribute
 * node.style 节点的css样式
+
 默认支持如下的一些样式
+
         // 位置及盒模型
         this.style.display = "block";
         this.style.position = "relative";
