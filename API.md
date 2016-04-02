@@ -39,3 +39,7 @@ console.log(node);
 * node.layer 节点的层级
 * node.node_id 节点的唯一标示
 * node.tagName 节点的标签名
+
+####Node Public Method
+* node.add_child(node)  添加子节点
+* node.del_child(child_id)  删除子节点
