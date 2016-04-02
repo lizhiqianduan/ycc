@@ -43,7 +43,7 @@ var rootNode = {
 var can = document.getElementById("can");
 var ctx = can.getContext("2d");
 var ycc = new Ycc.App(ctx,can.width,can.height);
-ycc.render(rootNode);
+ycc.render([rootNode,child01,child02]);
 </script>
 
 <!-- other code -->
