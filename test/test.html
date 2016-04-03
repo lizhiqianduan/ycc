@@ -11,31 +11,34 @@
 </head>
 <body>
 <canvas id="t" width="800" height="600"></canvas>
-<div style="width:200px;height: 100px; background-color: blue;border:10px solid;"></div>
-
+<!--<div style="width:200px;height: 100px; background-color: blue;border:10px solid;"></div>-->
+<div style="float:left;width:200px;height:200px;background-color: red"></div>
+<div style="float:left;width:300px;height:150px;background-color: yellow"></div>
+<div style="float:left;width:100px;height:50px;background-color: blue"></div>
+<div style="float:left;width:150px;height:500px;background-color: green"></div>
 </body>
 </html>
 
 <script src="../build/ycc.js"></script>
 <script>
+
     var t = document.getElementById("t");
     var ctx = t.getContext("2d");
 
     var ycc = new Ycc.App(ctx, t.width, t.height);
-    Ycc.painter.stroke_line([0,0],[100,50]);
 
+    // 测试painter
+    Ycc.painter.stroke_line([0,0],[100,50]);
     Ycc.painter.stroke_font("sfs",{
         fontSize:"66px",
         x:100,
         y:0
     });
-
     Ycc.painter.fill_font("111",{
         fontSize:"66px",
         x:200,
         y:0
     });
-
     Ycc.painter.stroke_circle({
         x:350,y:50,radius:40,
         startAngle:0,endAngle:120
@@ -54,21 +57,18 @@
         startAngle:0,endAngle:-120,
         close:true
     });
-
     Ycc.painter.stroke_rect([0,100],[80,200]);
     Ycc.painter.fill_rect([100,100],[160,200]);
+//    Ycc.painter.draw_image("222.bmp",[200,100]);
+//    Ycc.painter.draw_image("222.bmp",[350,100],{width:200});
 
-    Ycc.painter.draw_image("222.bmp",[200,100]);
-    Ycc.painter.draw_image("222.bmp",[350,100],{width:200});
 
-
-    Ycc.painter.clear();
+//    Ycc.painter.clear();
+    // 测试absolute布局
     var style = {
-        left:20,
-        top:40,
-        width:50,
+        position:"relative",
+        width:500,
         height:50,
-        borderWidth:12,
         borderTopWidth:10,
         borderBottomWidth:20,
         borderLeftWidth:30,
@@ -76,9 +76,39 @@
         backgroundColor:"red"
     };
     var child = new Ycc.Node(style);
-    Ycc.painter.paint_div(Ycc.Node.get_node_attr(child));
+//    Ycc.painter.paint_div(Ycc.Node.get_node_attr(child));
 
+    // 测试relative布局
+    var style2 = {
+        position:"relative",
+        marginTop:10,
+        width:50,
+        height:400,
+//        borderWidth:12,
+        borderTopWidth:10,
+        borderBottomWidth:20,
+        borderLeftWidth:30,
+        borderRightWidth:40,
+        backgroundColor:"red"
+    };
+    var child2 = new Ycc.Node(style2);
+//    Ycc.painter.paint_div(Ycc.Node.get_node_attr(child2));
 
+    // 测试render
+    Ycc.painter.clear();
+    var root = new Ycc.Node();
+    root.add_child(child);
+    root.add_child(child2);
+    var nodeAttrMap =  {};
+    nodeAttrMap[child.node_id] = child;
+    nodeAttrMap[child2.node_id] = child2;
+    nodeAttrMap[root.node_id] = root;
+
+    console.log(child);
+    Ycc.nodeAttr.init(t.width, t.height);
+    var res = Ycc.nodeAttr.compute_hold_rect(nodeAttrMap);
+    console.log(res[child.node_id]);
+    ycc.render(res,3);
 
 
 

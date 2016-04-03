@@ -43,22 +43,11 @@
 
     Ycc.painter.clear = clear;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    // 画div
     Ycc.painter.paint_div = paint_div;
+    // 渲染所有节点
+    Ycc.painter.render = render;
+
 
 
     // 测试节点
@@ -82,51 +71,96 @@
     * 根据节点的属性，将div画出来
     * */
     function paint_div(nodeAttr){
+//        var parents = Ycc.App.getPatentsAttr(nodeAttr.node_id);
+//        var parent = parents[parents.length-1];
+
+
+
         var style = nodeAttr.style;
 
         if(style.borderWidth){
             style.borderTopWidth = style.borderBottomWidth = style.borderLeftWidth=style.borderRightWidth = style.borderWidth;
         }
-
+        if(style.borderColor){
+            style.borderTopColor = style.borderBottomColor=style.borderLeftColor=style.borderRightColor=style.borderColor;
+        }
         if(style.padding){
             style.paddingLeft = style.paddingTop = style.paddingRight = style.paddingBottom = style.padding;
         }
 
-        if(style.position=="absolute"){
-            var left_top_dot = [];
-            var right_bottom_dot = [];
-            var options = {};
+        var left_top_dot = [];
+        var right_bottom_dot = [];
+        var options = {};
 
-            // 画背景
-            left_top_dot[0] = style.left+style.borderLeftWidth;
-            left_top_dot[1] = style.top+style.borderTopWidth;
-            right_bottom_dot[0] =left_top_dot[0] +  style.paddingLeft+style.paddingRight+style.width;
-            right_bottom_dot[1] =left_top_dot[1] +  style.paddingTop+style.paddingBottom+style.height;
-            options.fillStyle = style.backgroundColor;
-            fill_rect(left_top_dot,right_bottom_dot,options);
+        // 画背景
+//        left_top_dot[0] = style.left+style.borderLeftWidth;
+//        left_top_dot[1] = style.top+style.borderTopWidth;
+        left_top_dot[0] = style.borderLeftWidth+nodeAttr._hold_rect.left;
+        left_top_dot[1] = style.borderTopWidth+nodeAttr._hold_rect.top;
 
-            // 画边框
-            if(style.borderWidth>0){
-                left_top_dot[0] = style.left+style.borderLeftWidth/2;
-                left_top_dot[1] = style.top+style.borderTopWidth/2;
+        right_bottom_dot[0] =left_top_dot[0] +  style.paddingLeft+style.paddingRight+style.width;
+        right_bottom_dot[1] =left_top_dot[1] +  style.paddingTop+style.paddingBottom+style.height;
+        options.fillStyle = style.backgroundColor;
+        fill_rect(left_top_dot,right_bottom_dot,options);
+
+        // 画边框
+        print_border(style,options);
+
+        function print_border(style,options){
+            if(style.borderWidth>0 && style.borderColor){
+                left_top_dot[0] = style.borderLeftWidth/2+nodeAttr._hold_rect.left;
+                left_top_dot[1] = style.borderTopWidth/2+nodeAttr._hold_rect.top;
+//                left_top_dot[0] = style.left+style.borderLeftWidth/2;
+//                left_top_dot[1] = style.top+style.borderTopWidth/2;
                 right_bottom_dot[0] = left_top_dot[0] +  style.paddingLeft+style.borderRightWidth+style.paddingRight+style.width;
                 right_bottom_dot[1] = left_top_dot[1] +  style.paddingTop+style.borderBottomWidth+style.paddingBottom+style.height;
                 options.lineWidth = style.borderWidth;
+                options.strokeStyle = style.borderColor;
                 stroke_rect(left_top_dot,right_bottom_dot,options);
             }else{
                 var horizontal_length = style.width + style.paddingLeft + style.paddingRight;
                 var vertical_length = style.height + style.paddingTop + style.paddingBottom;
+//                options.lineWidth = style.borderTopWidth;
+//                stroke_vh_line([style.left,style.top+style.borderTopWidth/2],horizontal_length+style.borderLeftWidth,true,options);
+//                options.lineWidth = style.borderLeftWidth;
+//                stroke_vh_line([style.left+style.borderLeftWidth/2,style.top+style.borderTopWidth],vertical_length+style.borderBottomWidth,false,options);
+//                options.lineWidth = style.borderBottomWidth;
+//                stroke_vh_line([style.left+style.borderLeftWidth,style.top+style.width+style.borderTopWidth+style.borderBottomWidth/2],horizontal_length+style.borderRightWidth,true,options);
+//                options.lineWidth = style.borderRightWidth;
+//                stroke_vh_line([style.left+horizontal_length+style.borderLeftWidth+style.borderRightWidth/2,style.top],vertical_length+style.borderTopWidth,false,options);
+                options.strokeStyle = style.borderTopColor;
                 options.lineWidth = style.borderTopWidth;
-                stroke_vh_line([style.left,style.top+style.borderTopWidth/2],horizontal_length+style.borderLeftWidth,true,options);
+                stroke_vh_line([nodeAttr._hold_rect.left,nodeAttr._hold_rect.top+style.borderTopWidth/2],horizontal_length+style.borderLeftWidth,true,options);
                 options.lineWidth = style.borderLeftWidth;
-                stroke_vh_line([style.left+style.borderLeftWidth/2,style.top+style.borderTopWidth],vertical_length+style.borderBottomWidth,false,options);
+                options.strokeStyle = style.borderLeftColor;
+                stroke_vh_line([nodeAttr._hold_rect.left+style.borderLeftWidth/2,nodeAttr._hold_rect.top+style.borderTopWidth],vertical_length+style.borderBottomWidth,false,options);
                 options.lineWidth = style.borderBottomWidth;
-                stroke_vh_line([style.left+style.borderLeftWidth,style.top+style.width+style.borderTopWidth+style.borderBottomWidth/2],horizontal_length+style.borderRightWidth,true,options);
+                options.strokeStyle = style.borderBottomColor;
+                stroke_vh_line([nodeAttr._hold_rect.left+style.borderLeftWidth,nodeAttr._hold_rect.top+style.height+style.borderTopWidth+style.borderBottomWidth/2],horizontal_length+style.borderRightWidth,true,options);
                 options.lineWidth = style.borderRightWidth;
-                stroke_vh_line([style.left+horizontal_length+style.borderLeftWidth+style.borderRightWidth/2,style.top],vertical_length+style.borderTopWidth,false,options);
+                options.strokeStyle = style.borderRightColor;
+                stroke_vh_line([nodeAttr._hold_rect.left+horizontal_length+style.borderLeftWidth+style.borderRightWidth/2,nodeAttr._hold_rect.top],vertical_length+style.borderTopWidth,false,options);
+
+
             }
         }
     }
+
+    /*
+    * 将节点属性列表在canvas中渲染出来
+    * */
+    function render(node_attr_map){
+        for(var node_id in node_attr_map){
+            switch (node_attr_map[node_id].tagName){
+                case "div":
+                    paint_div(node_attr_map[node_id]);
+                    break;
+                case "img":
+                    break;
+            }
+        }
+    }
+
 
 
 

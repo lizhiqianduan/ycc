@@ -21,8 +21,10 @@
 
 
     //合并两个对象
-    Ycc.utils.extend = function(target_obj, obj2) {
+    Ycc.utils.extend = function(target_obj, obj2,isDeepClone) {
         var newobj = {};
+        if(isDeepClone)
+            obj2 = deepClone(obj2);
         for (var i in target_obj) {
             newobj[i] = target_obj[i];
             if (obj2 && obj2[i] != null) {
@@ -109,5 +111,51 @@
         }
         return dots1;
     };
+
+    Ycc.utils.deepClone = deepClone;
+
+
+
+    function deepClone(arrOrObj){
+        return (isArr(arrOrObj))? deepCopy(arrOrObj):deepExtend(arrOrObj);
+
+        function isObj(str) {
+            return (typeof(str) === "object");
+        }
+        function isArr(str){
+            return (Object.prototype.toString.call(str) === '[object Array]');
+        }
+        function deepExtend(obj){
+            var tempObj = {};
+            for(var i in obj){
+                tempObj[i] = obj[i];
+                if(isArr(obj[i])){
+                    tempObj[i] = deepCopy(obj[i]);
+                }else if(isObj(obj[i])){
+                    tempObj[i] = deepExtend(obj[i]);
+                }else{
+                    tempObj[i] = obj[i];
+                }
+            }
+            return tempObj;
+        }
+        function deepCopy(arr){
+            var newArr = [];
+            var v = null;
+            for(var i=0;i<arr.length;i++){
+                v = arr[i];
+                if(isArr(v))
+                    newArr.push(deepCopy(v));
+                else if(isObj(v))
+                    newArr.push(deepExtend(v));
+                else{
+                    newArr.push(v);
+                }
+            }
+            return newArr;
+        }
+    }
+
+
 })(Ycc);
 

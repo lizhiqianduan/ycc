@@ -1,5 +1,6 @@
 /**
  * Created by xiaohei on 2016/4/2.
+ * 此文件应该放置在server端
  */
 
 (function(Ycc){
@@ -23,12 +24,28 @@
 
     // constructor
     function Node(style){
-        // 子节点id列表
+        // 祖先元素的node_id列表
+        this.parents = [];
+        // 子节点node_id列表
         this.children = [];
+        // 节点在canvas中实际所占据的位置信息，该属性是私有信息，不应该被更改
+        this._hold_rect = {left:0,top:0,width:0,height:0};
+        // 节点被子元素占据的相关信息，私有信息，不应该被更改
+        this._be_hold_info = {
+            // 最下边元素所占据的相对当前node节点的位置
+            // 应该包括margin
+            maxHeight:0,
+            // 从左至右元素所占据的相对当前node节点的位置
+            // 应该包括margin
+            left2right:0,
+            // 从右至左元素所占据的位置，应该包括margin
+            right2left:0
+        };
         // 样式
         this.style = {};
         // 位置及盒模型
         this.style.display = "block";
+        this.style.float = "none";
         this.style.position = "absolute";
         this.style.top = 0;
         this.style.bottom = 0;
@@ -74,10 +91,12 @@
     proto.del_child = del_child;
 
 
-
     function add_child(node){
         node.layer = this.layer+1;
         node.node_id = Math.random().toString(16).replace("0.",node.layer+".");
+        node.parents = this.parents.slice(0);
+        node.parents.push(this.node_id);
+        this.children.push(node.node_id);
         Ycc.Node.nodeList.push(node);
         Ycc.Node.nodeMap[node.node_id] = node;
     }
