@@ -27,13 +27,13 @@
 
     // 测试painter
     Ycc.painter.stroke_line([0,0],[100,50]);
-    Ycc.painter.stroke_font("sfs",{
-        fontSize:"66px",
+    Ycc.painter.stroke_font("励志前端",{
+        fontSize:20,
         x:100,
-        y:0
+        y:30
     });
-    Ycc.painter.fill_font("111",{
-        fontSize:"66px",
+    Ycc.painter.fill_font("ycc",{
+        fontSize:66,
         x:200,
         y:0
     });
@@ -57,38 +57,8 @@
     });
     Ycc.painter.stroke_rect([0,100],[80,200]);
     Ycc.painter.fill_rect([100,100],[160,200]);
-//    Ycc.painter.draw_image("222.bmp",[200,100]);
-//    Ycc.painter.draw_image("222.bmp",[350,100],{width:200});
-
-
-    // 测试布局
-    var style = {
-        position:"relative",
-        float:"left",
-        margin:5,
-        borderWidth:10,
-        backgroundColor:"red"
-    };
-    var nodeAttrMap =  {};
-    var root = new Ycc.Node();
-    nodeAttrMap[root.node_id] = root;
-
-    for(var i=0;i<50;i++){
-        var child = new Ycc.Node(Ycc.utils.deepClone(style));
-        console.log(child);
-        child.style.width = (1+Math.random())*30;
-        child.style.height = (1+Math.random())*20;
-        root.add_child(child);
-        nodeAttrMap[child.node_id] = child;
-    }
-    Ycc.painter.clear();
-    Ycc.nodeAttr.init(t.width, t.height);
-    var res = Ycc.nodeAttr.compute_hold_rect(nodeAttrMap);
-    ycc.render(res,50);
-
-
-
-
+    Ycc.painter.draw_image("222.bmp",[200,100]);
+    Ycc.painter.draw_image("222.bmp",[350,100],{width:200});
 
 
 </script>

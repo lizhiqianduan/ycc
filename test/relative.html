@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <style>
+        *{margin: 0;padding: 0;}
+        body{background-color: #ccc;}
+    </style>
+
+</head>
+<body>
+<div>
+    <canvas id="t" width="800" height="600"></canvas>
+</div>
+
+</body>
+</html>
+
+<script src="../build/ycc.js"></script>
+<script>
+
+    var t = document.getElementById("t");
+    var ctx = t.getContext("2d");
+
+    var ycc = new Ycc.App(ctx, t.width, t.height);
+
+    // 测试布局
+    var style = {
+        position:"relative",
+        float:"left",
+        margin:5,
+        borderWidth:10,
+        backgroundColor:"red"
+    };
+    var nodeAttrMap =  {};
+    var root = new Ycc.Node();
+    nodeAttrMap[root.node_id] = root;
+
+    for(var i=0;i<50;i++){
+        var child = new Ycc.Node(Ycc.utils.deepClone(style));
+        child.style.width = (1+Math.random())*30;
+        child.style.height = (1+Math.random())*20;
+        root.add_child(child);
+        nodeAttrMap[child.node_id] = child;
+    }
+    Ycc.painter.clear();
+    Ycc.nodeAttr.init(t.width, t.height);
+    var res = Ycc.nodeAttr.compute_hold_rect(nodeAttrMap);
+    ycc.render(res,50);
+
+
+
+
+
+
+</script>

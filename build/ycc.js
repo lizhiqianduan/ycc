@@ -532,13 +532,7 @@ Ycc.settings = {
     * 根据节点的属性，将div画出来
     * */
     function paint_div(nodeAttr){
-//        var parents = Ycc.App.getPatentsAttr(nodeAttr.node_id);
-//        var parent = parents[parents.length-1];
-
-
-
         var style = nodeAttr.style;
-
         if(style.borderWidth){
             style.borderTopWidth = style.borderBottomWidth = style.borderLeftWidth=style.borderRightWidth = style.borderWidth;
         }
@@ -548,17 +542,12 @@ Ycc.settings = {
         if(style.padding){
             style.paddingLeft = style.paddingTop = style.paddingRight = style.paddingBottom = style.padding;
         }
-
         var left_top_dot = [];
         var right_bottom_dot = [];
         var options = {};
-
         // 画背景
-//        left_top_dot[0] = style.left+style.borderLeftWidth;
-//        left_top_dot[1] = style.top+style.borderTopWidth;
         left_top_dot[0] = style.borderLeftWidth+nodeAttr._hold_rect.left;
         left_top_dot[1] = style.borderTopWidth+nodeAttr._hold_rect.top;
-
         right_bottom_dot[0] =left_top_dot[0] +  style.paddingLeft+style.paddingRight+style.width;
         right_bottom_dot[1] =left_top_dot[1] +  style.paddingTop+style.paddingBottom+style.height;
         options.fillStyle = style.backgroundColor;
@@ -571,8 +560,6 @@ Ycc.settings = {
             if(style.borderWidth>0 && style.borderColor){
                 left_top_dot[0] = style.borderLeftWidth/2+nodeAttr._hold_rect.left;
                 left_top_dot[1] = style.borderTopWidth/2+nodeAttr._hold_rect.top;
-//                left_top_dot[0] = style.left+style.borderLeftWidth/2;
-//                left_top_dot[1] = style.top+style.borderTopWidth/2;
                 right_bottom_dot[0] = left_top_dot[0] +  style.paddingLeft+style.borderRightWidth+style.paddingRight+style.width;
                 right_bottom_dot[1] = left_top_dot[1] +  style.paddingTop+style.borderBottomWidth+style.paddingBottom+style.height;
                 options.lineWidth = style.borderWidth;
@@ -581,14 +568,6 @@ Ycc.settings = {
             }else{
                 var horizontal_length = style.width + style.paddingLeft + style.paddingRight;
                 var vertical_length = style.height + style.paddingTop + style.paddingBottom;
-//                options.lineWidth = style.borderTopWidth;
-//                stroke_vh_line([style.left,style.top+style.borderTopWidth/2],horizontal_length+style.borderLeftWidth,true,options);
-//                options.lineWidth = style.borderLeftWidth;
-//                stroke_vh_line([style.left+style.borderLeftWidth/2,style.top+style.borderTopWidth],vertical_length+style.borderBottomWidth,false,options);
-//                options.lineWidth = style.borderBottomWidth;
-//                stroke_vh_line([style.left+style.borderLeftWidth,style.top+style.width+style.borderTopWidth+style.borderBottomWidth/2],horizontal_length+style.borderRightWidth,true,options);
-//                options.lineWidth = style.borderRightWidth;
-//                stroke_vh_line([style.left+horizontal_length+style.borderLeftWidth+style.borderRightWidth/2,style.top],vertical_length+style.borderTopWidth,false,options);
                 options.strokeStyle = style.borderTopColor;
                 options.lineWidth = style.borderTopWidth;
                 stroke_vh_line([nodeAttr._hold_rect.left,nodeAttr._hold_rect.top+style.borderTopWidth/2],horizontal_length+style.borderLeftWidth,true,options);
@@ -606,6 +585,19 @@ Ycc.settings = {
             }
         }
     }
+
+    /*
+    * 根据节点属性将一个图片绘制出来
+    * */
+    function paint_img(){
+
+    }
+
+
+
+
+
+
 
     /*
     * 将节点属性列表在canvas中渲染出来
@@ -674,7 +666,7 @@ Ycc.settings = {
             //竖直0点从bottom开始
             textBaseline: "top",
             //文字大小和字体
-            fontSize: "16px",
+            fontSize: 16,
 
             fontFamily:"Arial",
             //绘制路径的线宽
@@ -686,7 +678,7 @@ Ycc.settings = {
         var afterTransDot = [settings.x,settings.y];
         ctx.textAlign = settings.textAlign;
         ctx.textBaseline = settings.textBaseline;
-        ctx.font = settings.fontSize+" "+settings.fontFamily;
+        ctx.font = settings.fontSize+"px "+settings.fontFamily;
         ctx.strokeStyle = settings.strokeStyle;
         ctx.strokeText(con, afterTransDot[0], afterTransDot[1]);
         ctx.restore();
@@ -718,7 +710,7 @@ Ycc.settings = {
             //竖直0点从bottom开始
             textBaseline: "top",
             //文字大小和字体
-            fontSize: "16px",
+            fontSize: 16,
 
             fontFamily:"Arial",
             //绘制路径的线宽
@@ -730,7 +722,7 @@ Ycc.settings = {
         var afterTransDot = [settings.x,settings.y];
         ctx.textAlign = settings.textAlign;
         ctx.textBaseline = settings.textBaseline;
-        ctx.font = settings.fontSize+" "+settings.fontFamily;
+        ctx.font = settings.fontSize+"px "+settings.fontFamily;
         ctx.fillStyle = settings.fillStyle;
         ctx.fillText(con, afterTransDot[0], afterTransDot[1]);
         ctx.restore();
