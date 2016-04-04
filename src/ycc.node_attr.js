@@ -43,6 +43,9 @@
             if(style.padding){
                 style.paddingLeft = style.paddingTop = style.paddingRight = style.paddingBottom = style.padding;
             }
+            if(style.margin){
+                style.marginLeft = style.marginTop = style.marginRight = style.marginBottom = style.margin;
+            }
             // fixed 布局的情况
             // float失效，margin失效，只看left、top
             if(style.position == "fixed"){
@@ -83,13 +86,37 @@
             // float为none，display为inline时，hold_rect类似于左浮动
             if((style.float == "none" && style.display == "inline")
                 ||(style.float == "left")){
+
                 var restWidth = ctx_width-be_hold_info.left2right-be_hold_info.right2left;// todo
-                hold_rect.left = style.left+style.marginLeft;
+                hold_rect.left = be_hold_info.left2right+style.left+style.marginLeft;
                 hold_rect.top = style.top+style.marginTop;
                 hold_rect.width = style.width + style.borderLeftWidth+style.borderRightWidth+style.paddingLeft+style.paddingRight;
                 hold_rect.height = style.height + style.borderTopWidth+style.borderBottomWidth+style.paddingTop+style.paddingBottom;
-                be_hold_info.maxHeight = style.marginTop+style.marginBottom+hold_rect.height;
-                be_hold_info.left2right += style.marginLeft+style.marginRight+hold_rect.width;
+
+                // 盒子的外宽高
+                var outWidth = hold_rect.width + style.marginLeft+style.marginRight;
+                var outHeight = hold_rect.height + style.marginTop+style.marginBottom;
+                // 如果浮动的一行，放不下当前元素，那么换行 todo:
+                if(restWidth<hold_rect.width+style.marginLeft+style.marginRight){
+                    // 记录上一行的最大高度
+                    be_hold_info.lastMaxHeight = be_hold_info.maxHeight;
+                    hold_rect.top = be_hold_info.lastMaxHeight+style.top+style.marginTop;
+                    hold_rect.left = style.left+style.marginLeft;
+                    be_hold_info.left2right = outWidth;
+                    be_hold_info.right2left = 0;
+                    be_hold_info.maxHeight = be_hold_info.lastMaxHeight+outHeight;
+                }else{
+                // 一行放得下的情况
+                    be_hold_info.maxHeight = be_hold_info.lastMaxHeight+outHeight>be_hold_info.maxHeight?be_hold_info.lastMaxHeight+outHeight:be_hold_info.maxHeight;
+//                    be_hold_info.maxHeight = style.marginTop+style.marginBottom+hold_rect.height;
+                    be_hold_info.left2right += style.marginLeft+style.marginRight+hold_rect.width;
+                    hold_rect.top = be_hold_info.lastMaxHeight+style.top+style.marginTop;
+
+                }
+
+
+
+
                 continue;
             }
 

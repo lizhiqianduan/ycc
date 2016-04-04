@@ -148,12 +148,14 @@
 
     /*
     * 将节点属性列表在canvas中渲染出来
+    *
     * */
     function render(node_attr_map){
-        for(var node_id in node_attr_map){
-            switch (node_attr_map[node_id].tagName){
+        var sorted = sort_node_attr_by_layer(node_attr_map);
+        for(var i=0;i<sorted.length;i++){
+            switch (sorted[i].tagName){
                 case "div":
-                    paint_div(node_attr_map[node_id]);
+                    paint_div(sorted[i]);
                     break;
                 case "img":
                     break;
@@ -161,7 +163,18 @@
         }
     }
 
-
+    /*
+    * 根据节点属性的layer将节点进行排序
+    * 返回排序后的列表 使用了es5函数
+    * */
+    function sort_node_attr_by_layer(node_attr_map){
+        var node_attr_list = [];
+        var keys = Object.keys(node_attr_map).sort();
+        for(var i=0;i<keys.length;i++){
+            node_attr_list[i] = node_attr_map[keys[i]];
+        }
+        return node_attr_list;
+    }
 
 
 

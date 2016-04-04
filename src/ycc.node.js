@@ -32,6 +32,8 @@
         this._hold_rect = {left:0,top:0,width:0,height:0};
         // 节点被子元素占据的相关信息，私有信息，不应该被更改
         this._be_hold_info = {
+            // 上一行的maxHeight
+            lastMaxHeight:0,
             // 最下边元素所占据的相对当前node节点的位置
             // 应该包括margin
             maxHeight:0,
@@ -68,6 +70,7 @@
         this.style.paddingBottom = 0;
         this.style.paddingLeft = 0;
         // 外边距
+        this.style.margin = 0;
         this.style.marginTop = 0;
         this.style.marginRight = 0;
         this.style.marginBottom = 0;
