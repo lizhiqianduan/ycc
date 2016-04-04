@@ -11,10 +11,10 @@ Ycc迷你Canvas框架
 然后，双击`/ycc/test/`文件夹下的`*.html`文件即可查看对应的测试效果。
 
 `test.html`文件测试简单的绘制功能，效果如下，
-![](https://github.com/lizhiqianduan/ycc/master/doc/images/test.png "test.html示例")
+![](https://github.com/lizhiqianduan/ycc/master/docs/images/test.png "test.html示例")
 
 `relative.html`测试relative布局及float功能，效果如下，
-![](https://github.com/lizhiqianduan/ycc/master/doc/images/test.png "relative.html示例")
+![](https://github.com/lizhiqianduan/ycc/master/docs/images/test.png "relative.html示例")
 
         目前项目处于开发过程中，如果你有兴趣、有想法，期待你的加入！联系我时请注明github账号！
 我的联系方式:lizhiqianduan@gmail.com <br>
