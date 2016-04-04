@@ -14,7 +14,7 @@ Ycc迷你Canvas框架
 ![](https://github.com/lizhiqianduan/ycc/raw/master/docs/images/test.png "test.html示例")
 
 `relative.html`测试relative布局及float功能，效果如下，
-![](https://github.com/lizhiqianduan/ycc/raw/master/docs/images/test.png "relative.html示例")
+![](https://github.com/lizhiqianduan/ycc/raw/master/docs/images/relative.png "relative.html示例")
 
         目前项目处于开发过程中，如果你有兴趣、有想法，期待你的加入！联系我时请注明github账号！
 我的联系方式:lizhiqianduan@gmail.com <br>
