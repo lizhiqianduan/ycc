@@ -30,7 +30,7 @@
     // 测试布局
     var style = {
         position:"relative",
-        float:"left",
+        float:"right",
         margin:5,
         borderWidth:10,
         backgroundColor:"red"
@@ -41,7 +41,7 @@
 
     for(var i=0;i<50;i++){
         var child = new Ycc.Node(Ycc.utils.deepClone(style));
-        child.style.width = (1+Math.random())*30;
+        child.style.width = (1+Math.random())*50;
         child.style.height = (1+Math.random())*20;
         root.add_child(child);
         nodeAttrMap[child.node_id] = child;

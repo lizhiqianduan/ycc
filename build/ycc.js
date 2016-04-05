@@ -404,7 +404,7 @@ Ycc.settings = {
             if((style.float == "none" && style.display == "inline")
                 ||(style.float == "left")){
 
-                var restWidth = ctx_width-be_hold_info.left2right-be_hold_info.right2left;// todo
+                var restWidth = ctx_width-be_hold_info.left2right-be_hold_info.right2left;
                 hold_rect.left = be_hold_info.left2right+style.left+style.marginLeft;
                 hold_rect.top = style.top+style.marginTop;
                 hold_rect.width = style.width + style.borderLeftWidth+style.borderRightWidth+style.paddingLeft+style.paddingRight;
@@ -413,7 +413,7 @@ Ycc.settings = {
                 // 盒子的外宽高
                 var outWidth = hold_rect.width + style.marginLeft+style.marginRight;
                 var outHeight = hold_rect.height + style.marginTop+style.marginBottom;
-                // 如果浮动的一行，放不下当前元素，那么换行 todo:
+                // 如果浮动的一行，放不下当前元素，那么换行
                 if(restWidth<hold_rect.width+style.marginLeft+style.marginRight){
                     // 记录上一行的最大高度
                     be_hold_info.lastMaxHeight = be_hold_info.maxHeight;
@@ -430,10 +430,42 @@ Ycc.settings = {
                     hold_rect.top = be_hold_info.lastMaxHeight+style.top+style.marginTop;
 
                 }
+                continue;
+            }
 
+            // 节点向右浮动的情况
+            if(style.float == "right"){
+                var restWidth = ctx_width-be_hold_info.left2right-be_hold_info.right2left;
 
+                hold_rect.width = style.width + style.borderLeftWidth+style.borderRightWidth+style.paddingLeft+style.paddingRight;
+                hold_rect.height = style.height + style.borderTopWidth+style.borderBottomWidth+style.paddingTop+style.paddingBottom;
+                hold_rect.left = be_hold_info.right2left+style.marginRight+hold_rect.width;
+                hold_rect.top = style.top+style.marginTop;
 
+                // 盒子的外宽高
+                var outWidth = hold_rect.width + style.marginLeft+style.marginRight;
+                var outHeight = hold_rect.height + style.marginTop+style.marginBottom;
+                // 如果浮动的一行，放不下当前元素，那么换行
+                if(restWidth<hold_rect.width+style.marginLeft+style.marginRight){
+                    // 记录上一行的最大高度
+                    console.log(11)
+                    be_hold_info.lastMaxHeight = be_hold_info.maxHeight;
+                    hold_rect.top = be_hold_info.lastMaxHeight+style.top+style.marginTop;
+                    hold_rect.left = ctx_width-(outWidth-style.marginLeft);
+                    be_hold_info.right2left = outWidth;
+                    be_hold_info.left2right = 0;
+                    be_hold_info.maxHeight = be_hold_info.lastMaxHeight+outHeight;
 
+                }else{
+                    // 一行放得下的情况
+                    be_hold_info.maxHeight = be_hold_info.lastMaxHeight+outHeight>be_hold_info.maxHeight?be_hold_info.lastMaxHeight+outHeight:be_hold_info.maxHeight;
+//                    be_hold_info.maxHeight = style.marginTop+style.marginBottom+hold_rect.height;
+                    hold_rect.top = be_hold_info.lastMaxHeight+style.top+style.marginTop;
+                    hold_rect.left = ctx_width-(be_hold_info.right2left+outWidth-style.marginLeft);
+                    be_hold_info.right2left += outWidth;
+                    console.log(hold_rect)
+
+                }
                 continue;
             }
 
