@@ -77,6 +77,10 @@
         this.style.marginLeft = 0;
         // 背景色
         this.style.backgroundColor = "#fff";
+        // 溢出处理
+        this.style.overflow = null;
+        this.style.overflowX = null;
+        this.style.overflowY = "auto";
 
         if(utils.isObj(style))
             this.style = utils.extend(this.style,style);

@@ -30,21 +30,39 @@
     // 测试布局
     var style = {
         position:"relative",
-        float:"right",
+        float:"none",
         margin:5,
         borderWidth:10,
         backgroundColor:"red"
+    };
+    var style2 = {
+        position:"relative",
+        float:"left",
+        margin:5,
+        borderWidth:10,
+        backgroundColor:"blue"
     };
     var nodeAttrMap =  {};
     var root = new Ycc.Node();
     nodeAttrMap[root.node_id] = root;
 
-    for(var i=0;i<50;i++){
+    for(var i=0;i<1;i++){
         var child = new Ycc.Node(Ycc.utils.deepClone(style));
-        child.style.width = (1+Math.random())*50;
-        child.style.height = (1+Math.random())*20;
+        var child2 = new Ycc.Node(Ycc.utils.deepClone(style2));
+        var child3 = new Ycc.Node(Ycc.utils.deepClone(style2));
+        child.style.width = (1+Math.random())*100;
+        child.style.height = /*(1+Math.random())**/0;
+        child2.style.width = (1+Math.random())*20;
+        child2.style.height = (1+Math.random())*20;
+        child3.style.width = (1+Math.random())*20;
+        child3.style.height = (1+Math.random())*20;
+//        child3.style.float = "right";
         root.add_child(child);
+        child.add_child(child2);
+        child.add_child(child3);
         nodeAttrMap[child.node_id] = child;
+        nodeAttrMap[child2.node_id] = child2;
+        nodeAttrMap[child3.node_id] = child3;
     }
     Ycc.painter.clear();
     Ycc.nodeAttr.init(t.width, t.height);
