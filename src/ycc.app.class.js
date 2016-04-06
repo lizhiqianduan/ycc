@@ -1,15 +1,15 @@
 /**
  * Created by xiaohei on 2016/4/1.
  */
-(function(Ycc) {
-    var extend = Ycc.utils.extend;
-    var deepClone = Ycc.utils.deepClone;
-    var isString = Ycc.utils.isString;
-    var isNum = Ycc.utils.isNum;
-    var isObj = Ycc.utils.isObj;
-    var isFn = Ycc.utils.isFn;
-    var isArray = Ycc.utils.isArray;
-    var isDot = Ycc.utils.isDot;
+(function(Ycc,utils,painter) {
+    var extend = utils.extend;
+    var deepClone = utils.deepClone;
+    var isString = utils.isString;
+    var isNum = utils.isNum;
+    var isObj = utils.isObj;
+    var isFn = utils.isFn;
+    var isArray = utils.isArray;
+    var isDot = utils.isDot;
     var _ctx = null;
     var _ctx_width = null;
     var _ctx_height = null;
@@ -75,7 +75,7 @@
             ctx.fillRect(0, 0, ctx_width, ctx_height);
             ctx.restore();
 
-            Ycc.painter(ctx,ctx_width,ctx_height);
+            painter(ctx,ctx_width,ctx_height);
         };
     }
 
@@ -155,9 +155,9 @@
     function render(node_attr_map,node_num){
         cur_node_num = node_num;
         cur_node_attr_map = node_attr_map;
-        Ycc.painter.render(node_attr_map);
+        painter.render(node_attr_map);
     }
 
 
 
-})(Ycc);
+})(Ycc,Ycc.utils,Ycc.painter);

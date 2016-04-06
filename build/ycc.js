@@ -176,10 +176,7 @@ Ycc.settings = {
  * 此文件应该放置在server端
  */
 
-(function(Ycc){
-    // 依赖于utils模块
-    var utils = Ycc.utils;
-
+(function(Ycc,utils){
     Ycc.Node = Node;
     // 节点列表
     Ycc.Node.nodeList = [];
@@ -312,7 +309,7 @@ Ycc.settings = {
         var json = {};
         var attr_num = 0;
         for(var attr in node){
-            if(!Ycc.utils.isFn(attr)){
+            if(!utils.isFn(attr)){
                 attr_num++;
                 json[attr] = node[attr];
             }
@@ -332,7 +329,7 @@ Ycc.settings = {
         return arr;
     }
 
-})(Ycc);;/**
+})(Ycc,Ycc.utils);;/**
  * Created by xiaohei on 2016/4/3.
  * 用于处理node属性的模块
  */
@@ -1034,15 +1031,15 @@ Ycc.settings = {
 })(Ycc);;/**
  * Created by xiaohei on 2016/4/1.
  */
-(function(Ycc) {
-    var extend = Ycc.utils.extend;
-    var deepClone = Ycc.utils.deepClone;
-    var isString = Ycc.utils.isString;
-    var isNum = Ycc.utils.isNum;
-    var isObj = Ycc.utils.isObj;
-    var isFn = Ycc.utils.isFn;
-    var isArray = Ycc.utils.isArray;
-    var isDot = Ycc.utils.isDot;
+(function(Ycc,utils,painter) {
+    var extend = utils.extend;
+    var deepClone = utils.deepClone;
+    var isString = utils.isString;
+    var isNum = utils.isNum;
+    var isObj = utils.isObj;
+    var isFn = utils.isFn;
+    var isArray = utils.isArray;
+    var isDot = utils.isDot;
     var _ctx = null;
     var _ctx_width = null;
     var _ctx_height = null;
@@ -1108,7 +1105,7 @@ Ycc.settings = {
             ctx.fillRect(0, 0, ctx_width, ctx_height);
             ctx.restore();
 
-            Ycc.painter(ctx,ctx_width,ctx_height);
+            painter(ctx,ctx_width,ctx_height);
         };
     }
 
@@ -1188,9 +1185,9 @@ Ycc.settings = {
     function render(node_attr_map,node_num){
         cur_node_num = node_num;
         cur_node_attr_map = node_attr_map;
-        Ycc.painter.render(node_attr_map);
+        painter.render(node_attr_map);
     }
 
 
 
-})(Ycc);
+})(Ycc,Ycc.utils,Ycc.painter);

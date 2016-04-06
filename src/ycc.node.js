@@ -3,10 +3,7 @@
  * 此文件应该放置在server端
  */
 
-(function(Ycc){
-    // 依赖于utils模块
-    var utils = Ycc.utils;
-
+(function(Ycc,utils){
     Ycc.Node = Node;
     // 节点列表
     Ycc.Node.nodeList = [];
@@ -139,7 +136,7 @@
         var json = {};
         var attr_num = 0;
         for(var attr in node){
-            if(!Ycc.utils.isFn(attr)){
+            if(!utils.isFn(attr)){
                 attr_num++;
                 json[attr] = node[attr];
             }
@@ -159,4 +156,4 @@
         return arr;
     }
 
-})(Ycc);
+})(Ycc,Ycc.utils);
