@@ -13,6 +13,8 @@
     // 节点map
     Ycc.Node.nodeMap = {};
 
+    Ycc.Node.getRoot = getRoot;
+
     // 获取节点的属性
     Ycc.Node.get_node_attr = get_node_attr;
     // 获取节点列表的属性
@@ -65,6 +67,7 @@
         this.style.borderBottomWidth = 0;
         this.style.borderLeftWidth = 0;
         // 内边距
+        this.style.padding = 0;
         this.style.paddingTop = 0;
         this.style.paddingRight = 0;
         this.style.paddingBottom = 0;
@@ -97,7 +100,17 @@
     proto.add_child = add_child;
     proto.del_child = del_child;
 
+    function getRoot(){
+        var node = new Node();
+//        node._be_hold_info = {};
+        Ycc.Node.nodeList.push(node);
+        Ycc.Node.nodeMap[node.node_id] = node;
+        return node;
+    }
 
+    /*
+    * 向节点添加子节点，只能先添加父节点，再添加子节点
+    * */
     function add_child(node){
         node.layer = this.layer+1;
         node.node_id = Math.random().toString(16).replace("0.",node.layer+".");

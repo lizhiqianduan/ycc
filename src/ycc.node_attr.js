@@ -12,6 +12,8 @@
 
 
     Ycc.nodeAttr.init = init;
+
+    // 计算节点所占据的物理像素区域，返回附加信息之后的nodeAttrMap
     Ycc.nodeAttr.compute_hold_rect = compute_hold_rect;
 
 
@@ -31,15 +33,20 @@
             var parents = getPatentsAttr(node_id,nodeAttrMap);
             // 最后一个父级元素即为节点的直接父级
             var parent = parents[parents.length-1];
+            var be_hold_info = null;
+            var parent_rect = null;
             if(!parent){
                 // 没有parent，说明是根节点，跳过它的计算
                 style.width = ctx_width;
                 style.height = ctx_height;
+                attr._hold_rect.height = ctx_height;
                 continue;
+            }else{
+                be_hold_info = parent._be_hold_info;
+                parent_rect = parent._hold_rect;
             }
-            var be_hold_info = parent._be_hold_info;
-            var parent_rect = parent._hold_rect;
-
+//            be_hold_info = parent._be_hold_info;
+//            parent_rect = parent._hold_rect;
             if(style.borderWidth){
                 style.borderTopWidth = style.borderBottomWidth = style.borderLeftWidth=style.borderRightWidth = style.borderWidth;
             }
@@ -127,7 +134,6 @@
                 }
             }else if(style.float == "right"){
             // 节点向右浮动的情况
-//                restWidth = ctx_width-be_hold_info.left2right-be_hold_info.right2left;
                 restWidth = parent.style.width-be_hold_info.left2right-be_hold_info.right2left;
 
                 hold_rect.width = style.width + style.borderLeftWidth+style.borderRightWidth+style.paddingLeft+style.paddingRight;
@@ -144,7 +150,6 @@
                     be_hold_info.lastMaxHeight = be_hold_info.maxHeight;
                     hold_rect.top = be_hold_info.lastMaxHeight+style.top+style.marginTop    +parent_rect.top+parent.style.borderTopWidth+parent.style.paddingTop;
                     hold_rect.left = parent.style.width      +parent_rect.left+parent.style.borderLeftWidth+parent.style.paddingLeft     -(outWidth-style.marginLeft);
-//                    hold_rect.left = ctx_width-(outWidth-style.marginLeft);
                     be_hold_info.right2left = outWidth;
                     be_hold_info.left2right = 0;
                     be_hold_info.maxHeight = be_hold_info.lastMaxHeight+outHeight;
@@ -159,13 +164,25 @@
             }
 
             if(parent.style.overflowY =="auto"){
-                console.log("overflow:auto ",hold_rect,parent_rect);
-                parent.style.height = be_hold_info.maxHeight>parent.style.height?be_hold_info.maxHeight:parent.style.height;
+                // 需要调整其所有父节点的高度
+                for(var i=parents.length-1;i>-1;i--){
+                    var parent = parents[i];
+                    var grand_parent = parents[i-1];
+                    if(parent._be_hold_info.maxHeight>parent.style.height){
+                        var increase = parent._be_hold_info.maxHeight - parent.style.height;
+                        parent.style.height = be_hold_info.maxHeight;
+                        parent._hold_rect.height+=increase;
+                        if(grand_parent && grand_parent.style.overflowY=="auto"){
+                            var new_max_height = grand_parent._be_hold_info.lastMaxHeight+parent._hold_rect.height+parent.style.marginTop+parent.style.marginBottom;
+                            if(new_max_height>grand_parent._be_hold_info.maxHeight){
+                                grand_parent._hold_rect.height+=new_max_height-grand_parent._be_hold_info.maxHeight;
+                                grand_parent._be_hold_info.maxHeight = new_max_height;
+                            }
+                        }
+                    }
+                }
+
             }
-            console.log(restWidth,hold_rect.width,parent_rect.width);
-
-
-
         }
         return nodeAttrMap;
     }

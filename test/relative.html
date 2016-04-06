@@ -30,39 +30,59 @@
     // 测试布局
     var style = {
         position:"relative",
-        float:"none",
+        float:"left",
         margin:5,
         borderWidth:10,
-        backgroundColor:"red"
+        backgroundColor:"red",
+        padding:20
     };
     var style2 = {
         position:"relative",
         float:"left",
-        margin:5,
+//        margin:5,
         borderWidth:10,
-        backgroundColor:"blue"
+        backgroundColor:"blue",
+        overflow:null,
+        marginTop:10
+
     };
     var nodeAttrMap =  {};
-    var root = new Ycc.Node();
+    var root = Ycc.Node.getRoot();
     nodeAttrMap[root.node_id] = root;
+    console.log(nodeAttrMap);
 
-    for(var i=0;i<1;i++){
+    for(var i=0;i<2;i++){
         var child = new Ycc.Node(Ycc.utils.deepClone(style));
         var child2 = new Ycc.Node(Ycc.utils.deepClone(style2));
         var child3 = new Ycc.Node(Ycc.utils.deepClone(style2));
-        child.style.width = (1+Math.random())*100;
-        child.style.height = /*(1+Math.random())**/0;
-        child2.style.width = (1+Math.random())*20;
-        child2.style.height = (1+Math.random())*20;
-        child3.style.width = (1+Math.random())*20;
-        child3.style.height = (1+Math.random())*20;
+        var child4 = new Ycc.Node(Ycc.utils.deepClone(style2));
+        child.style.width = 200;
+        child.style.height = 20;
+
+        child2.style.width = 80;
+        child2.style.height = 20;
+
+        child3.style.width = 20;
+        child3.style.height = 20;
+        child3.style.marginLeft = 20;
+
+        child4.style.width = 200;
+        child4.style.height = 200;
+        child4.style.marginTop = 20;
+        child4.style.marginLeft = 0;
+
 //        child3.style.float = "right";
         root.add_child(child);
+
         child.add_child(child2);
         child.add_child(child3);
+
+        root.add_child(child4);
+
         nodeAttrMap[child.node_id] = child;
         nodeAttrMap[child2.node_id] = child2;
         nodeAttrMap[child3.node_id] = child3;
+        nodeAttrMap[child4.node_id] = child4;
     }
     Ycc.painter.clear();
     Ycc.nodeAttr.init(t.width, t.height);
