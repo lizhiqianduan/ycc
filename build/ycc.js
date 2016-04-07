@@ -184,7 +184,8 @@ Ycc.settings = {
     Ycc.Node.nodeMap = {};
 
     Ycc.Node.getRoot = getRoot;
-
+    Ycc.Node.createNode = createNode;
+    Ycc.Node.createTextNode = createTextNode;
     // 获取节点的属性
     Ycc.Node.get_node_attr = get_node_attr;
     // 获取节点列表的属性
@@ -195,7 +196,7 @@ Ycc.settings = {
 
 
     // constructor
-    function Node(style){
+    function Node(style,attrs){
         // 祖先元素的node_id列表
         this.parents = [];
         // 子节点node_id列表
@@ -215,6 +216,12 @@ Ycc.settings = {
             // 从右至左元素所占据的位置，应该包括margin
             right2left:0
         };
+
+        // 文字节点的文字
+        this._innerText = null;
+
+        // 节点属性
+        this.attrs = {};
         // 样式
         this.style = {};
         // 位置及盒模型
@@ -249,7 +256,12 @@ Ycc.settings = {
         this.style.marginBottom = 0;
         this.style.marginLeft = 0;
         // 背景色
-        this.style.backgroundColor = "#fff";
+        this.style.backgroundColor = null; // "#fff/red/gradient"
+        // 文字
+        this.style.fontSize = 16;
+        this.style.color = "#000";
+        this.style.fontFamily = "Arial";
+
         // 溢出处理
         this.style.overflow = null;
         this.style.overflowX = null;
@@ -257,6 +269,8 @@ Ycc.settings = {
 
         if(utils.isObj(style))
             this.style = utils.extend(this.style,style);
+        if(utils.isObj(attrs))
+            this.attrs = utils.extend(this.attrs,attrs);
     }
 
     var proto = Ycc.Node.prototype;
@@ -329,6 +343,51 @@ Ycc.settings = {
         return arr;
     }
 
+    /*
+    * exports function
+    * 创建节点
+    * 需要三个参数  tagName,style,attrs
+    * 或者两个参数  style,attrs
+    * 或者一个参数  style
+    * */
+    function createNode(){
+        var tagName = "div";
+        var style = null;
+        var attrs = null;
+        if(arguments.length==2){
+            style = utils.deepClone(arguments[0]);
+            attrs = utils.deepClone(arguments[1]);
+        }else if(arguments.length==3){
+            tagName = arguments[0];
+            style = utils.deepClone(arguments[1]);
+            attrs = utils.deepClone(arguments[2]);
+        }else if(arguments.length==1){
+            style = utils.deepClone(arguments[0]);
+        }
+
+        var node = new Node();
+        node.tagName = tagName;
+        if(utils.isObj(style))
+            node.style = utils.extend(node.style,style);
+        if(utils.isObj(attrs))
+            node.attrs = utils.extend(node.attrs,attrs);
+        return node;
+    }
+
+    /*
+    * exports function
+    * 创建一个文字节点
+    * */
+    function createTextNode(text){
+        var node = new Node();
+        node.tagName = "_innerText";
+        node._innerText = text;
+        node.display = "inline";
+        return node;
+    }
+
+
+
 })(Ycc,Ycc.utils);;/**
  * Created by xiaohei on 2016/4/3.
  * 用于处理node属性的模块
@@ -355,7 +414,27 @@ Ycc.settings = {
     }
 
 
+    /*
+    * 某节点在计算之前的预处理
+    * */
+    function before_compute(node,parent){
+        var tagName = node.tagName;
+        var style = node.style;
 
+        // 重置img的一些特性
+        if(tagName == "img"){
+            style.padding = 0;
+        }else if(tagName == "_innerText"){
+        // 重置文字节点的一些特性
+            style.padding = 0;
+            style.margin = 0;
+            style.border = 0;
+        }
+    }
+
+    /*
+    * 计算节点在画布中的实际占据的位置信息
+    * */
     function compute_hold_rect(nodeAttrMap){
         for(var node_id in nodeAttrMap){
             var attr = nodeAttrMap[node_id];
@@ -373,6 +452,7 @@ Ycc.settings = {
                 attr._hold_rect.height = ctx_height;
                 continue;
             }else{
+                before_compute(attr,parent);
                 be_hold_info = parent._be_hold_info;
                 parent_rect = parent._hold_rect;
             }
@@ -538,16 +618,15 @@ Ycc.settings = {
  * Created by xiaohei on 2016/4/2.
  */
 
-(function (Ycc){
-    var extend = Ycc.utils.extend;
-    var isString = Ycc.utils.isString;
-    var isNum = Ycc.utils.isNum;
-    var isObj = Ycc.utils.isObj;
-    var isFn = Ycc.utils.isFn;
-    var isArray = Ycc.utils.isArray;
-    var isDot = Ycc.utils.isDot;
+(function (Ycc,utils){
+    var extend = utils.extend;
+    var isString = utils.isString;
+    var isNum = utils.isNum;
+    var isObj = utils.isObj;
+    var isFn = utils.isFn;
+    var isArray = utils.isArray;
+    var isDot = utils.isDot;
 
-    var utils = Ycc.utils;
 
     // app的引用
     var app = null;
@@ -580,14 +659,10 @@ Ycc.settings = {
     Ycc.painter.clear = clear;
 
     // 画div
-    Ycc.painter.paint_div = paint_div;
+    Ycc.painter.paint_bgColor_and_border = paint_bgColor_and_border;
     // 渲染所有节点
     Ycc.painter.render = render;
 
-
-
-    // 测试节点
-    var test_node = new Ycc.Node({width:200,height:100,borderWidth:5});
 
 
     /*
@@ -596,9 +671,12 @@ Ycc.settings = {
     function paint_node(nodeAttr){
         switch (nodeAttr.tagName){
             case "div":
-                paint_div(nodeAttr);
+                paint_bgColor_and_border(nodeAttr);
                 break;
             case "img":
+                break;
+            case "_innerText":
+
                 break;
         }
     }
@@ -606,7 +684,7 @@ Ycc.settings = {
     /*
     * 根据节点的属性，将div画出来
     * */
-    function paint_div(nodeAttr){
+    function paint_bgColor_and_border(nodeAttr){
         var style = nodeAttr.style;
         if(style.borderWidth){
             style.borderTopWidth = style.borderBottomWidth = style.borderLeftWidth=style.borderRightWidth = style.borderWidth;
@@ -625,8 +703,11 @@ Ycc.settings = {
         left_top_dot[1] = style.borderTopWidth+nodeAttr._hold_rect.top;
         right_bottom_dot[0] =left_top_dot[0] +  style.paddingLeft+style.paddingRight+style.width;
         right_bottom_dot[1] =left_top_dot[1] +  style.paddingTop+style.paddingBottom+style.height;
-        options.fillStyle = style.backgroundColor;
-        fill_rect(left_top_dot,right_bottom_dot,options);
+        if(style.backgroundColor){
+            // 如果设置了背景，那么就把它画出来
+            options.fillStyle = style.backgroundColor;
+            fill_rect(left_top_dot,right_bottom_dot,options);
+        }
 
         // 画边框
         print_border(style,options);
@@ -681,11 +762,15 @@ Ycc.settings = {
     function render(node_attr_map){
         var sorted = sort_node_attr_by_layer(node_attr_map);
         for(var i=0;i<sorted.length;i++){
+            paint_bgColor_and_border(sorted[i]);
+
             switch (sorted[i].tagName){
                 case "div":
-                    paint_div(sorted[i]);
                     break;
                 case "img":
+                    break;
+                case "_innerText":
+                    paint_textNode(sorted[i],node_attr_map);
                     break;
             }
         }
@@ -704,7 +789,47 @@ Ycc.settings = {
         return node_attr_list;
     }
 
+    /*
+     * 由于文字当前环境的高宽并不能确定，所以在渲染的时候
+     * */
+    function paint_textNode(text_node,node_attr_map){
+        var parent = node_attr_map[text_node.parents[text_node.parents.length-1]];
+        var text = text_node._innerText;
+        var parentStyle = parent.style;
+        var parent_hold_rect = parent._hold_rect;
+        var font_start_left = parent_hold_rect.left+parentStyle.borderLeftWidth+parentStyle.paddingLeft;
+        var font_start_top = parent_hold_rect.top+parentStyle.borderTopWidth+parentStyle.paddingTop;
 
+        console.log(parentStyle);
+        var fontSize = parentStyle.fontSize;
+        var fontFamily = parentStyle.fontFamily;
+        var color  = parentStyle.color;
+        ctx.font = fontSize+"px "+fontFamily;
+
+        var curWidth = 0;
+        for(var i=0;i<text.length;i++){
+            var letter = text[i];
+            var curLetterWidth = ctx.measureText(letter).width;
+            if(curWidth+curLetterWidth>parentStyle.width){
+                curWidth = 0;
+                font_start_top += fontSize;
+                font_start_left = parent_hold_rect.left+parentStyle.borderLeftWidth+parentStyle.paddingLeft;
+            }
+
+            fill_font(letter,{
+                //文字的起点，默认left=0 top=0
+                x:font_start_left,
+                y:font_start_top,
+                //文字大小和字体
+                fontSize: fontSize,
+                fontFamily:fontFamily,
+                //描边颜色
+                fillStyle: color
+            });
+            curWidth += curLetterWidth;
+            font_start_left += curLetterWidth;
+        }
+    }
 
 
 
@@ -791,7 +916,8 @@ Ycc.settings = {
             //绘制路径的线宽
             lineWidth: 1,
             //描边颜色
-            strokeStyle: "#000"
+            strokeStyle: "#000",
+            fillStyle : "#000"
         };
         settings = (settings && isObj(settings)) ? extend( defaultSet, settings) : defaultSet;
         var afterTransDot = [settings.x,settings.y];
@@ -1028,7 +1154,7 @@ Ycc.settings = {
 
 
 
-})(Ycc);;/**
+})(Ycc,Ycc.utils);;/**
  * Created by xiaohei on 2016/4/1.
  */
 (function(Ycc,utils,painter) {

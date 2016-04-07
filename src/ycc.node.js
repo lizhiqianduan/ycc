@@ -11,7 +11,8 @@
     Ycc.Node.nodeMap = {};
 
     Ycc.Node.getRoot = getRoot;
-
+    Ycc.Node.createNode = createNode;
+    Ycc.Node.createTextNode = createTextNode;
     // 获取节点的属性
     Ycc.Node.get_node_attr = get_node_attr;
     // 获取节点列表的属性
@@ -22,7 +23,7 @@
 
 
     // constructor
-    function Node(style){
+    function Node(style,attrs){
         // 祖先元素的node_id列表
         this.parents = [];
         // 子节点node_id列表
@@ -42,6 +43,12 @@
             // 从右至左元素所占据的位置，应该包括margin
             right2left:0
         };
+
+        // 文字节点的文字
+        this._innerText = null;
+
+        // 节点属性
+        this.attrs = {};
         // 样式
         this.style = {};
         // 位置及盒模型
@@ -76,7 +83,12 @@
         this.style.marginBottom = 0;
         this.style.marginLeft = 0;
         // 背景色
-        this.style.backgroundColor = "#fff";
+        this.style.backgroundColor = null; // "#fff/red/gradient"
+        // 文字
+        this.style.fontSize = 16;
+        this.style.color = "#000";
+        this.style.fontFamily = "Arial";
+
         // 溢出处理
         this.style.overflow = null;
         this.style.overflowX = null;
@@ -84,6 +96,8 @@
 
         if(utils.isObj(style))
             this.style = utils.extend(this.style,style);
+        if(utils.isObj(attrs))
+            this.attrs = utils.extend(this.attrs,attrs);
     }
 
     var proto = Ycc.Node.prototype;
@@ -155,5 +169,50 @@
         }
         return arr;
     }
+
+    /*
+    * exports function
+    * 创建节点
+    * 需要三个参数  tagName,style,attrs
+    * 或者两个参数  style,attrs
+    * 或者一个参数  style
+    * */
+    function createNode(){
+        var tagName = "div";
+        var style = null;
+        var attrs = null;
+        if(arguments.length==2){
+            style = utils.deepClone(arguments[0]);
+            attrs = utils.deepClone(arguments[1]);
+        }else if(arguments.length==3){
+            tagName = arguments[0];
+            style = utils.deepClone(arguments[1]);
+            attrs = utils.deepClone(arguments[2]);
+        }else if(arguments.length==1){
+            style = utils.deepClone(arguments[0]);
+        }
+
+        var node = new Node();
+        node.tagName = tagName;
+        if(utils.isObj(style))
+            node.style = utils.extend(node.style,style);
+        if(utils.isObj(attrs))
+            node.attrs = utils.extend(node.attrs,attrs);
+        return node;
+    }
+
+    /*
+    * exports function
+    * 创建一个文字节点
+    * */
+    function createTextNode(text){
+        var node = new Node();
+        node.tagName = "_innerText";
+        node._innerText = text;
+        node.display = "inline";
+        return node;
+    }
+
+
 
 })(Ycc,Ycc.utils);

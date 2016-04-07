@@ -24,7 +24,27 @@
     }
 
 
+    /*
+    * 某节点在计算之前的预处理
+    * */
+    function before_compute(node,parent){
+        var tagName = node.tagName;
+        var style = node.style;
 
+        // 重置img的一些特性
+        if(tagName == "img"){
+            style.padding = 0;
+        }else if(tagName == "_innerText"){
+        // 重置文字节点的一些特性
+            style.padding = 0;
+            style.margin = 0;
+            style.border = 0;
+        }
+    }
+
+    /*
+    * 计算节点在画布中的实际占据的位置信息
+    * */
     function compute_hold_rect(nodeAttrMap){
         for(var node_id in nodeAttrMap){
             var attr = nodeAttrMap[node_id];
@@ -42,6 +62,7 @@
                 attr._hold_rect.height = ctx_height;
                 continue;
             }else{
+                before_compute(attr,parent);
                 be_hold_info = parent._be_hold_info;
                 parent_rect = parent._hold_rect;
             }

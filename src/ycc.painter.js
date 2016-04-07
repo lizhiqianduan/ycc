@@ -43,14 +43,10 @@
     Ycc.painter.clear = clear;
 
     // 画div
-    Ycc.painter.paint_div = paint_div;
+    Ycc.painter.paint_bgColor_and_border = paint_bgColor_and_border;
     // 渲染所有节点
     Ycc.painter.render = render;
 
-
-
-    // 测试节点
-    var test_node = new Ycc.Node({width:200,height:100,borderWidth:5});
 
 
     /*
@@ -59,9 +55,12 @@
     function paint_node(nodeAttr){
         switch (nodeAttr.tagName){
             case "div":
-                paint_div(nodeAttr);
+                paint_bgColor_and_border(nodeAttr);
                 break;
             case "img":
+                break;
+            case "_innerText":
+
                 break;
         }
     }
@@ -69,7 +68,7 @@
     /*
     * 根据节点的属性，将div画出来
     * */
-    function paint_div(nodeAttr){
+    function paint_bgColor_and_border(nodeAttr){
         var style = nodeAttr.style;
         if(style.borderWidth){
             style.borderTopWidth = style.borderBottomWidth = style.borderLeftWidth=style.borderRightWidth = style.borderWidth;
@@ -88,8 +87,11 @@
         left_top_dot[1] = style.borderTopWidth+nodeAttr._hold_rect.top;
         right_bottom_dot[0] =left_top_dot[0] +  style.paddingLeft+style.paddingRight+style.width;
         right_bottom_dot[1] =left_top_dot[1] +  style.paddingTop+style.paddingBottom+style.height;
-        options.fillStyle = style.backgroundColor;
-        fill_rect(left_top_dot,right_bottom_dot,options);
+        if(style.backgroundColor){
+            // 如果设置了背景，那么就把它画出来
+            options.fillStyle = style.backgroundColor;
+            fill_rect(left_top_dot,right_bottom_dot,options);
+        }
 
         // 画边框
         print_border(style,options);
@@ -144,11 +146,15 @@
     function render(node_attr_map){
         var sorted = sort_node_attr_by_layer(node_attr_map);
         for(var i=0;i<sorted.length;i++){
+            paint_bgColor_and_border(sorted[i]);
+
             switch (sorted[i].tagName){
                 case "div":
-                    paint_div(sorted[i]);
                     break;
                 case "img":
+                    break;
+                case "_innerText":
+                    paint_textNode(sorted[i],node_attr_map);
                     break;
             }
         }
@@ -167,7 +173,47 @@
         return node_attr_list;
     }
 
+    /*
+     * 由于文字当前环境的高宽并不能确定，所以在渲染的时候
+     * */
+    function paint_textNode(text_node,node_attr_map){
+        var parent = node_attr_map[text_node.parents[text_node.parents.length-1]];
+        var text = text_node._innerText;
+        var parentStyle = parent.style;
+        var parent_hold_rect = parent._hold_rect;
+        var font_start_left = parent_hold_rect.left+parentStyle.borderLeftWidth+parentStyle.paddingLeft;
+        var font_start_top = parent_hold_rect.top+parentStyle.borderTopWidth+parentStyle.paddingTop;
 
+        console.log(parentStyle);
+        var fontSize = parentStyle.fontSize;
+        var fontFamily = parentStyle.fontFamily;
+        var color  = parentStyle.color;
+        ctx.font = fontSize+"px "+fontFamily;
+
+        var curWidth = 0;
+        for(var i=0;i<text.length;i++){
+            var letter = text[i];
+            var curLetterWidth = ctx.measureText(letter).width;
+            if(curWidth+curLetterWidth>parentStyle.width){
+                curWidth = 0;
+                font_start_top += fontSize;
+                font_start_left = parent_hold_rect.left+parentStyle.borderLeftWidth+parentStyle.paddingLeft;
+            }
+
+            fill_font(letter,{
+                //文字的起点，默认left=0 top=0
+                x:font_start_left,
+                y:font_start_top,
+                //文字大小和字体
+                fontSize: fontSize,
+                fontFamily:fontFamily,
+                //描边颜色
+                fillStyle: color
+            });
+            curWidth += curLetterWidth;
+            font_start_left += curLetterWidth;
+        }
+    }
 
 
 
@@ -254,7 +300,8 @@
             //绘制路径的线宽
             lineWidth: 1,
             //描边颜色
-            strokeStyle: "#000"
+            strokeStyle: "#000",
+            fillStyle : "#000"
         };
         settings = (settings && isObj(settings)) ? extend( defaultSet, settings) : defaultSet;
         var afterTransDot = [settings.x,settings.y];
