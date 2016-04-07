@@ -2,16 +2,15 @@
  * Created by xiaohei on 2016/4/2.
  */
 
-(function (Ycc){
-    var extend = Ycc.utils.extend;
-    var isString = Ycc.utils.isString;
-    var isNum = Ycc.utils.isNum;
-    var isObj = Ycc.utils.isObj;
-    var isFn = Ycc.utils.isFn;
-    var isArray = Ycc.utils.isArray;
-    var isDot = Ycc.utils.isDot;
+(function (Ycc,utils){
+    var extend = utils.extend;
+    var isString = utils.isString;
+    var isNum = utils.isNum;
+    var isObj = utils.isObj;
+    var isFn = utils.isFn;
+    var isArray = utils.isArray;
+    var isDot = utils.isDot;
 
-    var utils = Ycc.utils;
 
     // app的引用
     var app = null;
@@ -492,4 +491,4 @@
 
 
 
-})(Ycc);
+})(Ycc,Ycc.utils);
