@@ -82,21 +82,64 @@
         var left_top_dot = [];
         var right_bottom_dot = [];
         var options = {};
-        // 画背景
-        left_top_dot[0] = style.borderLeftWidth+nodeAttr._hold_rect.left;
-        left_top_dot[1] = style.borderTopWidth+nodeAttr._hold_rect.top;
-        right_bottom_dot[0] =left_top_dot[0] +  style.paddingLeft+style.paddingRight+style.width;
-        right_bottom_dot[1] =left_top_dot[1] +  style.paddingTop+style.paddingBottom+style.height;
-        if(style.backgroundColor){
-            // 如果设置了背景，那么就把它画出来
-            options.fillStyle = style.backgroundColor;
-            fill_rect(left_top_dot,right_bottom_dot,options);
-        }
+
+
+
+        // 如果超出隐藏，那么绘制一个裁剪区
+        (function(){
+            var parent = nodeAttr.parent;
+            if(!parent){
+                return null;
+            }
+            var hold_rect = parent._hold_rect;
+            var parent_style = parent.style;
+            if(parent_style.overflow!="hidden"){
+                console.log(parent.attrs);
+                return null;
+            }
+            var x0 = hold_rect.left+parent_style.borderLeftWidth+parent_style.paddingLeft;
+            var x1 = x0+parent_style.width;
+            var y0 = hold_rect.top + parent_style.borderTopWidth+parent_style.paddingTop;
+            var y1 = y0 + parent_style.height;
+            ctx.beginPath();
+            ctx.moveTo(x0,y0);
+            ctx.lineTo(x0,y1);
+            ctx.lineTo(x1,y1);
+            ctx.lineTo(x1,y0);
+            ctx.lineTo(x0,y0);
+            ctx.closePath();
+            //ctx.strokeStyle="yellow";
+            //ctx.lineWidth=1;
+            //ctx.stroke();
+            ctx.clip();
+        })();
 
         // 画边框
-        print_border(style,options);
+        paint_border(style,options);
+        // 画背景
+        paint_bg();
 
-        function print_border(style,options){
+
+        //while(!parent || (parent && parent.style.overflow == "hidden")){
+        //    var hold_rect = parent._hold_rect;
+        //
+        //    parent = parent.parent;
+        //}
+
+
+        function paint_bg(){
+            if(style.backgroundColor){
+                left_top_dot[0] = style.borderLeftWidth+nodeAttr._hold_rect.left;
+                left_top_dot[1] = style.borderTopWidth+nodeAttr._hold_rect.top;
+                right_bottom_dot[0] =left_top_dot[0] +  style.paddingLeft+style.paddingRight+style.width;
+                right_bottom_dot[1] =left_top_dot[1] +  style.paddingTop+style.paddingBottom+style.height;
+                options.fillStyle = style.backgroundColor;
+                fill_rect(left_top_dot,right_bottom_dot,options);
+            }
+        }
+
+
+        function paint_border(style,options){
             if(style.borderWidth>0 && style.borderColor){
                 left_top_dot[0] = style.borderLeftWidth/2+nodeAttr._hold_rect.left;
                 left_top_dot[1] = style.borderTopWidth/2+nodeAttr._hold_rect.top;

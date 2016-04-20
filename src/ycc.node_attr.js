@@ -77,7 +77,7 @@
             if(style.margin){
                 style.marginLeft = style.marginTop = style.marginRight = style.marginBottom = style.margin;
             }
-            if(style.overflow){
+            if(style.overflow !=""){
                 style.overflowX = style.overflowY = style.overflow;
             }
 

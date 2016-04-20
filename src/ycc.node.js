@@ -5,6 +5,7 @@
 
 (function(Ycc,utils){
     Ycc.Node = Node;
+
     // 节点列表
     Ycc.Node.nodeList = [];
     // 节点map
@@ -18,12 +19,16 @@
     // 获取节点列表的属性
     Ycc.Node.get_node_list_attr = get_node_list_attr;
 
-
-
+    // root节点
+    var root = new Node({},{id:"root"});
+    Ycc.Node.nodeList.push(root);
+    Ycc.Node.nodeMap[root.node_id] = root;
 
 
     // constructor
     function Node(style,attrs){
+        // 父节点默认为根
+        this.parent = root;
         // 祖先元素的node_id列表
         this.parents = [];
         // 子节点node_id列表
@@ -49,6 +54,9 @@
 
         // 节点属性
         this.attrs = {};
+        this.attrs.id = "";
+        this.attrs.class = '';
+
         // 样式
         this.style = {};
         // 位置及盒模型
@@ -90,39 +98,38 @@
         this.style.fontFamily = "Arial";
 
         // 溢出处理
-        this.style.overflow = null;
-        this.style.overflowX = null;
+        this.style.overflow = "";
+        this.style.overflowX = "";
         this.style.overflowY = "auto";
 
         if(utils.isObj(style))
             this.style = utils.extend(this.style,style);
         if(utils.isObj(attrs))
             this.attrs = utils.extend(this.attrs,attrs);
+
+        // 标签名
+        this.tagName = "div";
+        // 层级layer
+        this.layer = 1;
+        // 每个节点的唯一标示
+        this.node_id = Math.random().toString(16).replace("0.",this.layer+".");
     }
+
 
     var proto = Ycc.Node.prototype;
 
-    // 标签名
-    proto.tagName = "div";
-    // 层级layer
-    proto.layer = 1;
-    // 每个节点的唯一标示
-    proto.node_id = Math.random().toString(16).replace("0.",proto.layer+".");
     proto.add_child = add_child;
     proto.del_child = del_child;
 
     function getRoot(){
-        var node = new Node();
-//        node._be_hold_info = {};
-        Ycc.Node.nodeList.push(node);
-        Ycc.Node.nodeMap[node.node_id] = node;
-        return node;
+        return root;
     }
 
     /*
     * 向节点添加子节点，只能先添加父节点，再添加子节点
     * */
     function add_child(node){
+        node.parent = this;
         node.layer = this.layer+1;
         node.node_id = Math.random().toString(16).replace("0.",node.layer+".");
         node.parents = this.parents.slice(0);

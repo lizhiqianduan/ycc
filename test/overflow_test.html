@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>test overflowY</title>
+
+    <style>
+        *{margin: 0;padding: 0;}
+        body{background-color: #ccc;}
+    </style>
+
+</head>
+<body>
+
+<canvas id="t" width="800" height="600">
+    你的浏览器太古老了...
+</canvas>
+
+</body>
+</html>
+
+
+
+<script src="../build/ycc.js"></script>
+<script>
+
+    /********************* 浏览器端创建/获取canvas ***************************/
+    var t = document.getElementById("t");
+    var ctx = t.getContext("2d");
+    var ycc = new Ycc.App(ctx, t.width, t.height);
+
+
+    /************ server端执行 模拟server端的json数据 *****************************/
+    var nodeAttrMap = {};
+    var root = Ycc.Node.getRoot();
+    nodeAttrMap[root.node_id] = root;
+
+    var div1 = Ycc.Node.createNode({
+        position:"absolute",
+        width:50,
+        height:200,
+        backgroundColor:"red",
+        overflow:"hidden",
+        top:111,
+        left:22,
+        padding:10,
+        borderWidth:10
+    },{id:"red-div"});
+
+    var div2 = Ycc.Node.createNode({
+        width:24,
+        height:300,
+        backgroundColor:"blue",
+        overflow:"auto",
+        top:0,
+        left:0,
+        padding:10,
+        borderWidth:5
+    },{id:"blue-div"});
+    var text = Ycc.Node.createTextNode("这个div将被截断");
+    root.add_child(div1);
+    nodeAttrMap[div1.node_id] = div1;
+    div1.add_child(div2);
+    nodeAttrMap[div2.node_id] = div2;
+    div2.add_child(text);
+    nodeAttrMap[text.node_id] = text;
+
+
+    // t.width t.height 需要客户端传递
+    Ycc.nodeAttr.init(t.width, t.height);
+    var res = Ycc.nodeAttr.compute_hold_rect(nodeAttrMap);
+
+    /**************************************************************/
+    /*                    res就是最后返回给浏览器端的json             */
+    /**************************************************************/
+    Ycc.painter.clear();
+    ycc.render(res,Object.keys(res).length);
+
+</script>
+
+

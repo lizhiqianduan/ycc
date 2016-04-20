@@ -178,6 +178,7 @@ Ycc.settings = {
 
 (function(Ycc,utils){
     Ycc.Node = Node;
+
     // 节点列表
     Ycc.Node.nodeList = [];
     // 节点map
@@ -191,12 +192,16 @@ Ycc.settings = {
     // 获取节点列表的属性
     Ycc.Node.get_node_list_attr = get_node_list_attr;
 
-
-
+    // root节点
+    var root = new Node({},{id:"root"});
+    Ycc.Node.nodeList.push(root);
+    Ycc.Node.nodeMap[root.node_id] = root;
 
 
     // constructor
     function Node(style,attrs){
+        // 父节点默认为根
+        this.parent = root;
         // 祖先元素的node_id列表
         this.parents = [];
         // 子节点node_id列表
@@ -222,6 +227,9 @@ Ycc.settings = {
 
         // 节点属性
         this.attrs = {};
+        this.attrs.id = "";
+        this.attrs.class = '';
+
         // 样式
         this.style = {};
         // 位置及盒模型
@@ -263,39 +271,38 @@ Ycc.settings = {
         this.style.fontFamily = "Arial";
 
         // 溢出处理
-        this.style.overflow = null;
-        this.style.overflowX = null;
+        this.style.overflow = "";
+        this.style.overflowX = "";
         this.style.overflowY = "auto";
 
         if(utils.isObj(style))
             this.style = utils.extend(this.style,style);
         if(utils.isObj(attrs))
             this.attrs = utils.extend(this.attrs,attrs);
+
+        // 标签名
+        this.tagName = "div";
+        // 层级layer
+        this.layer = 1;
+        // 每个节点的唯一标示
+        this.node_id = Math.random().toString(16).replace("0.",this.layer+".");
     }
+
 
     var proto = Ycc.Node.prototype;
 
-    // 标签名
-    proto.tagName = "div";
-    // 层级layer
-    proto.layer = 1;
-    // 每个节点的唯一标示
-    proto.node_id = Math.random().toString(16).replace("0.",proto.layer+".");
     proto.add_child = add_child;
     proto.del_child = del_child;
 
     function getRoot(){
-        var node = new Node();
-//        node._be_hold_info = {};
-        Ycc.Node.nodeList.push(node);
-        Ycc.Node.nodeMap[node.node_id] = node;
-        return node;
+        return root;
     }
 
     /*
     * 向节点添加子节点，只能先添加父节点，再添加子节点
     * */
     function add_child(node){
+        node.parent = this;
         node.layer = this.layer+1;
         node.node_id = Math.random().toString(16).replace("0.",node.layer+".");
         node.parents = this.parents.slice(0);
@@ -467,7 +474,7 @@ Ycc.settings = {
             if(style.margin){
                 style.marginLeft = style.marginTop = style.marginRight = style.marginBottom = style.margin;
             }
-            if(style.overflow){
+            if(style.overflow !=""){
                 style.overflowX = style.overflowY = style.overflow;
             }
 
@@ -698,21 +705,64 @@ Ycc.settings = {
         var left_top_dot = [];
         var right_bottom_dot = [];
         var options = {};
-        // 画背景
-        left_top_dot[0] = style.borderLeftWidth+nodeAttr._hold_rect.left;
-        left_top_dot[1] = style.borderTopWidth+nodeAttr._hold_rect.top;
-        right_bottom_dot[0] =left_top_dot[0] +  style.paddingLeft+style.paddingRight+style.width;
-        right_bottom_dot[1] =left_top_dot[1] +  style.paddingTop+style.paddingBottom+style.height;
-        if(style.backgroundColor){
-            // 如果设置了背景，那么就把它画出来
-            options.fillStyle = style.backgroundColor;
-            fill_rect(left_top_dot,right_bottom_dot,options);
-        }
+
+
+
+        // 如果超出隐藏，那么绘制一个裁剪区
+        (function(){
+            var parent = nodeAttr.parent;
+            if(!parent){
+                return null;
+            }
+            var hold_rect = parent._hold_rect;
+            var parent_style = parent.style;
+            if(parent_style.overflow!="hidden"){
+                console.log(parent.attrs);
+                return null;
+            }
+            var x0 = hold_rect.left+parent_style.borderLeftWidth+parent_style.paddingLeft;
+            var x1 = x0+parent_style.width;
+            var y0 = hold_rect.top + parent_style.borderTopWidth+parent_style.paddingTop;
+            var y1 = y0 + parent_style.height;
+            ctx.beginPath();
+            ctx.moveTo(x0,y0);
+            ctx.lineTo(x0,y1);
+            ctx.lineTo(x1,y1);
+            ctx.lineTo(x1,y0);
+            ctx.lineTo(x0,y0);
+            ctx.closePath();
+            //ctx.strokeStyle="yellow";
+            //ctx.lineWidth=1;
+            //ctx.stroke();
+            ctx.clip();
+        })();
 
         // 画边框
-        print_border(style,options);
+        paint_border(style,options);
+        // 画背景
+        paint_bg();
 
-        function print_border(style,options){
+
+        //while(!parent || (parent && parent.style.overflow == "hidden")){
+        //    var hold_rect = parent._hold_rect;
+        //
+        //    parent = parent.parent;
+        //}
+
+
+        function paint_bg(){
+            if(style.backgroundColor){
+                left_top_dot[0] = style.borderLeftWidth+nodeAttr._hold_rect.left;
+                left_top_dot[1] = style.borderTopWidth+nodeAttr._hold_rect.top;
+                right_bottom_dot[0] =left_top_dot[0] +  style.paddingLeft+style.paddingRight+style.width;
+                right_bottom_dot[1] =left_top_dot[1] +  style.paddingTop+style.paddingBottom+style.height;
+                options.fillStyle = style.backgroundColor;
+                fill_rect(left_top_dot,right_bottom_dot,options);
+            }
+        }
+
+
+        function paint_border(style,options){
             if(style.borderWidth>0 && style.borderColor){
                 left_top_dot[0] = style.borderLeftWidth/2+nodeAttr._hold_rect.left;
                 left_top_dot[1] = style.borderTopWidth/2+nodeAttr._hold_rect.top;
