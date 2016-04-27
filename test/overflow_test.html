@@ -57,18 +57,32 @@
         padding:10,
         borderWidth:5
     },{id:"blue-div"});
+
+    var div3 = Ycc.Node.createNode({
+        width:24,
+        height:300,
+        backgroundColor:"green",
+        overflow:"auto",
+        top:0,
+        left:0,
+        padding:10,
+        borderWidth:5
+    });
+
     var text = Ycc.Node.createTextNode("这个div将被截断");
     root.add_child(div1);
-    nodeAttrMap[div1.node_id] = div1;
+//    nodeAttrMap[div1.node_id] = div1;
     div1.add_child(div2);
-    nodeAttrMap[div2.node_id] = div2;
+//    nodeAttrMap[div2.node_id] = div2;
     div2.add_child(text);
-    nodeAttrMap[text.node_id] = text;
-
+//    nodeAttrMap[text.node_id] = text;
+    root.add_child(div3);
+//    nodeAttrMap[div3.node_id] = div3;
 
     // t.width t.height 需要客户端传递
-    Ycc.nodeAttr.init(t.width, t.height);
-    var res = Ycc.nodeAttr.compute_hold_rect(nodeAttrMap);
+    Ycc.Node.init(ctx);
+//    var res = Ycc.nodeAttr.compute_hold_rect(nodeAttrMap);
+    var res = Ycc.Node.compute_hold_rect(Ycc.Node.nodeMap);
 
     /**************************************************************/
     /*                    res就是最后返回给浏览器端的json             */

@@ -21,8 +21,6 @@
 
     Ycc.App = App;
     Ycc.App.getNodeAttrById = getNodeAttrById;
-    Ycc.App.getChildrenAttr = getChildrenAttr;
-    Ycc.App.getPatentsAttr = getPatentsAttr;
     Ycc.App.getNodeAttrByTagName = getNodeAttrByTagName;
     Ycc.App.getNodeAttrById = getNodeAttrById;
     Ycc.App.getNodeAttrById = getNodeAttrById;
@@ -92,35 +90,7 @@
         return cur_node_attr_map[node_id];
     }
 
-    /*
-    * 获取子节点的属性
-    * */
-    function getChildrenAttr(node_id,isCopy){
-        var res = [];
-        var children = cur_node_attr_map[node_id].children;
-        var len = children.length;
-        if(len>0){
-            for(var i=0;i<len;i++){
-                isCopy?res.push(deepClone(cur_node_attr_map[children[i]])):res.push(cur_node_attr_map[children[i]]);
-            }
-        }
-        return res;
-    }
 
-    /*
-    * 根据节点id获取父级节点
-    * */
-    function getPatentsAttr(node_id,isCopy){
-        var res = [];
-        var parents = cur_node_attr_map[node_id].parents;
-        var len = parents.length;
-        if(len>0){
-            for(var i=0;i<len;i++){
-                isCopy?res.push(deepClone(cur_node_attr_map[parents[i]])):res.push(cur_node_attr_map[parents[i]]);
-            }
-        }
-        return res;
-    }
     /*
     * 获取节点的直接父节点
     * */

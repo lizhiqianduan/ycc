@@ -206,8 +206,11 @@
     /*
     * 根据节点属性的layer将节点进行排序
     * 返回排序后的列表 使用了es5函数
+    * todo:此处应该做一下排序
     * */
     function sort_node_attr_by_layer(node_attr_map){
+        var root = node_attr_map["1"];
+
         var node_attr_list = [];
         var keys = Object.keys(node_attr_map).sort();
         for(var i=0;i<keys.length;i++){
@@ -220,7 +223,8 @@
      * 由于文字当前环境的高宽并不能确定，所以在渲染的时候
      * */
     function paint_textNode(text_node,node_attr_map){
-        var parent = node_attr_map[text_node.parents[text_node.parents.length-1]];
+        //var parent = node_attr_map[text_node.parents[text_node.parents.length-1]];
+        var parent = text_node.parent;
         var text = text_node._innerText;
         var parentStyle = parent.style;
         var parent_hold_rect = parent._hold_rect;

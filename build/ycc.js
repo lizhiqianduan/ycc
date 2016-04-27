@@ -185,15 +185,21 @@ Ycc.settings = {
     Ycc.Node.nodeMap = {};
 
     Ycc.Node.getRoot = getRoot;
+    Ycc.Node.init = init;
     Ycc.Node.createNode = createNode;
     Ycc.Node.createTextNode = createTextNode;
     // 获取节点的属性
     Ycc.Node.get_node_attr = get_node_attr;
     // 获取节点列表的属性
     Ycc.Node.get_node_list_attr = get_node_list_attr;
+    Ycc.Node.compute_hold_rect = compute_hold_rect;
+
+    // 当前绘图环境
+    var ctx = {};
 
     // root节点
     var root = new Node({},{id:"root"});
+    root.node_id = 1;
     Ycc.Node.nodeList.push(root);
     Ycc.Node.nodeMap[root.node_id] = root;
 
@@ -302,12 +308,14 @@ Ycc.settings = {
     * 向节点添加子节点，只能先添加父节点，再添加子节点
     * */
     function add_child(node){
-        node.parent = this;
         node.layer = this.layer+1;
         node.node_id = Math.random().toString(16).replace("0.",node.layer+".");
+
+        node.parent = this;
         node.parents = this.parents.slice(0);
-        node.parents.push(this.node_id);
-        this.children.push(node.node_id);
+        node.parents.push(this);
+        this.children.push(node);
+
         Ycc.Node.nodeList.push(node);
         Ycc.Node.nodeMap[node.node_id] = node;
     }
@@ -393,37 +401,19 @@ Ycc.settings = {
         return node;
     }
 
-
-
-})(Ycc,Ycc.utils);;/**
- * Created by xiaohei on 2016/4/3.
- * 用于处理node属性的模块
- */
-
-(function(Ycc){
-    Ycc.nodeAttr = function(){};
-
-    var ctx_width = null;
-    var ctx_height = null;
-
-
-
-    Ycc.nodeAttr.init = init;
-
-    // 计算节点所占据的物理像素区域，返回附加信息之后的nodeAttrMap
-    Ycc.nodeAttr.compute_hold_rect = compute_hold_rect;
-
-
-
-    function init(_ctx_width,_ctx_height){
-        ctx_width = _ctx_width;
-        ctx_height = _ctx_height;
+    /*
+    * 模块初始化函数
+    * */
+    function init(_ctx){
+        //ctx.canvas.width =
+        ctx = _ctx;
     }
 
 
+
     /*
-    * 某节点在计算之前的预处理
-    * */
+     * 某节点在计算之前的预处理
+     * */
     function before_compute(node,parent){
         var tagName = node.tagName;
         var style = node.style;
@@ -432,7 +422,7 @@ Ycc.settings = {
         if(tagName == "img"){
             style.padding = 0;
         }else if(tagName == "_innerText"){
-        // 重置文字节点的一些特性
+            // 重置文字节点的一些特性
             style.padding = 0;
             style.margin = 0;
             style.border = 0;
@@ -440,23 +430,23 @@ Ycc.settings = {
     }
 
     /*
-    * 计算节点在画布中的实际占据的位置信息
-    * */
+     * 计算节点在画布中的实际占据的位置信息
+     * */
     function compute_hold_rect(nodeAttrMap){
         for(var node_id in nodeAttrMap){
             var attr = nodeAttrMap[node_id];
             var style = attr.style;
             var hold_rect = attr._hold_rect;
-            var parents = getPatentsAttr(node_id,nodeAttrMap);
+            var parents = attr.parents;
             // 最后一个父级元素即为节点的直接父级
-            var parent = parents[parents.length-1];
+            var parent = attr.parent;
             var be_hold_info = null;
             var parent_rect = null;
             if(!parent){
                 // 没有parent，说明是根节点，跳过它的计算
-                style.width = ctx_width;
-                style.height = ctx_height;
-                attr._hold_rect.height = ctx_height;
+                style.width = ctx.canvas.width;
+                style.height = ctx.canvas.height;
+                attr._hold_rect.height = ctx.canvas.height;
                 continue;
             }else{
                 before_compute(attr,parent);
@@ -520,7 +510,7 @@ Ycc.settings = {
 
             }else if((style.float == "none" && style.display == "inline")
                 ||(style.float == "left")){
-            // float为none，display为inline时，hold_rect类似于左浮动
+                // float为none，display为inline时，hold_rect类似于左浮动
 
                 restWidth = parent.style.width-be_hold_info.left2right-be_hold_info.right2left;
 //                restWidth = ctx_width-be_hold_info.left2right-be_hold_info.right2left;
@@ -543,7 +533,7 @@ Ycc.settings = {
                     be_hold_info.right2left = 0;
                     be_hold_info.maxHeight = be_hold_info.lastMaxHeight+outHeight;
                 }else{
-                // 一行放得下的情况
+                    // 一行放得下的情况
                     be_hold_info.maxHeight = be_hold_info.lastMaxHeight+outHeight>be_hold_info.maxHeight?be_hold_info.lastMaxHeight+outHeight:be_hold_info.maxHeight;
 //                    be_hold_info.maxHeight = style.marginTop+style.marginBottom+hold_rect.height;
                     be_hold_info.left2right += style.marginLeft+style.marginRight+hold_rect.width;
@@ -551,7 +541,7 @@ Ycc.settings = {
 
                 }
             }else if(style.float == "right"){
-            // 节点向右浮动的情况
+                // 节点向右浮动的情况
                 restWidth = parent.style.width-be_hold_info.left2right-be_hold_info.right2left;
 
                 hold_rect.width = style.width + style.borderLeftWidth+style.borderRightWidth+style.paddingLeft+style.paddingRight;
@@ -584,7 +574,7 @@ Ycc.settings = {
             if(parent.style.overflowY =="auto"){
                 // 需要调整其所有父节点的高度
                 for(var i=parents.length-1;i>-1;i--){
-                    var parent = parents[i];
+                    parent = parents[i];
                     var grand_parent = parents[i-1];
                     if(parent._be_hold_info.maxHeight>parent.style.height){
                         var increase = parent._be_hold_info.maxHeight - parent.style.height;
@@ -605,23 +595,7 @@ Ycc.settings = {
         return nodeAttrMap;
     }
 
-    /*
-     * 根据节点id获取父级节点
-     * */
-    function getPatentsAttr(node_id,nodeAttrMap){
-        var res = [];
-        var parents = nodeAttrMap[node_id].parents;
-        var len = parents.length;
-        if(len>0){
-            for(var i=0;i<len;i++){
-                res.push(nodeAttrMap[parents[i]]);
-            }
-        }
-        return res;
-    }
-
-
-})(Ycc);;/**
+})(Ycc,Ycc.utils);;/**
  * Created by xiaohei on 2016/4/2.
  */
 
@@ -829,8 +803,11 @@ Ycc.settings = {
     /*
     * 根据节点属性的layer将节点进行排序
     * 返回排序后的列表 使用了es5函数
+    * todo:此处应该做一下排序
     * */
     function sort_node_attr_by_layer(node_attr_map){
+        var root = node_attr_map["1"];
+
         var node_attr_list = [];
         var keys = Object.keys(node_attr_map).sort();
         for(var i=0;i<keys.length;i++){
@@ -843,7 +820,8 @@ Ycc.settings = {
      * 由于文字当前环境的高宽并不能确定，所以在渲染的时候
      * */
     function paint_textNode(text_node,node_attr_map){
-        var parent = node_attr_map[text_node.parents[text_node.parents.length-1]];
+        //var parent = node_attr_map[text_node.parents[text_node.parents.length-1]];
+        var parent = text_node.parent;
         var text = text_node._innerText;
         var parentStyle = parent.style;
         var parent_hold_rect = parent._hold_rect;
@@ -1227,8 +1205,6 @@ Ycc.settings = {
 
     Ycc.App = App;
     Ycc.App.getNodeAttrById = getNodeAttrById;
-    Ycc.App.getChildrenAttr = getChildrenAttr;
-    Ycc.App.getPatentsAttr = getPatentsAttr;
     Ycc.App.getNodeAttrByTagName = getNodeAttrByTagName;
     Ycc.App.getNodeAttrById = getNodeAttrById;
     Ycc.App.getNodeAttrById = getNodeAttrById;
@@ -1298,35 +1274,7 @@ Ycc.settings = {
         return cur_node_attr_map[node_id];
     }
 
-    /*
-    * 获取子节点的属性
-    * */
-    function getChildrenAttr(node_id,isCopy){
-        var res = [];
-        var children = cur_node_attr_map[node_id].children;
-        var len = children.length;
-        if(len>0){
-            for(var i=0;i<len;i++){
-                isCopy?res.push(deepClone(cur_node_attr_map[children[i]])):res.push(cur_node_attr_map[children[i]]);
-            }
-        }
-        return res;
-    }
 
-    /*
-    * 根据节点id获取父级节点
-    * */
-    function getPatentsAttr(node_id,isCopy){
-        var res = [];
-        var parents = cur_node_attr_map[node_id].parents;
-        var len = parents.length;
-        if(len>0){
-            for(var i=0;i<len;i++){
-                isCopy?res.push(deepClone(cur_node_attr_map[parents[i]])):res.push(cur_node_attr_map[parents[i]]);
-            }
-        }
-        return res;
-    }
     /*
     * 获取节点的直接父节点
     * */

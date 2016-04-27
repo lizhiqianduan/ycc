@@ -14,7 +14,7 @@ module.exports = function(grunt){
                         'src/ycc.init.js',
                         'src/ycc.utils.js',
                         'src/ycc.node.js',
-                        'src/ycc.node_attr.js',
+                        //'src/ycc.node_attr.js',
                         'src/ycc.painter.js',
                         'src/ycc.app.class.js'],
                     dest: 'build/ycc.js'

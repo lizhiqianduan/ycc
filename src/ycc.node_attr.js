@@ -50,9 +50,9 @@
             var attr = nodeAttrMap[node_id];
             var style = attr.style;
             var hold_rect = attr._hold_rect;
-            var parents = getPatentsAttr(node_id,nodeAttrMap);
+            var parents = attr.parents;
             // 最后一个父级元素即为节点的直接父级
-            var parent = parents[parents.length-1];
+            var parent = attr.parent;
             var be_hold_info = null;
             var parent_rect = null;
             if(!parent){

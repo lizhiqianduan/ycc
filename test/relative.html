@@ -2,7 +2,7 @@
 <html>
 <head lang="en">
     <meta charset="UTF-8">
-    <title></title>
+    <title>relative</title>
     <style>
         *{margin: 0;padding: 0;}
         body{background-color: #ccc;}
@@ -46,10 +46,8 @@
         marginTop:10
 
     };
-    var nodeAttrMap =  {};
+    var nodeAttrMap =  Ycc.Node.nodeMap;
     var root = Ycc.Node.getRoot();
-    nodeAttrMap[root.node_id] = root;
-    console.log(nodeAttrMap);
 
     for(var i=0;i<2;i++){
         var child = new Ycc.Node(Ycc.utils.deepClone(style));
@@ -79,14 +77,10 @@
 
         root.add_child(child4);
 
-        nodeAttrMap[child.node_id] = child;
-        nodeAttrMap[child2.node_id] = child2;
-        nodeAttrMap[child3.node_id] = child3;
-        nodeAttrMap[child4.node_id] = child4;
     }
     Ycc.painter.clear();
-    Ycc.nodeAttr.init(t.width, t.height);
-    var res = Ycc.nodeAttr.compute_hold_rect(nodeAttrMap);
+    Ycc.Node.init(ctx);
+    var res = Ycc.Node.compute_hold_rect(nodeAttrMap);
     ycc.render(res,50);
 
 

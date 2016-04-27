@@ -2,7 +2,7 @@
 <html>
 <head lang="en">
     <meta charset="UTF-8">
-    <title></title>
+    <title>text children</title>
     <style>
         *{margin: 0;padding: 0;}
         body{background-color: #ccc;}
@@ -29,9 +29,8 @@
 
 
     /************ server端执行 模拟server端的json数据 *****************************/
-    var nodeAttrMap = {};
+    var nodeAttrMap = Ycc.Node.nodeMap;
     var root = Ycc.Node.getRoot();
-    nodeAttrMap[root.node_id] = root;
     var div1 = Ycc.Node.createNode({
         width:50,
         height:200,
@@ -48,11 +47,9 @@
 
 
 
-    nodeAttrMap[div1.node_id] = div1;
-    nodeAttrMap[text.node_id] = text;
     // t.width t.height 需要客户端传递
-    Ycc.nodeAttr.init(t.width, t.height);
-    var res = Ycc.nodeAttr.compute_hold_rect(nodeAttrMap);
+    Ycc.Node.init(ctx);
+    var res = Ycc.Node.compute_hold_rect(nodeAttrMap);
 
     /**************************************************************/
     /*                    res就是最后返回给浏览器端的json             */
