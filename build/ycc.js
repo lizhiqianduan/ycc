@@ -133,7 +133,7 @@
 
     Ycc.utils.deepClone = function(arrOrObj){
         
-        return (isArr(arrOrObj))? deepCopy(arrOrObj):deepExtend(arrOrObj);
+        return (Ycc.utils.isArray(arrOrObj))? deepCopy(arrOrObj):deepExtend(arrOrObj);
         function deepExtend(obj){
             var tempObj = {};
             for(var i in obj){
