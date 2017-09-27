@@ -4,6 +4,8 @@
 var grunt = require("grunt");
 
 module.exports = function(grunt){
+	
+	
     grunt.initConfig({
         concat:{
                 options: {
@@ -29,12 +31,14 @@ module.exports = function(grunt){
             }
         }
         ,watch:{
-            files:["./src/*.js","GruntFile.js"],
+			options: {
+				livereload: 9000
+			},
+		
+			files:["./src/*.js","./test/*.html","./GruntFile.js"],
 
             tasks: ["concat","uglify"]
         }
-
-
     });
 
     // 加载包含 "uglify" 任务的插件。
