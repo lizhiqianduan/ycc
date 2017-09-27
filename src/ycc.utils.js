@@ -1,5 +1,9 @@
 /**
  * Created by xiaohei on 2016/4/1.
+ * 功能说明：
+ *  整个程序公用的基础工具模块
+ *
+ * 不依赖其他模块
  */
 
 (function(Ycc){
@@ -112,26 +116,16 @@
         return dots1;
     };
 
-    Ycc.utils.deepClone = deepClone;
-
-
-
-    function deepClone(arrOrObj){
+    Ycc.utils.deepClone = function(arrOrObj){
+        
         return (isArr(arrOrObj))? deepCopy(arrOrObj):deepExtend(arrOrObj);
-
-        function isObj(str) {
-            return (typeof(str) === "object");
-        }
-        function isArr(str){
-            return (Object.prototype.toString.call(str) === '[object Array]');
-        }
         function deepExtend(obj){
             var tempObj = {};
             for(var i in obj){
                 tempObj[i] = obj[i];
-                if(isArr(obj[i])){
+                if(Ycc.utils.isArray(obj[i])){
                     tempObj[i] = deepCopy(obj[i]);
-                }else if(isObj(obj[i])){
+                }else if(Ycc.utils.isObj(obj[i])){
                     tempObj[i] = deepExtend(obj[i]);
                 }else{
                     tempObj[i] = obj[i];
@@ -144,9 +138,9 @@
             var v = null;
             for(var i=0;i<arr.length;i++){
                 v = arr[i];
-                if(isArr(v))
+                if(Ycc.utils.isArray(v))
                     newArr.push(deepCopy(v));
-                else if(isObj(v))
+                else if(Ycc.utils.isObj(v))
                     newArr.push(deepExtend(v));
                 else{
                     newArr.push(v);

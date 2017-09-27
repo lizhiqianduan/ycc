@@ -18,16 +18,31 @@ module.exports = function(grunt){
                         'src/ycc.node.js',
                         //'src/ycc.node_attr.js',
                         'src/ycc.painter.js',
-                        'src/ycc.app.class.js'],
+                        'src/ycc.app.class.js'
+                    ],
                     dest: 'build/ycc.js'
                 }
 
         },
         uglify:{
             my_target:{
-                files: {
-                    'build/ycc.min.js': ['build/ycc.js'],
-                }
+				options: {
+					sourceMap:true
+				},
+                files: [
+					{
+						expand: true,
+						src: ['*.js', '!*.min.js'],
+						dest: 'build',
+						cwd: './src',
+						rename: function (dst, src) {
+							return dst + '/' + src.replace('.js', '.min.js');
+						}
+					},
+                    {
+                        'build/ycc.min.js': ['build/ycc.js']
+                    }
+                ]
             }
         }
         ,watch:{
@@ -35,6 +50,7 @@ module.exports = function(grunt){
 				livereload: 9000
 			},
 		
+   
 			files:["./src/*.js","./test/*.html","./GruntFile.js"],
 
             tasks: ["concat","uglify"]
