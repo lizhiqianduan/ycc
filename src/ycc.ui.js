@@ -10,14 +10,65 @@
  */
 
 (function(Ycc){
-	
+	// 检查依赖项
 	if(!Ycc.init || !Ycc.utils){
 		return console.error("Error: Ycc.ui needs module Ycc.init and Ycc.utils!");
 	}
+	// 方法别名
+	var isObj 		= Ycc.utils.isObj,
+		isArr 		= Ycc.utils.isArray,
+		isString	= Ycc.utils.isString,
+		isNum 		= Ycc.utils.isNum,
+		extend 		= Ycc.utils.extend;
+	/**
+	 * UI类的构造函数
+	 * @param yccInstance	{Ycc}	ycc的初始化实例，在init中初始化
+	 * @constructor
+	 */
+	Ycc.UI = function(yccInstance){
+		var self = this;
+
+		// 当前绘图环境
+		self.ctx = yccInstance.ctx;
+		// 当前ycc实例
+		self.yccInstance = yccInstance;
+		// 使用UIStep类记录如下UI方法，用于回退
+		var publicMethods = [stroke_font,fill_font,stroke_line,stroke_circle,fill_circle,stroke_rect,fill_rect,draw_image];
+		for(var i = 0;i<publicMethods.length;i++){
+			var fn = publicMethods[i];
+			self[fn.name] = function(f){
+				return function () {
+					self._steps.push(new UIStep(f.name,arguments));
+					f.apply(self,arguments);
+				}
+			}(fn);
+		}
+
+		
+		self.clear = clear;						// 清空画布
+		self.goBack = goBack;					// 回退
+		
+		// 私有属性和方法
+		self._steps = [];						//UI绘图的步骤队列
+		self._renderByStep = renderByStep;		//根据步骤绘制canvas
+	};
 	
-    Ycc.ui = function(){};
 	
-    
+	/**
+	 * UI绘图的步骤类
+	 * @param stepName	{String}	步骤名称，即UI类的方法名
+	 * @param params	{Array}		调用方法时所传递的参数
+	 * @constructor
+	 */
+	function UIStep(stepName, params) {
+		this.stepName = stepName;
+		this.params = params;
+	}
+	
+	
+
+
+ 
 	
 	/*
 	 *文字描边
@@ -29,12 +80,13 @@
 	 }
 	 */
 	function stroke_font(con, settings) {
+		
 		if (!isString(con) && !isNum(con)) {
 			console.log('%cFunction drawFont need param 1 to be string or number', 'color:red');
 			return false;
 		}
 		
-		ctx.save();
+		this.ctx.save();
 		var defaultSet = {
 			//文字的起点，默认left=0 top=0
 			x: 0,
@@ -54,12 +106,12 @@
 		};
 		settings = (settings && isObj(settings)) ? extend( defaultSet, settings) : defaultSet;
 		var afterTransDot = [settings.x,settings.y];
-		ctx.textAlign = settings.textAlign;
-		ctx.textBaseline = settings.textBaseline;
-		ctx.font = settings.fontSize+"px "+settings.fontFamily;
-		ctx.strokeStyle = settings.strokeStyle;
-		ctx.strokeText(con, afterTransDot[0], afterTransDot[1]);
-		ctx.restore();
+		this.ctx.textAlign = settings.textAlign;
+		this.ctx.textBaseline = settings.textBaseline;
+		this.ctx.font = settings.fontSize+"px "+settings.fontFamily;
+		this.ctx.strokeStyle = settings.strokeStyle;
+		this.ctx.strokeText(con, afterTransDot[0], afterTransDot[1]);
+		this.ctx.restore();
 		return this;
 	}
 	
@@ -78,7 +130,7 @@
 			return false;
 		}
 		
-		ctx.save();
+		this.ctx.save();
 		var defaultSet = {
 			//文字的起点，默认left=0 top=0
 			x:0,
@@ -99,12 +151,12 @@
 		};
 		settings = (settings && isObj(settings)) ? extend( defaultSet, settings) : defaultSet;
 		var afterTransDot = [settings.x,settings.y];
-		ctx.textAlign = settings.textAlign;
-		ctx.textBaseline = settings.textBaseline;
-		ctx.font = settings.fontSize+"px "+settings.fontFamily;
-		ctx.fillStyle = settings.fillStyle;
-		ctx.fillText(con, afterTransDot[0], afterTransDot[1]);
-		ctx.restore();
+		this.ctx.textAlign = settings.textAlign;
+		this.ctx.textBaseline = settings.textBaseline;
+		this.ctx.font = settings.fontSize+"px "+settings.fontFamily;
+		this.ctx.fillStyle = settings.fillStyle;
+		this.ctx.fillText(con, afterTransDot[0], afterTransDot[1]);
+		this.ctx.restore();
 		return this;
 	};
 	
@@ -114,7 +166,7 @@
 	 @lineSettingsObj : obj {strokeStyle:xx,lineWidth:xx}
 	 */
 	function stroke_line(dot1, dot2, lineSettingsObj){
-		ctx.save();
+		this.ctx.save();
 		var defaultSet = {
 			//线条颜色
 			strokeStyle:"#000",
@@ -127,45 +179,14 @@
 		var tpdot1 = (dot1);
 		var tpdot2 = (dot2);
 		
-		ctx.beginPath();
-		ctx.moveTo(tpdot1[0], tpdot1[1]);
-		ctx.lineTo(tpdot2[0], tpdot2[1]);
-		ctx.strokeStyle = lineSettingsObj.strokeStyle;
-		ctx.lineWidth = lineSettingsObj.lineWidth;
-		ctx.stroke();
-		ctx.closePath();
-		ctx.restore();
-		return this;
-	};
-	
-	/*
-	* 画横线/竖线
-	* direction : true 横线   false 竖线
-	* */
-	function stroke_vh_line(startDot, length, direction,options){
-		ctx.save();
-		var defaultSet = {
-			//线条颜色
-			strokeStyle:"#000",
-			
-			//线条宽度
-			lineWidth:0
-		};
-		options = extend(defaultSet,options);
-		if(options.lineWidth==0){
-			return this;
-		}
-		ctx.beginPath();
-		ctx.moveTo(startDot[0], startDot[1]);
-		if(direction)
-			ctx.lineTo(startDot[0]+length, startDot[1]);
-		else
-			ctx.lineTo(startDot[0], startDot[1]+length);
-		ctx.strokeStyle = options.strokeStyle;
-		ctx.lineWidth = options.lineWidth;
-		ctx.stroke();
-		ctx.closePath();
-		ctx.restore();
+		this.ctx.beginPath();
+		this.ctx.moveTo(tpdot1[0], tpdot1[1]);
+		this.ctx.lineTo(tpdot2[0], tpdot2[1]);
+		this.ctx.strokeStyle = lineSettingsObj.strokeStyle;
+		this.ctx.lineWidth = lineSettingsObj.lineWidth;
+		this.ctx.stroke();
+		this.ctx.closePath();
+		this.ctx.restore();
 		return this;
 	};
 	
@@ -188,12 +209,12 @@
 			close:false
 		};
 		var settings = extend(defaultSet, options);
-		ctx.strokeStyle = settings.strokeStyle;
-		ctx.save();
-		ctx.beginPath();
+		this.ctx.strokeStyle = settings.strokeStyle;
+		this.ctx.save();
+		this.ctx.beginPath();
 		if(settings.close)
-			ctx.moveTo(settings.x,settings.y);
-		ctx.arc(
+			this.ctx.moveTo(settings.x,settings.y);
+		this.ctx.arc(
 			settings.x,
 			settings.y,
 			settings.radius,
@@ -202,10 +223,10 @@
 			settings.direction
 		);
 		if(settings.close)
-			ctx.lineTo(settings.x,settings.y);
-		ctx.stroke();
-		ctx.closePath();
-		ctx.restore();
+			this.ctx.lineTo(settings.x,settings.y);
+		this.ctx.stroke();
+		this.ctx.closePath();
+		this.ctx.restore();
 	}
 	
 	/*
@@ -227,12 +248,12 @@
 			close:false
 		};
 		var settings = extend(defaultSet, options);
-		ctx.strokeStyle = settings.strokeStyle;
-		ctx.save();
-		ctx.beginPath();
+		this.ctx.strokeStyle = settings.strokeStyle;
+		this.ctx.save();
+		this.ctx.beginPath();
 		if(!settings.close)
-			ctx.moveTo(settings.x,settings.y);
-		ctx.arc(
+			this.ctx.moveTo(settings.x,settings.y);
+		this.ctx.arc(
 			settings.x,
 			settings.y,
 			settings.radius,
@@ -240,9 +261,9 @@
 			settings.endAngle/180*Math.PI,
 			settings.direction
 		);
-		ctx.fill();
-		ctx.closePath();
-		ctx.restore();
+		this.ctx.fill();
+		this.ctx.closePath();
+		this.ctx.restore();
 	}
 	
 	/*
@@ -255,14 +276,14 @@
 			lineWidth:1
 		};
 		var settings = extend(defaultSet, options);
-		ctx.strokeStyle = settings.strokeStyle;
-		ctx.lineWidth = settings.lineWidth;
-		ctx.save();
-		ctx.beginPath();
-		ctx.rect(left_top_dot[0],left_top_dot[1],right_bottom_dot[0]-left_top_dot[0],right_bottom_dot[1]-left_top_dot[1]);
-		ctx.stroke();
-		ctx.closePath();
-		ctx.restore();
+		this.ctx.strokeStyle = settings.strokeStyle;
+		this.ctx.lineWidth = settings.lineWidth;
+		this.ctx.save();
+		this.ctx.beginPath();
+		this.ctx.rect(left_top_dot[0],left_top_dot[1],right_bottom_dot[0]-left_top_dot[0],right_bottom_dot[1]-left_top_dot[1]);
+		this.ctx.stroke();
+		this.ctx.closePath();
+		this.ctx.restore();
 	}
 	
 	/*
@@ -274,19 +295,22 @@
 			fillStyle:"#000"
 		};
 		var settings = extend(defaultSet, options);
-		ctx.fillStyle = settings.fillStyle;
+		this.ctx.fillStyle = settings.fillStyle;
 		
-		ctx.save();
-		ctx.beginPath();
-		ctx.rect(left_top_dot[0],left_top_dot[1],right_bottom_dot[0]-left_top_dot[0],right_bottom_dot[1]-left_top_dot[1]);
-		ctx.fill();
-		ctx.closePath();
-		ctx.restore();
+		this.ctx.save();
+		this.ctx.beginPath();
+		this.ctx.rect(left_top_dot[0],left_top_dot[1],right_bottom_dot[0]-left_top_dot[0],right_bottom_dot[1]-left_top_dot[1]);
+		this.ctx.fill();
+		this.ctx.closePath();
+		this.ctx.restore();
 	}
 	
-	/*
-	 * 将图片加入画布
-	 * */
+	/**
+	 * 加载图片至画布
+	 * @param imagesrc			{String}	图片路径
+	 * @param left_top_dot		{Array}		左上角坐标
+	 * @param options			{Object}	设置回调和图片高宽
+	 */
 	function draw_image(imagesrc,left_top_dot,options){
 		var defaultSet = {
 			onDrawed:function(){},
@@ -308,24 +332,62 @@
 			}else if(!settings.width && settings.height){
 				scaleX = scaleY = settings.height/img.height;
 			}
-			ctx.save();
-			ctx.scale(scaleX,scaleY);
-			ctx.beginPath();
-			ctx.drawImage(img, left_top_dot[0]/scaleX, left_top_dot[1]/scaleY); // 设置对应的图像对象，以及它在画布上的位置
-			ctx.closePath();
-			ctx.restore();
+			this.ctx.save();
+			this.ctx.scale(scaleX,scaleY);
+			this.ctx.beginPath();
+			this.ctx.drawImage(img, left_top_dot[0]/scaleX, left_top_dot[1]/scaleY); // 设置对应的图像对象，以及它在画布上的位置
+			this.ctx.closePath();
+			this.ctx.restore();
 			settings.onDrawed(img);
 		}
 	}
 	
+	
 	/**
-     * 清除画布
+	 * 根据步骤绘制canvas
 	 */
-	function clear(){
-		ctx.save();
-		ctx.fillStyle = Ycc.settings.canvasBg;
-		ctx.fillRect(0, 0, ctx_width, ctx_height);
-		ctx.restore();
+	function renderByStep(){
+		var stepsTmp = this._steps.slice(0);
+		this._steps = [];
+		for(var i = 0;i<stepsTmp.length;i++){
+			this[stepsTmp[i].stepName].apply(this,stepsTmp[i].params);
+		}
+	}
+	
+	/**
+	 * 清除画布
+	 */
+	function clear() {
+		var defaultSet = {
+			//填充颜色
+			fillStyle:"#fff"
+		};
+		this.ctx.fillStyle = defaultSet.fillStyle;
+		
+		this.ctx.save();
+		this.ctx.beginPath();
+		this.ctx.rect(0,0,this.yccInstance.ctx_width,this.yccInstance.ctx_height);
+		this.ctx.fill();
+		this.ctx.closePath();
+		this.ctx.restore();
+	}
+	
+	/**
+	 * 回退
+	 * @param stepNumber	{Number}	回退的步数，默认为1
+	 * 		如果stepNumber大于总步数，则清空画布
+	 */
+	function goBack(stepNumber) {
+		if(!isNum(stepNumber)){
+			stepNumber = 1;
+		}
+		this.clear();
+		if(stepNumber>=this._steps.length){
+			this._steps = [];
+		}else{
+			this._steps = this._steps.slice(0,this._steps.length-stepNumber);
+		}
+		this._renderByStep();
 	}
 
 
@@ -346,5 +408,4 @@
 
 
 
-
-})(Ycc);
+})(window.Ycc);

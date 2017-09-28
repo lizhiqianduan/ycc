@@ -46,7 +46,7 @@
 
         this.clear = function(){
             ctx.save();
-            ctx.fillStyle = Ycc.settings.canvasBg;
+            ctx.fillStyle = Ycc.init.settings.canvasBg;
             ctx.fillRect(0, 0, ctx_width, ctx_height);
             ctx.restore();
         };
@@ -69,7 +69,7 @@
          * */
         function init() {
             ctx.save();
-            ctx.fillStyle = Ycc.settings.canvasBg;
+            ctx.fillStyle = Ycc.init.settings.canvasBg;
             ctx.fillRect(0, 0, ctx_width, ctx_height);
             ctx.restore();
 
