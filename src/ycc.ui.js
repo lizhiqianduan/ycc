@@ -4,6 +4,8 @@
  * 	控制所有的绘图基本操作，保存所有的绘图步骤
  * 	并提供回退、前进、清空、快照等方法
  *
+ *	基础UI只管理图形形状，不	管理图形颜色、阴影、文字等内容
+ *
  * 依赖：
  * 	Ycc.init
  * 	Ycc.utils
@@ -33,7 +35,7 @@
 		// 当前ycc实例
 		self.yccInstance = yccInstance;
 		// 使用UIStep类记录如下UI方法，用于回退
-		var publicMethods = [stroke_font,fill_font,stroke_line,stroke_circle,fill_circle,stroke_rect,fill_rect,draw_image];
+		var publicMethods = [stroke_font,fill_font,ellipse,stroke_line,stroke_circle,fill_circle,rect,draw_image];
 		for(var i = 0;i<publicMethods.length;i++){
 			var fn = publicMethods[i];
 			self[fn.name] = function(f){
@@ -267,41 +269,18 @@
 	}
 	
 	/*
-	 * 矩形描边
+	 * 矩形
 	 * */
-	function stroke_rect(left_top_dot,right_bottom_dot,options){
-		var defaultSet = {
-			//填充颜色
-			strokeStyle:"#000",
-			lineWidth:1
-		};
-		var settings = extend(defaultSet, options);
-		this.ctx.strokeStyle = settings.strokeStyle;
-		this.ctx.lineWidth = settings.lineWidth;
+	function rect(left_top_dot,right_bottom_dot,fill){
 		this.ctx.save();
 		this.ctx.beginPath();
 		this.ctx.rect(left_top_dot[0],left_top_dot[1],right_bottom_dot[0]-left_top_dot[0],right_bottom_dot[1]-left_top_dot[1]);
-		this.ctx.stroke();
 		this.ctx.closePath();
-		this.ctx.restore();
-	}
-	
-	/*
-	 * 矩形描边
-	 * */
-	function fill_rect(left_top_dot,right_bottom_dot,options){
-		var defaultSet = {
-			//填充颜色
-			fillStyle:"#000"
-		};
-		var settings = extend(defaultSet, options);
-		this.ctx.fillStyle = settings.fillStyle;
 		
-		this.ctx.save();
-		this.ctx.beginPath();
-		this.ctx.rect(left_top_dot[0],left_top_dot[1],right_bottom_dot[0]-left_top_dot[0],right_bottom_dot[1]-left_top_dot[1]);
-		this.ctx.fill();
-		this.ctx.closePath();
+		if(!fill)
+			this.ctx.stroke();
+		else
+			this.ctx.fill();
 		this.ctx.restore();
 	}
 	
@@ -342,6 +321,46 @@
 		}
 	}
 	
+	/**
+	 * 画椭圆  TODO：以此为标准修改
+	 * @param centrePoint	中心点
+	 * @param width			长半轴
+	 * @param height		短半轴
+	 * @param rotateAngle	旋转角
+	 * @param fill			是否填充
+	 */
+	function ellipse(centrePoint,width,height,rotateAngle,fill) {
+
+		this.ctx.save();
+		var r = (width > height) ? width : height;
+		// 计算压缩比例
+		var ratioX = width / r;
+		var ratioY = height / r;
+		// 默认旋转中心位于画布左上角，需要改变旋转中心点
+		this.ctx.translate(centrePoint[0],centrePoint[1]);
+		this.ctx.rotate(parseInt(rotateAngle)*Math.PI/180);
+		// 再变换回原来的旋转中心点
+		this.ctx.translate(-centrePoint[0],-centrePoint[1]);
+		this.ctx.scale(ratioX, ratioY);
+		this.ctx.beginPath();
+		this.ctx.arc(centrePoint[0] / ratioX,  centrePoint[1]/ ratioY, r, 0, 2 * Math.PI, false);
+		this.ctx.closePath();
+		
+		if(!fill)
+			this.ctx.stroke();
+		else
+			this.ctx.fill();
+
+		this.ctx.restore();
+
+	}
+	
+	
+	
+	
+	
+	
+/**************************************************/
 	
 	/**
 	 * 根据步骤绘制canvas
@@ -389,7 +408,6 @@
 		}
 		this._renderByStep();
 	}
-
 
 
 
