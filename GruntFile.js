@@ -45,22 +45,32 @@ module.exports = function(grunt){
                 ]
             }
         }
+        ,jsdoc:{
+			src: ['src/*.js'],
+			options: {
+				destination: 'docs'
+			}
+		}
+		
+		,clean:{
+			contents:["docs/*","build/*"]
+		}
+        
         ,watch:{
 			options: {
 				livereload: 9000
 			},
-		
-   
 			files:["./src/*.js","./test/*.html","./GruntFile.js"],
-
-            tasks: ["concat","uglify"]
+            tasks: ["clean","concat","uglify","jsdoc"]
         }
     });
 
     // 加载包含 "uglify" 任务的插件。
     grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-contrib-concat');
-    grunt.loadNpmTasks('grunt-contrib-watch');
+	grunt.loadNpmTasks('grunt-contrib-watch');
+	grunt.loadNpmTasks('grunt-contrib-clean');
+	grunt.loadNpmTasks('grunt-jsdoc');
     // 默认被执行的任务列表。
     grunt.registerTask('default', ['watch']);
     grunt.registerTask('build', ['concat','uglify']);
