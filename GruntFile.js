@@ -13,6 +13,7 @@ module.exports = function(grunt){
                 },
                 target: {
                     src: [
+                    	'src/Ycc.class.js',
                         'src/Ycc.init.js',
                         'src/Ycc.utils.js',
                         'src/ycc.node.js',
