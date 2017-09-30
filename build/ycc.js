@@ -1,24 +1,36 @@
 /**
- * Created by xiaohei on 2016/4/2.
+ * @file 		Ycc.init.js
+ * @author		xiaohei
+ * @date		2017/9/29
+ * @desc
+ * 	初始化Ycc构造函数，保存初始化信息
  */
 (function (win) {
-	var Ycc = win.Ycc = function(){};
-	Ycc.init = {};
-	
-	Ycc.settings = {
-		canvasBg: "#fff",
-		font: "12px Arial",
-		lineWidth: 1,
-		strokeStyle: "#CC0000",
-		fillStyle: "#CC0000"
+	/**
+	 * 项目初始化的设置
+	 * @type {{settings: {canvasBg: string, font: string, lineWidth: number, strokeStyle: string, fillStyle: string}}}
+	 * @static
+	 */
+	win.Ycc.init = {
+		// 初始化默认配置
+		settings:{
+			canvasBg: "#fff",			// 画布背景色
+			font: "12px Arial",			// 画布字体
+			lineWidth: 1,				// 线框
+			strokeStyle: "#CC0000",		// 线条颜色
+			fillStyle: "#CC0000"		// 填充颜色
+		}
 	};
+	
+
 })(window);
 ;/**
- * Created by xiaohei on 2016/4/1.
- * 功能说明：
+ * @file        Ycc.utils.js
+ * @author      xiaohei
+ * @desc
  *  整个程序公用的基础工具模块
  *
- * 不依赖其他模块
+ * @requires    Ycc.init
  */
 
 (function(Ycc){
@@ -1167,7 +1179,7 @@
 
     function clear(){
         ctx.save();
-        ctx.fillStyle = Ycc.settings.canvasBg;
+        ctx.fillStyle = Ycc.init.settings.canvasBg;
         ctx.fillRect(0, 0, ctx_width, ctx_height);
         ctx.restore();
     };
@@ -1227,7 +1239,7 @@
 
         this.clear = function(){
             ctx.save();
-            ctx.fillStyle = Ycc.settings.canvasBg;
+            ctx.fillStyle = Ycc.init.settings.canvasBg;
             ctx.fillRect(0, 0, ctx_width, ctx_height);
             ctx.restore();
         };
@@ -1250,7 +1262,7 @@
          * */
         function init() {
             ctx.save();
-            ctx.fillStyle = Ycc.settings.canvasBg;
+            ctx.fillStyle = Ycc.init.settings.canvasBg;
             ctx.fillRect(0, 0, ctx_width, ctx_height);
             ctx.restore();
 
