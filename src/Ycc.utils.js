@@ -1,9 +1,10 @@
 /**
- * Created by xiaohei on 2016/4/1.
- * 功能说明：
+ * @file        Ycc.utils.js
+ * @author      xiaohei
+ * @desc
  *  整个程序公用的基础工具模块
  *
- * 依赖模块Ycc.init
+ * @requires    Ycc.init
  */
 
 (function(Ycc){

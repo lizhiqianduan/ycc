@@ -13,8 +13,8 @@ module.exports = function(grunt){
                 },
                 target: {
                     src: [
-                        'src/ycc.init.js',
-                        'src/ycc.utils.js',
+                        'src/Ycc.init.js',
+                        'src/Ycc.utils.js',
                         'src/ycc.node.js',
                         //'src/ycc.node_attr.js',
                         'src/ycc.painter.js',
@@ -48,7 +48,8 @@ module.exports = function(grunt){
         ,jsdoc:{
 			src: ['src/*.js'],
 			options: {
-				destination: 'docs'
+				destination: 'docs',
+				private:true
 			}
 		}
 		

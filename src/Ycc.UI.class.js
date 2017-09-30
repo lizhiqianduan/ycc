@@ -7,14 +7,14 @@
  * 控制所有的绘图基本操作，保存所有的绘图步骤，并提供回退、前进、清空、快照等方法。
  * 不管理图形颜色、阴影、文字等内容。
  *
- * @requires Ycc.init
+ * @requires Ycc
  * @requires Ycc.utils
  * */
 
 (function(Ycc){
 	// 检查依赖项
-	if(!Ycc.init || !Ycc.utils){
-		return console.error("Error: Ycc.ui needs module Ycc.init and Ycc.utils!");
+	if(!Ycc || !Ycc.utils){
+		return console.error("Error: Ycc.ui needs module `Ycc` and `Ycc.utils`!");
 	}
 	// 方法别名
 	var isObj 		= Ycc.utils.isObj,
@@ -29,19 +29,18 @@
 
 	/**
 	 * UI类，提供绘图基本的原子图形和组合图形。
-	 * 每个原子图形都会使用UIStep进行记录，而组合图形不会被记录。
 	 *
 	 * @param yccInstance	{Ycc}	ycc的初始化实例，在init中初始化
 	 * @constructor
 	 */
 	Ycc.UI = function(yccInstance){
-		
+
 		/**
-		 * UI绘图的步骤队列
+		 * 保存的快照，每个元素都是`getImageData`的返回值
 		 * @type {Array}
 		 * @private
 		 */
-		this._steps = [];
+		this._photos = [];
 		
 		
 		/**
@@ -49,54 +48,23 @@
 		 */
 		this.ctx = yccInstance.ctx;
 		
+		
 		/**
 		 * 当前UI所属的ycc实例
 		 * @type {Ycc}
 		 */
 		this.yccInstance = yccInstance;
-		
-		
-		
-		// // 使用UIStep类记录如下UI方法，用于回退
-		// var publicMethods = [stroke_font,fill_font,ellipse,circle,stroke_line,stroke_circle,fill_circle,rect,draw_image];
-		// for(var i = 0;i<publicMethods.length;i++){
-		// 	var fn = publicMethods[i];
-		// 	/**
-		// 	 * @member {Function}
-		// 	 * @desc 	各个方法
-		// 	 */
-		// 	self[fn.name] = function(f){
-		// 		return function () {
-		// 			self._steps.push(new UIStep(f.name,arguments));
-		// 			f.apply(self,arguments);
-		// 		}
-		// 	}(fn);
-		// }
 	};
-	
-	
-	/**
-	 * UI绘图的步骤类
-	 * @param stepName	{String}	步骤名称，即UI类的方法名
-	 * @param params	{Array}		调用方法时所传递的参数，用于传递给apply方法
-	 * @constructor
-	 */
-	Ycc.UI.UIStep = UIStep;
-	
-	function UIStep(stepName, params) {
-		this.stepName = stepName;
-		this.params = params;
-	}
-	
+
 	
 	
 	
 	
 	/*******************************************************************************
-	 * 定义UI类的原子图形
+	 * 定义UI类的基础图形
 	 ******************************************************************************/
 	/**
-	 * 文字，`原子图形`
+	 * 文字
 	 * @param positionDot
 	 * @param content
 	 * @param [fill]
@@ -109,12 +77,11 @@
 		else
 			this.ctx.strokeText(content,positionDot[0],positionDot[1]);
 		this.ctx.restore();
-		this._steps.push(new UIStep("text",arguments));
 		return this;
 	};
 	
 	/**
-	 * 画线，`原子图形`
+	 * 画线
 	 * @param dot1
 	 * @param dot2
 	 * @returns {Ycc.UI}
@@ -127,13 +94,12 @@
 		this.ctx.stroke();
 		this.ctx.closePath();
 		this.ctx.restore();
-		this._steps.push(new UIStep("line",arguments));
 		return this;
 	};
 	
 	
 	/**
-	 * 矩形，`原子图形`
+	 * 矩形
 	 * @param left_top_dot
 	 * @param right_bottom_dot
 	 * @param fill
@@ -149,52 +115,11 @@
 		else
 			this.ctx.fill();
 		this.ctx.restore();
-		this._steps.push(new UIStep("rect",arguments));
 		return this;
 	};
 	
 	/**
-	 * 加载图片至画布，`原子图形`
-	 * @param imagesrc			{String}	图片路径
-	 * @param left_top_dot		{Array}		左上角坐标
-	 * @param options			{Object}	设置回调和图片高宽
-	 */
-	Ycc.UI.prototype.image = function (imagesrc,left_top_dot,options){
-		var defaultSet = {
-			onDrawed:function(){},
-			width:0,
-			height:0
-		};
-		var settings = extend(defaultSet, options);
-		var img = new Image();
-		img.src = imagesrc;
-		
-		img.onload = function(){
-			var scaleX = 1;
-			var scaleY = 1;
-			if(settings.width && settings.height){
-				scaleX = settings.width/img.width;
-				scaleY = settings.height/img.height;
-			}else if(settings.width && !settings.height){
-				scaleX = scaleY = settings.width/img.width;
-			}else if(!settings.width && settings.height){
-				scaleX = scaleY = settings.height/img.height;
-			}
-			this.ctx.save();
-			this.ctx.scale(scaleX,scaleY);
-			this.ctx.beginPath();
-			this.ctx.drawImage(img, left_top_dot[0]/scaleX, left_top_dot[1]/scaleY); // 设置对应的图像对象，以及它在画布上的位置
-			this.ctx.closePath();
-			this.ctx.restore();
-			settings.onDrawed(img);
-		};
-		this._steps.push(new UIStep("image",arguments));
-		return this;
-	};
-	
-	/**
-	 * 椭圆，`原子图形`
-	 *
+	 * 椭圆
 	 * @param centrePoint	{Dot}		椭圆中心点
 	 * @param width			{Number}	长半轴
 	 * @param height		{Number}	短半轴
@@ -224,14 +149,11 @@
 			this.ctx.fill();
 
 		this.ctx.restore();
-		this._steps.push(new UIStep("ellipse",arguments));
 		return this;
 	};
 	
-	
-	
 	/**
-	 * 圆弧，`原子图形`
+	 * 圆弧
 	 * @param centrePoint			圆心
 	 * @param r						半径
 	 * @param startAngle			起始角
@@ -252,13 +174,12 @@
 		this.ctx.stroke();
 		this.ctx.closePath();
 		this.ctx.restore();
-		this._steps.push(new UIStep("circleArc",arguments));
 		return this;
 		
 	};
 	
 	/**
-	 * 扇形，`原子图形`
+	 * 扇形
 	 * @param centrePoint			圆心
 	 * @param r						半径
 	 * @param startAngle			起始角
@@ -278,16 +199,29 @@
 		else
 			this.ctx.fill();
 		this.ctx.restore();
-		this._steps.push(new UIStep("sector",arguments));
 		return this;
 	};
-
-
-	/*******************************************************************************
-	 * 定义UI类的组合图形
-	 ******************************************************************************/
+	
 	/**
-	 * 圆，`组合图形`
+	 * 根据多个点画折线，可以用此方法实现跟随鼠标
+	 * @param pointList		{Array}		Dot数组，即二维数组
+	 */
+	Ycc.UI.prototype.foldLine = function (pointList) {
+		if(pointList.length<2) return console.error("Error: 参数错误！");
+
+		this.ctx.save();
+		this.ctx.beginPath();
+		this.ctx.moveTo(pointList[0][0],pointList[0][1]);
+		for(var i =0;i<pointList.length;i++){
+			this.ctx.lineTo(pointList[i][0],pointList[i][1]);
+		}
+		this.ctx.stroke();
+		this.ctx.restore();
+		return this;
+	};
+	
+	/**
+	 * 圆
 	 * @param centrePoint	圆心
 	 * @param r				半径
 	 * @param fill			是否填充
@@ -297,22 +231,50 @@
 		return this;
 	};
 	
-	
-	
-	/**************************************************/
-	
 	/**
-	 * 根据步骤绘制canvas
+	 * 加载图片至画布
+	 * @param imagesrc			{String}	图片路径
+	 * @param left_top_dot		{Array}		左上角坐标
+	 * @param options			{Object}	设置回调和图片高宽
 	 */
-	Ycc.UI.prototype.renderByStep = function(){
-		var stepsTmp = this._steps.slice(0);
-		this._steps = [];
-		for(var i = 0;i<stepsTmp.length;i++){
-			this[stepsTmp[i].stepName].apply(this,stepsTmp[i].params);
-		}
-		return this;
+	Ycc.UI.prototype.image = function (imagesrc,left_top_dot,options){
+		var self = this;
+		var defaultSet = {
+			onDraw:function(){},
+			width:0,
+			height:0
+		};
+		var settings = extend(defaultSet, options);
+		left_top_dot = left_top_dot || [0,0];
 		
+		var img = new Image();
+		img.src = imagesrc;
+		
+		img.onload = function(){
+			var scaleX = 1;
+			var scaleY = 1;
+			if(settings.width && settings.height){
+				scaleX = settings.width/img.width;
+				scaleY = settings.height/img.height;
+			}else if(settings.width && !settings.height){
+				scaleX = scaleY = settings.width/img.width;
+			}else if(!settings.width && settings.height){
+				scaleX = scaleY = settings.height/img.height;
+			}
+			self.ctx.save();
+			self.ctx.scale(scaleX,scaleY);
+			self.ctx.beginPath();
+			self.ctx.drawImage(img, left_top_dot[0]/scaleX, left_top_dot[1]/scaleY); // 设置对应的图像对象，以及它在画布上的位置
+			self.ctx.closePath();
+			self.ctx.restore();
+			settings.onDraw(img);
+		};
+		return this;
 	};
+	
+	/*******************************************************************************
+	 * 定义UI类的控制方法
+	 ******************************************************************************/
 	
 	/**
 	 * 清除画布
@@ -326,35 +288,15 @@
 		
 		this.ctx.save();
 		this.ctx.beginPath();
-		this.ctx.rect(0,0,this.yccInstance.ctx_width,this.yccInstance.ctx_height);
+		this.ctx.rect(0,0,this.yccInstance.ctxWidth,this.yccInstance.ctxHeight);
 		this.ctx.fill();
 		this.ctx.closePath();
 		this.ctx.restore();
 		return this;
-		
 	};
 	
-	/**
-	 * 回退
-	 * @param stepNumber	{Number}	回退的步数，默认为1;如果stepNumber大于总步数，则清空画布
-	 */
-	Ycc.UI.prototype.goBack = function(stepNumber) {
-		if(!isNum(stepNumber)){
-			stepNumber = 1;
-		}
-		this.clear();
-		if(stepNumber>=this._steps.length){
-			this._steps = [];
-		}else{
-			this._steps = this._steps.slice(0,this._steps.length-stepNumber);
-		}
-		this.renderByStep();
-		return this;
-		
-	}
-
-
-
+	
+	
 
 
 
