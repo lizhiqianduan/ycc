@@ -39,7 +39,7 @@
 		&nbsp;&nbsp;&nbsp;&nbsp;
 		<button onclick="line()">直线</button>
 		<button onclick="pen()">钢笔</button>
-		<button onclick="pen()">方框</button>
+		<button onclick="rect()">方框</button>
 		<button onclick="pen()">椭圆</button>
 		<button onclick="pen()">勾勾</button>
 		<button onclick="pen()">叉叉</button>
@@ -109,9 +109,9 @@
 	}
 
 
-
-
-
+	/**
+	 * 画直线
+	 */
 	function line() {
 		var hasDragged = false;
 		ycc.eventManager.ondragging = function (e) {
@@ -129,6 +129,9 @@
 	}
 
 
+	/**
+	 * 钢笔
+	 */
 	function pen() {
 		var startDot = [];
 		var hasMoved = false;
@@ -148,8 +151,30 @@
 			showPhotoToHtml();
 			hasMoved = false;
 		};
-
 	}
+
+
+	/**
+	 * 画方框
+	 */
+	function rect() {
+		var hasDragged = false;
+		ycc.eventManager.ondragging = function (e) {
+			hasDragged = true;
+			var startDot = [ycc.eventManager.mouseDownEvent.x,ycc.eventManager.mouseDownEvent.y];
+			var endDot = [e.x,e.y];
+			ycc.photoManager.showLastPhoto();
+			ycc.ui.rect(startDot,endDot);
+		};
+		ycc.eventManager.onmouseup = function (e) {
+			if(!hasDragged) return null;
+			ycc.photoManager.takePhoto();
+			showPhotoToHtml();
+			hasDragged = false;
+		};
+	}
+
+
 
 
 

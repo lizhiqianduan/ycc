@@ -4,6 +4,7 @@
  * @date    2017/9/30
  * @description  Ycc.EventManager.class文件。
  * 	Ycc实例的事件管理类
+ * @requires Ycc.utils
  */
 
 
@@ -107,14 +108,45 @@
 	};
 	
 	// 托管的原生事件
-	Ycc.EventManager.prototype.onmousemove = noop;
-	Ycc.EventManager.prototype.onmousedown = noop;
-	Ycc.EventManager.prototype.onmouseup = noop;
-	Ycc.EventManager.prototype.onclick = noop;
+	/**
+	 * 托管原生的鼠标移动事件
+	 * @param e {YccEvent}	ycc事件对象
+	 * @type {Function}
+	 */
+	Ycc.EventManager.prototype.onmousemove = function (e) {};
+	/**
+	 * 托管原生的鼠标按下事件
+	 * @param e {YccEvent}	ycc事件对象
+	 * @type {Function}
+	 */
+	Ycc.EventManager.prototype.onmousedown = function (e) {};
+	/**
+	 * 托管原生的鼠标抬起事件
+	 * @param e {YccEvent}	ycc事件对象
+	 * @type {Function}
+	 */
+	Ycc.EventManager.prototype.onmouseup = function (e) {};
+	/**
+	 * 托管原生的鼠标点击事件
+	 * @param e {YccEvent}	ycc事件对象
+	 * @type {Function}
+	 */
+	Ycc.EventManager.prototype.onclick = function (e) {};
+	
 	
 	// 由原生事件组合的自定义事件
-	Ycc.EventManager.prototype.ondragging = noop;
-	Ycc.EventManager.prototype.ondragend = noop;
+	/**
+	 * 自定义鼠标拖拽事件
+	 * @param e {YccEvent}	ycc事件对象
+	 * @type {Function}
+	 */
+	Ycc.EventManager.prototype.ondragging = function (e) {};
+	/**
+	 * 自定义鼠标拖拽结束事件
+	 * @param e {YccEvent}	ycc事件对象
+	 * @type {Function}
+	 */
+	Ycc.EventManager.prototype.ondragend = function (e) {};
 	
 
 
@@ -127,6 +159,9 @@
 	 */
 	function filterOriginEvent(_type,eventManagerInstance) {
 		
+		/**
+		 * @param e 原生js的事件实例
+		 */
 		return function (e) {
 			
 			// ycc事件实例
@@ -140,11 +175,12 @@
 			 * 鼠标按下事件
 			 */
 			if(_type === "mousedown"){
+				// 修改标识、初始化
 				eventManagerInstance.mouseDown = true;
 				eventManagerInstance.mouseMoving = false;
-				
 				eventManagerInstance.mouseDownEvent = yccEvent;
-				eventManagerInstance["on"+_type](yccEvent);
+				// 触发ycc自定义事件
+				Ycc.utils.isFn(eventManagerInstance["on"+_type])&&eventManagerInstance["on"+_type](yccEvent);
 				return null;
 			}
 			
@@ -152,13 +188,15 @@
 			 * 鼠标移动事件
 			 */
 			if(_type === "mousemove"){
+				// 修改标识
 				eventManagerInstance.mouseMoving = true;
 				eventManagerInstance["on"+_type](yccEvent);
-				
+				// 实测某些浏览器坐标位置没改变，移动事件仍然触发。此处进行过滤
 				if(eventManagerInstance.mouseDown && (yccEvent.x!==eventManagerInstance.mouseDownEvent.x ||  yccEvent.y!==eventManagerInstance.mouseDownEvent.y)){
 					yccEvent.type = "dragging";
 					yccEvent.originEvent = e;
-					eventManagerInstance["on"+yccEvent.type](yccEvent);
+					// 触发ycc自定义事件
+					Ycc.utils.isFn(eventManagerInstance["on"+_type])&&eventManagerInstance["on"+_type](yccEvent);
 				}
 				return null;
 			}
@@ -167,9 +205,11 @@
 			 * 鼠标抬起事件
 			 */
 			if(_type === "mouseup"){
+				// 修改标识
 				eventManagerInstance.mouseDown = false;
 				eventManagerInstance.mouseMoving = false;
-				eventManagerInstance["on"+yccEvent.type](yccEvent);
+				// 触发ycc自定义事件
+				Ycc.utils.isFn(eventManagerInstance["on"+_type])&&eventManagerInstance["on"+_type](yccEvent);
 				return null;
 			}
 
