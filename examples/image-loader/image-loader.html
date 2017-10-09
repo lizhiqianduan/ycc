@@ -6,8 +6,6 @@
 </head>
 <body>
 
-<canvas id="ctx"></canvas>
-<br>
 </body>
 </html>
 
@@ -42,8 +40,7 @@
 
 
 
-	var ycc = new Ycc(document.getElementById("ctx"));
-	ycc.loader.loadImageList(images,function () {
+	new Ycc.Loader().loadImageList(images,function () {
 		console.log("loaded!");
 	},function (img) {
 		document.body.appendChild(img);
