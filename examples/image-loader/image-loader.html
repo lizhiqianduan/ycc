@@ -22,7 +22,6 @@
 
 
 
-<script src="../../src/Ycc.init.js"></script>
 
 
 <script>
@@ -44,10 +43,10 @@
 
 
 	var ycc = new Ycc(document.getElementById("ctx"));
-	ycc.loader.loadImageList(images,function (img) {
-		document.body.appendChild(img);
-	},function () {
+	ycc.loader.loadImageList(images,function () {
 		console.log("loaded!");
+	},function (img) {
+		document.body.appendChild(img);
 	})
 
 

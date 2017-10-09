@@ -214,6 +214,19 @@
 				Ycc.utils.isFn(eventManagerInstance["on"+_type])&&eventManagerInstance["on"+_type](yccEvent);
 				return null;
 			}
+			
+			/**
+			 * 鼠标点击事件
+			 */
+			if(_type === "click"){
+				// 修改标识
+				eventManagerInstance.mouseDown = false;
+				eventManagerInstance.mouseMoving = false;
+				// 触发ycc托管的事件
+				Ycc.utils.isFn(eventManagerInstance["on"+_type])&&eventManagerInstance["on"+_type](yccEvent);
+				return null;
+			}
+			
 
 			
 

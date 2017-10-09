@@ -41,29 +41,5 @@
 		this.canvasBgColor = "green";
 	};
 	
-	/**
-	 * 设置线条样式
-	 * @param val
-	 */
-	Ycc.Config.prototype.strokeStyle = function (val) {
-		this.ctxProps.strokeStyle = val;
-	};
-	
-	/**
-	 * 设置填充样式
-	 * @param val
-	 */
-	Ycc.Config.prototype.fillStyle = function (val) {
-		this.ctxProps.fillStyle = val;
-	};
-	
-	/**
-	 * 设置线条宽度
-	 * @param val
-	 */
-	Ycc.Config.prototype.lineWidth = function (val) {
-		this.ctxProps.lineWidth = val;
-	}
-	
 	
 })(window.Ycc);

@@ -26,15 +26,15 @@
 		 * 绘图环境
 		 * @type {CanvasRenderingContext2D}
 		 */
-		this.ctx = canvasDom.getContext("2d");
+		this.ctx = this.canvasDom.getContext("2d");
 		/**
 		 * 可绘图区的宽
 		 */
-		this.ctxWidth = canvasDom.width;
+		this.ctxWidth = this.canvasDom.width;
 		/**
 		 * 可绘图区的高
 		 */
-		this.ctxHeight = canvasDom.height;
+		this.ctxHeight = this.canvasDom.height;
 
 		/**
 		 * 实例的图形管理模块
@@ -60,11 +60,6 @@
 		 */
 		this.config = new Ycc.Config(this);
 		
-		/**
-		 * 实例的资源加载管理模块
-		 * @type {Ycc.Loader}
-		 */
-		this.loader = Ycc.Loader?new Ycc.Loader(this):null;
 		
 		this.init();
 	};
@@ -81,7 +76,6 @@
 		this.ctx.strokeStyle = this.config.ctxProps.strokeStyle;
 		this.ctx.fillStyle = this.config.ctxProps.fillStyle;
 	};
-	
 	
 	
 	

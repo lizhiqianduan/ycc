@@ -11,16 +11,10 @@
 	
 	/**
 	 * ycc实例的资源加载类
-	 * @param yccInstance
 	 * @constructor
 	 */
-	Ycc.Loader = function (yccInstance) {
-		/**
-		 * ycc的引用
-		 * @type {Ycc}
-		 */
-		this.yccInstance = yccInstance;
-		
+	Ycc.Loader = function () {
+	
 	};
 	
 	
@@ -43,7 +37,7 @@
 	 * @param progressCb
 	 * @param endCb
 	 */
-	Ycc.Loader.prototype.loadImageList = function (imagesSrc,progressCb,endCb) {
+	Ycc.Loader.prototype.loadImageList = function (imagesSrc,endCb,progressCb) {
 		// 已加载图片的个数
 		var loadedNum = 0;
 		// 记录加载的资源
