@@ -47,19 +47,31 @@
 		 * 实例的图形管理模块
 		 * @type {Ycc.UI}
 		 */
-		this.ui = new Ycc.UI(this);
+		this.ui = Ycc.UI?new Ycc.UI(this):null;
 		
 		/**
 		 * 实例的快照管理模块
 		 * @type {Ycc.PhotoManager}
 		 */
-		this.photoManager = new Ycc.PhotoManager(this);
+		this.photoManager = Ycc.PhotoManager?new Ycc.PhotoManager(this):null;
 		
 		/**
 		 * 实例的事件管理模块
 		 * @type {Ycc.EventManager}
 		 */
-		this.eventManager = new Ycc.EventManager(this);
+		this.eventManager = Ycc.EventManager?new Ycc.EventManager(this):null;
+		
+		/**
+		 * 实例的配置管理模块
+		 * @type {Ycc.Config}
+		 */
+		this.config = Ycc.Config?new Ycc.Config(this):null;
+		
+		/**
+		 * 实例的资源加载管理模块
+		 * @type {Ycc.Loader}
+		 */
+		this.loader = Ycc.Loader?new Ycc.Loader(this):null;
 		
 		this.init();
 	};

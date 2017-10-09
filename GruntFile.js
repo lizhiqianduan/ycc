@@ -67,6 +67,7 @@ module.exports = function(grunt){
         }
     });
 
+    
     // 加载包含 "uglify" 任务的插件。
     grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-contrib-concat');

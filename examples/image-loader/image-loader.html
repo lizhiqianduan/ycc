@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>image loader</title>
+</head>
+<body>
+
+<canvas id="ctx"></canvas>
+</body>
+</html>
+
+
+
+<script src="http://localhost:9000/livereload.js"></script>
+
+<script src="../../src/Ycc.class.js"></script>
+<script src="../../src/Ycc.utils.js"></script>
+<script src="../../src/Ycc.Loader.class.js"></script>
+
+
+
+<script src="../../src/Ycc.init.js"></script>
+
+
+<script>
+
+
+	var images = {
+		a:"https://ss2.baidu.com/6ONYsjip0QIZ8tyhnq/it/u=4122922613,1597972748&fm=173&s=8700DC4F1C825153D80F493D0300104A&w=218&h=146&img.JPEG",
+		b:"https://ss1.baidu.com/6ONXsjip0QIZ8tyhnq/it/u=3487794280,1578631380&fm=173&s=019F837D42E0F3555FAC846F03006071&w=218&h=146&img.JPEG",
+		c:"https://ss1.baidu.com/6ONXsjip0QIZ8tyhnq/it/u=4026573301,2319016532&fm=173&s=0383994D5C030E5B1E94DC3603007043&w=218&h=146&img.JPEG"
+	};
+
+
+
+	var ycc = new Ycc(document.getElementById("ctx"));
+	ycc.loader.loadImageList(images,function (img) {
+		console.log(img);
+	})
+
+
+</script>
