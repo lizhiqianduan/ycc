@@ -179,7 +179,7 @@
 				eventManagerInstance.mouseDown = true;
 				eventManagerInstance.mouseMoving = false;
 				eventManagerInstance.mouseDownEvent = yccEvent;
-				// 触发ycc自定义事件
+				// 触发ycc托管的事件
 				Ycc.utils.isFn(eventManagerInstance["on"+_type])&&eventManagerInstance["on"+_type](yccEvent);
 				return null;
 			}
@@ -196,8 +196,10 @@
 					yccEvent.type = "dragging";
 					yccEvent.originEvent = e;
 					// 触发ycc自定义事件
-					Ycc.utils.isFn(eventManagerInstance["on"+_type])&&eventManagerInstance["on"+_type](yccEvent);
+					Ycc.utils.isFn(eventManagerInstance["on"+yccEvent.type])&&eventManagerInstance["on"+yccEvent.type](yccEvent);
 				}
+				// 触发ycc托管的事件
+				Ycc.utils.isFn(eventManagerInstance["on"+_type])&&eventManagerInstance["on"+_type](yccEvent);
 				return null;
 			}
 			
@@ -208,7 +210,7 @@
 				// 修改标识
 				eventManagerInstance.mouseDown = false;
 				eventManagerInstance.mouseMoving = false;
-				// 触发ycc自定义事件
+				// 触发ycc托管的事件
 				Ycc.utils.isFn(eventManagerInstance["on"+_type])&&eventManagerInstance["on"+_type](yccEvent);
 				return null;
 			}

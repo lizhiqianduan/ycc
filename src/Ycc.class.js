@@ -14,12 +14,10 @@
 	/**
 	 * 应用启动入口类，每个实例都与一个canvas绑定
 	 * @param canvasDom
-	 * @param options				{Object}	启动配置项
-	 * @param options.canvasBg		{String}	背景色
 	 *
 	 * @constructor
 	 */
-	win.Ycc = function Ycc(canvasDom,options){
+	win.Ycc = function Ycc(canvasDom){
 		/**
 		 * canvas的Dom对象
 		 */
@@ -37,11 +35,6 @@
 		 * 可绘图区的高
 		 */
 		this.ctxHeight = canvasDom.height;
-		/**
-		 * 配置对象，配置默认线条颜色、线条宽度、填充颜色、字体颜色、大小、默认canvas背景色等内容
-		 * @default {}
-		 */
-		this.options = options || {};
 
 		/**
 		 * 实例的图形管理模块
@@ -65,7 +58,7 @@
 		 * 实例的配置管理模块
 		 * @type {Ycc.Config}
 		 */
-		this.config = Ycc.Config?new Ycc.Config(this):null;
+		this.config = new Ycc.Config(this);
 		
 		/**
 		 * 实例的资源加载管理模块
@@ -80,10 +73,13 @@
 	 * 类初始化
 	 */
 	win.Ycc.prototype.init = function () {
-		var self = this;
 		// 填充背景
-		this.ctx.fillStyle = this.options.canvasBg||"#fff";
+		this.ctx.fillStyle = this.config.canvasBgColor;
 		this.ctx.fillRect(0,0,this.ctxWidth,this.ctxHeight);
+		
+		this.ctx.lineWidth = this.config.ctxProps.lineWidth;
+		this.ctx.strokeStyle = this.config.ctxProps.strokeStyle;
+		this.ctx.fillStyle = this.config.ctxProps.fillStyle;
 	};
 	
 	

@@ -35,11 +35,10 @@
 		});
 		
 		/**
-		 * 项目所需要的图片资源路径。
-		 * 键为图片名；值为图片路径，绝对路径、相对路径均可
-		 * @type {Object}
+		 * 初始时，canvas的背景色
+		 * @type {String}
 		 */
-		this.imagesResource = new Object({});
+		this.canvasBgColor = "green";
 	};
 	
 	/**
