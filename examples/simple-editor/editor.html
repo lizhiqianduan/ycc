@@ -35,6 +35,7 @@
 	<br>
 	<div class="ctrl">
 		<button onclick="goBack()">回退</button>
+		&nbsp;&nbsp;
 		<button onclick="zoomIn()">放大</button>
 		<button onclick="zoomOut()">缩小</button>
 		&nbsp;&nbsp;&nbsp;&nbsp;
@@ -44,6 +45,7 @@
 		<button onclick="ellipse()">椭圆</button>
 		<button onclick="gou()">勾勾</button>
 		<button onclick="cross()">叉叉</button>
+		<button onclick="text()">文字</button>
 	</div>
 	<br>
 
@@ -288,6 +290,19 @@
 	}
 
 
+	function text() {
+		ycc.eventManager.ondragging = function (e) {};
+		ycc.eventManager.onmouseup = function (e) {};
+		ycc.eventManager.onclick = function (e) {
+			var endDot = translateDotByScale([e.x,e.y]);
+			ycc.ui.text(endDot,"test",true);
+			ycc.photoManager.takePhoto();
+			showPhotoToHtml();
+		}
+
+	}
+
+
 
 	/**
 	 * 点击回退
@@ -312,7 +327,6 @@
 		var res = [0,0];
 		res[0]= dot[0]/scale;
 		res[1]= dot[1]/scale;
-		console.log(dot,res);
 		return res;
 	}
 

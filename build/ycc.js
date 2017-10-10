@@ -72,9 +72,10 @@
 		this.ctx.fillStyle = this.config.canvasBgColor;
 		this.ctx.fillRect(0,0,this.ctxWidth,this.ctxHeight);
 		
-		this.ctx.lineWidth = this.config.ctxProps.lineWidth;
-		this.ctx.strokeStyle = this.config.ctxProps.strokeStyle;
-		this.ctx.fillStyle = this.config.ctxProps.fillStyle;
+		// 使用ctxProps，初始化画布属性
+		for(var key in this.config.ctxProps){
+			this.ctx[key] = this.config.ctxProps[key];
+		}
 	};
 	
 	

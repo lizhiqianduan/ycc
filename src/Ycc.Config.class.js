@@ -25,13 +25,14 @@
 
 		/**
 		 * 画布属性的配置项，包含所有的画布属性。
-		 * 键为画布的属性名；值为画布属性值
+		 * 键为画布的属性名；值为画布属性值。供ycc.init()方法使用
 		 * @type {Object}
 		 */
 		this.ctxProps = new Object({
 			lineWidth:3,
 			strokeStyle:"red",
-			fillStyle:"#000"
+			fillStyle:"red",
+			font:"32px arial"
 		});
 		
 		/**
