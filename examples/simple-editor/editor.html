@@ -29,12 +29,14 @@
 </head>
 <body>
 <div>
-	<div id="canvas">
-	</div>
 
-
+	<br>
+	<br>
+	<br>
 	<div class="ctrl">
 		<button onclick="goBack()">回退</button>
+		<button onclick="zoomIn()">放大</button>
+		<button onclick="zoomOut()">缩小</button>
 		&nbsp;&nbsp;&nbsp;&nbsp;
 		<button onclick="line()">直线</button>
 		<button onclick="pen()">钢笔</button>
@@ -43,7 +45,10 @@
 		<button onclick="gou()">勾勾</button>
 		<button onclick="cross()">叉叉</button>
 	</div>
+	<br>
 
+	<div id="canvas">
+	</div>
 
 	<div id="photos"></div>
 </div>
@@ -77,6 +82,12 @@
 	// ycc实例
 	var ycc = null;
 
+	// 放大缩小的比例
+	var scale = 1;
+
+	// canvas初始宽度
+	var originWidth = 0;
+
 	// 加载器实例
 	new Ycc.Loader().loadImageList(imageResources,function (imgs) {
 		imageRes = imgs;
@@ -85,6 +96,9 @@
 
 		canvas.width = imageRes.paper.width;
 		canvas.height = imageRes.paper.height;
+		originWidth = canvas.width;
+		canvas.style.width = canvas.width+"px";
+//		canvas.style.height = canvas.height+"px";
 		ycc = new Ycc(canvas);
 
 		document.getElementById("canvas").appendChild(canvas);
@@ -113,6 +127,23 @@
 
 
 	/**
+	 * 放大
+	 */
+	function zoomIn() {
+		scale+=0.1;
+		ycc.canvasDom.style.width = originWidth*scale+"px";
+	}
+
+	/**
+	 * 缩小
+	 */
+	function zoomOut() {
+		scale-=0.1;
+		ycc.canvasDom.style.width = originWidth*scale+"px";
+	}
+
+
+	/**
 	 * 画直线
 	 */
 	function line() {
@@ -120,9 +151,10 @@
 		ycc.eventManager.onclick = function (e) {};
 		ycc.eventManager.ondragging = function (e) {
 			hasDragged = true;
+			var startDot = [ycc.eventManager.mouseDownEvent.x,ycc.eventManager.mouseDownEvent.y];
 			var endDot = [e.x,e.y];
 			ycc.photoManager.showLastPhoto();
-			ycc.ui.line([ycc.eventManager.mouseDownEvent.x,ycc.eventManager.mouseDownEvent.y],endDot);
+			ycc.ui.line(translateDotByScale(startDot),translateDotByScale(endDot));
 		};
 		ycc.eventManager.onmouseup = function (e) {
 			if(!hasDragged) return null;
@@ -142,11 +174,11 @@
 
 		ycc.eventManager.onclick = function (e) {};
 		ycc.eventManager.onmousedown = function (e) {
-			startDot = [e.x,e.y];
+			startDot = translateDotByScale([e.x,e.y]);
 		};
 		ycc.eventManager.ondragging = function (e) {
 			hasMoved = true;
-			var moveDot = [e.x,e.y];
+			var moveDot = translateDotByScale([e.x,e.y]);
 			ycc.ui.line(startDot,moveDot);
 			startDot = moveDot;
 		};
@@ -170,7 +202,7 @@
 			var startDot = [ycc.eventManager.mouseDownEvent.x,ycc.eventManager.mouseDownEvent.y];
 			var endDot = [e.x,e.y];
 			ycc.photoManager.showLastPhoto();
-			ycc.ui.rect(startDot,endDot);
+			ycc.ui.rect(translateDotByScale(startDot),translateDotByScale(endDot));
 		};
 		ycc.eventManager.onmouseup = function (e) {
 			if(!hasDragged) return null;
@@ -191,8 +223,8 @@
 
 		ycc.eventManager.ondragging = function (e) {
 			hasDragged = true;
-			var startDot = [ycc.eventManager.mouseDownEvent.x,ycc.eventManager.mouseDownEvent.y];
-			var endDot = [e.x,e.y];
+			var startDot = translateDotByScale([ycc.eventManager.mouseDownEvent.x,ycc.eventManager.mouseDownEvent.y]);
+			var endDot = translateDotByScale([e.x,e.y]);
 
 			var entryPoint = [0,0];
 			var width = 0;
@@ -228,10 +260,9 @@
 		ycc.eventManager.ondragging = function (e) {};
 		ycc.eventManager.onmouseup = function (e) {};
 		ycc.eventManager.onclick = function (e) {
-			console.log(e);
-
+			var endDot = translateDotByScale([e.x,e.y]);
 			ycc.ui.scale(0.2,0.2);
-			ycc.ui.image(imageRes.tick,[(e.x-70*0.2)*5,(e.y-240*0.2)*5]);
+			ycc.ui.image(imageRes.tick,[endDot[0]*5-70,endDot[1]*5-240]);
 			ycc.ui.scale(5,5);
 
 			ycc.photoManager.takePhoto();
@@ -246,10 +277,9 @@
 		ycc.eventManager.ondragging = function (e) {};
 		ycc.eventManager.onmouseup = function (e) {};
 		ycc.eventManager.onclick = function (e) {
-			console.log(e);
-
+			var endDot = translateDotByScale([e.x,e.y]);
 			ycc.ui.scale(0.2,0.2);
-			ycc.ui.image(imageRes.cross,[(e.x-100*0.2)*5,(e.y-128*0.2)*5]);
+			ycc.ui.image(imageRes.cross,[endDot[0]*5-100,endDot[1]*5-128]);
 			ycc.ui.scale(5,5);
 
 			ycc.photoManager.takePhoto();
@@ -259,7 +289,9 @@
 
 
 
-
+	/**
+	 * 点击回退
+	 */
 	function goBack() {
 		var photos = ycc.photoManager.getHistoryPhotos();
 		if(photos.length>=2){
@@ -271,6 +303,18 @@
 	}
 
 
+	/**
+	 * 变换一个点，根据缩放比例变化一个点的坐标
+	 * @param dot
+	 * @returns {[number,number]}
+	 */
+	function translateDotByScale(dot){
+		var res = [0,0];
+		res[0]= dot[0]/scale;
+		res[1]= dot[1]/scale;
+		console.log(dot,res);
+		return res;
+	}
 
 
 

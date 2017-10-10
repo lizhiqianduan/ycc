@@ -20,8 +20,8 @@
 	
 	/**
 	 * 加载单个图片资源
-	 * @param imageSrc
-	 * @param endCb
+	 * @param imageSrc	{String}	图片的路径
+	 * @param endCb		{Function}	加载成功的回调
 	 */
 	Ycc.Loader.prototype.loadImage = function (imageSrc,endCb) {
 		var img = new Image();
@@ -33,9 +33,9 @@
 	
 	/**
 	 * 加载图片资源列表
-	 * @param imagesSrc	{Object}	资源列表。键为资源名称；值为资源路径
-	 * @param progressCb
-	 * @param endCb
+	 * @param imagesSrc		{Object}	资源列表。键为资源名称；值为资源路径
+	 * @param progressCb	{function}	加载进度的回调，每加载成功一个资源都会调用一次
+	 * @param endCb			{function}	全部加载完成的回调
 	 */
 	Ycc.Loader.prototype.loadImageList = function (imagesSrc,endCb,progressCb) {
 		// 已加载图片的个数

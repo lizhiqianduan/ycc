@@ -3,7 +3,7 @@
  * @author  xiaohei
  * @date    2017/10/9
  * @description  Ycc.Config.class文件。
- * 	Ycc实例的配置类
+ * 	Ycc实例的默认配置类。所有ycc实例都默认使用该配置类。
  *
  */
 
@@ -29,8 +29,8 @@
 		 * @type {Object}
 		 */
 		this.ctxProps = new Object({
-			lineWidth:1,
-			strokeStyle:"#000",
+			lineWidth:3,
+			strokeStyle:"red",
 			fillStyle:"#000"
 		});
 		

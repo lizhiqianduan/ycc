@@ -40,8 +40,8 @@
 
 
 
-	new Ycc.Loader().loadImageList(images,function () {
-		console.log("loaded!");
+	new Ycc.Loader().loadImageList(images,function (imgs) {
+		console.log("loaded!",imgs);
 	},function (img) {
 		document.body.appendChild(img);
 	})
