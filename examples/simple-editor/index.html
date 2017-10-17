@@ -105,6 +105,9 @@
 
 		document.getElementById("canvas").appendChild(canvas);
 
+		ycc.eventManager.onclick = function (e) {
+			console.log(this,e);
+		};
 
 		ycc.ui.image(imgs.paper,[0,0]);
 		ycc.photoManager.takePhoto();
