@@ -33,6 +33,6 @@ Ycc迷你Canvas框架
 ## 联系方式
 目前项目处于开发过程中，如果你有兴趣、有想法，期待你的加入！联系我时请注明github账号！
 
-        工作邮箱:1024669228@qq.com <br>
-        个人网站:http://www.lizhiqianduan.com <br>
+        工作邮箱:1024669228@qq.com
+        个人网站:http://www.lizhiqianduan.com
         QQ群号：439366057
