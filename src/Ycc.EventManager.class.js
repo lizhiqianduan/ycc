@@ -55,15 +55,16 @@
 	 * Ycc实例的事件管理类。
 	 * 此类会托管原生的事件，剔除多余事件属性，保留必要属性。
 	 * 还会根据情况生成一些其他事件，方便使用。
-	 * @param yccInstance	{Ycc}
+	 * 每个EventManager都跟一个canvas元素绑定。
+	 * @param canvasDom	{HTMLElement}
 	 * @constructor
 	 */
-	Ycc.EventManager = function (yccInstance) {
+	Ycc.EventManager = function (canvasDom) {
 		/**
 		 * Ycc实例
-		 * @type {Ycc}
+		 * @type {HTMLElement}
 		 */
-		this.yccInstance = yccInstance;
+		this.canvasDom = canvasDom;
 		
 		/**
 		 * 鼠标是否按下的标识
@@ -95,7 +96,7 @@
 	Ycc.EventManager.prototype.init = function () {
 		var self = this;
 		// canvas元素
-		var dom = this.yccInstance.canvasDom;
+		var dom = this.canvasDom;
 
 		// 托管的事件类型
 		var proxyEventTypes = ["mousemove","mousedown","mouseup","click"];
@@ -168,8 +169,8 @@
 			var yccEvent = new YccEvent();
 			yccEvent.type = _type;
 			yccEvent.originEvent = e;
-			yccEvent.x = e.clientX - eventManagerInstance.yccInstance.canvasDom.getBoundingClientRect().left;
-			yccEvent.y = e.clientY - eventManagerInstance.yccInstance.canvasDom.getBoundingClientRect().top;
+			yccEvent.x = e.clientX - eventManagerInstance.canvasDom.getBoundingClientRect().left;
+			yccEvent.y = e.clientY - eventManagerInstance.canvasDom.getBoundingClientRect().top;
 			
 			/**
 			 * 鼠标按下事件

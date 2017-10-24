@@ -40,14 +40,14 @@
 
     
 
-    <h4 class="name" id="EventManager"><span class="type-signature"></span>new EventManager<span class="signature">(yccInstance)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="EventManager"><span class="type-signature"></span>new EventManager<span class="signature">(canvasDom)</span><span class="type-signature"></span></h4>
 
     
 
 
 
 <div class="description">
-    Ycc实例的事件管理类。此类会托管原生的事件，剔除多余事件属性，保留必要属性。还会根据情况生成一些其他事件，方便使用。
+    Ycc实例的事件管理类。此类会托管原生的事件，剔除多余事件属性，保留必要属性。还会根据情况生成一些其他事件，方便使用。每个EventManager都跟一个canvas元素绑定。
 </div>
 
 
@@ -83,13 +83,13 @@
 
         <tr>
             
-                <td class="name"><code>yccInstance</code></td>
+                <td class="name"><code>canvasDom</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">Ycc</span>
+<span class="param-type">HTMLElement</span>
 
 
             
@@ -140,7 +140,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Ycc.EventManager.class.js.html">Ycc.EventManager.class.js</a>, <a href="Ycc.EventManager.class.js.html#line61">line 61</a>
+        <a href="Ycc.EventManager.class.js.html">Ycc.EventManager.class.js</a>, <a href="Ycc.EventManager.class.js.html#line62">line 62</a>
     </li></ul></dd>
     
 
@@ -181,6 +181,78 @@
 
     
         <h3 class="subsection-title">Members</h3>
+
+        
+            
+<h4 class="name" id="canvasDom"><span class="type-signature"></span>canvasDom<span class="type-signature"> :HTMLElement</span></h4>
+
+
+
+
+<div class="description">
+    Ycc实例
+</div>
+
+
+
+    <h5>Type:</h5>
+    <ul>
+        <li>
+            
+<span class="param-type">HTMLElement</span>
+
+
+        </li>
+    </ul>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="Ycc.EventManager.class.js.html">Ycc.EventManager.class.js</a>, <a href="Ycc.EventManager.class.js.html#line67">line 67</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
 
         
             
@@ -238,7 +310,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Ycc.EventManager.class.js.html">Ycc.EventManager.class.js</a>, <a href="Ycc.EventManager.class.js.html#line72">line 72</a>
+        <a href="Ycc.EventManager.class.js.html">Ycc.EventManager.class.js</a>, <a href="Ycc.EventManager.class.js.html#line73">line 73</a>
     </li></ul></dd>
     
 
@@ -310,7 +382,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Ycc.EventManager.class.js.html">Ycc.EventManager.class.js</a>, <a href="Ycc.EventManager.class.js.html#line78">line 78</a>
+        <a href="Ycc.EventManager.class.js.html">Ycc.EventManager.class.js</a>, <a href="Ycc.EventManager.class.js.html#line79">line 79</a>
     </li></ul></dd>
     
 
@@ -382,79 +454,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Ycc.EventManager.class.js.html">Ycc.EventManager.class.js</a>, <a href="Ycc.EventManager.class.js.html#line84">line 84</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-        
-            
-<h4 class="name" id="yccInstance"><span class="type-signature"></span>yccInstance<span class="type-signature"> :Ycc</span></h4>
-
-
-
-
-<div class="description">
-    Ycc实例
-</div>
-
-
-
-    <h5>Type:</h5>
-    <ul>
-        <li>
-            
-<span class="param-type">Ycc</span>
-
-
-        </li>
-    </ul>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Ycc.EventManager.class.js.html">Ycc.EventManager.class.js</a>, <a href="Ycc.EventManager.class.js.html#line66">line 66</a>
+        <a href="Ycc.EventManager.class.js.html">Ycc.EventManager.class.js</a>, <a href="Ycc.EventManager.class.js.html#line85">line 85</a>
     </li></ul></dd>
     
 
@@ -581,7 +581,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Ycc.EventManager.class.js.html">Ycc.EventManager.class.js</a>, <a href="Ycc.EventManager.class.js.html#line134">line 134</a>
+        <a href="Ycc.EventManager.class.js.html">Ycc.EventManager.class.js</a>, <a href="Ycc.EventManager.class.js.html#line135">line 135</a>
     </li></ul></dd>
     
 
@@ -712,7 +712,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Ycc.EventManager.class.js.html">Ycc.EventManager.class.js</a>, <a href="Ycc.EventManager.class.js.html#line149">line 149</a>
+        <a href="Ycc.EventManager.class.js.html">Ycc.EventManager.class.js</a>, <a href="Ycc.EventManager.class.js.html#line150">line 150</a>
     </li></ul></dd>
     
 
@@ -843,7 +843,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Ycc.EventManager.class.js.html">Ycc.EventManager.class.js</a>, <a href="Ycc.EventManager.class.js.html#line143">line 143</a>
+        <a href="Ycc.EventManager.class.js.html">Ycc.EventManager.class.js</a>, <a href="Ycc.EventManager.class.js.html#line144">line 144</a>
     </li></ul></dd>
     
 
@@ -974,7 +974,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Ycc.EventManager.class.js.html">Ycc.EventManager.class.js</a>, <a href="Ycc.EventManager.class.js.html#line122">line 122</a>
+        <a href="Ycc.EventManager.class.js.html">Ycc.EventManager.class.js</a>, <a href="Ycc.EventManager.class.js.html#line123">line 123</a>
     </li></ul></dd>
     
 
@@ -1105,7 +1105,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Ycc.EventManager.class.js.html">Ycc.EventManager.class.js</a>, <a href="Ycc.EventManager.class.js.html#line116">line 116</a>
+        <a href="Ycc.EventManager.class.js.html">Ycc.EventManager.class.js</a>, <a href="Ycc.EventManager.class.js.html#line117">line 117</a>
     </li></ul></dd>
     
 
@@ -1236,7 +1236,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Ycc.EventManager.class.js.html">Ycc.EventManager.class.js</a>, <a href="Ycc.EventManager.class.js.html#line128">line 128</a>
+        <a href="Ycc.EventManager.class.js.html">Ycc.EventManager.class.js</a>, <a href="Ycc.EventManager.class.js.html#line129">line 129</a>
     </li></ul></dd>
     
 
@@ -1278,13 +1278,13 @@
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="win.Ycc.html">Ycc</a></li><li><a href="Ycc.Config.html">Config</a></li><li><a href="Ycc.EventManager.html">EventManager</a></li><li><a href="Ycc.Loader.html">Loader</a></li><li><a href="Ycc.PhotoManager.html">PhotoManager</a></li><li><a href="Ycc.UI.html">UI</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="win.Ycc.html">Ycc</a></li><li><a href="Ycc.Config.html">Config</a></li><li><a href="Ycc.EventManager.html">EventManager</a></li><li><a href="Ycc.LayerManager.html">LayerManager</a></li><li><a href="Ycc.Loader.html">Loader</a></li><li><a href="Ycc.PhotoManager.html">PhotoManager</a></li><li><a href="Ycc.UI.html">UI</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Tue Oct 10 2017 15:54:03 GMT+0800 (中国标准时间)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Tue Oct 24 2017 10:27:17 GMT+0800 (中国标准时间)
 </footer>
 
 <script> prettyPrint(); </script>

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Class: Loader</title>
+    <title>JSDoc: Class: LayerManager</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
 
-    <h1 class="page-title">Class: Loader</h1>
+    <h1 class="page-title">Class: LayerManager</h1>
 
     
 
@@ -28,7 +28,7 @@
 
 <header>
     
-        <h2>Loader</h2>
+        <h2>LayerManager</h2>
         
     
 </header>
@@ -40,14 +40,14 @@
 
     
 
-    <h4 class="name" id="Loader"><span class="type-signature"></span>new Loader<span class="signature">()</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="LayerManager"><span class="type-signature"></span>new LayerManager<span class="signature">()</span><span class="type-signature"></span></h4>
 
     
 
 
 
 <div class="description">
-    ycc实例的资源加载类
+    Ycc的图层管理类。每个图层管理器都与一个canvas舞台绑定。
 </div>
 
 
@@ -91,7 +91,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Ycc.Loader.class.js.html">Ycc.Loader.class.js</a>, <a href="Ycc.Loader.class.js.html#line16">line 16</a>
+        <a href="Ycc.LayerManager.class.js.html">Ycc.LayerManager.class.js</a>, <a href="Ycc.LayerManager.class.js.html#line128">line 128</a>
     </li></ul></dd>
     
 
@@ -131,6 +131,72 @@
     
 
     
+        <h3 class="subsection-title">Members</h3>
+
+        
+            
+<h4 class="name" id="yccInstance"><span class="type-signature"></span>yccInstance<span class="type-signature"></span></h4>
+
+
+
+
+<div class="description">
+    ycc实例
+</div>
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="Ycc.LayerManager.class.js.html">Ycc.LayerManager.class.js</a>, <a href="Ycc.LayerManager.class.js.html#line133">line 133</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
+    
 
     
         <h3 class="subsection-title">Methods</h3>
@@ -140,14 +206,14 @@
 
     
 
-    <h4 class="name" id="loadImage"><span class="type-signature"></span>loadImage<span class="signature">(imageSrc, endCb)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="deleteLayer"><span class="type-signature"></span>deleteLayer<span class="signature">(layer)</span><span class="type-signature"></span></h4>
 
     
 
 
 
 <div class="description">
-    加载单个图片资源
+    删除图层。删除图层时，自动重洗渲染所有图层
 </div>
 
 
@@ -183,15 +249,10 @@
 
         <tr>
             
-                <td class="name"><code>imageSrc</code></td>
+                <td class="name"><code>layer</code></td>
             
 
             <td class="type">
-            
-                
-<span class="param-type">String</span>
-
-
             
             </td>
 
@@ -199,30 +260,7 @@
 
             
 
-            <td class="description last">图片的路径</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>endCb</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">function</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">加载成功的回调</td>
+            <td class="description last"></td>
         </tr>
 
     
@@ -263,7 +301,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Ycc.Loader.class.js.html">Ycc.Loader.class.js</a>, <a href="Ycc.Loader.class.js.html#line26">line 26</a>
+        <a href="Ycc.LayerManager.class.js.html">Ycc.LayerManager.class.js</a>, <a href="Ycc.LayerManager.class.js.html#line156">line 156</a>
     </li></ul></dd>
     
 
@@ -294,14 +332,14 @@
 
     
 
-    <h4 class="name" id="loadImageList"><span class="type-signature"></span>loadImageList<span class="signature">(imagesSrc, progressCb, endCb)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="newLayer"><span class="type-signature"></span>newLayer<span class="signature">(config)</span><span class="type-signature"></span></h4>
 
     
 
 
 
 <div class="description">
-    加载图片资源列表
+    新建图层
 </div>
 
 
@@ -337,15 +375,10 @@
 
         <tr>
             
-                <td class="name"><code>imagesSrc</code></td>
+                <td class="name"><code>config</code></td>
             
 
             <td class="type">
-            
-                
-<span class="param-type">Object</span>
-
-
             
             </td>
 
@@ -353,53 +386,7 @@
 
             
 
-            <td class="description last">资源列表。键为资源名称；值为资源路径</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>progressCb</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">function</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">加载进度的回调，每加载成功一个资源都会调用一次</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>endCb</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">function</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">全部加载完成的回调</td>
+            <td class="description last"></td>
         </tr>
 
     
@@ -440,7 +427,89 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Ycc.Loader.class.js.html">Ycc.Loader.class.js</a>, <a href="Ycc.Loader.class.js.html#line40">line 40</a>
+        <a href="Ycc.LayerManager.class.js.html">Ycc.LayerManager.class.js</a>, <a href="Ycc.LayerManager.class.js.html#line146">line 146</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="renderAllLayerToStage"><span class="type-signature"></span>renderAllLayerToStage<span class="signature">()</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+<div class="description">
+    将可显示的所有图层渲染至舞台。
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="Ycc.LayerManager.class.js.html">Ycc.LayerManager.class.js</a>, <a href="Ycc.LayerManager.class.js.html#line172">line 172</a>
     </li></ul></dd>
     
 
