@@ -13,10 +13,14 @@
 	
 	/**
 	 * Ycc的配置类
-	 * @param yccInstance	{Ycc}	ycc的引用
+	 * @param yccInstance	{Ycc}			ycc的引用
+	 * @param [config]		{Ycc.Config}	初始化时的配置项
 	 * @constructor
 	 */
-	Ycc.Config = function (yccInstance) {
+	Ycc.Config = function (yccInstance,config) {
+		
+		config = config?config:{};
+		
 		/**
 		 * ycc的引用
 		 * @type {Ycc}
@@ -36,10 +40,25 @@
 		});
 		
 		/**
-		 * 初始时，canvas的背景色
+		 * canvas的背景色。默认为透明
 		 * @type {String}
 		 */
-		this.canvasBgColor = "green";
+		this.canvasBgColor = config.canvasBgColor||"transparent";
+		
+		/**
+		 * canvas的宽度
+		 */
+		this.width = config.width || 800;
+		this.height = config.height || 600;
+		
+		
+		// 可选config
+		if(config && config.ctxProps){
+			for(var key in this.ctxProps){
+				if(config.ctxProps[key])
+					this.ctxProps[key] = config.ctxProps[key];
+			}
+		}
 	};
 	
 	

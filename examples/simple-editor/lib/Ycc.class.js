@@ -12,16 +12,23 @@
 (function (win) {
 	
 	/**
-	 * 应用启动入口类，每个实例都与一个canvas绑定
-	 * @param canvasDom
+	 * 应用启动入口类，每个实例都与一个舞台绑定。
+	 * 每个舞台都是一个canvas元素，该元素会被添加至HTML结构中。
 	 *
+	 * @param canvasDom		canvas的HTML元素。即，显示舞台
+	 * @param [config]		canvas初始化的属性。字体大小、填充颜色、线条颜色、默认背景等。
 	 * @constructor
 	 */
-	win.Ycc = function Ycc(canvasDom){
+	win.Ycc = function Ycc(canvasDom,config){
 		/**
 		 * canvas的Dom对象
 		 */
 		this.canvasDom = canvasDom;
+		
+		/**
+		 * 显示舞台
+		 */
+		this.stage = canvasDom;
 		/**
 		 * 绘图环境
 		 * @type {CanvasRenderingContext2D}
@@ -35,12 +42,18 @@
 		 * 可绘图区的高
 		 */
 		this.ctxHeight = this.canvasDom.height;
+		
+		/**
+		 * Layer对象数组。包含所有的图层
+		 * @type {Array}
+		 */
+		this.layerList = [];
 
 		/**
-		 * 实例的图形管理模块
-		 * @type {Ycc.UI}
+		 * 实例的配置管理模块
+		 * @type {Ycc.Config}
 		 */
-		this.ui = Ycc.UI?new Ycc.UI(this):null;
+		this.config = new Ycc.Config(this,config);
 		
 		/**
 		 * 实例的快照管理模块
@@ -49,16 +62,15 @@
 		this.photoManager = Ycc.PhotoManager?new Ycc.PhotoManager(this):null;
 		
 		/**
-		 * 实例的事件管理模块
-		 * @type {Ycc.EventManager}
+		 * ycc的图层管理器
+		 * @type {null}
 		 */
-		this.eventManager = Ycc.EventManager?new Ycc.EventManager(this):null;
+		this.layerManager = Ycc.LayerManager?new Ycc.LayerManager(this):null;
 		
 		/**
-		 * 实例的配置管理模块
-		 * @type {Ycc.Config}
+		 * 舞台的事件
 		 */
-		this.config = new Ycc.Config(this);
+		this.stageEventManager = new Ycc.EventManager(this.stage);
 		
 		
 		this.init();
@@ -68,6 +80,7 @@
 	 * 类初始化
 	 */
 	win.Ycc.prototype.init = function () {
+		var self = this;
 		// 填充背景
 		this.ctx.fillStyle = this.config.canvasBgColor;
 		this.ctx.fillRect(0,0,this.ctxWidth,this.ctxHeight);
@@ -76,7 +89,31 @@
 		for(var key in this.config.ctxProps){
 			this.ctx[key] = this.config.ctxProps[key];
 		}
+		
+		
+		// 将舞台的事件广播给所有的图层。注意，应倒序。
+		for(var key in this.stageEventManager){
+			if(key.indexOf("on")===0){
+				console.log(key);
+				this.stageEventManager[key] = function (e) {
+					for(var i=self.layerList.length-1;i>=0;i--){
+						var layer = self.layerList[i];
+						layer.eventManager.mouseDownEvent = self.stageEventManager.mouseDownEvent;
+						layer.eventManager["on"+e.type](e);
+					}
+				}
+			}
+		}
 	};
+	
+	/**
+	 * 清除
+	 */
+	win.Ycc.prototype.clearStage = function () {
+		this.ctx.clearRect(0,0,this.ctxWidth,this.ctxHeight);
+	};
+	
+
 	
 	
 	

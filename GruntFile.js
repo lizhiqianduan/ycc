@@ -18,6 +18,7 @@ module.exports = function(grunt){
 						'src/Ycc.Config.class.js',
 						'src/Ycc.UI.class.js',
 						'src/Ycc.Loader.class.js',
+						'src/Ycc.LayerManager.class.js',
 						'src/Ycc.EventManager.class.js',
 						'src/Ycc.PhotoManager.class.js'
                     ],
@@ -67,6 +68,7 @@ module.exports = function(grunt){
 			{expand:true,cwd:"./src", src: '*.js', dest: 'build/'},
 			{expand:true,cwd:"./build", src: '*.js', dest: 'examples/simple-editor/lib/'},
 			{expand:true,cwd:"./build", src: '*.js', dest: 'examples/image-loader/lib/'},
+			{expand:true,cwd:"./build", src: '*.js', dest: 'examples/ui-test/lib/'},
   		]
 		
     });

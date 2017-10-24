@@ -12,16 +12,23 @@
 (function (win) {
 	
 	/**
-	 * 应用启动入口类，每个实例都与一个canvas绑定
-	 * @param canvasDom
+	 * 应用启动入口类，每个实例都与一个舞台绑定。
+	 * 每个舞台都是一个canvas元素，该元素会被添加至HTML结构中。
 	 *
+	 * @param canvasDom		canvas的HTML元素。即，显示舞台
+	 * @param [config]		canvas初始化的属性。字体大小、填充颜色、线条颜色、默认背景等。
 	 * @constructor
 	 */
-	win.Ycc = function Ycc(canvasDom){
+	win.Ycc = function Ycc(canvasDom,config){
 		/**
 		 * canvas的Dom对象
 		 */
 		this.canvasDom = canvasDom;
+		
+		/**
+		 * 显示舞台
+		 */
+		this.stage = canvasDom;
 		/**
 		 * 绘图环境
 		 * @type {CanvasRenderingContext2D}
@@ -35,12 +42,18 @@
 		 * 可绘图区的高
 		 */
 		this.ctxHeight = this.canvasDom.height;
+		
+		/**
+		 * Layer对象数组。包含所有的图层
+		 * @type {Array}
+		 */
+		this.layerList = [];
 
 		/**
-		 * 实例的图形管理模块
-		 * @type {Ycc.UI}
+		 * 实例的配置管理模块
+		 * @type {Ycc.Config}
 		 */
-		this.ui = Ycc.UI?new Ycc.UI(this):null;
+		this.config = new Ycc.Config(this,config);
 		
 		/**
 		 * 实例的快照管理模块
@@ -49,16 +62,15 @@
 		this.photoManager = Ycc.PhotoManager?new Ycc.PhotoManager(this):null;
 		
 		/**
-		 * 实例的事件管理模块
-		 * @type {Ycc.EventManager}
+		 * ycc的图层管理器
+		 * @type {null}
 		 */
-		this.eventManager = Ycc.EventManager?new Ycc.EventManager(this):null;
+		this.layerManager = Ycc.LayerManager?new Ycc.LayerManager(this):null;
 		
 		/**
-		 * 实例的配置管理模块
-		 * @type {Ycc.Config}
+		 * 舞台的事件
 		 */
-		this.config = new Ycc.Config(this);
+		this.stageEventManager = new Ycc.EventManager(this.stage);
 		
 		
 		this.init();
@@ -68,6 +80,7 @@
 	 * 类初始化
 	 */
 	win.Ycc.prototype.init = function () {
+		var self = this;
 		// 填充背景
 		this.ctx.fillStyle = this.config.canvasBgColor;
 		this.ctx.fillRect(0,0,this.ctxWidth,this.ctxHeight);
@@ -76,7 +89,31 @@
 		for(var key in this.config.ctxProps){
 			this.ctx[key] = this.config.ctxProps[key];
 		}
+		
+		
+		// 将舞台的事件广播给所有的图层。注意，应倒序。
+		for(var key in this.stageEventManager){
+			if(key.indexOf("on")===0){
+				console.log(key);
+				this.stageEventManager[key] = function (e) {
+					for(var i=self.layerList.length-1;i>=0;i--){
+						var layer = self.layerList[i];
+						layer.eventManager.mouseDownEvent = self.stageEventManager.mouseDownEvent;
+						layer.eventManager["on"+e.type](e);
+					}
+				}
+			}
+		}
 	};
+	
+	/**
+	 * 清除
+	 */
+	win.Ycc.prototype.clearStage = function () {
+		this.ctx.clearRect(0,0,this.ctxWidth,this.ctxHeight);
+	};
+	
+
 	
 	
 	
@@ -251,10 +288,14 @@
 	
 	/**
 	 * Ycc的配置类
-	 * @param yccInstance	{Ycc}	ycc的引用
+	 * @param yccInstance	{Ycc}			ycc的引用
+	 * @param [config]		{Ycc.Config}	初始化时的配置项
 	 * @constructor
 	 */
-	Ycc.Config = function (yccInstance) {
+	Ycc.Config = function (yccInstance,config) {
+		
+		config = config?config:{};
+		
 		/**
 		 * ycc的引用
 		 * @type {Ycc}
@@ -274,10 +315,25 @@
 		});
 		
 		/**
-		 * 初始时，canvas的背景色
+		 * canvas的背景色。默认为透明
 		 * @type {String}
 		 */
-		this.canvasBgColor = "green";
+		this.canvasBgColor = config.canvasBgColor||"transparent";
+		
+		/**
+		 * canvas的宽度
+		 */
+		this.width = config.width || 800;
+		this.height = config.height || 600;
+		
+		
+		// 可选config
+		if(config && config.ctxProps){
+			for(var key in this.ctxProps){
+				if(config.ctxProps[key])
+					this.ctxProps[key] = config.ctxProps[key];
+			}
+		}
 	};
 	
 	
@@ -313,11 +369,12 @@
 
 	/**
 	 * UI类，提供绘图基本的原子图形和组合图形。
+	 * 每个UI类的对象都跟一个canvas绑定。
 	 *
-	 * @param yccInstance	{Ycc}	ycc的初始化实例，在init中初始化
+	 * @param canvasDom	{HTMLElement}
 	 * @constructor
 	 */
-	Ycc.UI = function(yccInstance){
+	Ycc.UI = function(canvasDom){
 
 		/**
 		 * 保存的快照，每个元素都是`getImageData`的返回值
@@ -330,14 +387,17 @@
 		/**
 		 * 当前绘图环境
 		 */
-		this.ctx = yccInstance.ctx;
-		
+		this.ctx = canvasDom.getContext('2d');
 		
 		/**
-		 * 当前UI所属的ycc实例
-		 * @type {Ycc}
+		 * 当前绘图环境的宽
 		 */
-		this.yccInstance = yccInstance;
+		this.ctxWidth = canvasDom.width;
+
+		/**
+		 * 当前绘图环境的高
+		 */
+		this.ctxHeight = canvasDom.height;
 	};
 
 	
@@ -558,7 +618,7 @@
 		
 		this.ctx.save();
 		this.ctx.beginPath();
-		this.ctx.rect(0,0,this.yccInstance.ctxWidth,this.yccInstance.ctxHeight);
+		this.ctx.rect(0,0,this.ctxWidth,this.ctxHeight);
 		this.ctx.fill();
 		this.ctx.closePath();
 		this.ctx.restore();
@@ -648,6 +708,187 @@
 	
 	
 })(window.Ycc);;/**
+ * @file    Ycc.Layer.class.js
+ * @author  xiaohei
+ * @date    2017/10/23
+ * @description  Ycc.LayerManager.class文件
+ */
+
+
+(function (Ycc) {
+	
+	var layerIndex = 0;
+	
+	/**
+	 * 图层类。
+	 * 每新建一个图层，都会新建一个canvas元素。
+	 * 每个图层都跟这个canvas元素绑定。
+	 * @param yccInstance
+	 * @param config
+	 * @constructor
+	 */
+	function Layer(yccInstance,config){
+		var defaultConfig = {
+			name:"",
+			width:yccInstance.ctxWidth,
+			height:yccInstance.ctxHeight,
+			bgColor:"transparent",
+			show:true
+		};
+		// 浅拷贝
+		config = Ycc.utils.extend(defaultConfig,config);
+		
+		var canvasDom = document.createElement("canvas");
+		canvasDom.width = config.width;
+		canvasDom.height = config.height;
+		
+		
+		/**
+		 * ycc实例的引用
+		 */
+		this.yccInstance = yccInstance;
+		/**
+		 * 虚拟canvas元素的引用
+		 * @type {Element}
+		 */
+		this.canvasDom = canvasDom;
+		
+		/**
+		 * 当前图层的绘图环境
+		 * @type {CanvasRenderingContext2D}
+		 */
+		this.ctx = this.canvasDom.getContext('2d');
+		
+		/**
+		 * 图层id
+		 */
+		this.id = layerIndex++;
+
+		/**
+		 * 图层名称
+		 * @type {string}
+		 */
+		this.name = config.name?config.name:"图层"+this.id;
+		
+		/**
+		 * 图层宽
+		 * @type {number}
+		 */
+		this.width = config.width;
+		/**
+		 * 图层高
+		 * @type {number}
+		 */
+		this.height = config.height;
+		/**
+		 * 图层背景色
+		 * @type {string}
+		 */
+		this.bgColor = config.bgColor;
+		
+		/**
+		 * 图层是否显示
+		 */
+		this.show = config.show;
+		
+		/**
+		 * 实例的图形管理模块
+		 * @type {Ycc.UI}
+		 */
+		this.ui = Ycc.UI?new Ycc.UI(this.canvasDom):null;
+		
+		/**
+		 * 实例的事件管理模块
+		 * @type {Ycc.EventManager}
+		 */
+		this.eventManager = Ycc.EventManager?new Ycc.EventManager(this.canvasDom):null;
+	}
+	
+	// todo
+	Layer.prototype.init = function () {
+	
+	};
+	
+	/**
+	 * 清除图层
+	 */
+	Layer.prototype.clear = function () {
+		this.ctx.clearRect(0,0,this.width,this.height);
+	};
+	
+	
+	/**
+	 * 渲染图层至舞台
+	 */
+	Layer.prototype.renderToStage = function () {
+		if(this.show)
+			this.yccInstance.ctx.drawImage(this.canvasDom,0,0,this.width,this.height);
+	};
+	
+	
+	
+	
+	
+	/**
+	 * Ycc的图层管理类。每个图层管理器都与一个canvas舞台绑定。
+	 *
+	 * @constructor
+	 */
+	Ycc.LayerManager = function (yccInstance) {
+		
+		/**
+		 * ycc实例
+		 */
+		this.yccInstance = yccInstance;
+		
+	};
+	
+	Ycc.LayerManager.prototype.init = function () {
+	
+	};
+	
+	
+	/**
+	 * 新建图层
+	 * @param config
+	 */
+	Ycc.LayerManager.prototype.newLayer = function (config) {
+		var layer = new Layer(this.yccInstance,config);
+		this.yccInstance.layerList.push(layer);
+		return layer;
+	};
+	
+	/**
+	 * 删除图层。
+	 * @param layer
+	 */
+	Ycc.LayerManager.prototype.deleteLayer = function (layer) {
+		var layerList = this.yccInstance.layerList;
+		for(var i = 0;i<layerList.length;i++){
+			if(layerList[i].id === layer.id){
+				this.yccInstance.layerList.splice(i,1);
+				return layer;
+			}
+		}
+		return layer;
+	};
+	
+	
+	/**
+	 * 将可显示的所有图层渲染至舞台。
+	 */
+	Ycc.LayerManager.prototype.renderAllLayerToStage = function () {
+		for(var i=0;i<this.yccInstance.layerList.length;i++){
+			var layer = this.yccInstance.layerList[i];
+			// 该图层是否可见
+			if(layer.show)
+				this.yccInstance.ctx.drawImage(layer.canvasDom,0,0,layer.width,layer.height);
+		}
+	};
+	
+	
+	
+})(window.Ycc);;/**
  * @file    Ycc.EventManager.class.js
  * @author  xiaohei
  * @date    2017/9/30
@@ -704,15 +945,16 @@
 	 * Ycc实例的事件管理类。
 	 * 此类会托管原生的事件，剔除多余事件属性，保留必要属性。
 	 * 还会根据情况生成一些其他事件，方便使用。
-	 * @param yccInstance	{Ycc}
+	 * 每个EventManager都跟一个canvas元素绑定。
+	 * @param canvasDom	{HTMLElement}
 	 * @constructor
 	 */
-	Ycc.EventManager = function (yccInstance) {
+	Ycc.EventManager = function (canvasDom) {
 		/**
 		 * Ycc实例
-		 * @type {Ycc}
+		 * @type {HTMLElement}
 		 */
-		this.yccInstance = yccInstance;
+		this.canvasDom = canvasDom;
 		
 		/**
 		 * 鼠标是否按下的标识
@@ -744,7 +986,7 @@
 	Ycc.EventManager.prototype.init = function () {
 		var self = this;
 		// canvas元素
-		var dom = this.yccInstance.canvasDom;
+		var dom = this.canvasDom;
 
 		// 托管的事件类型
 		var proxyEventTypes = ["mousemove","mousedown","mouseup","click"];
@@ -817,8 +1059,8 @@
 			var yccEvent = new YccEvent();
 			yccEvent.type = _type;
 			yccEvent.originEvent = e;
-			yccEvent.x = e.clientX - eventManagerInstance.yccInstance.canvasDom.getBoundingClientRect().left;
-			yccEvent.y = e.clientY - eventManagerInstance.yccInstance.canvasDom.getBoundingClientRect().top;
+			yccEvent.x = e.clientX - eventManagerInstance.canvasDom.getBoundingClientRect().left;
+			yccEvent.y = e.clientY - eventManagerInstance.canvasDom.getBoundingClientRect().top;
 			
 			/**
 			 * 鼠标按下事件
