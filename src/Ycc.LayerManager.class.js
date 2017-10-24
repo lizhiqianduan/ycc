@@ -21,8 +21,8 @@
 	function Layer(yccInstance,config){
 		var defaultConfig = {
 			name:"",
-			width:800,
-			height:600,
+			width:yccInstance.ctxWidth,
+			height:yccInstance.ctxHeight,
 			bgColor:"transparent",
 			show:true
 		};
