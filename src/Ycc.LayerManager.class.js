@@ -24,7 +24,8 @@
 			width:yccInstance.ctxWidth,
 			height:yccInstance.ctxHeight,
 			bgColor:"transparent",
-			show:true
+			show:true,
+			enableEventManager:false
 		};
 		// 浅拷贝
 		config = Ycc.utils.extend(defaultConfig,config);
@@ -81,6 +82,12 @@
 		 * 图层是否显示
 		 */
 		this.show = config.show;
+		
+		/**
+		 * 是否监听舞台的事件。用于控制舞台事件是否广播至图层。默认关闭
+		 * @type {boolean}
+		 */
+		this.enableEventManager = config.enableEventManager;
 		
 		/**
 		 * 实例的图形管理模块
