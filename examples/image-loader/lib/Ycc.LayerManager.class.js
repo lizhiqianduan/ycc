@@ -17,10 +17,12 @@
 	 * @param yccInstance
 	 * @param config
 	 * @constructor
+	 * @private
 	 */
 	function Layer(yccInstance,config){
 		var defaultConfig = {
 			name:"",
+			type:"ui",
 			width:yccInstance.ctxWidth,
 			height:yccInstance.ctxHeight,
 			bgColor:"transparent",
@@ -59,6 +61,12 @@
 		 * 图层id
 		 */
 		this.id = layerIndex++;
+		
+		/**
+		 * 图层类型。`ui`表示用于绘图的图层。`tool`表示辅助的工具图层。
+		 * 默认为`ui`。
+		 */
+		this.type = config.type;
 
 		/**
 		 * 图层名称
@@ -135,7 +143,7 @@
 	
 	/**
 	 * Ycc的图层管理类。每个图层管理器都与一个canvas舞台绑定。
-	 *
+	 * @param yccInstance {Ycc}		ycc实例
 	 * @constructor
 	 */
 	Ycc.LayerManager = function (yccInstance) {
@@ -205,7 +213,7 @@
 			layer = null;
 		}
 		this.yccInstance.layerList = [];
-		this.yccInstance.layerList.push(layer);
+		this.yccInstance.layerList.push(resLayer);
 		return resLayer;
 	};
 	
