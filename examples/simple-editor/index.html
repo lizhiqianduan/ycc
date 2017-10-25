@@ -114,7 +114,7 @@
 
 		ycc = new Ycc(canvas);
 		layer = ycc.layerManager.newLayer({name:"试卷图层"});
-		
+		layer.enableEventManager = true;
 
 		layer.eventManager.onclick = function (e) {
 //			console.log(this,e);
