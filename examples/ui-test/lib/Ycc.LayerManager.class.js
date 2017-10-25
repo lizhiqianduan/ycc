@@ -24,7 +24,8 @@
 			width:yccInstance.ctxWidth,
 			height:yccInstance.ctxHeight,
 			bgColor:"transparent",
-			show:true
+			show:true,
+			enableEventManager:false
 		};
 		// 浅拷贝
 		config = Ycc.utils.extend(defaultConfig,config);
@@ -33,6 +34,10 @@
 		canvasDom.width = config.width;
 		canvasDom.height = config.height;
 		
+		/**
+		 * 初始化配置项
+		 */
+		this.config = config;
 		
 		/**
 		 * ycc实例的引用
@@ -83,6 +88,12 @@
 		this.show = config.show;
 		
 		/**
+		 * 是否监听舞台的事件。用于控制舞台事件是否广播至图层。默认关闭
+		 * @type {boolean}
+		 */
+		this.enableEventManager = config.enableEventManager;
+		
+		/**
 		 * 实例的图形管理模块
 		 * @type {Ycc.UI}
 		 */
@@ -93,11 +104,13 @@
 		 * @type {Ycc.EventManager}
 		 */
 		this.eventManager = Ycc.EventManager?new Ycc.EventManager(this.canvasDom):null;
+		
+		this.init();
 	}
 	
-	// todo
 	Layer.prototype.init = function () {
-	
+		this.ctx.fillStyle = this.config.bgColor;
+		this.ui.rect([0,0],[this.width,this.height],true);
 	};
 	
 	/**
@@ -177,6 +190,36 @@
 		}
 	};
 	
+	/**
+	 * 依次合并图层。队列后面的图层将被绘制在前面图层之上。
+	 * @param layerArray {Layer[]}	图层队列
+	 * @return {*}
+	 */
+	Ycc.LayerManager.prototype.mergeLayers = function (layerArray) {
+		var len = layerArray.length;
+		if(len===0) return null;
+		var resLayer = new Layer(this.yccInstance,{name:"合并图层"});
+		for(var i = 0;i<len;i++){
+			var layer = layerArray[i];
+			resLayer.ctx.drawImage(layer.canvasDom,0,0,layer.width,layer.height);
+			layer = null;
+		}
+		this.yccInstance.layerList = [];
+		this.yccInstance.layerList.push(layer);
+		return resLayer;
+	};
+	
+	/**
+	 * 只允许某一个图层接收舞台事件
+	 * @param layer	{Layer}		允许接收事件的图层
+	 */
+	Ycc.LayerManager.prototype.enableEventManagerOnly = function (layer) {
+		if(!layer) return false;
+		for(var i=0;i<this.yccInstance.layerList.length;i++) {
+			this.yccInstance.layerList[i].enableEventManager = false;
+		}
+		layer.enableEventManager = true;
+	};
 	
 	
 })(window.Ycc);

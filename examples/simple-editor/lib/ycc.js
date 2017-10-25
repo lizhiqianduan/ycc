@@ -744,6 +744,10 @@
 		canvasDom.width = config.width;
 		canvasDom.height = config.height;
 		
+		/**
+		 * 初始化配置项
+		 */
+		this.config = config;
 		
 		/**
 		 * ycc实例的引用
@@ -810,11 +814,13 @@
 		 * @type {Ycc.EventManager}
 		 */
 		this.eventManager = Ycc.EventManager?new Ycc.EventManager(this.canvasDom):null;
+		
+		this.init();
 	}
 	
-	// todo
 	Layer.prototype.init = function () {
-	
+		this.ctx.fillStyle = this.config.bgColor;
+		this.ui.rect([0,0],[this.width,this.height],true);
 	};
 	
 	/**
@@ -911,7 +917,19 @@
 		this.yccInstance.layerList = [];
 		this.yccInstance.layerList.push(layer);
 		return resLayer;
-	}
+	};
+	
+	/**
+	 * 只允许某一个图层接收舞台事件
+	 * @param layer	{Layer}		允许接收事件的图层
+	 */
+	Ycc.LayerManager.prototype.enableEventManagerOnly = function (layer) {
+		if(!layer) return false;
+		for(var i=0;i<this.yccInstance.layerList.length;i++) {
+			this.yccInstance.layerList[i].enableEventManager = false;
+		}
+		layer.enableEventManager = true;
+	};
 	
 	
 })(window.Ycc);;/**

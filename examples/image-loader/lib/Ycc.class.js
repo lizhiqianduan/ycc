@@ -98,6 +98,7 @@
 				this.stageEventManager[key] = function (e) {
 					for(var i=self.layerList.length-1;i>=0;i--){
 						var layer = self.layerList[i];
+						if(!layer.enableEventManager) continue;
 						layer.eventManager.mouseDownEvent = self.stageEventManager.mouseDownEvent;
 						layer.eventManager["on"+e.type](e);
 					}
