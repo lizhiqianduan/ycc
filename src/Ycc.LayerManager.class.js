@@ -177,6 +177,24 @@
 		}
 	};
 	
+	/**
+	 * 依次合并图层。队列后面的图层将被绘制在前面图层之上。
+	 * @param layerArray {Layer[]}	图层队列
+	 * @return {*}
+	 */
+	Ycc.LayerManager.prototype.mergeLayers = function (layerArray) {
+		var len = layerArray.length;
+		if(len===0) return null;
+		var resLayer = new Layer(this.yccInstance,{name:"合并图层"});
+		for(var i = 0;i<len;i++){
+			var layer = layerArray[i];
+			resLayer.ctx.drawImage(layer.canvasDom,0,0,layer.width,layer.height);
+			layer = null;
+		}
+		this.yccInstance.layerList = [];
+		this.yccInstance.layerList.push(layer);
+		return resLayer;
+	}
 	
 	
 })(window.Ycc);
