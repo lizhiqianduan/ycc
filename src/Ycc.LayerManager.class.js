@@ -25,7 +25,6 @@
 			type:"ui",
 			width:yccInstance.ctxWidth,
 			height:yccInstance.ctxHeight,
-			bgColor:"transparent",
 			show:true,
 			enableEventManager:false
 		};
@@ -113,12 +112,10 @@
 		 */
 		this.eventManager = Ycc.EventManager?new Ycc.EventManager(this.canvasDom):null;
 		
-		this.init();
 	}
 	
 	Layer.prototype.init = function () {
-		this.ctx.fillStyle = this.config.bgColor;
-		this.ui.rect([0,0],[this.width,this.height],true);
+	
 	};
 	
 	/**
