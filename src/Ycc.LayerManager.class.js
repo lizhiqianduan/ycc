@@ -26,7 +26,9 @@
 			width:yccInstance.ctxWidth,
 			height:yccInstance.ctxHeight,
 			show:true,
-			enableEventManager:false
+			enableEventManager:false,
+			enableFrameEvent:false,
+			update:function () {}
 		};
 		// 浅拷贝
 		config = Ycc.utils.extend(defaultConfig,config);
@@ -99,6 +101,20 @@
 		 * @type {boolean}
 		 */
 		this.enableEventManager = config.enableEventManager;
+		
+		/**
+		 * 是否接收每帧更新的通知
+		 * @type {boolean}
+		 */
+		this.enableFrameEvent = config.enableFrameEvent;
+		
+		/**
+		 * 若接收通知，此函数为接收通知的回调函数。当且仅当enableFrameEvent为true时生效
+		 * @type {function}
+		 */
+		this.update = config.update;
+		
+		
 		
 		/**
 		 * 实例的图形管理模块

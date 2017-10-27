@@ -25,9 +25,10 @@
 			type:"ui",
 			width:yccInstance.ctxWidth,
 			height:yccInstance.ctxHeight,
-			bgColor:"transparent",
 			show:true,
-			enableEventManager:false
+			enableEventManager:false,
+			enableFrameEvent:false,
+			update:function () {}
 		};
 		// 浅拷贝
 		config = Ycc.utils.extend(defaultConfig,config);
@@ -102,6 +103,20 @@
 		this.enableEventManager = config.enableEventManager;
 		
 		/**
+		 * 是否接收每帧更新的通知
+		 * @type {boolean}
+		 */
+		this.enableFrameEvent = config.enableFrameEvent;
+		
+		/**
+		 * 若接收通知，此函数为接收通知的回调函数。当且仅当enableFrameEvent为true时生效
+		 * @type {function}
+		 */
+		this.update = config.update;
+		
+		
+		
+		/**
 		 * 实例的图形管理模块
 		 * @type {Ycc.UI}
 		 */
@@ -113,12 +128,10 @@
 		 */
 		this.eventManager = Ycc.EventManager?new Ycc.EventManager(this.canvasDom):null;
 		
-		this.init();
 	}
 	
 	Layer.prototype.init = function () {
-		this.ctx.fillStyle = this.config.bgColor;
-		this.ui.rect([0,0],[this.width,this.height],true);
+	
 	};
 	
 	/**

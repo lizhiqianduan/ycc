@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>使用timer实现的动画</title>
+</head>
+<body>
+
+
+<canvas width="800" height="600" id="canvas"></canvas>
+
+</body>
+</html>
+
+<script src="http://localhost:9000/livereload.js"></script>
+
+<script src="./lib/Ycc.class.js"></script>
+<script src="./lib/Ycc.utils.js"></script>
+<script src="./lib/Ycc.Config.class.js"></script>
+<script src="./lib/Ycc.Loader.class.js"></script>
+<script src="./lib/Ycc.UI.class.js"></script>
+<script src="./lib/Ycc.LayerManager.class.js"></script>
+<script src="./lib/Ycc.PhotoManager.class.js"></script>
+<script src="./lib/Ycc.EventManager.class.js"></script>
+<script src="./lib/Ycc.Timer.class.js"></script>
+
+
+<script>
+	var canvas = document.getElementById("canvas");
+	ycc = new Ycc(canvas);
+	var layer = ycc.layerManager.newLayer({enableFrameEvent:true});
+
+	var i = 0;
+	layer.update = function () {
+		i++;
+		if(i===600) layer.enableFrameEvent = false;
+		layer.clear();
+		ycc.clearStage();
+		layer.ui.circle([i,i],20,true);
+		layer.renderToStage();
+	}
+
+</script>

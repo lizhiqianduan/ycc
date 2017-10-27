@@ -72,6 +72,10 @@
 		 */
 		this.stageEventManager = new Ycc.EventManager(this.stage);
 		
+		/**
+		 * 系统心跳定时器
+		 */
+		this.timer = Ycc.Timer?new Ycc.Timer(this):null;
 		
 		this.init();
 	};
@@ -80,6 +84,9 @@
 	 * 类初始化
 	 */
 	win.Ycc.prototype.init = function () {
+		
+		this.timer.start();
+		
 		var self = this;
 		// 填充背景
 		this.ctx.fillStyle = this.config.canvasBgColor;
