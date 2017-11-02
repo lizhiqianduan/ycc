@@ -23,6 +23,12 @@
 		var defaultConfig = {
 			name:"",
 			type:"ui",
+
+			// 图层在舞台的渲染位置
+			x:0,
+			y:0,
+			
+			// 图层的高宽
 			width:yccInstance.getStageWidth(),
 			height:yccInstance.getStageHeight(),
 			show:true,
@@ -74,6 +80,18 @@
 		 * @type {string}
 		 */
 		this.name = config.name?config.name:"图层"+this.id;
+		
+		/**
+		 * 图层位置的x坐标。默认与舞台左上角重合
+		 * @type {number}
+		 */
+		this.x = config.x;
+
+		/**
+		 * 图层位置的Y坐标。默认与舞台左上角重合
+		 * @type {number}
+		 */
+		this.y = config.y;
 		
 		/**
 		 * 图层宽
@@ -207,7 +225,7 @@
 			var layer = this.yccInstance.layerList[i];
 			// 该图层是否可见
 			if(layer.show)
-				this.yccInstance.ctx.drawImage(layer.canvasDom,0,0,layer.width,layer.height);
+				this.yccInstance.ctx.drawImage(layer.canvasDom,layer.x,layer.y,layer.width,layer.height);
 		}
 	};
 	
