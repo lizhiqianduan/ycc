@@ -50,10 +50,9 @@
 		this.layerList = [];
 
 		/**
-		 * 实例的配置管理模块
-		 * @type {Ycc.Config}
+		 * 实例的全局配置项
 		 */
-		this.config = new Ycc.Config(this,config);
+		this.config = config?config:{};
 		
 		/**
 		 * 实例的快照管理模块
@@ -73,32 +72,34 @@
 		this.stageEventManager = new Ycc.EventManager(this.stage);
 		
 		/**
-		 * 系统心跳定时器
+		 * 系统心跳管理器
 		 */
-		this.timer = Ycc.Timer?new Ycc.Timer(this):null;
+		this.ticker = Ycc.Ticker?new Ycc.Ticker(this):null;
 		
 		this.init();
+	};
+	
+	/**
+	 * 获取舞台的宽
+	 */
+	win.Ycc.prototype.getStageWidth = function () {
+		return this.stage.width;
+	};
+	
+	/**
+	 * 获取舞台的高
+	 */
+	win.Ycc.prototype.getStageHeight = function () {
+		return this.stage.height;
 	};
 	
 	/**
 	 * 类初始化
 	 */
 	win.Ycc.prototype.init = function () {
-		
-		this.timer.start();
-		
 		var self = this;
-		// 填充背景
-		this.ctx.fillStyle = this.config.canvasBgColor;
-		this.ctx.fillRect(0,0,this.ctxWidth,this.ctxHeight);
 		
-		// 使用ctxProps，初始化画布属性
-		for(var key in this.config.ctxProps){
-			this.ctx[key] = this.config.ctxProps[key];
-		}
-		
-		
-		// 将舞台的事件广播给所有的图层。注意，应倒序。
+		// 将舞台的事件广播给所有的图层。注意，新加图层层级最高，所以应倒序。
 		for(var key in this.stageEventManager){
 			if(key.indexOf("on")===0){
 				console.log(key);
@@ -118,7 +119,7 @@
 	 * 清除
 	 */
 	win.Ycc.prototype.clearStage = function () {
-		this.ctx.clearRect(0,0,this.ctxWidth,this.ctxHeight);
+		this.ctx.clearRect(0,0,this.getStageWidth(),this.getStageHeight());
 	};
 	
 
@@ -282,70 +283,6 @@
 })(Ycc);
 
 ;/**
- * @file    Ycc.Config.class.js
- * @author  xiaohei
- * @date    2017/10/9
- * @description  Ycc.Config.class文件。
- * 	Ycc实例的默认配置类。所有ycc实例都默认使用该配置类。
- *
- */
-
-
-
-(function (Ycc) {
-	
-	/**
-	 * Ycc的配置类
-	 * @param yccInstance	{Ycc}			ycc的引用
-	 * @param [config]		{Ycc.Config}	初始化时的配置项
-	 * @constructor
-	 */
-	Ycc.Config = function (yccInstance,config) {
-		
-		config = config?config:{};
-		
-		/**
-		 * ycc的引用
-		 * @type {Ycc}
-		 */
-		this.yccInstance = yccInstance;
-
-		/**
-		 * 画布属性的配置项，包含所有的画布属性。
-		 * 键为画布的属性名；值为画布属性值。供ycc.init()方法使用
-		 * @type {Object}
-		 */
-		this.ctxProps = new Object({
-			lineWidth:3,
-			strokeStyle:"red",
-			fillStyle:"red",
-			font:"32px arial"
-		});
-		
-		/**
-		 * canvas的背景色。默认为透明
-		 * @type {String}
-		 */
-		this.canvasBgColor = config.canvasBgColor||"transparent";
-		
-		/**
-		 * canvas的宽度
-		 */
-		this.width = config.width || 800;
-		this.height = config.height || 600;
-		
-		
-		// 可选config
-		if(config && config.ctxProps){
-			for(var key in this.ctxProps){
-				if(config.ctxProps[key])
-					this.ctxProps[key] = config.ctxProps[key];
-			}
-		}
-	};
-	
-	
-})(window.Ycc);;/**
  * @file 	ycc.ui.js
  * @author	xiaohei
  * @date	2016/4/1
@@ -740,8 +677,8 @@
 		var defaultConfig = {
 			name:"",
 			type:"ui",
-			width:yccInstance.ctxWidth,
-			height:yccInstance.ctxHeight,
+			width:yccInstance.getStageWidth(),
+			height:yccInstance.getStageHeight(),
 			show:true,
 			enableEventManager:false,
 			enableFrameEvent:false,
@@ -1226,7 +1163,7 @@
 	
 	/**
 	 * Ycc实例的快照管理类
-	 * @param yccInstance
+	 * @param yccInstance {Ycc}
 	 * @constructor
 	 */
 	Ycc.PhotoManager = function (yccInstance) {
@@ -1242,7 +1179,7 @@
 	 * 保存快照，即保存当前的原子图形渲染步骤
 	 */
 	Ycc.PhotoManager.prototype.takePhoto = function () {
-		this._photos.push(new Photo(this.ctx.getImageData(0,0,this.yccInstance.ctxWidth,this.yccInstance.ctxHeight)));
+		this._photos.push(new Photo(this.ctx.getImageData(0,0,this.yccInstance.getStageWidth(),this.yccInstance.getStageHeight())));
 		return this;
 	};
 	

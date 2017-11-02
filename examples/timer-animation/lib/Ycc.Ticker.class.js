@@ -1,8 +1,8 @@
 /**
- * @file    Ycc.Timer.class.js
+ * @file    Ycc.Ticker.class.js
  * @author  xiaohei
  * @date    2017/10/26
- * @description  Ycc.Timer.class文件
+ * @description  Ycc.Ticker.class文件
  */
 
 
@@ -11,11 +11,12 @@
 	
 	
 	/**
-	 * 定时器类
+	 * 系统心跳管理类。
+	 * 管理系统的心跳；自定义帧事件的广播；帧更新图层的更新等。
 	 * @param yccInstance
 	 * @constructor
 	 */
-	Ycc.Timer = function (yccInstance) {
+	Ycc.Ticker = function (yccInstance) {
 		/**
 		 * ycc实例的引用
 		 * @type {Ycc}
@@ -44,7 +45,8 @@
 		 * 默认帧率
 		 * @type {number}
 		 */
-		this.frameRate = 100;
+		this.frameRate = 60;
+		
 		
 		/**
 		 * 实时帧率
@@ -70,7 +72,7 @@
 	/**
 	 * 定时器开始
 	 */
-	Ycc.Timer.prototype.start = function () {
+	Ycc.Ticker.prototype.start = function () {
 		var self = this;
 		// 每帧理论的间隔时间
 		var frameDeltaTime = 1000/self.frameRate;
@@ -133,7 +135,7 @@
 	 * 给每帧添加自定义的监听函数
 	 * @param listener
 	 */
-	Ycc.Timer.prototype.addFrameListener = function (listener) {
+	Ycc.Ticker.prototype.addFrameListener = function (listener) {
 		this.frameListenerList.push(listener);
 	};
 	
@@ -141,7 +143,7 @@
 	/**
 	 * 执行所有自定义的帧监听函数
 	 */
-	Ycc.Timer.prototype.broadcastFrameEvent = function () {
+	Ycc.Ticker.prototype.broadcastFrameEvent = function () {
 		for(var i =0;i<this.frameListenerList.length;i++){
 			var listener = this.frameListenerList[i];
 			Ycc.utils.isFn(listener) && listener();
@@ -151,7 +153,7 @@
 	/**
 	 * 执行所有图层的监听函数
 	 */
-	Ycc.Timer.prototype.broadcastToLayer = function () {
+	Ycc.Ticker.prototype.broadcastToLayer = function () {
 		for(var i = 0;i<this.yccInstance.layerList.length;i++){
 			var layer = this.yccInstance.layerList[i];
 			layer.show && layer.enableFrameEvent && layer.update();

@@ -24,7 +24,7 @@
 	
 	/**
 	 * Ycc实例的快照管理类
-	 * @param yccInstance
+	 * @param yccInstance {Ycc}
 	 * @constructor
 	 */
 	Ycc.PhotoManager = function (yccInstance) {
@@ -40,7 +40,7 @@
 	 * 保存快照，即保存当前的原子图形渲染步骤
 	 */
 	Ycc.PhotoManager.prototype.takePhoto = function () {
-		this._photos.push(new Photo(this.ctx.getImageData(0,0,this.yccInstance.ctxWidth,this.yccInstance.ctxHeight)));
+		this._photos.push(new Photo(this.ctx.getImageData(0,0,this.yccInstance.getStageWidth(),this.yccInstance.getStageHeight())));
 		return this;
 	};
 	

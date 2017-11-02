@@ -50,10 +50,9 @@
 		this.layerList = [];
 
 		/**
-		 * 实例的配置管理模块
-		 * @type {Ycc.Config}
+		 * 实例的全局配置项
 		 */
-		this.config = new Ycc.Config(this,config);
+		this.config = config?config:{};
 		
 		/**
 		 * 实例的快照管理模块
@@ -73,32 +72,34 @@
 		this.stageEventManager = new Ycc.EventManager(this.stage);
 		
 		/**
-		 * 系统心跳定时器
+		 * 系统心跳管理器
 		 */
-		this.timer = Ycc.Timer?new Ycc.Timer(this):null;
+		this.ticker = Ycc.Ticker?new Ycc.Ticker(this):null;
 		
 		this.init();
+	};
+	
+	/**
+	 * 获取舞台的宽
+	 */
+	win.Ycc.prototype.getStageWidth = function () {
+		return this.stage.width;
+	};
+	
+	/**
+	 * 获取舞台的高
+	 */
+	win.Ycc.prototype.getStageHeight = function () {
+		return this.stage.height;
 	};
 	
 	/**
 	 * 类初始化
 	 */
 	win.Ycc.prototype.init = function () {
-		
-		this.timer.start();
-		
 		var self = this;
-		// 填充背景
-		this.ctx.fillStyle = this.config.canvasBgColor;
-		this.ctx.fillRect(0,0,this.ctxWidth,this.ctxHeight);
 		
-		// 使用ctxProps，初始化画布属性
-		for(var key in this.config.ctxProps){
-			this.ctx[key] = this.config.ctxProps[key];
-		}
-		
-		
-		// 将舞台的事件广播给所有的图层。注意，应倒序。
+		// 将舞台的事件广播给所有的图层。注意，新加图层层级最高，所以应倒序。
 		for(var key in this.stageEventManager){
 			if(key.indexOf("on")===0){
 				console.log(key);
@@ -118,7 +119,7 @@
 	 * 清除
 	 */
 	win.Ycc.prototype.clearStage = function () {
-		this.ctx.clearRect(0,0,this.ctxWidth,this.ctxHeight);
+		this.ctx.clearRect(0,0,this.getStageWidth(),this.getStageHeight());
 	};
 	
 

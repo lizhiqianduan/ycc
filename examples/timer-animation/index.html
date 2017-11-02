@@ -16,13 +16,12 @@
 
 <script src="./lib/Ycc.class.js"></script>
 <script src="./lib/Ycc.utils.js"></script>
-<script src="./lib/Ycc.Config.class.js"></script>
 <script src="./lib/Ycc.Loader.class.js"></script>
 <script src="./lib/Ycc.UI.class.js"></script>
 <script src="./lib/Ycc.LayerManager.class.js"></script>
 <script src="./lib/Ycc.PhotoManager.class.js"></script>
 <script src="./lib/Ycc.EventManager.class.js"></script>
-<script src="./lib/Ycc.Timer.class.js"></script>
+<script src="./lib/Ycc.Ticker.class.js"></script>
 
 
 <script>
@@ -31,8 +30,9 @@
 	var height = canvas.height;
 
 	ycc = new Ycc(canvas);
-	var layer = ycc.layerManager.newLayer({enableFrameEvent:true});
+	ycc.ticker.start();
 
+	var layer = ycc.layerManager.newLayer({enableFrameEvent:true});
 	var x = 0,y = 0;
 	var stepPx = 8;
 	var left = true;

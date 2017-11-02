@@ -23,8 +23,8 @@
 		var defaultConfig = {
 			name:"",
 			type:"ui",
-			width:yccInstance.ctxWidth,
-			height:yccInstance.ctxHeight,
+			width:yccInstance.getStageWidth(),
+			height:yccInstance.getStageHeight(),
 			show:true,
 			enableEventManager:false,
 			enableFrameEvent:false,
