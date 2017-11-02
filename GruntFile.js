@@ -54,7 +54,7 @@ module.exports = function(grunt){
 		}
 		
 		,clean:{
-			contents:["docs/*","build/*"]
+			contents:["docs/*","build/*","examples/*/lib/*"]
 		}
         
         ,watch:{

@@ -44,7 +44,8 @@
 		 * 默认帧率
 		 * @type {number}
 		 */
-		this.frameRate = 100;
+		this.frameRate = 60;
+		
 		
 		/**
 		 * 实时帧率
