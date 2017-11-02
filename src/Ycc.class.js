@@ -72,9 +72,9 @@
 		this.stageEventManager = new Ycc.EventManager(this.stage);
 		
 		/**
-		 * 系统心跳定时器
+		 * 系统心跳管理器
 		 */
-		this.timer = Ycc.Timer?new Ycc.Timer(this):null;
+		this.ticker = Ycc.Ticker?new Ycc.Ticker(this):null;
 		
 		this.init();
 	};
@@ -98,10 +98,8 @@
 	 */
 	win.Ycc.prototype.init = function () {
 		var self = this;
-
-		this.timer.start();
 		
-		// 将舞台的事件广播给所有的图层。注意，应倒序。
+		// 将舞台的事件广播给所有的图层。注意，新加图层层级最高，所以应倒序。
 		for(var key in this.stageEventManager){
 			if(key.indexOf("on")===0){
 				console.log(key);

@@ -1,8 +1,8 @@
 /**
- * @file    Ycc.Timer.class.js
+ * @file    Ycc.Ticker.class.js
  * @author  xiaohei
  * @date    2017/10/26
- * @description  Ycc.Timer.class文件
+ * @description  Ycc.Ticker.class文件
  */
 
 
@@ -11,11 +11,12 @@
 	
 	
 	/**
-	 * 定时器类
+	 * 系统心跳管理类。
+	 * 管理系统的心跳；自定义帧事件的广播；帧更新图层的更新等。
 	 * @param yccInstance
 	 * @constructor
 	 */
-	Ycc.Timer = function (yccInstance) {
+	Ycc.Ticker = function (yccInstance) {
 		/**
 		 * ycc实例的引用
 		 * @type {Ycc}
@@ -44,14 +45,14 @@
 		 * 默认帧率
 		 * @type {number}
 		 */
-		this.frameRate = 60;
+		this.defaultFrameRate = 60;
 		
 		
 		/**
 		 * 实时帧率
 		 * @type {number}
 		 */
-		this.realTimeFrameRate = this.frameRate;
+		this.realTimeFrameRate = this.defaultFrameRate;
 		
 		/**
 		 * 总帧数
@@ -70,11 +71,12 @@
 	
 	/**
 	 * 定时器开始
+	 * @param [frameRate] 心跳频率，即帧率
 	 */
-	Ycc.Timer.prototype.start = function () {
+	Ycc.Ticker.prototype.start = function (frameRate) {
 		var self = this;
 		// 每帧理论的间隔时间
-		var frameDeltaTime = 1000/self.frameRate;
+		var frameDeltaTime = 1000/(frameRate?frameRate:self.defaultFrameRate);
 		
 		var timer = window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame || window.oRequestAnimationFrame || window.msRequestAnimationFrame;
 		
@@ -108,7 +110,7 @@
 			var frameTime = self.frameAllCount * frameDeltaTime;
 
 			// 判断是否刷新帧 todo:耗时操作时的帧处理
-			if(tickTime>frameTime){
+			if(tickTime > frameTime){
 				// 总帧数加1
 				self.frameAllCount++;
 				// 设置实时帧率
@@ -134,7 +136,7 @@
 	 * 给每帧添加自定义的监听函数
 	 * @param listener
 	 */
-	Ycc.Timer.prototype.addFrameListener = function (listener) {
+	Ycc.Ticker.prototype.addFrameListener = function (listener) {
 		this.frameListenerList.push(listener);
 	};
 	
@@ -142,7 +144,7 @@
 	/**
 	 * 执行所有自定义的帧监听函数
 	 */
-	Ycc.Timer.prototype.broadcastFrameEvent = function () {
+	Ycc.Ticker.prototype.broadcastFrameEvent = function () {
 		for(var i =0;i<this.frameListenerList.length;i++){
 			var listener = this.frameListenerList[i];
 			Ycc.utils.isFn(listener) && listener();
@@ -152,7 +154,7 @@
 	/**
 	 * 执行所有图层的监听函数
 	 */
-	Ycc.Timer.prototype.broadcastToLayer = function () {
+	Ycc.Ticker.prototype.broadcastToLayer = function () {
 		for(var i = 0;i<this.yccInstance.layerList.length;i++){
 			var layer = this.yccInstance.layerList[i];
 			layer.show && layer.enableFrameEvent && layer.update();
