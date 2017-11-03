@@ -70,16 +70,23 @@
 		this.id = layerIndex++;
 		
 		/**
-		 * 图层类型。`ui`表示用于绘图的图层。`tool`表示辅助的工具图层。
+		 * 图层类型。
+		 * `ui`表示用于绘图的图层。`tool`表示辅助的工具图层。`text`表示文字图层。
 		 * 默认为`ui`。
 		 */
 		this.type = config.type;
+		
+		/**
+		 * 图层中的文字。仅当图层type为text时有值。
+		 * @type {string}
+		 */
+		this.textValue = "";
 
 		/**
 		 * 图层名称
 		 * @type {string}
 		 */
-		this.name = config.name?config.name:"图层"+this.id;
+		this.name = config.name?config.name:"图层_"+this.type+"_"+this.id;
 		
 		/**
 		 * 图层位置的x坐标。默认与舞台左上角重合
@@ -103,6 +110,7 @@
 		 * @type {number}
 		 */
 		this.height = config.height;
+		
 		/**
 		 * 图层背景色
 		 * @type {string}

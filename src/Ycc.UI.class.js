@@ -253,6 +253,40 @@
 		return this;
 	};
 	
+	
+	/**
+	 * 绘制多行文本
+	 */
+	Ycc.UI.prototype.multiLineText = function (content,option) {
+		var self = this;
+		var lines = content.split(/(?:\r\n|\r|\n)/);
+		var config = Ycc.utils.extend({
+			lineHeight:24,
+			fill:true,
+			color:"black",
+			rect:new Ycc.Math.Rect()
+		},option);
+		
+		for(var i = 0;i<lines.length;i++){
+			var line = lines[i];
+			var x = config.rect.x;
+			var y = config.rect.y + i*config.lineHeight;
+			this.ctx.save();
+			this.ctx.fillStyle = config.color;
+			this.ctx.strokeStyle = config.color;
+			this.text([x,y],line,config.fill);
+			this.ctx.restore();
+		}
+		return this;
+	};
+	
+	
+	
+	
+	
+	
+	
+	
 	/*******************************************************************************
 	 * 定义UI类的控制方法
 	 ******************************************************************************/
@@ -285,6 +319,8 @@
 		this.ctx.restore();
 		return this;
 	};
+	
+
 	
 	
 	
