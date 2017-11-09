@@ -257,10 +257,10 @@
 	
 	/**
 	 * 绘制多行文本
-	 * @param content	{string}		文本内容
 	 * @param option	{object}		配置项
+	 * @param option.content	{string}	内容
 	 * @param [option.color=black]	{string}	颜色
-	 * @param option.rect	{Ycc.Math.Rect}	文字的绘制区域
+	 * @param option.rect	{Ycc.Math.Rect}	文字的绘制区域。若超出长度，此区域会被修改
 	 * @param [option.wordBreak=break-all]	{string}	文字超出换行
 	 * <br>`break-all`		超出即换行
 	 * <br>`break-word`		在单词处换行
@@ -268,11 +268,12 @@
 	 * <br>默认为`no-break`
 	 * @return {Ycc.UI}
 	 */
-	Ycc.UI.prototype.multiLineText = function (content,option) {
+	Ycc.UI.prototype.multiLineText = function (option) {
 		var self = this;
-		var lines = content.split(/(?:\r\n|\r|\n)/);
+		var lines = option.content.split(/(?:\r\n|\r|\n)/);
 		
 		var config = Ycc.utils.extend({
+			content:"",
 			lineHeight:parseInt(this.ctx.font)*1.5,
 			fill:true,
 			color:this.ctx.fillStyle,
