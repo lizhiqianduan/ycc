@@ -256,27 +256,165 @@
 	
 	/**
 	 * 绘制多行文本
+	 * @param content	{string}		文本内容
+	 * @param option	{object}		配置项
+	 * @param [option.color=black]	{string}	颜色
+	 * @param option.rect	{Ycc.Math.Rect}	文字的绘制区域
+	 * @param [option.wordBreak=break-all]	{string}	文字超出换行
+	 * <br>`break-all`		超出即换行
+	 * <br>`break-word`		在单词处换行
+	 * <br>`no-break`		不换行，超出即隐藏
+	 * <br>默认为`no-break`
+	 * @return {Ycc.UI}
 	 */
 	Ycc.UI.prototype.multiLineText = function (content,option) {
 		var self = this;
 		var lines = content.split(/(?:\r\n|\r|\n)/);
+		
 		var config = Ycc.utils.extend({
 			lineHeight:24,
 			fill:true,
 			color:"black",
-			rect:new Ycc.Math.Rect()
+			rect:new Ycc.Math.Rect(),
+			wordBreak:"no-break"
 		},option);
 		
-		for(var i = 0;i<lines.length;i++){
-			var line = lines[i];
+		// 存储需要实时绘制的每行文字
+		var renderLines = getRenderLines();
+		
+		// 绘制
+		for(var i = 0;i<renderLines.length;i++){
 			var x = config.rect.x;
 			var y = config.rect.y + i*config.lineHeight;
 			this.ctx.save();
 			this.ctx.fillStyle = config.color;
 			this.ctx.strokeStyle = config.color;
-			this.text([x,y],line,config.fill);
+			this.text([x,y],renderLines[i],config.fill);
 			this.ctx.restore();
 		}
+		
+		
+		
+		
+		
+		
+		function getRenderLines(){
+			switch (config.wordBreak){
+				case "no-break":
+				case "break-all":
+					return getBreakAllRenderLines();
+					break;
+				case "break-word":
+					return getBreakWordRenderLines();
+					break;
+				default:
+					return getBreakAllRenderLines();
+			}
+			
+			/**
+			 * 获取break-all时的绘制文本行
+			 */
+			function getBreakAllRenderLines(){
+				var res = [];
+				for(var i = 0;i<lines.length;i++){
+					var line = lines[i];
+					var _lines = dealLine(line);
+					res = res.concat(_lines);
+				}
+				return res;
+				
+				/**
+				 * 递归处理单行超长的情况
+				 * @param line
+				 */
+				function dealLine(line){
+					var subLines = [];
+					var lineW = self.ctx.measureText(line).width;
+					// 若没有超长
+					if(lineW<=config.rect.width){
+						subLines.push(line);
+						return subLines;
+					}
+					
+					for(var j=0;j<line.length;j++){
+						var part = line.slice(0,j+1);
+						var partW = self.ctx.measureText(part).width;
+						if(partW>config.rect.width){
+							var subLine = line.slice(0,j-1);
+							subLines.push(subLine);
+							var restLine = line.slice(j-1);
+							// 递归处理剩下的字符串
+							subLines = subLines.concat(dealLine(restLine));
+							return subLines;
+						}
+					}
+				}
+			}
+			
+			/**
+			 * 获取break-word时的绘制文本行
+			 */
+			
+			function getBreakWordRenderLines(){
+				var res = [];
+				for(var i = 0;i<lines.length;i++){
+					var line = lines[i];
+					var _lines = dealLine(line);
+					res = res.concat(_lines);
+				}
+				return res;
+				
+				/**
+				 * 递归处理单行超长的情况
+				 * @param line
+				 */
+				function dealLine(line){
+					var subLines = [];
+					var lineW = self.ctx.measureText(line).width;
+					// 若没有超长
+					if(lineW<=config.rect.width){
+						subLines.push(line);
+						return subLines;
+					}
+					// 记录最后一次空格出现的位置
+					var spacePosition = 0;
+					for(var j=0;j<line.length;j++){
+						var part = line.slice(0,j+1);
+						var partW = self.ctx.measureText(part).width;
+						var curChar = line[j];
+						if(curChar===" ")
+							spacePosition = j;
+						if(partW>config.rect.width){
+							var subLine = "";
+							var restLine = "";
+							// 若当前字符为空格
+							if(curChar===" " || spacePosition===0){
+								subLine = line.slice(0,j);
+								subLines.push(subLine);
+								restLine = line.slice(j);
+								// 递归处理剩下的字符串
+								subLines = subLines.concat(dealLine(restLine));
+								return subLines;
+							}
+							
+							// 当前字符不为空格
+							subLine = line.slice(0,spacePosition);
+							subLines.push(subLine);
+							restLine = line.slice(spacePosition);
+							// 递归处理剩下的字符串
+							subLines = subLines.concat(dealLine(restLine));
+							return subLines;
+							
+						}
+					}
+				}
+			}
+		}
+		
+		
+		
+		
+		
 		return this;
 	};
 	
