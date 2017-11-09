@@ -59,6 +59,7 @@
 		 * 当前绘图环境的高
 		 */
 		this.ctxHeight = canvasDom.height;
+		
 	};
 
 	
@@ -272,20 +273,29 @@
 		var lines = content.split(/(?:\r\n|\r|\n)/);
 		
 		var config = Ycc.utils.extend({
-			lineHeight:24,
+			lineHeight:parseInt(this.ctx.font)*1.5,
 			fill:true,
-			color:"black",
+			color:this.ctx.fillStyle,
 			rect:new Ycc.Math.Rect(),
-			wordBreak:"no-break"
+			wordBreak:"no-break",
+			overflow:"auto"
 		},option);
+		
+		// 修改引用
+		option = config;
 		
 		// 存储需要实时绘制的每行文字
 		var renderLines = getRenderLines();
-		
+		if(config.overflow==="auto"){
+			config.rect.height = config.lineHeight*renderLines.length;
+		}
 		// 绘制
 		for(var i = 0;i<renderLines.length;i++){
 			var x = config.rect.x;
 			var y = config.rect.y + i*config.lineHeight;
+			if(y+config.lineHeight>config.rect.y+config.rect.height){
+				break;
+			}
 			this.ctx.save();
 			this.ctx.fillStyle = config.color;
 			this.ctx.strokeStyle = config.color;

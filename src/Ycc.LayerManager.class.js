@@ -34,15 +34,26 @@
 			show:true,
 			enableEventManager:false,
 			enableFrameEvent:false,
-			update:function () {}
+			update:function () {},
+			ctxConfig:{
+				font:"16px 微软雅黑",
+				textBaseline:"top",
+				fillStyle:"red",
+				strokeStyle:"blue"
+			}
 		};
-		// 浅拷贝
-		config = Ycc.utils.extend(defaultConfig,config);
+		// 深拷贝
+		config = Ycc.utils.extend(defaultConfig,config,true);
 		
 		var canvasDom = document.createElement("canvas");
 		canvasDom.width = config.width;
 		canvasDom.height = config.height;
 		
+		/**
+		 * 绘图环境的默认属性配置项
+		 * @type {ctxConfig|{}}
+		 */
+		this.ctxConfig = config.ctxConfig;
 		/**
 		 * 初始化配置项
 		 */
@@ -112,12 +123,6 @@
 		this.height = config.height;
 		
 		/**
-		 * 图层背景色
-		 * @type {string}
-		 */
-		this.bgColor = config.bgColor;
-		
-		/**
 		 * 图层是否显示
 		 */
 		this.show = config.show;
@@ -154,10 +159,15 @@
 		 */
 		this.eventManager = Ycc.EventManager?new Ycc.EventManager(this.canvasDom):null;
 		
+		this.init();
 	}
 	
 	Layer.prototype.init = function () {
-	
+		if(!this.ctxConfig || !Ycc.utils.isObj(this.ctxConfig))
+			return null;
+		for(var key in this.ctxConfig){
+			this.ctx[key] = this.ctxConfig[key];
+		}
 	};
 	
 	/**
