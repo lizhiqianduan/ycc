@@ -67,7 +67,7 @@
 	
 	
 	/*******************************************************************************
-	 * 定义UI类的基础图形
+	 * 定义UI类的基础图形，不带rect容器的图形
 	 ******************************************************************************/
 	/**
 	 * 文字
@@ -255,6 +255,12 @@
 	};
 	
 	
+	/*************************************************************
+	 * 带容器的UI。
+	 * 每个方法的名称前都以box开头。
+	 * 每个参数option在方法内部都会被修改，并且都会带有rect字段表示渲染区域。
+ 	 ************************************************************/
+	
 	/**
 	 * 绘制多行文本
 	 * @param option	{object}		配置项
@@ -268,22 +274,25 @@
 	 * <br>默认为`no-break`
 	 * @return {Ycc.UI}
 	 */
-	Ycc.UI.prototype.multiLineText = function (option) {
+	Ycc.UI.prototype.boxMultiLineText = function (option) {
 		var self = this;
 		var lines = option.content.split(/(?:\r\n|\r|\n)/);
 		
-		var config = Ycc.utils.extend({
+		option = Ycc.utils.extend({
 			content:"",
-			lineHeight:parseInt(this.ctx.font)*1.5,
+			lineHeight:parseInt(self.canvasDom._props.fontSize)*1.5,
 			fill:true,
 			color:this.ctx.fillStyle,
-			rect:new Ycc.Math.Rect(),
+			rect:new Ycc.Math.Rect(0,0,this.ctx.width,this.ctx.height),
 			wordBreak:"no-break",
 			overflow:"auto"
 		},option);
 		
 		// 修改引用
-		option = config;
+		var config = option;
+		this.ctx.save();
+		this.ctx.fillStyle = config.color;
+		this.ctx.strokeStyle = config.color;
 		
 		// 存储需要实时绘制的每行文字
 		var renderLines = getRenderLines();
@@ -297,18 +306,14 @@
 			if(y+config.lineHeight>config.rect.y+config.rect.height){
 				break;
 			}
-			this.ctx.save();
-			this.ctx.fillStyle = config.color;
-			this.ctx.strokeStyle = config.color;
 			this.text([x,y],renderLines[i],config.fill);
-			this.ctx.restore();
 		}
+		this.ctx.restore();
 		
 		
-		
-		
-		
-		
+		/**
+		 * 获取需要实际绘制的文本行数组
+		 */
 		function getRenderLines(){
 			switch (config.wordBreak){
 				case "no-break":
@@ -425,12 +430,51 @@
 		
 		
 		
-		
 		return this;
 	};
 	
 	
-	
+	/**
+	 * 绘制单行文本
+	 * @param option	{object}		配置项
+	 * @param option.content	{string}	内容
+	 * @param [option.color=black]	{string}	颜色
+	 * @param option.rect	{Ycc.Math.Rect}	文字的绘制区域。若超出长度，此区域会被修改
+	 * @param [option.wordBreak=break-all]	{string}	文字超出换行
+	 * <br>`break-all`		超出即换行
+	 * <br>`break-word`		在单词处换行
+	 * <br>`no-break`		不换行，超出即隐藏
+	 * <br>默认为`no-break`
+	 * @return {Ycc.UI}
+	 */
+	// todo:测试文字长度，超出隐藏
+	Ycc.UI.prototype.boxSingleLineText = function (option) {
+		var self = this;
+		// 字体大小
+		var fontSize = parseInt(self.canvasDom._props.fontSize);
+		option = Ycc.utils.extend({
+			content:"",
+			fill:true,
+			color:this.ctx.fillStyle,
+			rect:new Ycc.Math.Rect(0,0,this.ctx.width,fontSize),
+			xAlign:"left",
+			yAlign:"center",
+			overflow:"auto"
+		},option);
+		
+		var x = option.rect.x,y = option.rect.y;
+		
+		if(option.yAlign==="center"){
+			y = y+option.rect.height/2-fontSize/2;
+		}
+		this.ctx.save();
+		this.ctx.fillStyle = option.color;
+		this.ctx.strokeStyle = option.color;
+		this.text([x,y],option.content,option.fill);
+		this.ctx.restore();
+		
+		return this;
+	};
 	
 	
 	

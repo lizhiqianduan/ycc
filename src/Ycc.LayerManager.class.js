@@ -17,7 +17,7 @@
 	 * @param yccInstance
 	 * @param config
 	 * @constructor
-	 * @private
+	 * @global
 	 */
 	function Layer(yccInstance,config){
 		var defaultConfig = {
@@ -36,6 +36,11 @@
 			enableFrameEvent:false,
 			update:function () {},
 			ctxConfig:{
+				fontStyle:"normal",
+				fontVariant:"normal",
+				fontWeight:"normal",
+				fontSize:"16px",
+				fontFamily:"微软雅黑",
 				font:"16px 微软雅黑",
 				textBaseline:"top",
 				fillStyle:"red",
@@ -48,7 +53,6 @@
 		var canvasDom = document.createElement("canvas");
 		canvasDom.width = config.width;
 		canvasDom.height = config.height;
-		
 		/**
 		 * 绘图环境的默认属性配置项
 		 * @type {ctxConfig|{}}
@@ -68,6 +72,11 @@
 		 * @type {Element}
 		 */
 		this.canvasDom = canvasDom;
+		
+		/**
+		 * 画布属性的双向绑定
+		 */
+		this.canvasDom._props = {};
 		
 		/**
 		 * 当前图层的绘图环境
@@ -162,13 +171,55 @@
 		this.init();
 	}
 	
+	/**
+	 * 初始化
+	 * @return {null}
+	 */
 	Layer.prototype.init = function () {
+		var self = this;
+		// 初始化画布的属性
 		if(!this.ctxConfig || !Ycc.utils.isObj(this.ctxConfig))
 			return null;
-		for(var key in this.ctxConfig){
-			this.ctx[key] = this.ctxConfig[key];
+		// 设置画布的所有属性
+		self._setCtxProps();
+		
+		var ctxConfig = this.ctxConfig;
+		for(var key in ctxConfig){
+			if(!ctxConfig.hasOwnProperty(key)) continue;
+			Object.defineProperty(this.canvasDom._props,key,{
+				enumerable : true,
+				configurable : true,
+				set : (function(k){
+					return function (newValue) {
+						// 修改_props的属性后自动设置画布的属性
+						self.ctxConfig[k] = newValue;
+						self._setCtxProps();
+					};
+				})(key),
+				get:(function(k){
+					return function () {
+						return self.ctxConfig[k];
+					};
+				})(key)
+			})
+		}
+		
+		
+	};
+	
+	/**
+	 * 设置画布所有的属性
+	 */
+	Layer.prototype._setCtxProps = function () {
+		var self = this;
+		var ctxConfig = this.ctxConfig;
+		ctxConfig["font"] = [ctxConfig.fontStyle,ctxConfig.fontVariant,ctxConfig.fontWeight,ctxConfig.fontSize,ctxConfig.fontFamily].join(" ");
+		for(var key in self.ctxConfig){
+			if(!self.ctxConfig.hasOwnProperty(key)) continue;
+			self.ctx[key] = self.ctxConfig[key];
 		}
 	};
+	
 	
 	/**
 	 * 清除图层
