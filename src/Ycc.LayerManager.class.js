@@ -186,7 +186,7 @@
 		var ctxConfig = this.ctxConfig;
 		for(var key in ctxConfig){
 			if(!ctxConfig.hasOwnProperty(key)) continue;
-			Object.defineProperty(this.canvasDom._props,key,{
+			Object.defineProperty(this.ctx.canvas._props,key,{
 				enumerable : true,
 				configurable : true,
 				set : (function(k){

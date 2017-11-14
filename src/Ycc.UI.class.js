@@ -268,10 +268,13 @@
 	 * @param [option.color=black]	{string}	颜色
 	 * @param option.rect	{Ycc.Math.Rect}	文字的绘制区域。若超出长度，此区域会被修改
 	 * @param [option.wordBreak=break-all]	{string}	文字超出换行
-	 * <br>`break-all`		超出即换行
-	 * <br>`break-word`		在单词处换行
-	 * <br>`no-break`		不换行，超出即隐藏
-	 * <br>默认为`no-break`
+	 * 		<br>`break-all`		超出即换行
+	 * 		<br>`break-word`		在单词处换行
+	 * 		<br>`no-break`		不换行，超出即隐藏
+	 * 		<br>默认为`no-break`
+	 * @param option.overflow	{string}	垂直方向超出rect之后的显示方式
+	 * 		<br> `hidden` -- 直接隐藏
+	 * 		<br> `auto`	-- 修改rect大小，完全显示
 	 * @return {Ycc.UI}
 	 */
 	Ycc.UI.prototype.boxMultiLineText = function (option) {
@@ -280,7 +283,7 @@
 		
 		option = Ycc.utils.extend({
 			content:"",
-			lineHeight:parseInt(self.canvasDom._props.fontSize)*1.5,
+			lineHeight:parseInt(self.ctx.canvas._props.fontSize)*1.5,
 			fill:true,
 			color:this.ctx.fillStyle,
 			rect:new Ycc.Math.Rect(0,0,this.ctx.width,this.ctx.height),
@@ -438,20 +441,23 @@
 	 * 绘制单行文本
 	 * @param option	{object}		配置项
 	 * @param option.content	{string}	内容
+	 * @param option._displayContent	{string}	rect区域内显示的文本。私有属性，不可修改。
 	 * @param [option.color=black]	{string}	颜色
 	 * @param option.rect	{Ycc.Math.Rect}	文字的绘制区域。若超出长度，此区域会被修改
-	 * @param [option.wordBreak=break-all]	{string}	文字超出换行
-	 * <br>`break-all`		超出即换行
-	 * <br>`break-word`		在单词处换行
-	 * <br>`no-break`		不换行，超出即隐藏
-	 * <br>默认为`no-break`
+	 * @param option.overflow	{string}	水平方向超出rect之后的显示方式
+	 * 		<br> `hidden` -- 直接隐藏
+	 * 		<br> `auto`	-- 修改rect大小，完全显示
 	 * @return {Ycc.UI}
 	 */
-	// todo:测试文字长度，超出隐藏
 	Ycc.UI.prototype.boxSingleLineText = function (option) {
 		var self = this;
+		// 文字的绘制起点
+		var x,y;
 		// 字体大小
-		var fontSize = parseInt(self.canvasDom._props.fontSize);
+		var fontSize = parseInt(self.ctx.canvas._props.fontSize);
+		// 内容的长度
+		var contentWidth;
+
 		option = Ycc.utils.extend({
 			content:"",
 			fill:true,
@@ -459,21 +465,62 @@
 			rect:new Ycc.Math.Rect(0,0,this.ctx.width,fontSize),
 			xAlign:"left",
 			yAlign:"center",
-			overflow:"auto"
+			overflow:"auto",
+			
+			_displayContent:option.content
 		},option);
 		
-		var x = option.rect.x,y = option.rect.y;
 		
+		
+		x = option.rect.x;
+		y = option.rect.y;
+		contentWidth = this.ctx.measureText(option.content).width;
+		
+		if(fontSize>option.rect.height){
+			return console.warn("[Ycc warning] : ","行高不够，或者文字太大！",option);
+		}
+		// 上下居中
 		if(option.yAlign==="center"){
 			y = y+option.rect.height/2-fontSize/2;
 		}
+		// 长度超长时的处理
+		if(contentWidth>option.rect.width){
+			if(option.overflow === "hidden"){
+				option._displayContent = self._getMaxLenContent(option.content,option.rect.width);
+			}else if(option.overflow === "auto"){
+				option.rect.width = contentWidth;
+			}
+		}
+		
 		this.ctx.save();
 		this.ctx.fillStyle = option.color;
 		this.ctx.strokeStyle = option.color;
-		this.text([x,y],option.content,option.fill);
+		this.text([x,y],option._displayContent,option.fill);
 		this.ctx.restore();
 		
 		return this;
+	};
+	
+	/**
+	 * 给定宽度，获取能容纳的最长字符串
+	 * @param content {string}
+	 * @param width {number}
+	 * @return {string}
+	 * @private
+	 */
+	Ycc.UI.prototype._getMaxLenContent = function (content,width) {
+		var out = content;
+		var outW = 0;
+		
+		if(this.ctx.measureText(content).width<=width)
+			return content;
+		for(var i = 0;i<content.length;i++){
+			out = content.slice(0,i);
+			outW = this.ctx.measureText(out).width;
+			if(outW>width){
+				return content.slice(0,i-1);
+			}
+		}
 	};
 	
 	
