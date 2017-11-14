@@ -275,6 +275,7 @@
 	 * @param option.overflow	{string}	垂直方向超出rect之后的显示方式
 	 * 		<br> `hidden` -- 直接隐藏
 	 * 		<br> `auto`	-- 修改rect大小，完全显示
+	 * @param option._displayLines	{string[]}  显示在文本框中的文本行。私有属性，不允许修改。
 	 * @return {Ycc.UI}
 	 */
 	Ycc.UI.prototype.boxMultiLineText = function (option) {
@@ -288,7 +289,9 @@
 			color:this.ctx.fillStyle,
 			rect:new Ycc.Math.Rect(0,0,this.ctx.width,this.ctx.height),
 			wordBreak:"no-break",
-			overflow:"auto"
+			overflow:"auto",
+			
+			_displayLines:[]
 		},option);
 		
 		// 修改引用
@@ -299,6 +302,7 @@
 		
 		// 存储需要实时绘制的每行文字
 		var renderLines = getRenderLines();
+		option._displayLines = renderLines;
 		if(config.overflow==="auto"){
 			config.rect.height = config.lineHeight*renderLines.length;
 		}
@@ -312,7 +316,6 @@
 			this.text([x,y],renderLines[i],config.fill);
 		}
 		this.ctx.restore();
-		
 		
 		/**
 		 * 获取需要实际绘制的文本行数组
@@ -429,9 +432,6 @@
 				}
 			}
 		}
-		
-		
-		
 		
 		return this;
 	};
