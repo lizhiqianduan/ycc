@@ -3,6 +3,7 @@
  * @author  xiaohei
  * @date    2017/11/16
  * @description  Ycc.Layer.class文件
+ * @requires Ycc.Listener
  */
 
 
@@ -19,8 +20,11 @@
 	 * @param yccInstance	{Ycc} ycc实例
 	 * @param option		{object} 配置项
 	 * @constructor
+	 * @extends Ycc.Listener
 	 */
-	 Ycc.Layer = function(yccInstance,option){
+	Ycc.Layer = function(yccInstance,option){
+	 	Ycc.Listener.call(this);
+	 	
 		/**
 		 * 存储图层中的所有UI
 		 * @type {Ycc.UI[]}
@@ -167,22 +171,10 @@
 		 */
 		this.onFrameComing = function () {};
 		
-		
-		
-		/**
-		 * 实例的图形管理模块
-		 * @type {Ycc.UI}
-		 */
-		this.ui = Ycc.UI?new Ycc.UI(this.canvasDom):null;
-		
-		/**
-		 * 实例的事件管理模块
-		 * @type {Ycc.EventManager}
-		 */
-		this.eventManager = Ycc.EventManager?new Ycc.EventManager(this.canvasDom):null;
-		
 		this.init();
 	};
+	Ycc.Layer.prototype = new Ycc.Listener();
+	Ycc.Layer.prototype.constructor = Ycc.Layer;
 	
 	/**
 	 * 初始化
@@ -195,7 +187,8 @@
 			return null;
 		// 设置画布的所有属性
 		self._setCtxProps();
-		
+		self._initEvent();
+		//双向绑定ctx的属性
 		var ctxConfig = this.ctxConfig;
 		for(var key in ctxConfig){
 			if(!ctxConfig.hasOwnProperty(key)) continue;
@@ -217,6 +210,34 @@
 			})
 		}
 		
+		
+	};
+	
+	/**
+	 * 事件的初始化
+	 * @private
+	 * @todo 需要算法将图层事件分发至图层中的UI
+	 */
+	Ycc.Layer.prototype._initEvent = function () {
+		var self = this;
+		this.addListener("click",function (e) {
+			console.log("click",e,self);
+		});
+		// this.addListener("mousemove",function (e) {
+		// 	console.log("mousemove",e);
+		// });
+		// this.addListener("mousedown",function (e) {
+		// 	console.log("mousedown",e);
+		// });
+		// this.addListener("mouseup",function (e) {
+		// 	console.log("mouseup",e);
+		// });
+		// this.addListener("mouseenter",function (e) {
+		// 	console.log("mouseenter",e);
+		// });
+		// this.addListener("mouseout",function (e) {
+		// 	console.log("mouseout",e);
+		// });
 		
 	};
 	

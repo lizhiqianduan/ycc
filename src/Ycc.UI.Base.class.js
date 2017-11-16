@@ -13,8 +13,10 @@
 	/**
 	 * 所有UI类的基类
 	 * @constructor
+	 * @extends Ycc.Listener
 	 */
 	Ycc.UI.Base = function () {
+		Ycc.Listener.call(this);
 		
 		/**
 		 * UI的唯一ID
@@ -39,6 +41,10 @@
 		this.baseUI = null;
 		
 	};
+	
+	Ycc.UI.Base.prototype = new Ycc.Listener();
+	Ycc.UI.Base.prototype.constructor = Ycc.UI.Base;
+	
 	
 	/**
 	 * 在某个图层中初始化UI

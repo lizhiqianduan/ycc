@@ -13,6 +13,7 @@
 	/**
 	 * 多行文本UI
 	 * @constructor
+	 * @extends Ycc.UI.Base
 	 * @param option	{object}		配置项
 	 * @param option.content	{string}	内容
 	 * @param [option.color=black]	{string}	颜色
@@ -52,7 +53,7 @@
 		
 	};
 	Ycc.UI.MultiLineText.prototype = new Ycc.UI.Base();
-	
+	Ycc.UI.MultiLineText.prototype.constructor = Ycc.UI.MultiLineText;
 	/**
 	 * 渲染至ctx
 	 * @param ctx
