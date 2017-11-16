@@ -39,7 +39,7 @@
 		 * @type {number}
 		 */
 		this.y = 0;
-
+		
 		var len = arguments.length;
 		if(len===1){
 			this.x = dot.x;
@@ -48,8 +48,19 @@
 			this.x = arguments[0];
 			this.y = arguments[1];
 		}
-
+		
 	};
+	
+	/**
+	 * 点是否在某个区域内
+	 * @param rect	{Ycc.Math.Rect}	区域
+	 */
+	Ycc.Math.Dot.prototype.isInRect = function (rect) {
+		return this.x>=rect.x&&this.x<=rect.x+rect.width  && this.y>=rect.y && this.y<=rect.y+rect.height;
+	};
+	
+	
+	
 	
 	/**
 	 * 区域
@@ -112,9 +123,8 @@
 			this.width = arguments[2];
 			this.height = arguments[3];
 		}
-	}
+	};
 	
-	
-	
+
 	
 })(window.Ycc);
