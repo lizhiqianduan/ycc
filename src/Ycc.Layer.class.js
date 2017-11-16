@@ -17,10 +17,10 @@
 	 * 每新建一个图层，都会新建一个canvas元素。
 	 * 每个图层都跟这个canvas元素绑定。
 	 * @param yccInstance	{Ycc} ycc实例
-	 * @param config		{object} 配置项
+	 * @param option		{object} 配置项
 	 * @constructor
 	 */
-	 Ycc.Layer = function(yccInstance,config){
+	 Ycc.Layer = function(yccInstance,option){
 		/**
 		 * 存储图层中的所有UI
 		 * @type {Ycc.UI[]}
@@ -55,11 +55,17 @@
 			}
 		};
 		// 深拷贝
-		config = Ycc.utils.extend(defaultConfig,config,true);
+		var config = Ycc.utils.extend(defaultConfig,option,true);
 		
 		var canvasDom = document.createElement("canvas");
 		canvasDom.width = config.width;
 		canvasDom.height = config.height;
+		
+		 /**
+		  * 配置项
+		  */
+		this.option = config;
+
 		/**
 		 * 绘图环境的默认属性配置项
 		 * @type {ctxConfig|{}}

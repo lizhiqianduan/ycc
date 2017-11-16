@@ -84,7 +84,11 @@
 		 */
 		this.mouseMoving = false;
 		
-		
+		/**
+		 * 被托管的原生事件类型
+		 * @type {Array}
+		 */
+		this.proxyEventTypes = ["mousemove","mousedown","mouseup","click","mouseenter","mouseout"];
 		
 		
 		// 初始化
@@ -99,8 +103,7 @@
 		var dom = this.canvasDom;
 
 		// 托管的事件类型
-		var proxyEventTypes = ["mousemove","mousedown","mouseup","click"];
-		// var proxyEventTypes = ["mousedown"];
+		var proxyEventTypes = self.proxyEventTypes;
 		
 		for(var i = 0;i<proxyEventTypes.length;i++){
 			var type = proxyEventTypes[i];
@@ -133,6 +136,18 @@
 	 * @type {Function}
 	 */
 	Ycc.EventManager.prototype.onclick = function (e) {};
+	/**
+	 * 托管原生的鼠标移入
+	 * @param e {YccEvent}	ycc事件对象
+	 * @type {Function}
+	 */
+	Ycc.EventManager.prototype.onmouseenter = function (e) {};
+	/**
+	 * 托管原生的鼠标移除
+	 * @param e {YccEvent}	ycc事件对象
+	 * @type {Function}
+	 */
+	Ycc.EventManager.prototype.onmouseout = function (e) {};
 	
 	
 	// 由原生事件组合的自定义事件
@@ -228,7 +243,9 @@
 				return null;
 			}
 			
-
+			// 若没有特殊处理，默认直接触发托管的事件
+			Ycc.utils.isFn(eventManagerInstance["on"+_type])&&eventManagerInstance["on"+_type](yccEvent);
+			return null;
 			
 
 		};
