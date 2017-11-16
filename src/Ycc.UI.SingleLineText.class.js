@@ -16,7 +16,6 @@
 	 * @extends Ycc.UI.Base
 	 * @param option	{object}		配置项
 	 * @param option.content	{string}	内容
-	 * @param option._displayContent	{string}	rect区域内显示的文本。私有属性，不可修改。
 	 * @param [option.color=black]	{string}	颜色
 	 * @param option.rect	{Ycc.Math.Rect}	文字的绘制区域。若超出长度，此区域会被修改
 	 * @param option.overflow	{string}	水平方向超出rect之后的显示方式
