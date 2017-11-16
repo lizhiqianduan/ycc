@@ -194,7 +194,7 @@
 	Ycc.Ticker.prototype.broadcastToLayer = function () {
 		for(var i = 0;i<this.yccInstance.layerList.length;i++){
 			var layer = this.yccInstance.layerList[i];
-			layer.show && layer.enableFrameEvent && layer.update();
+			layer.show && layer.enableFrameEvent && layer.onFrameComing();
 		}
 	};
 	

@@ -16,8 +16,8 @@
 	 * 图层类。
 	 * 每新建一个图层，都会新建一个canvas元素。
 	 * 每个图层都跟这个canvas元素绑定。
-	 * @param yccInstance
-	 * @param config
+	 * @param yccInstance	{Ycc} ycc实例
+	 * @param config		{object} 配置项
 	 * @constructor
 	 */
 	 Ycc.Layer = function(yccInstance,config){
@@ -42,7 +42,6 @@
 			show:true,
 			enableEventManager:false,
 			enableFrameEvent:false,
-			update:function () {},
 			ctxConfig:{
 				fontStyle:"normal",
 				fontVariant:"normal",
@@ -160,7 +159,7 @@
 		 * 若接收通知，此函数为接收通知的回调函数。当且仅当enableFrameEvent为true时生效
 		 * @type {function}
 		 */
-		this.update = config.update;
+		this.onFrameComing = function () {};
 		
 		
 		
