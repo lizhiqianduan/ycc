@@ -122,10 +122,6 @@
 		this.ctx.clearRect(0,0,this.getStageWidth(),this.getStageHeight());
 	};
 	
-
-	
-	
-	
 })(window);;/**
  * @file        Ycc.utils.js
  * @author      xiaohei
@@ -157,7 +153,7 @@
     Ycc.utils.extend = function(target_obj, obj2,isDeepClone) {
         var newobj = {};
         if(isDeepClone)
-            obj2 = deepClone(obj2);
+            obj2 = Ycc.utils.deepClone(obj2);
         for (var i in target_obj) {
             newobj[i] = target_obj[i];
             if (obj2 && obj2[i] != null) {
@@ -343,6 +339,7 @@
 		 * 当前绘图环境的高
 		 */
 		this.ctxHeight = canvasDom.height;
+		
 	};
 
 	
@@ -350,7 +347,7 @@
 	
 	
 	/*******************************************************************************
-	 * 定义UI类的基础图形
+	 * 定义UI类的基础图形，不带rect容器的图形
 	 ******************************************************************************/
 	/**
 	 * 文字
@@ -537,6 +534,34 @@
 		return this;
 	};
 	
+	
+	
+	/**
+	 * 给定宽度，获取能容纳的最长字符串
+	 * @param content {string}
+	 * @param width {number}
+	 * @return {string}
+	 * @private
+	 */
+	Ycc.UI.prototype._getMaxLenContent = function (content,width) {
+		var out = content;
+		var outW = 0;
+		
+		if(this.ctx.measureText(content).width<=width)
+			return content;
+		for(var i = 0;i<content.length;i++){
+			out = content.slice(0,i);
+			outW = this.ctx.measureText(out).width;
+			if(outW>width){
+				return content.slice(0,i-1);
+			}
+		}
+	};
+	
+	
+	
+	
+	
 	/*******************************************************************************
 	 * 定义UI类的控制方法
 	 ******************************************************************************/
@@ -569,6 +594,8 @@
 		this.ctx.restore();
 		return this;
 	};
+	
+
 	
 	
 	
@@ -662,152 +689,6 @@
 
 (function (Ycc) {
 	
-	var layerIndex = 0;
-	
-	/**
-	 * 图层类。
-	 * 每新建一个图层，都会新建一个canvas元素。
-	 * 每个图层都跟这个canvas元素绑定。
-	 * @param yccInstance
-	 * @param config
-	 * @constructor
-	 * @private
-	 */
-	function Layer(yccInstance,config){
-		var defaultConfig = {
-			name:"",
-			type:"ui",
-			width:yccInstance.getStageWidth(),
-			height:yccInstance.getStageHeight(),
-			show:true,
-			enableEventManager:false,
-			enableFrameEvent:false,
-			update:function () {}
-		};
-		// 浅拷贝
-		config = Ycc.utils.extend(defaultConfig,config);
-		
-		var canvasDom = document.createElement("canvas");
-		canvasDom.width = config.width;
-		canvasDom.height = config.height;
-		
-		/**
-		 * 初始化配置项
-		 */
-		this.config = config;
-		
-		/**
-		 * ycc实例的引用
-		 */
-		this.yccInstance = yccInstance;
-		/**
-		 * 虚拟canvas元素的引用
-		 * @type {Element}
-		 */
-		this.canvasDom = canvasDom;
-		
-		/**
-		 * 当前图层的绘图环境
-		 * @type {CanvasRenderingContext2D}
-		 */
-		this.ctx = this.canvasDom.getContext('2d');
-		
-		/**
-		 * 图层id
-		 */
-		this.id = layerIndex++;
-		
-		/**
-		 * 图层类型。`ui`表示用于绘图的图层。`tool`表示辅助的工具图层。
-		 * 默认为`ui`。
-		 */
-		this.type = config.type;
-
-		/**
-		 * 图层名称
-		 * @type {string}
-		 */
-		this.name = config.name?config.name:"图层"+this.id;
-		
-		/**
-		 * 图层宽
-		 * @type {number}
-		 */
-		this.width = config.width;
-		/**
-		 * 图层高
-		 * @type {number}
-		 */
-		this.height = config.height;
-		/**
-		 * 图层背景色
-		 * @type {string}
-		 */
-		this.bgColor = config.bgColor;
-		
-		/**
-		 * 图层是否显示
-		 */
-		this.show = config.show;
-		
-		/**
-		 * 是否监听舞台的事件。用于控制舞台事件是否广播至图层。默认关闭
-		 * @type {boolean}
-		 */
-		this.enableEventManager = config.enableEventManager;
-		
-		/**
-		 * 是否接收每帧更新的通知
-		 * @type {boolean}
-		 */
-		this.enableFrameEvent = config.enableFrameEvent;
-		
-		/**
-		 * 若接收通知，此函数为接收通知的回调函数。当且仅当enableFrameEvent为true时生效
-		 * @type {function}
-		 */
-		this.update = config.update;
-		
-		
-		
-		/**
-		 * 实例的图形管理模块
-		 * @type {Ycc.UI}
-		 */
-		this.ui = Ycc.UI?new Ycc.UI(this.canvasDom):null;
-		
-		/**
-		 * 实例的事件管理模块
-		 * @type {Ycc.EventManager}
-		 */
-		this.eventManager = Ycc.EventManager?new Ycc.EventManager(this.canvasDom):null;
-		
-	}
-	
-	Layer.prototype.init = function () {
-	
-	};
-	
-	/**
-	 * 清除图层
-	 */
-	Layer.prototype.clear = function () {
-		this.ctx.clearRect(0,0,this.width,this.height);
-	};
-	
-	
-	/**
-	 * 渲染图层至舞台
-	 */
-	Layer.prototype.renderToStage = function () {
-		if(this.show)
-			this.yccInstance.ctx.drawImage(this.canvasDom,0,0,this.width,this.height);
-	};
-	
-	
-	
-	
-	
 	/**
 	 * Ycc的图层管理类。每个图层管理器都与一个canvas舞台绑定。
 	 * @param yccInstance {Ycc}		ycc实例
@@ -832,7 +713,7 @@
 	 * @param config
 	 */
 	Ycc.LayerManager.prototype.newLayer = function (config) {
-		var layer = new Layer(this.yccInstance,config);
+		var layer = new Ycc.Layer(this.yccInstance,config);
 		this.yccInstance.layerList.push(layer);
 		return layer;
 	};
@@ -861,7 +742,7 @@
 			var layer = this.yccInstance.layerList[i];
 			// 该图层是否可见
 			if(layer.show)
-				this.yccInstance.ctx.drawImage(layer.canvasDom,0,0,layer.width,layer.height);
+				this.yccInstance.ctx.drawImage(layer.canvasDom,layer.x,layer.y,layer.width,layer.height);
 		}
 	};
 	
@@ -873,7 +754,7 @@
 	Ycc.LayerManager.prototype.mergeLayers = function (layerArray) {
 		var len = layerArray.length;
 		if(len===0) return null;
-		var resLayer = new Layer(this.yccInstance,{name:"合并图层"});
+		var resLayer = new Ycc.Layer(this.yccInstance,{name:"合并图层"});
 		for(var i = 0;i<len;i++){
 			var layer = layerArray[i];
 			resLayer.ctx.drawImage(layer.canvasDom,0,0,layer.width,layer.height);
@@ -895,6 +776,7 @@
 		}
 		layer.enableEventManager = true;
 	};
+	
 	
 	
 })(window.Ycc);;/**

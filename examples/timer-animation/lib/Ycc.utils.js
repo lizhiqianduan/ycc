@@ -29,7 +29,7 @@
     Ycc.utils.extend = function(target_obj, obj2,isDeepClone) {
         var newobj = {};
         if(isDeepClone)
-            obj2 = deepClone(obj2);
+            obj2 = Ycc.utils.deepClone(obj2);
         for (var i in target_obj) {
             newobj[i] = target_obj[i];
             if (obj2 && obj2[i] != null) {

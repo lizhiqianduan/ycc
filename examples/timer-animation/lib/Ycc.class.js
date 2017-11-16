@@ -122,8 +122,4 @@
 		this.ctx.clearRect(0,0,this.getStageWidth(),this.getStageHeight());
 	};
 	
-
-	
-	
-	
 })(window);
