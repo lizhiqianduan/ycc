@@ -58,6 +58,27 @@
 	Ycc.UI.Base.prototype.render = function (ctx) {
 	
 	};
+	
+	/**
+	 * 给定宽度，获取能容纳的最长单行字符串
+	 * @param content	{string} 文本内容
+	 * @param width		{number} 指定宽度
+	 * @return {string}
+	 */
+	Ycc.UI.Base.prototype.getMaxContentInWidth = function (content, width) {
+		var out = content;
+		var outW = 0;
+		
+		if(this.ctx.measureText(content).width<=width)
+			return content;
+		for(var i = 0;i<content.length;i++){
+			out = content.slice(0,i);
+			outW = this.ctx.measureText(out).width;
+			if(outW>width){
+				return content.slice(0,i-1);
+			}
+		}
+	}
 
 
 

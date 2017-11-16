@@ -93,7 +93,7 @@
 		// 长度超长时的处理
 		if(contentWidth>option.rect.width){
 			if(option.overflow === "hidden"){
-				self.displayContent = self._getMaxLenContent(option.content,option.rect.width);
+				self.displayContent = self.getMaxContentInWidth(option.content,option.rect.width);
 			}else if(option.overflow === "auto"){
 				option.rect.width = contentWidth;
 			}
