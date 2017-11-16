@@ -20,6 +20,13 @@
 	 * @global
 	 */
 	function Layer(yccInstance,config){
+		/**
+		 * 存储图层中的所有UI
+		 * @type {Ycc.UI[]}
+		 * @private
+		 */
+		var uiList = [];
+		
 		var defaultConfig = {
 			name:"",
 			type:"ui",
@@ -237,7 +244,14 @@
 			this.yccInstance.ctx.drawImage(this.canvasDom,0,0,this.width,this.height);
 	};
 	
-	
+	/**
+	 * 添加一个UI图形至图层
+	 * @param ui {Ycc.UI}	UI图形
+	 */
+	Layer.prototype.addUI = function (ui) {
+		ui.init(this);
+		ui.render();
+	};
 	
 	
 	
