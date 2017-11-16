@@ -49,7 +49,8 @@ module.exports = function(grunt){
 			src: ['src/*.js'],
 			options: {
 				destination: 'docs',
-				private:true
+				private:true,
+				template:"./lib/jaguarjs-jsdoc"
 			}
 		}
 		
