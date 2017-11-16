@@ -34,7 +34,7 @@
 			content:"",
 			fontSize:"16px",
 			fill:true,
-			color:null,
+			color:"black",
 			rect:null,
 			xAlign:"left",
 			yAlign:"center",
