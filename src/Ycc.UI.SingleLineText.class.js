@@ -50,7 +50,7 @@
 		
 	};
 	Ycc.UI.SingleLineText.prototype = new Ycc.UI.Base();
-	
+	Ycc.UI.SingleLineText.prototype.constructor = Ycc.UI.SingleLineText;
 	/**
 	 * 渲染至ctx
 	 * @param ctx
