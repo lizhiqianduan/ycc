@@ -24,7 +24,7 @@
 	 * @return {Ycc.UI}
 	 */
 
-	Ycc.UI.SingleLineText = function (option) {
+	Ycc.UI.SingleLineText = function SingleLineText(option) {
 		Ycc.UI.Base.call(this);
 		
 		/**

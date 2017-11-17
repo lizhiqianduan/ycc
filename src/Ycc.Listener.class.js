@@ -39,7 +39,7 @@
 	 */
 	Ycc.Listener.prototype.triggerListener = function (type,data) {
 		
-		console.log(this.id,type,data);
+		// console.log(this.id,type,data);
 		
 		var ls = this.listeners[type];
 		if(!ls || !Ycc.utils.isArray(ls)) return;

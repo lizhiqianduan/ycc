@@ -25,12 +25,7 @@
 	Ycc.Layer = function(yccInstance,option){
 	 	Ycc.Listener.call(this);
 	 	
-		/**
-		 * 存储图层中的所有UI
-		 * @type {Ycc.UI[]}
-		 * @private
-		 */
-		var uiList = [];
+
 		
 		var defaultConfig = {
 			name:"",
@@ -70,6 +65,12 @@
 		  */
 		this.option = config;
 
+		/**
+		 * 存储图层中的所有UI
+		 * @type {Ycc.UI[]}
+		 */
+		this.uiList = [];
+		
 		/**
 		 * 绘图环境的默认属性配置项
 		 * @type {ctxConfig|{}}
@@ -221,7 +222,12 @@
 	Ycc.Layer.prototype._initEvent = function () {
 		var self = this;
 		this.addListener("click",function (e) {
-			console.log("click",e,self);
+			for(var i = 0;i<self.uiList.length;i++){
+				var ui = self.uiList[i];
+				var dot = new Ycc.Math.Dot(e.x,e.y);
+				if(dot.isInRect(ui.option.rect))
+					ui.triggerListener("click",e);
+			}
 		});
 		// this.addListener("mousemove",function (e) {
 		// 	console.log("mousemove",e);
@@ -278,6 +284,7 @@
 	Ycc.Layer.prototype.addUI = function (ui) {
 		ui.init(this);
 		ui.render();
+		this.uiList.push(ui);
 	};
 	
 	

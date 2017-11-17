@@ -27,7 +27,7 @@
 	 * 		<br> `hidden` -- 直接隐藏
 	 * 		<br> `auto`	-- 修改rect大小，完全显示
 	 */
-	Ycc.UI.MultiLineText = function (option) {
+	Ycc.UI.MultiLineText = function MultiLineText(option) {
 		Ycc.UI.Base.call(this);
 		
 		/**
