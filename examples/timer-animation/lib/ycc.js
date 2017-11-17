@@ -69,12 +69,18 @@
 		/**
 		 * 舞台的事件
 		 */
-		this.stageEventManager = new Ycc.EventManager(this.stage);
+		this.stageEventManager = new Ycc.EventManager(this);
 		
 		/**
 		 * 系统心跳管理器
 		 */
 		this.ticker = Ycc.Ticker?new Ycc.Ticker(this):null;
+		
+		/**
+		 * 基础绘图UI。这些绘图操作会直接作用于舞台。
+		 * @type {Ycc.UI}
+		 */
+		this.baseUI = new Ycc.UI(this.stage);
 		
 		this.init();
 	};
@@ -107,8 +113,7 @@
 					for(var i=self.layerList.length-1;i>=0;i--){
 						var layer = self.layerList[i];
 						if(!layer.enableEventManager) continue;
-						layer.eventManager.mouseDownEvent = self.stageEventManager.mouseDownEvent;
-						layer.eventManager["on"+e.type](e);
+						layer.triggerListener(e.type,e);
 					}
 				}
 			}
@@ -134,119 +139,86 @@
 (function(Ycc){
     Ycc.utils = {};
 
-    // 继承
-    Ycc.utils.inherits = function(FatherConstructor,SonConstructor){
-        var that = this;
-        function Son(){
-            if(that.isFn(SonConstructor)){
-                SonConstructor.call(this,"");
-            }
-            FatherConstructor.call(this,"");
-        }
 
-        Son.prototype = FatherConstructor.prototype;
-        return Son;
-    };
-
-
-    //合并两个对象
-    Ycc.utils.extend = function(target_obj, obj2,isDeepClone) {
+	/**
+     * 合并两个对象。只会保留targetObj中存在的字段。
+	 * @param targetObj    目标对象
+	 * @param obj2  待合入的对象
+	 * @param isDeepClone   是否进行深拷贝
+	 * @return {{}} 新的对象
+	 */
+    Ycc.utils.extend = function(targetObj, obj2,isDeepClone) {
         var newobj = {};
         if(isDeepClone)
             obj2 = Ycc.utils.deepClone(obj2);
-        for (var i in target_obj) {
-            newobj[i] = target_obj[i];
+        for (var i in targetObj) {
+			if(!targetObj.hasOwnProperty(i)) continue;
+            newobj[i] = targetObj[i];
             if (obj2 && obj2[i] != null) {
                 newobj[i] = obj2[i];
             }
         }
         return newobj;
     };
-
-    Ycc.utils.isString = function(str) {
+	
+	/**
+     * 判断字符串
+	 * @param str
+	 * @return {boolean}
+	 */
+	Ycc.utils.isString = function(str) {
         return typeof(str) === "string";
     };
-
+	
+	/**
+     * 判断数字
+	 * @param str
+	 * @return {boolean}
+	 */
     Ycc.utils.isNum = function(str) {
         return typeof(str) === "number";
 
     };
-
-    Ycc.utils.isObj = function(str) {
+	
+	/**
+     * 判断对象
+	 * @param str
+	 * @return {boolean}
+	 */
+	Ycc.utils.isObj = function(str) {
         return typeof(str) === "object";
     };
-
-    Ycc.utils.isFn = function(str) {
-        return typeof(str) == "function";
+	/**
+     * 判断函数
+	 * @param str
+	 * @return {boolean}
+	 */
+	Ycc.utils.isFn = function(str) {
+        return typeof(str) === "function";
     };
-
+	
+	/**
+     * 判断数组
+	 * @param str
+	 * @return {boolean}
+	 */
     Ycc.utils.isArray = function(str) {
         return Object.prototype.toString.call(str) === '[object Array]';
     };
-
-//检测是否是一个点[x,y]
-    Ycc.utils.isDot = function(dot) {
-        return this.isArray(dot) && dot.length==2;
-    };
-
-//检测是否是点列[[],[],...]
-    Ycc.utils.isDotList = function(Dots) {
-        if (Dots && (this.isArray(Dots))) {
-            for (var i = 0; i < Dots.length; i++) {
-                if (!this.isDot(Dots[i])) {
-                    return false;
-                }
-            }
-            return true;
-        } else {
-            return false;
-        }
-
-    };
-    /*
-     * 两点对应坐标相加,维数不限
-     * [1,2]+[3,4] = [4,6]
-     *
-     */
-    Ycc.utils.dotAddDot = function(dot1, dot2) {
-//        var isArray = this.isArray;
-        if (!this.isArray(dot1) || !this.isArray(dot2)) {
-            console.log('%c Function addOffset params wrong', 'color:red');
-            return dot1;
-        }
-        if (dot1.length !== dot2.length) {
-            console.log('%c Function addOffset params arr.length must equal offset.length', 'color:red');
-            return dot1;
-        }
-        var tp = dot1.slice(0);
-        for (var i = 0; i < dot2.length; i++) {
-            tp[i] += dot2[i];
-        }
-        return tp;
-    };
-
-    /*
-     * 将传入的点匹配到table表的坐标轴上
-     * @param dots : 二维数组点列[[],[]...]
-     * @param cellW : 单元格宽
-     * @param cellH : 单元格高
-     * return 一个新数组
-     * */
-    Ycc.utils.dotsMatchAxis = function(dots,cellW,cellH){
-        var dots1 = dots.slice(0);
-        for(var j = 0;j<dots.length;j++){
-            dots1[j][0] *=cellW;
-            dots1[j][1] *=cellH;
-        }
-        return dots1;
-    };
-
-    Ycc.utils.deepClone = function(arrOrObj){
+	
+	
+	/**
+     * 深拷贝某个对象或者数组
+	 * @param arrOrObj
+	 * @return {*}
+	 */
+	Ycc.utils.deepClone = function(arrOrObj){
         
         return (Ycc.utils.isArray(arrOrObj))? deepCopy(arrOrObj):deepExtend(arrOrObj);
         function deepExtend(obj){
             var tempObj = {};
             for(var i in obj){
+                if(!obj.hasOwnProperty(i)) continue;
                 tempObj[i] = obj[i];
                 if(Ycc.utils.isArray(obj[i])){
                     tempObj[i] = deepCopy(obj[i]);
@@ -833,19 +805,25 @@
 	
 	
 	/**
-	 * Ycc实例的事件管理类。
+	 * Ycc实例的事件管理类。只监听舞台的事件。
 	 * 此类会托管原生的事件，剔除多余事件属性，保留必要属性。
 	 * 还会根据情况生成一些其他事件，方便使用。
 	 * 每个EventManager都跟一个canvas元素绑定。
-	 * @param canvasDom	{HTMLElement}
+	 * @param yccInstance	{Ycc}
 	 * @constructor
 	 */
-	Ycc.EventManager = function (canvasDom) {
+	Ycc.EventManager = function (yccInstance) {
+		
 		/**
 		 * Ycc实例
+		 * @type {Ycc}
+		 */
+		this.yccInstance = yccInstance;
+		
+		/**
 		 * @type {HTMLElement}
 		 */
-		this.canvasDom = canvasDom;
+		this.canvasDom = yccInstance.stage;
 		
 		/**
 		 * 鼠标是否按下的标识
@@ -865,23 +843,28 @@
 		 */
 		this.mouseMoving = false;
 		
-		
+		/**
+		 * 被托管的原生事件类型
+		 * @type {Array}
+		 */
+		this.proxyEventTypes = ["mousemove","mousedown","mouseup","click","mouseenter","mouseout"];
 		
 		
 		// 初始化
 		this.init();
 	};
 	
-
 	
+	/**
+	 * 初始化
+	 */
 	Ycc.EventManager.prototype.init = function () {
 		var self = this;
 		// canvas元素
 		var dom = this.canvasDom;
 
 		// 托管的事件类型
-		var proxyEventTypes = ["mousemove","mousedown","mouseup","click"];
-		// var proxyEventTypes = ["mousedown"];
+		var proxyEventTypes = self.proxyEventTypes;
 		
 		for(var i = 0;i<proxyEventTypes.length;i++){
 			var type = proxyEventTypes[i];
@@ -889,50 +872,22 @@
 		}
 	};
 	
-	// 托管的原生事件
-	/**
-	 * 托管原生的鼠标移动事件
-	 * @param e {YccEvent}	ycc事件对象
-	 * @type {Function}
-	 */
-	Ycc.EventManager.prototype.onmousemove = function (e) {};
-	/**
-	 * 托管原生的鼠标按下事件
-	 * @param e {YccEvent}	ycc事件对象
-	 * @type {Function}
-	 */
-	Ycc.EventManager.prototype.onmousedown = function (e) {};
-	/**
-	 * 托管原生的鼠标抬起事件
-	 * @param e {YccEvent}	ycc事件对象
-	 * @type {Function}
-	 */
-	Ycc.EventManager.prototype.onmouseup = function (e) {};
-	/**
-	 * 托管原生的鼠标点击事件
-	 * @param e {YccEvent}	ycc事件对象
-	 * @type {Function}
-	 */
-	Ycc.EventManager.prototype.onclick = function (e) {};
 	
-	
-	// 由原生事件组合的自定义事件
 	/**
-	 * 自定义鼠标拖拽事件
-	 * @param e {YccEvent}	ycc事件对象
-	 * @type {Function}
+	 * 将事件分发至舞台中所有的图层
+	 * @param type
+	 * @param yccEvent
+	 * @todo 需要判断事件是否发生在图层之上，并不需要所有图层都分发
 	 */
-	Ycc.EventManager.prototype.ondragging = function (e) {};
-	/**
-	 * 自定义鼠标拖拽结束事件
-	 * @param e {YccEvent}	ycc事件对象
-	 * @type {Function}
-	 */
-	Ycc.EventManager.prototype.ondragend = function (e) {};
+	Ycc.EventManager.prototype.broadcastToLayer = function (type, yccEvent) {
+		var self = this.yccInstance;
+		for(var i=self.layerList.length-1;i>=0;i--){
+			var layer = self.layerList[i];
+			if(!layer.enableEventManager) continue;
+			layer.triggerListener(type,yccEvent);
+		}
+	};
 	
-
-
-
 	/**
 	 * 代理原生事件
 	 * @param _type					原生js的事件类型
@@ -962,7 +917,8 @@
 				eventManagerInstance.mouseMoving = false;
 				eventManagerInstance.mouseDownEvent = yccEvent;
 				// 触发ycc托管的事件
-				Ycc.utils.isFn(eventManagerInstance["on"+_type])&&eventManagerInstance["on"+_type](yccEvent);
+				// Ycc.utils.isFn(eventManagerInstance["on"+_type])&&eventManagerInstance["on"+_type](yccEvent);
+				eventManagerInstance.broadcastToLayer(_type,yccEvent);
 				return null;
 			}
 			
@@ -972,16 +928,18 @@
 			if(_type === "mousemove"){
 				// 修改标识
 				eventManagerInstance.mouseMoving = true;
-				eventManagerInstance["on"+_type](yccEvent);
+				// eventManagerInstance["on"+_type](yccEvent);
 				// 实测某些浏览器坐标位置没改变，移动事件仍然触发。此处进行过滤
 				if(eventManagerInstance.mouseDown && (yccEvent.x!==eventManagerInstance.mouseDownEvent.x ||  yccEvent.y!==eventManagerInstance.mouseDownEvent.y)){
 					yccEvent.type = "dragging";
 					yccEvent.originEvent = e;
 					// 触发ycc自定义事件
-					Ycc.utils.isFn(eventManagerInstance["on"+yccEvent.type])&&eventManagerInstance["on"+yccEvent.type](yccEvent);
+					// Ycc.utils.isFn(eventManagerInstance["on"+yccEvent.type])&&eventManagerInstance["on"+yccEvent.type](yccEvent);
+					eventManagerInstance.broadcastToLayer(_type,yccEvent);
 				}
 				// 触发ycc托管的事件
-				Ycc.utils.isFn(eventManagerInstance["on"+_type])&&eventManagerInstance["on"+_type](yccEvent);
+				// Ycc.utils.isFn(eventManagerInstance["on"+_type])&&eventManagerInstance["on"+_type](yccEvent);
+				eventManagerInstance.broadcastToLayer(_type,yccEvent);
 				return null;
 			}
 			
@@ -993,7 +951,8 @@
 				eventManagerInstance.mouseDown = false;
 				eventManagerInstance.mouseMoving = false;
 				// 触发ycc托管的事件
-				Ycc.utils.isFn(eventManagerInstance["on"+_type])&&eventManagerInstance["on"+_type](yccEvent);
+				// Ycc.utils.isFn(eventManagerInstance["on"+_type])&&eventManagerInstance["on"+_type](yccEvent);
+				eventManagerInstance.broadcastToLayer(_type,yccEvent);
 				return null;
 			}
 			
@@ -1005,11 +964,15 @@
 				eventManagerInstance.mouseDown = false;
 				eventManagerInstance.mouseMoving = false;
 				// 触发ycc托管的事件
-				Ycc.utils.isFn(eventManagerInstance["on"+_type])&&eventManagerInstance["on"+_type](yccEvent);
+				// Ycc.utils.isFn(eventManagerInstance["on"+_type])&&eventManagerInstance["on"+_type](yccEvent);
+				eventManagerInstance.broadcastToLayer(_type,yccEvent);
 				return null;
 			}
 			
-
+			// 若没有特殊处理，默认直接触发托管的事件
+			// Ycc.utils.isFn(eventManagerInstance["on"+_type])&&eventManagerInstance["on"+_type](yccEvent);
+			eventManagerInstance.broadcastToLayer(_type,yccEvent);
+			return null;
 			
 
 		};

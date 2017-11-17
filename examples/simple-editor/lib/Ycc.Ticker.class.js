@@ -45,14 +45,14 @@
 		 * 默认帧率
 		 * @type {number}
 		 */
-		this.frameRate = 60;
+		this.defaultFrameRate = 60;
 		
 		
 		/**
 		 * 实时帧率
 		 * @type {number}
 		 */
-		this.realTimeFrameRate = this.frameRate;
+		this.realTimeFrameRate = this.defaultFrameRate;
 		
 		/**
 		 * 总帧数
@@ -66,16 +66,37 @@
 		 */
 		this.timerTickCount = 0;
 		
+		/**
+		 * 定时器ID。用于停止心跳。
+		 * @type {number}
+		 * @private
+		 */
+		this._timerId = 0;
+		
+		/**
+		 * 心跳是否已经启动
+		 * @type {boolean}
+		 * @private
+		 */
+		this._isRunning = false;
 	};
 	
 	
 	/**
 	 * 定时器开始
+	 * @param [frameRate] 心跳频率，即帧率
 	 */
-	Ycc.Ticker.prototype.start = function () {
+	Ycc.Ticker.prototype.start = function (frameRate) {
 		var self = this;
+		if(self._isRunning){
+			return;
+		}
+		
+		// 正常设置的帧率
+		frameRate = frameRate?frameRate:self.defaultFrameRate;
+		
 		// 每帧理论的间隔时间
-		var frameDeltaTime = 1000/self.frameRate;
+		var frameDeltaTime = 1000/frameRate;
 		
 		var timer = window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame || window.oRequestAnimationFrame || window.msRequestAnimationFrame;
 		
@@ -90,7 +111,8 @@
 		// 启动时间
 		self.startTime = Date.now();
 		// 启动心跳
-		timer.call(window, cb);
+		self._timerId = timer.call(window, cb);
+		self._isRunning = true;
 		
 		
 		// 心跳回调函数。约60fps
@@ -108,8 +130,8 @@
 			// 所有帧刷新总时间，理论值
 			var frameTime = self.frameAllCount * frameDeltaTime;
 
-			// 判断是否刷新帧 todo:耗时操作时的帧处理
-			if(tickTime>frameTime){
+			// 判断是否刷新帧
+			if(tickTime > frameTime){
 				// 总帧数加1
 				self.frameAllCount++;
 				// 设置实时帧率
@@ -119,17 +141,33 @@
 				// 执行所有图层的帧监听函数
 				self.broadcastToLayer();
 				
-				console.log("总帧率： ",self.realTimeFrameRate);
-				
+				if((Date.now()-self.lastFrameTime)/frameDeltaTime>3){
+					console.warn("第%d帧：",self.frameAllCount);
+					console.warn("该帧率已低于正常值的1/3！若相邻帧持续警告，请适当降低帧率，或者提升刷新效率！","正常值：",frameRate," 当前值：",1000/(Date.now()-self.lastFrameTime));
+				}
 				// 设置上一帧刷新时间
 				self.lastFrameTime = Date.now();
 			}
 			
 			// 递归调用心跳函数
-			timer.call(window,cb);
+			self._timerId = timer.call(window,cb);
 		}
 		
 	};
+	
+	/**
+	 * 停止心跳
+	 */
+	Ycc.Ticker.prototype.stop = function () {
+		var stop = window.cancelAnimationFrame || window.webkitCancelAnimationFrame || window.mozCancelAnimationFrame || window.oCancelAnimationFrame;
+		stop || (stop = function (id) {
+			return window.clearTimeout(id);
+		});
+		stop(this._timerId);
+		this._isRunning = false;
+	};
+	
+	
 	
 	/**
 	 * 给每帧添加自定义的监听函数
@@ -156,7 +194,7 @@
 	Ycc.Ticker.prototype.broadcastToLayer = function () {
 		for(var i = 0;i<this.yccInstance.layerList.length;i++){
 			var layer = this.yccInstance.layerList[i];
-			layer.show && layer.enableFrameEvent && layer.update();
+			layer.show && layer.enableFrameEvent && layer.onFrameComing();
 		}
 	};
 	

@@ -1,1293 +1,1402 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Class: EventManager</title>
-
-    <script src="scripts/prettify/prettify.js"> </script>
-    <script src="scripts/prettify/lang-css.js"> </script>
+    <title>Class: EventManager</title>
+    
+    
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <script src="scripts/jquery.min.js"></script>
     <!--[if lt IE 9]>
       <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
     <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
-    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
-</head>
-
-<body>
-
-<div id="main">
-
-    <h1 class="page-title">Class: EventManager</h1>
-
+    <link type="text/css" rel="stylesheet" href="styles/bootstrap.min.css">
+    <link type="text/css" rel="stylesheet" href="styles/jaguar.css">
+    
+    
+    <script>
+    var config = {"monospaceLinks":false,"cleverLinks":false,"default":{"outputSourceFiles":true}};
+    </script>
     
 
+    
+</head>
+<body>
+<div id="wrap" class="clearfix">
+    
+<div class="navigation">
+    <h3 class="applicationName"><a href="index.html"></a></h3>
+
+    <div class="search">
+        <input id="search" type="text" class="form-control input-sm" placeholder="Search Documentations">
+    </div>
+    <ul class="list">
+    
+        <li class="item" data-name="win.Ycc">
+            <span class="title">
+                <a href="win.Ycc.html">win.Ycc</a>
+                
+            </span>
+            <ul class="members itemMembers">
+            
+            <span class="subtitle">Members</span>
+            
+                <li data-name="win.Ycc#baseUI"><a href="win.Ycc.html#baseUI">baseUI</a></li>
+            
+                <li data-name="win.Ycc#canvasDom"><a href="win.Ycc.html#canvasDom">canvasDom</a></li>
+            
+                <li data-name="win.Ycc#config"><a href="win.Ycc.html#config">config</a></li>
+            
+                <li data-name="win.Ycc#ctx"><a href="win.Ycc.html#ctx">ctx</a></li>
+            
+                <li data-name="win.Ycc#ctxHeight"><a href="win.Ycc.html#ctxHeight">ctxHeight</a></li>
+            
+                <li data-name="win.Ycc#ctxWidth"><a href="win.Ycc.html#ctxWidth">ctxWidth</a></li>
+            
+                <li data-name="win.Ycc#layerList"><a href="win.Ycc.html#layerList">layerList</a></li>
+            
+                <li data-name="win.Ycc#layerManager"><a href="win.Ycc.html#layerManager">layerManager</a></li>
+            
+                <li data-name="win.Ycc#photoManager"><a href="win.Ycc.html#photoManager">photoManager</a></li>
+            
+                <li data-name="win.Ycc#stage"><a href="win.Ycc.html#stage">stage</a></li>
+            
+                <li data-name="win.Ycc#stageEventManager"><a href="win.Ycc.html#stageEventManager">stageEventManager</a></li>
+            
+                <li data-name="win.Ycc#ticker"><a href="win.Ycc.html#ticker">ticker</a></li>
+            
+            </ul>
+            <ul class="typedefs itemMembers">
+            
+            </ul>
+            <ul class="methods itemMembers">
+            
+            <span class="subtitle">Methods</span>
+            
+                <li data-name="win.Ycc#clearStage"><a href="win.Ycc.html#clearStage">clearStage</a></li>
+            
+                <li data-name="win.Ycc#getStageHeight"><a href="win.Ycc.html#getStageHeight">getStageHeight</a></li>
+            
+                <li data-name="win.Ycc#getStageWidth"><a href="win.Ycc.html#getStageWidth">getStageWidth</a></li>
+            
+                <li data-name="win.Ycc#init"><a href="win.Ycc.html#init">init</a></li>
+            
+            </ul>
+            <ul class="events itemMembers">
+            
+            </ul>
+        </li>
+    
+        <li class="item" data-name="Ycc.EventManager">
+            <span class="title">
+                <a href="Ycc.EventManager.html">Ycc.EventManager</a>
+                
+            </span>
+            <ul class="members itemMembers">
+            
+            <span class="subtitle">Members</span>
+            
+                <li data-name="Ycc.EventManager#canvasDom"><a href="Ycc.EventManager.html#canvasDom">canvasDom</a></li>
+            
+                <li data-name="Ycc.EventManager#mouseDown"><a href="Ycc.EventManager.html#mouseDown">mouseDown</a></li>
+            
+                <li data-name="Ycc.EventManager#mouseDownEvent"><a href="Ycc.EventManager.html#mouseDownEvent">mouseDownEvent</a></li>
+            
+                <li data-name="Ycc.EventManager#mouseMoving"><a href="Ycc.EventManager.html#mouseMoving">mouseMoving</a></li>
+            
+                <li data-name="Ycc.EventManager#proxyEventTypes"><a href="Ycc.EventManager.html#proxyEventTypes">proxyEventTypes</a></li>
+            
+                <li data-name="Ycc.EventManager#yccInstance"><a href="Ycc.EventManager.html#yccInstance">yccInstance</a></li>
+            
+            </ul>
+            <ul class="typedefs itemMembers">
+            
+            </ul>
+            <ul class="methods itemMembers">
+            
+            <span class="subtitle">Methods</span>
+            
+                <li data-name="Ycc.EventManager#broadcastToLayer"><a href="Ycc.EventManager.html#broadcastToLayer">broadcastToLayer</a></li>
+            
+                <li data-name="Ycc.EventManager#init"><a href="Ycc.EventManager.html#init">init</a></li>
+            
+            </ul>
+            <ul class="events itemMembers">
+            
+            </ul>
+        </li>
+    
+        <li class="item" data-name="Ycc.Layer">
+            <span class="title">
+                <a href="Ycc.Layer.html">Ycc.Layer</a>
+                
+            </span>
+            <ul class="members itemMembers">
+            
+            <span class="subtitle">Members</span>
+            
+                <li data-name="Ycc.Layer#canvasDom"><a href="Ycc.Layer.html#canvasDom">canvasDom</a></li>
+            
+                <li data-name="Ycc.Layer#config"><a href="Ycc.Layer.html#config">config</a></li>
+            
+                <li data-name="Ycc.Layer#ctx"><a href="Ycc.Layer.html#ctx">ctx</a></li>
+            
+                <li data-name="Ycc.Layer#ctxConfig"><a href="Ycc.Layer.html#ctxConfig">ctxConfig</a></li>
+            
+                <li data-name="Ycc.Layer#enableEventManager"><a href="Ycc.Layer.html#enableEventManager">enableEventManager</a></li>
+            
+                <li data-name="Ycc.Layer#enableFrameEvent"><a href="Ycc.Layer.html#enableFrameEvent">enableFrameEvent</a></li>
+            
+                <li data-name="Ycc.Layer#height"><a href="Ycc.Layer.html#height">height</a></li>
+            
+                <li data-name="Ycc.Layer#id"><a href="Ycc.Layer.html#id">id</a></li>
+            
+                <li data-name="Ycc.Layer#listeners"><a href="Ycc.Layer.html#listeners">listeners</a></li>
+            
+                <li data-name="Ycc.Layer#name"><a href="Ycc.Layer.html#name">name</a></li>
+            
+                <li data-name="Ycc.Layer#option"><a href="Ycc.Layer.html#option">option</a></li>
+            
+                <li data-name="Ycc.Layer#show"><a href="Ycc.Layer.html#show">show</a></li>
+            
+                <li data-name="Ycc.Layer#textValue"><a href="Ycc.Layer.html#textValue">textValue</a></li>
+            
+                <li data-name="Ycc.Layer#type"><a href="Ycc.Layer.html#type">type</a></li>
+            
+                <li data-name="Ycc.Layer#uiList"><a href="Ycc.Layer.html#uiList">uiList</a></li>
+            
+                <li data-name="Ycc.Layer#width"><a href="Ycc.Layer.html#width">width</a></li>
+            
+                <li data-name="Ycc.Layer#x"><a href="Ycc.Layer.html#x">x</a></li>
+            
+                <li data-name="Ycc.Layer#y"><a href="Ycc.Layer.html#y">y</a></li>
+            
+                <li data-name="Ycc.Layer#yccInstance"><a href="Ycc.Layer.html#yccInstance">yccInstance</a></li>
+            
+            </ul>
+            <ul class="typedefs itemMembers">
+            
+            </ul>
+            <ul class="methods itemMembers">
+            
+            <span class="subtitle">Methods</span>
+            
+                <li data-name="Ycc.Layer#_initEvent"><a href="Ycc.Layer.html#_initEvent">_initEvent</a></li>
+            
+                <li data-name="Ycc.Layer#_setCtxProps"><a href="Ycc.Layer.html#_setCtxProps">_setCtxProps</a></li>
+            
+                <li data-name="Ycc.Layer#addListener"><a href="Ycc.Layer.html#addListener">addListener</a></li>
+            
+                <li data-name="Ycc.Layer#addUI"><a href="Ycc.Layer.html#addUI">addUI</a></li>
+            
+                <li data-name="Ycc.Layer#clear"><a href="Ycc.Layer.html#clear">clear</a></li>
+            
+                <li data-name="Ycc.Layer#init"><a href="Ycc.Layer.html#init">init</a></li>
+            
+                <li data-name="Ycc.Layer#onFrameComing"><a href="Ycc.Layer.html#onFrameComing">onFrameComing</a></li>
+            
+                <li data-name="Ycc.Layer#removeListener"><a href="Ycc.Layer.html#removeListener">removeListener</a></li>
+            
+                <li data-name="Ycc.Layer#renderToStage"><a href="Ycc.Layer.html#renderToStage">renderToStage</a></li>
+            
+                <li data-name="Ycc.Layer#triggerListener"><a href="Ycc.Layer.html#triggerListener">triggerListener</a></li>
+            
+            </ul>
+            <ul class="events itemMembers">
+            
+            </ul>
+        </li>
+    
+        <li class="item" data-name="Ycc.LayerManager">
+            <span class="title">
+                <a href="Ycc.LayerManager.html">Ycc.LayerManager</a>
+                
+            </span>
+            <ul class="members itemMembers">
+            
+            <span class="subtitle">Members</span>
+            
+                <li data-name="Ycc.LayerManager#yccInstance"><a href="Ycc.LayerManager.html#yccInstance">yccInstance</a></li>
+            
+            </ul>
+            <ul class="typedefs itemMembers">
+            
+            </ul>
+            <ul class="methods itemMembers">
+            
+            <span class="subtitle">Methods</span>
+            
+                <li data-name="Ycc.LayerManager#deleteLayer"><a href="Ycc.LayerManager.html#deleteLayer">deleteLayer</a></li>
+            
+                <li data-name="Ycc.LayerManager#enableEventManagerOnly"><a href="Ycc.LayerManager.html#enableEventManagerOnly">enableEventManagerOnly</a></li>
+            
+                <li data-name="Ycc.LayerManager#mergeLayers"><a href="Ycc.LayerManager.html#mergeLayers">mergeLayers</a></li>
+            
+                <li data-name="Ycc.LayerManager#newLayer"><a href="Ycc.LayerManager.html#newLayer">newLayer</a></li>
+            
+                <li data-name="Ycc.LayerManager#renderAllLayerToStage"><a href="Ycc.LayerManager.html#renderAllLayerToStage">renderAllLayerToStage</a></li>
+            
+            </ul>
+            <ul class="events itemMembers">
+            
+            </ul>
+        </li>
+    
+        <li class="item" data-name="Ycc.Loader">
+            <span class="title">
+                <a href="Ycc.Loader.html">Ycc.Loader</a>
+                
+            </span>
+            <ul class="members itemMembers">
+            
+            </ul>
+            <ul class="typedefs itemMembers">
+            
+            </ul>
+            <ul class="methods itemMembers">
+            
+            <span class="subtitle">Methods</span>
+            
+                <li data-name="Ycc.Loader#loadImage"><a href="Ycc.Loader.html#loadImage">loadImage</a></li>
+            
+                <li data-name="Ycc.Loader#loadImageList"><a href="Ycc.Loader.html#loadImageList">loadImageList</a></li>
+            
+            </ul>
+            <ul class="events itemMembers">
+            
+            </ul>
+        </li>
+    
+        <li class="item" data-name="Ycc.Math">
+            <span class="title">
+                <a href="Ycc.Math.html">Ycc.Math</a>
+                
+            </span>
+            <ul class="members itemMembers">
+            
+            </ul>
+            <ul class="typedefs itemMembers">
+            
+            </ul>
+            <ul class="methods itemMembers">
+            
+            </ul>
+            <ul class="events itemMembers">
+            
+            </ul>
+        </li>
+    
+        <li class="item" data-name="Ycc.Math.Dot">
+            <span class="title">
+                <a href="Ycc.Math.Dot.html">Ycc.Math.Dot</a>
+                
+            </span>
+            <ul class="members itemMembers">
+            
+            <span class="subtitle">Members</span>
+            
+                <li data-name="Ycc.Math.Dot#x"><a href="Ycc.Math.Dot.html#x">x</a></li>
+            
+                <li data-name="Ycc.Math.Dot#y"><a href="Ycc.Math.Dot.html#y">y</a></li>
+            
+            </ul>
+            <ul class="typedefs itemMembers">
+            
+            </ul>
+            <ul class="methods itemMembers">
+            
+            <span class="subtitle">Methods</span>
+            
+                <li data-name="Ycc.Math.Dot#isInRect"><a href="Ycc.Math.Dot.html#isInRect">isInRect</a></li>
+            
+            </ul>
+            <ul class="events itemMembers">
+            
+            </ul>
+        </li>
+    
+        <li class="item" data-name="Ycc.Math.Dot">
+            <span class="title">
+                <a href="Ycc.Math.Dot.html">Ycc.Math.Dot</a>
+                
+            </span>
+            <ul class="members itemMembers">
+            
+            <span class="subtitle">Members</span>
+            
+                <li data-name="Ycc.Math.Dot#x"><a href="Ycc.Math.Dot.html#x">x</a></li>
+            
+                <li data-name="Ycc.Math.Dot#y"><a href="Ycc.Math.Dot.html#y">y</a></li>
+            
+            </ul>
+            <ul class="typedefs itemMembers">
+            
+            </ul>
+            <ul class="methods itemMembers">
+            
+            <span class="subtitle">Methods</span>
+            
+                <li data-name="Ycc.Math.Dot#isInRect"><a href="Ycc.Math.Dot.html#isInRect">isInRect</a></li>
+            
+            </ul>
+            <ul class="events itemMembers">
+            
+            </ul>
+        </li>
+    
+        <li class="item" data-name="Ycc.Math.Rect">
+            <span class="title">
+                <a href="Ycc.Math.Rect.html">Ycc.Math.Rect</a>
+                
+            </span>
+            <ul class="members itemMembers">
+            
+            <span class="subtitle">Members</span>
+            
+                <li data-name="Ycc.Math.Rect#height"><a href="Ycc.Math.Rect.html#height">height</a></li>
+            
+                <li data-name="Ycc.Math.Rect#width"><a href="Ycc.Math.Rect.html#width">width</a></li>
+            
+                <li data-name="Ycc.Math.Rect#x"><a href="Ycc.Math.Rect.html#x">x</a></li>
+            
+                <li data-name="Ycc.Math.Rect#y"><a href="Ycc.Math.Rect.html#y">y</a></li>
+            
+            </ul>
+            <ul class="typedefs itemMembers">
+            
+            </ul>
+            <ul class="methods itemMembers">
+            
+            </ul>
+            <ul class="events itemMembers">
+            
+            </ul>
+        </li>
+    
+        <li class="item" data-name="Ycc.Math.Rect">
+            <span class="title">
+                <a href="Ycc.Math.Rect.html">Ycc.Math.Rect</a>
+                
+            </span>
+            <ul class="members itemMembers">
+            
+            <span class="subtitle">Members</span>
+            
+                <li data-name="Ycc.Math.Rect#height"><a href="Ycc.Math.Rect.html#height">height</a></li>
+            
+                <li data-name="Ycc.Math.Rect#width"><a href="Ycc.Math.Rect.html#width">width</a></li>
+            
+                <li data-name="Ycc.Math.Rect#x"><a href="Ycc.Math.Rect.html#x">x</a></li>
+            
+                <li data-name="Ycc.Math.Rect#y"><a href="Ycc.Math.Rect.html#y">y</a></li>
+            
+            </ul>
+            <ul class="typedefs itemMembers">
+            
+            </ul>
+            <ul class="methods itemMembers">
+            
+            </ul>
+            <ul class="events itemMembers">
+            
+            </ul>
+        </li>
+    
+        <li class="item" data-name="Ycc.Math.Rect">
+            <span class="title">
+                <a href="Ycc.Math.Rect.html">Ycc.Math.Rect</a>
+                
+            </span>
+            <ul class="members itemMembers">
+            
+            <span class="subtitle">Members</span>
+            
+                <li data-name="Ycc.Math.Rect#height"><a href="Ycc.Math.Rect.html#height">height</a></li>
+            
+                <li data-name="Ycc.Math.Rect#width"><a href="Ycc.Math.Rect.html#width">width</a></li>
+            
+                <li data-name="Ycc.Math.Rect#x"><a href="Ycc.Math.Rect.html#x">x</a></li>
+            
+                <li data-name="Ycc.Math.Rect#y"><a href="Ycc.Math.Rect.html#y">y</a></li>
+            
+            </ul>
+            <ul class="typedefs itemMembers">
+            
+            </ul>
+            <ul class="methods itemMembers">
+            
+            </ul>
+            <ul class="events itemMembers">
+            
+            </ul>
+        </li>
+    
+        <li class="item" data-name="Ycc.PhotoManager">
+            <span class="title">
+                <a href="Ycc.PhotoManager.html">Ycc.PhotoManager</a>
+                
+            </span>
+            <ul class="members itemMembers">
+            
+            </ul>
+            <ul class="typedefs itemMembers">
+            
+            </ul>
+            <ul class="methods itemMembers">
+            
+            <span class="subtitle">Methods</span>
+            
+                <li data-name="Ycc.PhotoManager#delPhotoById"><a href="Ycc.PhotoManager.html#delPhotoById">delPhotoById</a></li>
+            
+                <li data-name="Ycc.PhotoManager#getHistoryPhotos"><a href="Ycc.PhotoManager.html#getHistoryPhotos">getHistoryPhotos</a></li>
+            
+                <li data-name="Ycc.PhotoManager#showLastPhoto"><a href="Ycc.PhotoManager.html#showLastPhoto">showLastPhoto</a></li>
+            
+                <li data-name="Ycc.PhotoManager#showPhoto"><a href="Ycc.PhotoManager.html#showPhoto">showPhoto</a></li>
+            
+                <li data-name="Ycc.PhotoManager#takePhoto"><a href="Ycc.PhotoManager.html#takePhoto">takePhoto</a></li>
+            
+            </ul>
+            <ul class="events itemMembers">
+            
+            </ul>
+        </li>
+    
+        <li class="item" data-name="Ycc.Ticker">
+            <span class="title">
+                <a href="Ycc.Ticker.html">Ycc.Ticker</a>
+                
+            </span>
+            <ul class="members itemMembers">
+            
+            <span class="subtitle">Members</span>
+            
+                <li data-name="Ycc.Ticker#_isRunning"><a href="Ycc.Ticker.html#_isRunning">_isRunning</a></li>
+            
+                <li data-name="Ycc.Ticker#_timerId"><a href="Ycc.Ticker.html#_timerId">_timerId</a></li>
+            
+                <li data-name="Ycc.Ticker#defaultFrameRate"><a href="Ycc.Ticker.html#defaultFrameRate">defaultFrameRate</a></li>
+            
+                <li data-name="Ycc.Ticker#frameAllCount"><a href="Ycc.Ticker.html#frameAllCount">frameAllCount</a></li>
+            
+                <li data-name="Ycc.Ticker#frameListenerList"><a href="Ycc.Ticker.html#frameListenerList">frameListenerList</a></li>
+            
+                <li data-name="Ycc.Ticker#lastFrameTime"><a href="Ycc.Ticker.html#lastFrameTime">lastFrameTime</a></li>
+            
+                <li data-name="Ycc.Ticker#realTimeFrameRate"><a href="Ycc.Ticker.html#realTimeFrameRate">realTimeFrameRate</a></li>
+            
+                <li data-name="Ycc.Ticker#startTime"><a href="Ycc.Ticker.html#startTime">startTime</a></li>
+            
+                <li data-name="Ycc.Ticker#timerTickCount"><a href="Ycc.Ticker.html#timerTickCount">timerTickCount</a></li>
+            
+                <li data-name="Ycc.Ticker#yccInstance"><a href="Ycc.Ticker.html#yccInstance">yccInstance</a></li>
+            
+            </ul>
+            <ul class="typedefs itemMembers">
+            
+            </ul>
+            <ul class="methods itemMembers">
+            
+            <span class="subtitle">Methods</span>
+            
+                <li data-name="Ycc.Ticker#addFrameListener"><a href="Ycc.Ticker.html#addFrameListener">addFrameListener</a></li>
+            
+                <li data-name="Ycc.Ticker#broadcastFrameEvent"><a href="Ycc.Ticker.html#broadcastFrameEvent">broadcastFrameEvent</a></li>
+            
+                <li data-name="Ycc.Ticker#broadcastToLayer"><a href="Ycc.Ticker.html#broadcastToLayer">broadcastToLayer</a></li>
+            
+                <li data-name="Ycc.Ticker#start"><a href="Ycc.Ticker.html#start">start</a></li>
+            
+                <li data-name="Ycc.Ticker#stop"><a href="Ycc.Ticker.html#stop">stop</a></li>
+            
+            </ul>
+            <ul class="events itemMembers">
+            
+            </ul>
+        </li>
+    
+        <li class="item" data-name="Ycc.UI">
+            <span class="title">
+                <a href="Ycc.UI.html">Ycc.UI</a>
+                
+            </span>
+            <ul class="members itemMembers">
+            
+            <span class="subtitle">Members</span>
+            
+                <li data-name="Ycc.UI#_photos"><a href="Ycc.UI.html#_photos">_photos</a></li>
+            
+                <li data-name="Ycc.UI#ctx"><a href="Ycc.UI.html#ctx">ctx</a></li>
+            
+                <li data-name="Ycc.UI#ctxHeight"><a href="Ycc.UI.html#ctxHeight">ctxHeight</a></li>
+            
+                <li data-name="Ycc.UI#ctxWidth"><a href="Ycc.UI.html#ctxWidth">ctxWidth</a></li>
+            
+            </ul>
+            <ul class="typedefs itemMembers">
+            
+            </ul>
+            <ul class="methods itemMembers">
+            
+            <span class="subtitle">Methods</span>
+            
+                <li data-name="Ycc.UI#_getMaxLenContent"><a href="Ycc.UI.html#_getMaxLenContent">_getMaxLenContent</a></li>
+            
+                <li data-name="Ycc.UI#circle"><a href="Ycc.UI.html#circle">circle</a></li>
+            
+                <li data-name="Ycc.UI#circleArc"><a href="Ycc.UI.html#circleArc">circleArc</a></li>
+            
+                <li data-name="Ycc.UI#clear"><a href="Ycc.UI.html#clear">clear</a></li>
+            
+                <li data-name="Ycc.UI#ellipse"><a href="Ycc.UI.html#ellipse">ellipse</a></li>
+            
+                <li data-name="Ycc.UI#foldLine"><a href="Ycc.UI.html#foldLine">foldLine</a></li>
+            
+                <li data-name="Ycc.UI#image"><a href="Ycc.UI.html#image">image</a></li>
+            
+                <li data-name="Ycc.UI#line"><a href="Ycc.UI.html#line">line</a></li>
+            
+                <li data-name="Ycc.UI#rect"><a href="Ycc.UI.html#rect">rect</a></li>
+            
+                <li data-name="Ycc.UI#scale"><a href="Ycc.UI.html#scale">scale</a></li>
+            
+                <li data-name="Ycc.UI#sector"><a href="Ycc.UI.html#sector">sector</a></li>
+            
+                <li data-name="Ycc.UI#text"><a href="Ycc.UI.html#text">text</a></li>
+            
+            </ul>
+            <ul class="events itemMembers">
+            
+            </ul>
+        </li>
+    
+        <li class="item" data-name="Ycc.UI.Base">
+            <span class="title">
+                <a href="Ycc.UI.Base.html">Ycc.UI.Base</a>
+                
+            </span>
+            <ul class="members itemMembers">
+            
+            <span class="subtitle">Members</span>
+            
+                <li data-name="Ycc.UI.Base#baseUI"><a href="Ycc.UI.Base.html#baseUI">baseUI</a></li>
+            
+                <li data-name="Ycc.UI.Base#ctx"><a href="Ycc.UI.Base.html#ctx">ctx</a></li>
+            
+                <li data-name="Ycc.UI.Base#listeners"><a href="Ycc.UI.Base.html#listeners">listeners</a></li>
+            
+                <li data-name="Ycc.UI.Base#rect"><a href="Ycc.UI.Base.html#rect">rect</a></li>
+            
+                <li data-name="Ycc.UI.Base#uid"><a href="Ycc.UI.Base.html#uid">uid</a></li>
+            
+            </ul>
+            <ul class="typedefs itemMembers">
+            
+            </ul>
+            <ul class="methods itemMembers">
+            
+            <span class="subtitle">Methods</span>
+            
+                <li data-name="Ycc.UI.Base#addListener"><a href="Ycc.UI.Base.html#addListener">addListener</a></li>
+            
+                <li data-name="Ycc.UI.Base#getMaxContentInWidth"><a href="Ycc.UI.Base.html#getMaxContentInWidth">getMaxContentInWidth</a></li>
+            
+                <li data-name="Ycc.UI.Base#init"><a href="Ycc.UI.Base.html#init">init</a></li>
+            
+                <li data-name="Ycc.UI.Base#removeListener"><a href="Ycc.UI.Base.html#removeListener">removeListener</a></li>
+            
+                <li data-name="Ycc.UI.Base#render"><a href="Ycc.UI.Base.html#render">render</a></li>
+            
+                <li data-name="Ycc.UI.Base#triggerListener"><a href="Ycc.UI.Base.html#triggerListener">triggerListener</a></li>
+            
+            </ul>
+            <ul class="events itemMembers">
+            
+            </ul>
+        </li>
+    
+        <li class="item" data-name="Ycc.UI.MultiLineText">
+            <span class="title">
+                <a href="Ycc.UI.MultiLineText.html">Ycc.UI.MultiLineText</a>
+                
+            </span>
+            <ul class="members itemMembers">
+            
+            <span class="subtitle">Members</span>
+            
+                <li data-name="Ycc.UI.MultiLineText#baseUI"><a href="Ycc.UI.MultiLineText.html#baseUI">baseUI</a></li>
+            
+                <li data-name="Ycc.UI.MultiLineText#ctx"><a href="Ycc.UI.MultiLineText.html#ctx">ctx</a></li>
+            
+                <li data-name="Ycc.UI.MultiLineText#displayLines"><a href="Ycc.UI.MultiLineText.html#displayLines">displayLines</a></li>
+            
+                <li data-name="Ycc.UI.MultiLineText#listeners"><a href="Ycc.UI.MultiLineText.html#listeners">listeners</a></li>
+            
+                <li data-name="Ycc.UI.MultiLineText#option"><a href="Ycc.UI.MultiLineText.html#option">option</a></li>
+            
+                <li data-name="Ycc.UI.MultiLineText#rect"><a href="Ycc.UI.MultiLineText.html#rect">rect</a></li>
+            
+                <li data-name="Ycc.UI.MultiLineText#uid"><a href="Ycc.UI.MultiLineText.html#uid">uid</a></li>
+            
+            </ul>
+            <ul class="typedefs itemMembers">
+            
+            </ul>
+            <ul class="methods itemMembers">
+            
+            <span class="subtitle">Methods</span>
+            
+                <li data-name="Ycc.UI.MultiLineText#addListener"><a href="Ycc.UI.MultiLineText.html#addListener">addListener</a></li>
+            
+                <li data-name="Ycc.UI.MultiLineText#getMaxContentInWidth"><a href="Ycc.UI.MultiLineText.html#getMaxContentInWidth">getMaxContentInWidth</a></li>
+            
+                <li data-name="Ycc.UI.MultiLineText#init"><a href="Ycc.UI.MultiLineText.html#init">init</a></li>
+            
+                <li data-name="Ycc.UI.MultiLineText#removeListener"><a href="Ycc.UI.MultiLineText.html#removeListener">removeListener</a></li>
+            
+                <li data-name="Ycc.UI.MultiLineText#render"><a href="Ycc.UI.MultiLineText.html#render">render</a></li>
+            
+                <li data-name="Ycc.UI.MultiLineText#triggerListener"><a href="Ycc.UI.MultiLineText.html#triggerListener">triggerListener</a></li>
+            
+            </ul>
+            <ul class="events itemMembers">
+            
+            </ul>
+        </li>
+    
+        <li class="item" data-name="Ycc.UI.Rect">
+            <span class="title">
+                <a href="Ycc.UI.Rect.html">Ycc.UI.Rect</a>
+                
+            </span>
+            <ul class="members itemMembers">
+            
+            <span class="subtitle">Members</span>
+            
+                <li data-name="Ycc.UI.Rect#option"><a href="Ycc.UI.Rect.html#option">option</a></li>
+            
+            </ul>
+            <ul class="typedefs itemMembers">
+            
+            </ul>
+            <ul class="methods itemMembers">
+            
+            <span class="subtitle">Methods</span>
+            
+                <li data-name="Ycc.UI.Rect#render"><a href="Ycc.UI.Rect.html#render">render</a></li>
+            
+            </ul>
+            <ul class="events itemMembers">
+            
+            </ul>
+        </li>
+    
+        <li class="item" data-name="Ycc.UI.SingleLineText">
+            <span class="title">
+                <a href="Ycc.UI.SingleLineText.html">Ycc.UI.SingleLineText</a>
+                
+            </span>
+            <ul class="members itemMembers">
+            
+            <span class="subtitle">Members</span>
+            
+                <li data-name="Ycc.UI.SingleLineText#baseUI"><a href="Ycc.UI.SingleLineText.html#baseUI">baseUI</a></li>
+            
+                <li data-name="Ycc.UI.SingleLineText#ctx"><a href="Ycc.UI.SingleLineText.html#ctx">ctx</a></li>
+            
+                <li data-name="Ycc.UI.SingleLineText#displayContent"><a href="Ycc.UI.SingleLineText.html#displayContent">displayContent</a></li>
+            
+                <li data-name="Ycc.UI.SingleLineText#listeners"><a href="Ycc.UI.SingleLineText.html#listeners">listeners</a></li>
+            
+                <li data-name="Ycc.UI.SingleLineText#option"><a href="Ycc.UI.SingleLineText.html#option">option</a></li>
+            
+                <li data-name="Ycc.UI.SingleLineText#rect"><a href="Ycc.UI.SingleLineText.html#rect">rect</a></li>
+            
+                <li data-name="Ycc.UI.SingleLineText#uid"><a href="Ycc.UI.SingleLineText.html#uid">uid</a></li>
+            
+            </ul>
+            <ul class="typedefs itemMembers">
+            
+            </ul>
+            <ul class="methods itemMembers">
+            
+            <span class="subtitle">Methods</span>
+            
+                <li data-name="Ycc.UI.SingleLineText#addListener"><a href="Ycc.UI.SingleLineText.html#addListener">addListener</a></li>
+            
+                <li data-name="Ycc.UI.SingleLineText#getMaxContentInWidth"><a href="Ycc.UI.SingleLineText.html#getMaxContentInWidth">getMaxContentInWidth</a></li>
+            
+                <li data-name="Ycc.UI.SingleLineText#init"><a href="Ycc.UI.SingleLineText.html#init">init</a></li>
+            
+                <li data-name="Ycc.UI.SingleLineText#removeListener"><a href="Ycc.UI.SingleLineText.html#removeListener">removeListener</a></li>
+            
+                <li data-name="Ycc.UI.SingleLineText#render"><a href="Ycc.UI.SingleLineText.html#render">render</a></li>
+            
+                <li data-name="Ycc.UI.SingleLineText#triggerListener"><a href="Ycc.UI.SingleLineText.html#triggerListener">triggerListener</a></li>
+            
+            </ul>
+            <ul class="events itemMembers">
+            
+            </ul>
+        </li>
+    
+    </ul>
+</div>
+    <div class="main">
+        <h1 class="page-title" data-filename="Ycc.EventManager.html">Class: EventManager</h1>
+        
 
 
 
 <section>
-
+    
 <header>
+    <h2>
+    EventManager
+    </h2>
     
-        <h2>EventManager</h2>
-        
-    
-</header>
+</header>  
 
 <article>
     <div class="container-overview">
     
+    
+    
         
-
+<dt>
+    <div class="nameContainer">
+        <h4 class="name" id="EventManager">
+            
+            new Ycc.EventManager<span class="signature">(yccInstance)</span>
+        </h4>
     
-
-    <h4 class="name" id="EventManager"><span class="type-signature"></span>new EventManager<span class="signature">(canvasDom)</span><span class="type-signature"></span></h4>
-
-    
-
-
-
-<div class="description">
-    Ycc实例的事件管理类。此类会托管原生的事件，剔除多余事件属性，保留必要属性。还会根据情况生成一些其他事件，方便使用。每个EventManager都跟一个canvas元素绑定。
-</div>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
         
-        <th>Name</th>
+        <div class="tag-source">
+            <a href="Ycc.EventManager.class.js.html">Ycc.EventManager.class.js</a>, <a href="Ycc.EventManager.class.js.html#line62">line 62</a>
+        </div>
         
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>canvasDom</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">HTMLElement</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"></td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Ycc.EventManager.class.js.html">Ycc.EventManager.class.js</a>, <a href="Ycc.EventManager.class.js.html#line62">line 62</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    
     </div>
 
     
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        Ycc实例的事件管理类。只监听舞台的事件。此类会托管原生的事件，剔除多余事件属性，保留必要属性。还会根据情况生成一些其他事件，方便使用。每个EventManager都跟一个canvas元素绑定。
+    </div>
+    
 
+    
+    
+    
+    
+    
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>yccInstance</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">Ycc</span>
+
+
+            
+            </td>
+            
+            
+            
+            <td class="description last">
+                
+                </td>
+        </tr>
+	
+	
+	</tbody>
+</table>
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
     
 
     
 
-     
+    
+    
+    
+    
+    
+    
+    
+</dd>
 
     
-
+    </div>
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     
         <h3 class="subsection-title">Members</h3>
-
         
+        <dl>
             
-<h4 class="name" id="canvasDom"><span class="type-signature"></span>canvasDom<span class="type-signature"> :HTMLElement</span></h4>
-
-
-
-
-<div class="description">
-    Ycc实例
-</div>
-
-
-
-    <h5>Type:</h5>
-    <ul>
-        <li>
-            
-<span class="param-type">HTMLElement</span>
-
-
-        </li>
-    </ul>
-
-
-
-
-
+<dt>
+    <div class="nameContainer">
+        <h4 class="name" id="canvasDom">canvasDom<span class="type-signature type htmlelement">HTMLElement</span> </h4>
+    </div>
+    
+    
+</dt>
+<dd>
+    
+    
+    
 <dl class="details">
-
+    
+        
+    
+    
     
 
     
-
     
-
     
-
     
-
     
-
     
-
     
-
     
-
     
-
     
-
     
-
     
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Ycc.EventManager.class.js.html">Ycc.EventManager.class.js</a>, <a href="Ycc.EventManager.class.js.html#line67">line 67</a>
-    </li></ul></dd>
     
-
     
-
-    
-
     
 </dl>
 
-
-
-
-
+    
+    
+</dd>
 
         
             
-<h4 class="name" id="mouseDown"><span class="type-signature"></span>mouseDown<span class="type-signature"> :boolean</span></h4>
-
-
-
-
-<div class="description">
-    鼠标是否按下的标识
-</div>
-
-
-
-    <h5>Type:</h5>
-    <ul>
-        <li>
-            
-<span class="param-type">boolean</span>
-
-
-        </li>
-    </ul>
-
-
-
-
-
+<dt>
+    <div class="nameContainer">
+        <h4 class="name" id="mouseDown">mouseDown<span class="type-signature type boolean">boolean</span> </h4>
+    </div>
+    
+    
+</dt>
+<dd>
+    
+    <div class="description">
+        鼠标是否按下的标识
+    </div>
+    
+    
+    
 <dl class="details">
-
+    
+        
+    
+    
     
 
     
-
     
-
     
-
     
-
     
-
     
-
     
-
     
-
     
-
     
-
     
-
     
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Ycc.EventManager.class.js.html">Ycc.EventManager.class.js</a>, <a href="Ycc.EventManager.class.js.html#line73">line 73</a>
-    </li></ul></dd>
     
-
     
-
-    
-
     
 </dl>
 
-
-
-
-
+    
+    
+</dd>
 
         
             
-<h4 class="name" id="mouseDownEvent"><span class="type-signature"></span>mouseDownEvent<span class="type-signature"> :YccEvent</span></h4>
-
-
-
-
-<div class="description">
-    鼠标按下时的YccEvent
-</div>
-
-
-
-    <h5>Type:</h5>
-    <ul>
-        <li>
-            
-<span class="param-type">YccEvent</span>
-
-
-        </li>
-    </ul>
-
-
-
-
-
+<dt>
+    <div class="nameContainer">
+        <h4 class="name" id="mouseDownEvent">mouseDownEvent<span class="type-signature type yccevent">YccEvent</span> </h4>
+    </div>
+    
+    
+</dt>
+<dd>
+    
+    <div class="description">
+        鼠标按下时的YccEvent
+    </div>
+    
+    
+    
 <dl class="details">
-
+    
+        
+    
+    
     
 
     
-
     
-
     
-
     
-
     
-
     
-
     
-
     
-
     
-
     
-
     
-
     
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Ycc.EventManager.class.js.html">Ycc.EventManager.class.js</a>, <a href="Ycc.EventManager.class.js.html#line79">line 79</a>
-    </li></ul></dd>
     
-
     
-
-    
-
     
 </dl>
 
-
-
-
-
+    
+    
+</dd>
 
         
             
-<h4 class="name" id="mouseMoving"><span class="type-signature"></span>mouseMoving<span class="type-signature"> :boolean</span></h4>
-
-
-
-
-<div class="description">
-    鼠标是否正在移动的标识
-</div>
-
-
-
-    <h5>Type:</h5>
-    <ul>
-        <li>
-            
-<span class="param-type">boolean</span>
-
-
-        </li>
-    </ul>
-
-
-
-
-
+<dt>
+    <div class="nameContainer">
+        <h4 class="name" id="mouseMoving">mouseMoving<span class="type-signature type boolean">boolean</span> </h4>
+    </div>
+    
+    
+</dt>
+<dd>
+    
+    <div class="description">
+        鼠标是否正在移动的标识
+    </div>
+    
+    
+    
 <dl class="details">
-
+    
+        
+    
+    
     
 
     
-
     
-
     
-
     
-
     
-
     
-
     
-
     
-
     
-
     
-
     
-
     
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Ycc.EventManager.class.js.html">Ycc.EventManager.class.js</a>, <a href="Ycc.EventManager.class.js.html#line85">line 85</a>
-    </li></ul></dd>
     
-
     
-
-    
-
     
 </dl>
 
-
-
-
-
+    
+    
+</dd>
 
         
+            
+<dt>
+    <div class="nameContainer">
+        <h4 class="name" id="proxyEventTypes">proxyEventTypes<span class="type-signature type array">Array</span> </h4>
+    </div>
+    
+    
+</dt>
+<dd>
+    
+    <div class="description">
+        被托管的原生事件类型
+    </div>
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
     
 
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <div class="nameContainer">
+        <h4 class="name" id="yccInstance">yccInstance<span class="type-signature type ycc">Ycc</span> </h4>
+    </div>
+    
+    
+</dt>
+<dd>
+    
+    <div class="description">
+        Ycc实例
+    </div>
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+</dd>
+
+        </dl>
+    
+    
     
         <h3 class="subsection-title">Methods</h3>
-
         
+        <dl>
             
+<dt>
+    <div class="nameContainer">
+        <h4 class="name" id="broadcastToLayer">
+            
+            broadcastToLayer<span class="signature">(type, yccEvent)</span>
+        </h4>
+    
+        
+        <div class="tag-source">
+            <a href="Ycc.EventManager.class.js.html">Ycc.EventManager.class.js</a>, <a href="Ycc.EventManager.class.js.html#line129">line 129</a>
+        </div>
+        
+    </div>
 
     
-
-    <h4 class="name" id="onclick"><span class="type-signature"></span>onclick<span class="signature">(e)</span><span class="type-signature"></span></h4>
-
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        将事件分发至舞台中所有的图层
+    </div>
     
 
-
-
-<div class="description">
-    托管原生的鼠标点击事件
-</div>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
     
+    
+    
+    
+    
+        
 
 <table class="params">
     <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
         <tr>
             
-                <td class="name"><code>e</code></td>
+                <td class="name"><code>type</code></td>
             
-
+            
             <td class="type">
             
+            </td>
+            
+            
+            
+            <td class="description last">
                 
-<span class="param-type">YccEvent</span>
-
-
+                </td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>yccEvent</code></td>
+            
+            
+            <td class="type">
             
             </td>
-
             
-
             
-
-            <td class="description last">ycc事件对象</td>
+            
+            <td class="description last">
+                
+                </td>
         </tr>
-
-    
-    </tbody>
+	
+	
+	</tbody>
 </table>
-
-
-
-
-
-
+    
+    
+    
 <dl class="details">
-
+    
+        
+    
+    
     
 
     
-
     
-
     
-
     
-
     
-
     
-
     
-
     
-
     
-
     
-
     
-
     
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Ycc.EventManager.class.js.html">Ycc.EventManager.class.js</a>, <a href="Ycc.EventManager.class.js.html#line135">line 135</a>
-    </li></ul></dd>
     
-
     
-
     
-
+    <dt class="tag-todo">TODO</dt>
+    <dd class="tag-todo">
+        <ul>
+            <li>需要判断事件是否发生在图层之上，并不需要所有图层都分发</li>
+        </ul>
+    </dd>
     
 </dl>
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        
-            
+    
+    
 
     
 
-    <h4 class="name" id="ondragend"><span class="type-signature"></span>ondragend<span class="signature">(e)</span><span class="type-signature"></span></h4>
-
     
-
-
-
-<div class="description">
-    自定义鼠标拖拽结束事件
-</div>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
     
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
+    
+    
+    
+    
+    
+</dd>
 
         
-
+            
+<dt>
+    <div class="nameContainer">
+        <h4 class="name" id="init">
+            
+            init<span class="signature">()</span>
+        </h4>
+    
         
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>e</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">YccEvent</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">ycc事件对象</td>
-        </tr>
+        <div class="tag-source">
+            <a href="Ycc.EventManager.class.js.html">Ycc.EventManager.class.js</a>, <a href="Ycc.EventManager.class.js.html#line108">line 108</a>
+        </div>
+        
+    </div>
 
     
-    </tbody>
-</table>
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        初始化
+    </div>
+    
 
-
-
-
-
-
+    
+    
+    
+    
+    
+    
+    
 <dl class="details">
-
+    
+        
+    
+    
     
 
     
-
     
-
     
-
     
-
     
-
     
-
     
-
     
-
     
-
     
-
     
-
     
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Ycc.EventManager.class.js.html">Ycc.EventManager.class.js</a>, <a href="Ycc.EventManager.class.js.html#line150">line 150</a>
-    </li></ul></dd>
     
-
     
-
-    
-
     
 </dl>
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        
-            
-
-    
-
-    <h4 class="name" id="ondragging"><span class="type-signature"></span>ondragging<span class="signature">(e)</span><span class="type-signature"></span></h4>
-
-    
-
-
-
-<div class="description">
-    自定义鼠标拖拽事件
-</div>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>e</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">YccEvent</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">ycc事件对象</td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Ycc.EventManager.class.js.html">Ycc.EventManager.class.js</a>, <a href="Ycc.EventManager.class.js.html#line144">line 144</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        
-            
-
-    
-
-    <h4 class="name" id="onmousedown"><span class="type-signature"></span>onmousedown<span class="signature">(e)</span><span class="type-signature"></span></h4>
-
-    
-
-
-
-<div class="description">
-    托管原生的鼠标按下事件
-</div>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>e</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">YccEvent</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">ycc事件对象</td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Ycc.EventManager.class.js.html">Ycc.EventManager.class.js</a>, <a href="Ycc.EventManager.class.js.html#line123">line 123</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        
-            
-
-    
-
-    <h4 class="name" id="onmousemove"><span class="type-signature"></span>onmousemove<span class="signature">(e)</span><span class="type-signature"></span></h4>
-
-    
-
-
-
-<div class="description">
-    托管原生的鼠标移动事件
-</div>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>e</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">YccEvent</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">ycc事件对象</td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Ycc.EventManager.class.js.html">Ycc.EventManager.class.js</a>, <a href="Ycc.EventManager.class.js.html#line117">line 117</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        
-            
-
-    
-
-    <h4 class="name" id="onmouseup"><span class="type-signature"></span>onmouseup<span class="signature">(e)</span><span class="type-signature"></span></h4>
-
-    
-
-
-
-<div class="description">
-    托管原生的鼠标抬起事件
-</div>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>e</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">YccEvent</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">ycc事件对象</td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
     
-
-    
-
     
 
     
 
     
-
-    
-
     
-
     
-
     
-
     
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Ycc.EventManager.class.js.html">Ycc.EventManager.class.js</a>, <a href="Ycc.EventManager.class.js.html#line129">line 129</a>
-    </li></ul></dd>
     
-
     
+</dd>
 
+        </dl>
     
-
     
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        
     
-
     
-
     
 </article>
 
-</section>
+</section>  
 
 
 
 
+
+        
+
+        <footer>
+            Documentation generated by <a target="_blank" href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Fri Nov 17 2017 11:20:09 GMT+0800 (中国标准时间)
+        </footer>
+    </div>
 </div>
-
-<nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="win.Ycc.html">Ycc</a></li><li><a href="Ycc.EventManager.html">EventManager</a></li><li><a href="Ycc.LayerManager.html">LayerManager</a></li><li><a href="Ycc.Loader.html">Loader</a></li><li><a href="Ycc.PhotoManager.html">PhotoManager</a></li><li><a href="Ycc.Ticker.html">Ticker</a></li><li><a href="Ycc.UI.html">UI</a></li></ul>
-</nav>
-
-<br class="clear">
-
-<footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Thu Nov 02 2017 10:47:41 GMT+0800 (中国标准时间)
-</footer>
-
-<script> prettyPrint(); </script>
-<script src="scripts/linenumber.js"> </script>
+<script>prettyPrint();</script>
+<script src="scripts/linenumber.js"></script>
+<script src="scripts/main.js"></script>
 </body>
 </html>

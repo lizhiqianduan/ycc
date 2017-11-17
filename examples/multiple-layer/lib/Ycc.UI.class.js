@@ -59,6 +59,7 @@
 		 * 当前绘图环境的高
 		 */
 		this.ctxHeight = canvasDom.height;
+		
 	};
 
 	
@@ -66,7 +67,7 @@
 	
 	
 	/*******************************************************************************
-	 * 定义UI类的基础图形
+	 * 定义UI类的基础图形，不带rect容器的图形
 	 ******************************************************************************/
 	/**
 	 * 文字
@@ -253,6 +254,34 @@
 		return this;
 	};
 	
+	
+	
+	/**
+	 * 给定宽度，获取能容纳的最长字符串
+	 * @param content {string}
+	 * @param width {number}
+	 * @return {string}
+	 * @private
+	 */
+	Ycc.UI.prototype._getMaxLenContent = function (content,width) {
+		var out = content;
+		var outW = 0;
+		
+		if(this.ctx.measureText(content).width<=width)
+			return content;
+		for(var i = 0;i<content.length;i++){
+			out = content.slice(0,i);
+			outW = this.ctx.measureText(out).width;
+			if(outW>width){
+				return content.slice(0,i-1);
+			}
+		}
+	};
+	
+	
+	
+	
+	
 	/*******************************************************************************
 	 * 定义UI类的控制方法
 	 ******************************************************************************/
@@ -285,6 +314,8 @@
 		this.ctx.restore();
 		return this;
 	};
+	
+
 	
 	
 	

@@ -69,12 +69,18 @@
 		/**
 		 * 舞台的事件
 		 */
-		this.stageEventManager = new Ycc.EventManager(this.stage);
+		this.stageEventManager = new Ycc.EventManager(this);
 		
 		/**
 		 * 系统心跳管理器
 		 */
 		this.ticker = Ycc.Ticker?new Ycc.Ticker(this):null;
+		
+		/**
+		 * 基础绘图UI。这些绘图操作会直接作用于舞台。
+		 * @type {Ycc.UI}
+		 */
+		this.baseUI = new Ycc.UI(this.stage);
 		
 		this.init();
 	};
@@ -107,8 +113,7 @@
 					for(var i=self.layerList.length-1;i>=0;i--){
 						var layer = self.layerList[i];
 						if(!layer.enableEventManager) continue;
-						layer.eventManager.mouseDownEvent = self.stageEventManager.mouseDownEvent;
-						layer.eventManager["on"+e.type](e);
+						layer.triggerListener(e.type,e);
 					}
 				}
 			}
@@ -121,9 +126,5 @@
 	win.Ycc.prototype.clearStage = function () {
 		this.ctx.clearRect(0,0,this.getStageWidth(),this.getStageHeight());
 	};
-	
-
-	
-	
 	
 })(window);
