@@ -182,7 +182,7 @@
 					yccEvent.originEvent = e;
 					// 触发ycc自定义事件
 					// Ycc.utils.isFn(eventManagerInstance["on"+yccEvent.type])&&eventManagerInstance["on"+yccEvent.type](yccEvent);
-					eventManagerInstance.broadcastToLayer(_type,yccEvent);
+					eventManagerInstance.broadcastToLayer(yccEvent.type,yccEvent);
 				}
 				// 触发ycc托管的事件
 				// Ycc.utils.isFn(eventManagerInstance["on"+_type])&&eventManagerInstance["on"+_type](yccEvent);
