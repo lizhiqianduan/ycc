@@ -52,18 +52,25 @@
 	
 	
 	/**
-	 * Ycc实例的事件管理类。
+	 * Ycc实例的事件管理类。只监听舞台的事件。
 	 * 此类会托管原生的事件，剔除多余事件属性，保留必要属性。
 	 * 还会根据情况生成一些其他事件，方便使用。
+	 * 每个EventManager都跟一个canvas元素绑定。
 	 * @param yccInstance	{Ycc}
 	 * @constructor
 	 */
 	Ycc.EventManager = function (yccInstance) {
+		
 		/**
 		 * Ycc实例
 		 * @type {Ycc}
 		 */
 		this.yccInstance = yccInstance;
+		
+		/**
+		 * @type {HTMLElement}
+		 */
+		this.canvasDom = yccInstance.stage;
 		
 		/**
 		 * 鼠标是否按下的标识
@@ -83,23 +90,28 @@
 		 */
 		this.mouseMoving = false;
 		
-		
+		/**
+		 * 被托管的原生事件类型
+		 * @type {Array}
+		 */
+		this.proxyEventTypes = ["mousemove","mousedown","mouseup","click","mouseenter","mouseout"];
 		
 		
 		// 初始化
 		this.init();
 	};
 	
-
 	
+	/**
+	 * 初始化
+	 */
 	Ycc.EventManager.prototype.init = function () {
 		var self = this;
 		// canvas元素
-		var dom = this.yccInstance.canvasDom;
+		var dom = this.canvasDom;
 
 		// 托管的事件类型
-		var proxyEventTypes = ["mousemove","mousedown","mouseup","click"];
-		// var proxyEventTypes = ["mousedown"];
+		var proxyEventTypes = self.proxyEventTypes;
 		
 		for(var i = 0;i<proxyEventTypes.length;i++){
 			var type = proxyEventTypes[i];
@@ -107,50 +119,22 @@
 		}
 	};
 	
-	// 托管的原生事件
-	/**
-	 * 托管原生的鼠标移动事件
-	 * @param e {YccEvent}	ycc事件对象
-	 * @type {Function}
-	 */
-	Ycc.EventManager.prototype.onmousemove = function (e) {};
-	/**
-	 * 托管原生的鼠标按下事件
-	 * @param e {YccEvent}	ycc事件对象
-	 * @type {Function}
-	 */
-	Ycc.EventManager.prototype.onmousedown = function (e) {};
-	/**
-	 * 托管原生的鼠标抬起事件
-	 * @param e {YccEvent}	ycc事件对象
-	 * @type {Function}
-	 */
-	Ycc.EventManager.prototype.onmouseup = function (e) {};
-	/**
-	 * 托管原生的鼠标点击事件
-	 * @param e {YccEvent}	ycc事件对象
-	 * @type {Function}
-	 */
-	Ycc.EventManager.prototype.onclick = function (e) {};
 	
-	
-	// 由原生事件组合的自定义事件
 	/**
-	 * 自定义鼠标拖拽事件
-	 * @param e {YccEvent}	ycc事件对象
-	 * @type {Function}
+	 * 将事件分发至舞台中所有的图层
+	 * @param type
+	 * @param yccEvent
+	 * @todo 需要判断事件是否发生在图层之上，并不需要所有图层都分发
 	 */
-	Ycc.EventManager.prototype.ondragging = function (e) {};
-	/**
-	 * 自定义鼠标拖拽结束事件
-	 * @param e {YccEvent}	ycc事件对象
-	 * @type {Function}
-	 */
-	Ycc.EventManager.prototype.ondragend = function (e) {};
+	Ycc.EventManager.prototype.broadcastToLayer = function (type, yccEvent) {
+		var self = this.yccInstance;
+		for(var i=self.layerList.length-1;i>=0;i--){
+			var layer = self.layerList[i];
+			if(!layer.enableEventManager) continue;
+			layer.triggerListener(type,yccEvent);
+		}
+	};
 	
-
-
-
 	/**
 	 * 代理原生事件
 	 * @param _type					原生js的事件类型
@@ -168,8 +152,8 @@
 			var yccEvent = new YccEvent();
 			yccEvent.type = _type;
 			yccEvent.originEvent = e;
-			yccEvent.x = e.clientX - eventManagerInstance.yccInstance.canvasDom.getBoundingClientRect().left;
-			yccEvent.y = e.clientY - eventManagerInstance.yccInstance.canvasDom.getBoundingClientRect().top;
+			yccEvent.x = e.clientX - eventManagerInstance.canvasDom.getBoundingClientRect().left;
+			yccEvent.y = e.clientY - eventManagerInstance.canvasDom.getBoundingClientRect().top;
 			
 			/**
 			 * 鼠标按下事件
@@ -180,7 +164,8 @@
 				eventManagerInstance.mouseMoving = false;
 				eventManagerInstance.mouseDownEvent = yccEvent;
 				// 触发ycc托管的事件
-				Ycc.utils.isFn(eventManagerInstance["on"+_type])&&eventManagerInstance["on"+_type](yccEvent);
+				// Ycc.utils.isFn(eventManagerInstance["on"+_type])&&eventManagerInstance["on"+_type](yccEvent);
+				eventManagerInstance.broadcastToLayer(_type,yccEvent);
 				return null;
 			}
 			
@@ -190,16 +175,18 @@
 			if(_type === "mousemove"){
 				// 修改标识
 				eventManagerInstance.mouseMoving = true;
-				eventManagerInstance["on"+_type](yccEvent);
+				// eventManagerInstance["on"+_type](yccEvent);
 				// 实测某些浏览器坐标位置没改变，移动事件仍然触发。此处进行过滤
 				if(eventManagerInstance.mouseDown && (yccEvent.x!==eventManagerInstance.mouseDownEvent.x ||  yccEvent.y!==eventManagerInstance.mouseDownEvent.y)){
 					yccEvent.type = "dragging";
 					yccEvent.originEvent = e;
 					// 触发ycc自定义事件
-					Ycc.utils.isFn(eventManagerInstance["on"+yccEvent.type])&&eventManagerInstance["on"+yccEvent.type](yccEvent);
+					// Ycc.utils.isFn(eventManagerInstance["on"+yccEvent.type])&&eventManagerInstance["on"+yccEvent.type](yccEvent);
+					eventManagerInstance.broadcastToLayer(_type,yccEvent);
 				}
 				// 触发ycc托管的事件
-				Ycc.utils.isFn(eventManagerInstance["on"+_type])&&eventManagerInstance["on"+_type](yccEvent);
+				// Ycc.utils.isFn(eventManagerInstance["on"+_type])&&eventManagerInstance["on"+_type](yccEvent);
+				eventManagerInstance.broadcastToLayer(_type,yccEvent);
 				return null;
 			}
 			
@@ -211,7 +198,8 @@
 				eventManagerInstance.mouseDown = false;
 				eventManagerInstance.mouseMoving = false;
 				// 触发ycc托管的事件
-				Ycc.utils.isFn(eventManagerInstance["on"+_type])&&eventManagerInstance["on"+_type](yccEvent);
+				// Ycc.utils.isFn(eventManagerInstance["on"+_type])&&eventManagerInstance["on"+_type](yccEvent);
+				eventManagerInstance.broadcastToLayer(_type,yccEvent);
 				return null;
 			}
 			
@@ -223,11 +211,15 @@
 				eventManagerInstance.mouseDown = false;
 				eventManagerInstance.mouseMoving = false;
 				// 触发ycc托管的事件
-				Ycc.utils.isFn(eventManagerInstance["on"+_type])&&eventManagerInstance["on"+_type](yccEvent);
+				// Ycc.utils.isFn(eventManagerInstance["on"+_type])&&eventManagerInstance["on"+_type](yccEvent);
+				eventManagerInstance.broadcastToLayer(_type,yccEvent);
 				return null;
 			}
 			
-
+			// 若没有特殊处理，默认直接触发托管的事件
+			// Ycc.utils.isFn(eventManagerInstance["on"+_type])&&eventManagerInstance["on"+_type](yccEvent);
+			eventManagerInstance.broadcastToLayer(_type,yccEvent);
+			return null;
 			
 
 		};

@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>多图层示例</title>
+
+	<style>
+		#stage{
+			width:820px;
+			float:left;
+		}
+		canvas{
+			background-color: #ccc;
+		}
+		.right-section{
+			float:left;
+			width:200px;
+		}
+		#layer canvas{
+			width:190px;
+		}
+
+	</style>
+</head>
+<body>
+<br>
+<br>
+<h3 style="text-align: center;">ycc图层系统示例，项目地址：<a href="https://github.com/lizhiqianduan/ycc" target="_blank">ycc github</a></h3>
+<br>
+<br>
+<div id="stage">
+	<div>绘图区 <br>（图层原本为透明色，灰色仅仅是为了显示效果）</div>
+	<canvas width="800" height="600">
+
+	</canvas>
+</div>
+
+<div class="right-section">
+	<div class="ctrl">
+		<button onclick="newLayer()">新建图层</button>
+	</div>
+
+	<div id="layer">
+		<div>图层列表（点击可删除图层）</div>
+		<hr>
+	</div>
+</div>
+
+</body>
+</html>
+
+
+<script src="http://localhost:9000/livereload.js"></script>
+
+<script src="./lib/Ycc.class.js"></script>
+<script src="./lib/Ycc.utils.js"></script>
+<script src="./lib/Ycc.Loader.class.js"></script>
+<script src="./lib/Ycc.UI.class.js"></script>
+<script src="./lib/Ycc.LayerManager.class.js"></script>
+<script src="./lib/Ycc.PhotoManager.class.js"></script>
+<script src="./lib/Ycc.EventManager.class.js"></script>
+
+
+<script>
+
+	var stage = document.getElementById("stage").getElementsByTagName("canvas")[0];
+	var layerDom = document.getElementById("layer");
+
+	var ycc = new window.Ycc(stage);
+	newLayer();
+
+
+
+	function newLayer() {
+		var layer = ycc.layerManager.newLayer({enableEventManager:true});
+		ycc.layerManager.enableEventManagerOnly(layer);
+		ycc.layerManager.renderAllLayerToStage();
+		pen();
+		renderLayerToHtml();
+
+
+		/**
+		 * 钢笔
+		 */
+		function pen() {
+			var startDot = [];
+			var hasMoved = false;
+
+			layer.eventManager.onclick = function (e) {};
+			layer.eventManager.onmousedown = function (e) {
+				startDot = ([e.x,e.y]);
+			};
+			layer.eventManager.ondragging = function (e) {
+				hasMoved = true;
+				var moveDot = ([e.x,e.y]);
+
+				ycc.photoManager.showLastPhoto();
+				layer.ui.line(startDot,moveDot);
+				ycc.layerManager.renderAllLayerToStage();
+				renderLayerToHtml();
+
+				startDot = moveDot;
+			};
+			layer.eventManager.onmouseup = function (e) {
+				if(!hasMoved) return null;
+				ycc.photoManager.takePhoto();
+				hasMoved = false;
+			};
+		}
+
+
+	}
+
+	function renderLayerToHtml() {
+		for(var i=ycc.layerList.length-1;i>=0;i--){
+			var layer = ycc.layerList[i];
+			var canvas = document.getElementById("ycc-layer-"+layer.id);// || document.createElement("canvas");
+			// 没有元素则新建dom
+			if(!canvas){
+				canvas = document.createElement("canvas");
+				canvas.width = layer.width;
+				canvas.height = layer.height;
+				canvas.id = "ycc-layer-"+layer.id;
+				layerDom.appendChild(canvas);
+			}
+			var ctx = canvas.getContext("2d");
+			ctx.drawImage(layer.canvasDom,0,0,layer.width,layer.height);
+
+			// 点击事件
+			canvas.onclick = function (_layer) {
+				return function () {
+					layerDom.removeChild(this);
+					// 清空舞台
+					ycc.clearStage();
+					// 删除图层
+					ycc.layerManager.deleteLayer(_layer);
+					// 重新渲染所有图层
+					ycc.layerManager.renderAllLayerToStage();
+					// 将最后一个图层设置为当前绘制图层
+					ycc.layerManager.enableEventManagerOnly(ycc.layerList[ycc.layerList.length-1]);
+					// 拍照
+					ycc.photoManager.takePhoto();
+					// 重新渲染图层列表
+					renderLayerToHtml();
+				};
+			}(layer)
+		}
+	}
+
+
+
+</script>

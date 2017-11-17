@@ -30,11 +30,12 @@
 
 	/**
 	 * UI类，提供绘图基本的原子图形和组合图形。
+	 * 每个UI类的对象都跟一个canvas绑定。
 	 *
-	 * @param yccInstance	{Ycc}	ycc的初始化实例，在init中初始化
+	 * @param canvasDom	{HTMLElement}
 	 * @constructor
 	 */
-	Ycc.UI = function(yccInstance){
+	Ycc.UI = function(canvasDom){
 
 		/**
 		 * 保存的快照，每个元素都是`getImageData`的返回值
@@ -47,14 +48,18 @@
 		/**
 		 * 当前绘图环境
 		 */
-		this.ctx = yccInstance.ctx;
-		
+		this.ctx = canvasDom.getContext('2d');
 		
 		/**
-		 * 当前UI所属的ycc实例
-		 * @type {Ycc}
+		 * 当前绘图环境的宽
 		 */
-		this.yccInstance = yccInstance;
+		this.ctxWidth = canvasDom.width;
+
+		/**
+		 * 当前绘图环境的高
+		 */
+		this.ctxHeight = canvasDom.height;
+		
 	};
 
 	
@@ -62,7 +67,7 @@
 	
 	
 	/*******************************************************************************
-	 * 定义UI类的基础图形
+	 * 定义UI类的基础图形，不带rect容器的图形
 	 ******************************************************************************/
 	/**
 	 * 文字
@@ -249,6 +254,34 @@
 		return this;
 	};
 	
+	
+	
+	/**
+	 * 给定宽度，获取能容纳的最长字符串
+	 * @param content {string}
+	 * @param width {number}
+	 * @return {string}
+	 * @private
+	 */
+	Ycc.UI.prototype._getMaxLenContent = function (content,width) {
+		var out = content;
+		var outW = 0;
+		
+		if(this.ctx.measureText(content).width<=width)
+			return content;
+		for(var i = 0;i<content.length;i++){
+			out = content.slice(0,i);
+			outW = this.ctx.measureText(out).width;
+			if(outW>width){
+				return content.slice(0,i-1);
+			}
+		}
+	};
+	
+	
+	
+	
+	
 	/*******************************************************************************
 	 * 定义UI类的控制方法
 	 ******************************************************************************/
@@ -275,12 +308,14 @@
 		
 		this.ctx.save();
 		this.ctx.beginPath();
-		this.ctx.rect(0,0,this.yccInstance.ctxWidth,this.yccInstance.ctxHeight);
+		this.ctx.rect(0,0,this.ctxWidth,this.ctxHeight);
 		this.ctx.fill();
 		this.ctx.closePath();
 		this.ctx.restore();
 		return this;
 	};
+	
+
 	
 	
 	

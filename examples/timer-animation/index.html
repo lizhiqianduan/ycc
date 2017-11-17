@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>四处碰壁的小球</title>
+</head>
+<body>
+
+
+<canvas width="400" height="300" id="canvas"></canvas>
+
+</body>
+</html>
+
+<script src="http://localhost:9000/livereload.js"></script>
+
+<script src="./lib/Ycc.class.js"></script>
+<script src="./lib/Ycc.utils.js"></script>
+<script src="./lib/Ycc.Loader.class.js"></script>
+<script src="./lib/Ycc.UI.class.js"></script>
+<script src="./lib/Ycc.UI.Base.class.js"></script>
+<script src="./lib/Ycc.Layer.class.js"></script>
+<script src="./lib/Ycc.LayerManager.class.js"></script>
+<script src="./lib/Ycc.PhotoManager.class.js"></script>
+<script src="./lib/Ycc.EventManager.class.js"></script>
+<script src="./lib/Ycc.Ticker.class.js"></script>
+
+
+<script>
+	var canvas = document.getElementById("canvas");
+	var width = canvas.width;
+	var height = canvas.height;
+
+	ycc = new Ycc(canvas);
+	ycc.ticker.start();
+
+	var layer = ycc.layerManager.newLayer({enableFrameEvent:true});
+	var x = 0,y = 0;
+	var stepPx = 8;
+	var left = true;
+	var topTo = true;
+	var update = function () {
+		if(x<=0) left=true;
+		if(x>=width) left=false;
+		if(y<=0) topTo=true;
+		if(y>=height) topTo=false;
+		if(left)
+			x+=stepPx;
+		else
+			x-=stepPx;
+
+		if(topTo)
+			y+=stepPx;
+		else
+			y-=stepPx;
+	};
+	layer.onFrameComing = function () {
+		update();
+		layer.clear();
+		ycc.clearStage();
+		layer.ui.circle([x,y],20,true);
+		layer.renderToStage();
+	}
+
+</script>
