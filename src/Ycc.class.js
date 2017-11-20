@@ -105,8 +105,8 @@
 			this.stage.addEventListener(proxyEventTypes[i],function (e) {
 				var yccEvent = new Ycc.Event(e.type);
 				yccEvent.originEvent = e;
-				yccEvent.x = e.clientX - self.stage.getBoundingClientRect().left;
-				yccEvent.y = e.clientY - self.stage.getBoundingClientRect().top;
+				yccEvent.x = parseInt(e.clientX - self.stage.getBoundingClientRect().left);
+				yccEvent.y = parseInt(e.clientY - self.stage.getBoundingClientRect().top);
 				for(var i=self.layerList.length-1;i>=0;i--){
 					var layer = self.layerList[i];
 					if(!layer.enableEventManager) continue;
