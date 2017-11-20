@@ -29,7 +29,7 @@
 		var ls = this.listeners[type];
 		if(!ls)
 			this.listeners[type] = [];
-		this.listeners[type].push(listener);
+		this.listeners[type].indexOf(listener) === -1 && this.listeners[type].push(listener);
 	};
 	
 	/**
