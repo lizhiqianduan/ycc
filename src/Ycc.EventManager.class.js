@@ -42,6 +42,11 @@
 		 */
 		this.originEvent = null;
 		
+		/**
+		 * 禁止向下传递。默认为false
+		 * @type {boolean}
+		 */
+		this.stop = false;
 	};
 	
 	
@@ -106,17 +111,17 @@
 	 * 初始化
 	 */
 	Ycc.EventManager.prototype.init = function () {
-		var self = this;
-		// canvas元素
-		var dom = this.canvasDom;
-
-		// 托管的事件类型
-		var proxyEventTypes = self.proxyEventTypes;
-		
-		for(var i = 0;i<proxyEventTypes.length;i++){
-			var type = proxyEventTypes[i];
-			dom.addEventListener(type,filterOriginEvent(type,self));
-		}
+		// var self = this;
+		// // canvas元素
+		// var dom = this.canvasDom;
+		//
+		// // 托管的事件类型
+		// var proxyEventTypes = self.proxyEventTypes;
+		//
+		// for(var i = 0;i<proxyEventTypes.length;i++){
+		// 	var type = proxyEventTypes[i];
+		// 	dom.addEventListener(type,filterOriginEvent(type,self));
+		// }
 	};
 	
 	

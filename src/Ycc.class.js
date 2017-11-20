@@ -106,17 +106,34 @@
 		var self = this;
 		
 		// 将舞台的事件广播给所有的图层。注意，新加图层层级最高，所以应倒序。
-		for(var key in this.stageEventManager){
-			if(key.indexOf("on")===0){
-				console.log(key);
-				this.stageEventManager[key] = function (e) {
-					for(var i=self.layerList.length-1;i>=0;i--){
-						var layer = self.layerList[i];
-						if(!layer.enableEventManager) continue;
-						layer.triggerListener(e.type,e);
-					}
+		// for(var key in this.stageEventManager){
+		// 	if(key.indexOf("on")===0){
+		// 		console.log(key);
+		// 		this.stageEventManager[key] = function (e) {
+		// 			for(var i=self.layerList.length-1;i>=0;i--){
+		// 				var layer = self.layerList[i];
+		// 				if(!layer.enableEventManager) continue;
+		// 				layer.triggerListener(e.type,e);
+		// 			}
+		// 		}
+		// 	}
+		// }
+		
+		
+		
+		var proxyEventTypes = ["mousemove","mousedown","mouseup","click","mouseenter","mouseout"];
+		for(var i = 0;i<proxyEventTypes.length;i++){
+			this.stage.addEventListener(proxyEventTypes[i],function (e) {
+				var yccEvent = new Ycc.Event(e.type);
+				yccEvent.originEvent = e;
+				yccEvent.x = e.clientX - self.stage.getBoundingClientRect().left;
+				yccEvent.y = e.clientY - self.stage.getBoundingClientRect().top;
+				for(var i=self.layerList.length-1;i>=0;i--){
+					var layer = self.layerList[i];
+					// if(!layer.enableEventManager) continue;
+					layer.triggerListener(e.type,yccEvent);
 				}
-			}
+			})
 		}
 	};
 	
