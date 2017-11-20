@@ -67,11 +67,6 @@
 		this.layerManager = Ycc.LayerManager?new Ycc.LayerManager(this):null;
 		
 		/**
-		 * 舞台的事件
-		 */
-		this.stageEventManager = new Ycc.EventManager(this);
-		
-		/**
 		 * 系统心跳管理器
 		 */
 		this.ticker = Ycc.Ticker?new Ycc.Ticker(this):null;
@@ -104,23 +99,7 @@
 	 */
 	win.Ycc.prototype.init = function () {
 		var self = this;
-		
-		// 将舞台的事件广播给所有的图层。注意，新加图层层级最高，所以应倒序。
-		// for(var key in this.stageEventManager){
-		// 	if(key.indexOf("on")===0){
-		// 		console.log(key);
-		// 		this.stageEventManager[key] = function (e) {
-		// 			for(var i=self.layerList.length-1;i>=0;i--){
-		// 				var layer = self.layerList[i];
-		// 				if(!layer.enableEventManager) continue;
-		// 				layer.triggerListener(e.type,e);
-		// 			}
-		// 		}
-		// 	}
-		// }
-		
-		
-		
+		// 代理的原生鼠标事件，默认每个图层都触发
 		var proxyEventTypes = ["mousemove","mousedown","mouseup","click","mouseenter","mouseout"];
 		for(var i = 0;i<proxyEventTypes.length;i++){
 			this.stage.addEventListener(proxyEventTypes[i],function (e) {
@@ -130,7 +109,7 @@
 				yccEvent.y = e.clientY - self.stage.getBoundingClientRect().top;
 				for(var i=self.layerList.length-1;i>=0;i--){
 					var layer = self.layerList[i];
-					// if(!layer.enableEventManager) continue;
+					if(!layer.enableEventManager) continue;
 					layer.triggerListener(e.type,yccEvent);
 				}
 			})
