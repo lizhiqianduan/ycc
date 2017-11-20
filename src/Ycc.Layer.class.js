@@ -224,7 +224,10 @@
 		this.addListener("click",function (e) {
 			for(var i = 0;i<self.uiList.length;i++){
 				var ui = self.uiList[i];
-				var dot = new Ycc.Math.Dot(e.x,e.y);
+				// 图层内部UI的相对坐标
+				var layerX = e.x - ui.belongTo.x;
+				var layerY = e.y - ui.belongTo.y;
+				var dot = new Ycc.Math.Dot(layerX,layerY);
 				if(dot.isInRect(ui.option.rect))
 					ui.triggerListener("click",e);
 			}
@@ -244,6 +247,10 @@
 		// this.addListener("mouseout",function (e) {
 		// 	console.log("mouseout",e);
 		// });
+		// this.addListener("dragging",function (e) {
+		// 	console.log("dragging",e);
+		// });
+		
 		
 	};
 	
