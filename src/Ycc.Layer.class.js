@@ -331,6 +331,17 @@
 		this.uiList.push(ui);
 	};
 	
+	/**
+	 * 渲染Layer。
+	 * <br>注意：并没有渲染至舞台。
+	 */
+	Ycc.Layer.prototype.render = function () {
+		for(var i=0;i<this.uiList.length;i++){
+			this.uiList[i].render();
+		}
+	}
+	
+	
 	
 	
 })(window.Ycc);
