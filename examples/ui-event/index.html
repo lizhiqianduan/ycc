@@ -2,9 +2,116 @@
 <html lang="en">
 <head>
 	<meta charset="UTF-8">
-	<title>$Title$</title>
+	<title>UI事件的示例</title>
 </head>
 <body>
-$END$
+
+
+<div id="canvas">
+
+</div>
+
+
 </body>
 </html>
+
+<script src="http://localhost:9000/livereload.js"></script>
+
+<script src="./lib/Ycc.class.js"></script>
+<script src="./lib/Ycc.utils.js"></script>
+<script src="./lib/Ycc.Math.js"></script>
+<script src="./lib/Ycc.Loader.class.js"></script>
+<script src="./lib/Ycc.Listener.class.js"></script>
+<script src="./lib/Ycc.UI.class.js"></script>
+<script src="./lib/Ycc.UI.Base.class.js"></script>
+<script src="./lib/Ycc.UI.SingleLineText.class.js"></script>
+<script src="./lib/Ycc.UI.MultiLineText.class.js"></script>
+<script src="./lib/Ycc.UI.Rect.class.js"></script>
+<script src="./lib/Ycc.UI.Line.class.js"></script>
+<script src="./lib/Ycc.PhotoManager.class.js"></script>
+<script src="./lib/Ycc.Event.class.js"></script>
+<script src="./lib/Ycc.Layer.class.js"></script>
+<script src="./lib/Ycc.LayerManager.class.js"></script>
+
+<script>
+	var canvas = document.createElement("canvas");
+	canvas.width = 800;
+	canvas.height = 600;
+	document.getElementById("canvas").appendChild(canvas);
+
+	var ycc = new Ycc(canvas);
+	// 新建图层
+	var layer = ycc.layerManager.newLayer({enableEventManager:true});
+	// 设置UI属性
+	var config = {
+		content:"  我是  可以拖拽的  多行文本框  测试文字  测试文字 测试文字 测试文字  01234567",
+		rect:new Ycc.Math.Rect(100,100,100,100),
+		wordBreak:"break-word",
+		overflow:"auto"
+	};
+	// 新建多行文本的UI
+	var ui = new Ycc.UI.MultiLineText(config);
+
+	// 点击
+	ui.addListener("click",function (e) {
+		console.log("我是",this.constructor.name,"我",e.type,e);
+	});
+	// 另一种方式的监听
+	ui.onclick = function (e) {
+		console.log("我是",this.constructor.name,"我方式二监听",e.type,e);
+	};
+
+	// 拖拽
+	ui.ondragging = function (e) {
+		console.log("我是",this.constructor.name,"我",e.type,e);
+		this.option.rect.x = e.x;
+		this.option.rect.y = e.y;
+		this.belongTo.clear();
+		this.belongTo.render();
+		ycc.clearStage();
+		ycc.layerManager.renderAllLayerToStage();
+	};
+	// 添加至图层
+	layer.addUI(ui);
+
+	/****************** 下面是使用普通的mousemove模拟拖拽 *****************************/
+	config = {
+		rect:new Ycc.Math.Rect(100,100,30,50)
+	};
+	ui = new Ycc.UI.Rect(config);
+	var down = null;
+	var draggingListener = null;
+	ui.onmousedown = function (e) {
+		down = {x:this.option.rect.x,y:this.option.rect.y};
+		console.log("我是",this.constructor.name,"我",e.type,e);
+	};
+	ui.onmouseup = function (e) {
+		console.log("我是",this.constructor.name,"我",e.type,e);
+		down = null;
+		this.belongTo.removeListener("mousemove",draggingListener);
+		draggingListener = null;
+	};
+
+	ui.onmousemove = function (e) {
+		console.log("我是",this.constructor.name,"我",e.type,e);
+		var self = this;
+		if(down && !draggingListener){
+			draggingListener = function (e2) {
+				self.option.rect.x = down.x + e2.x-e.mouseDownYccEvent.x;
+				self.option.rect.y = down.y + e2.y-e.mouseDownYccEvent.y;
+				layer.clear();
+				layer.render();
+				ycc.clearStage();
+				ycc.layerManager.renderAllLayerToStage();
+			};
+			this.belongTo.addListener("mousemove",draggingListener);
+		}
+	};
+	layer.addUI(ui);
+
+//	全部绘制
+	ycc.layerManager.renderAllLayerToStage();
+
+
+
+</script>
