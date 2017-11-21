@@ -272,6 +272,7 @@
 				draggingEvent.target = mouseDownYccEvent.target;
 				draggingEvent.x = e.x;
 				draggingEvent.y = e.y;
+				draggingEvent.mouseDownYccEvent = mouseDownYccEvent;
 				draggingEvent.target.triggerListener(draggingEvent.type,draggingEvent);
 			}
 			
