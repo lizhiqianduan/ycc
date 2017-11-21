@@ -52,6 +52,13 @@
 		 * @type {boolean}
 		 */
 		this.stop = false;
+		
+		/**
+		 * 事件触发的对象
+		 * @type {Ycc.UI|null}
+		 */
+		this.target = null;
+		
 	}
 	
 	
