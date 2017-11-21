@@ -241,18 +241,57 @@
 		});
 
 		this.addListener("mouseup",function (e) {
+			e.mouseDownYccEvent = mouseDownYccEvent = null;
 			mouseUpYccEvent = e;
 			defaultMouseListener(e);
 		});
 		
-		this.addListener("mousemove",function (e) {
+		this.addListener("mousemove",mouseMoveListener);
+		
+		
+		/**
+		 * 图层中鼠标移动的监听器
+		 * @param e	{Ycc.Event}
+		 */
+		function mouseMoveListener(e) {
+			// 判断事件是否已经被阻止
+			if(e.stop) return;
 			// 判断是否真的移动
 			if(mouseDownYccEvent && e.x===mouseDownYccEvent.x&&e.y===mouseDownYccEvent.y) return;
 			// 解决webkit内核mouseup自动触发mousemove的BUG
-			if(mouseUpYccEvent && e.x===mouseUpYccEvent.x&&e.y===mouseUpYccEvent.y) return;
+			if(mouseUpYccEvent && e.x===mouseUpYccEvent.x&&e.y===mouseUpYccEvent.y) {
+				return;
+			}
+
+			// 设置已经移动的标志位
 			mouseHasMove = true;
-			defaultMouseListener(e);
-		});
+			
+			// 如果鼠标已经按下，且按下时有目标，则表示拖拽事件
+			if(mouseDownYccEvent && mouseDownYccEvent.target){
+				var draggingEvent = new Ycc.Event("dragging");
+				draggingEvent.target = mouseDownYccEvent.target;
+				draggingEvent.x = e.x;
+				draggingEvent.y = e.y;
+				draggingEvent.target.triggerListener(draggingEvent.type,draggingEvent);
+			}
+			
+			// 下面处理普通的鼠标移动事件
+			for(var i = 0;i<self.uiList.length;i++){
+				var ui = self.uiList[i];
+				// 图层内部UI的相对坐标
+				var dot = new Ycc.Math.Dot(e.x - ui.belongTo.x,e.y - ui.belongTo.y);
+				// 如果位于rect内，触发事件,并阻止继续传递
+				if(dot.isInRect(ui.option.rect)){
+					e.stop = true;
+					e.mouseDownYccEvent = mouseDownYccEvent;
+					e.mouseUpYccEvent = mouseUpYccEvent;
+					e.target = ui;
+					ui.triggerListener(e.type,e);
+					break;
+				}
+			}
+		}
+		
 		
 		/**
 		 * 默认的事件监听器。默认鼠标事件触发点位于rect内，事件才转发给UI。
@@ -271,6 +310,7 @@
 					e.stop = true;
 					e.mouseDownYccEvent = mouseDownYccEvent;
 					e.mouseUpYccEvent = mouseUpYccEvent;
+					e.target = ui;
 					ui.triggerListener(e.type,e);
 					break;
 				}
