@@ -61,15 +61,13 @@
 		console.log("我是",this.constructor.name,"我方式二监听",e.type,e);
 	};
 
+
 	// 拖拽
 	ui.ondragging = function (e) {
 		console.log("我是",this.constructor.name,"我",e.type,e);
 		this.option.rect.x = e.x;
 		this.option.rect.y = e.y;
-		this.belongTo.clear();
-		this.belongTo.render();
-		ycc.clearStage();
-		ycc.layerManager.renderAllLayerToStage();
+		ycc.layerManager.reRenderAllLayerToStage();
 	};
 	// 添加至图层
 	layer.addUI(ui);
@@ -99,10 +97,7 @@
 			draggingListener = function (e2) {
 				self.option.rect.x = down.x + e2.x-e.mouseDownYccEvent.x;
 				self.option.rect.y = down.y + e2.y-e.mouseDownYccEvent.y;
-				layer.clear();
-				layer.render();
-				ycc.clearStage();
-				ycc.layerManager.renderAllLayerToStage();
+				ycc.layerManager.reRenderAllLayerToStage();
 			};
 			this.belongTo.addListener("mousemove",draggingListener);
 		}

@@ -123,6 +123,13 @@
 		this.ctx.clearRect(0,0,this.getStageWidth(),this.getStageHeight());
 	};
 	
+	/**
+	 * 根据ycc.layerList重复舞台
+	 */
+	win.Ycc.prototype.reRenderStage = function () {
+		this.clearStage();
+		this.layerManager.renderAllLayerToStage();
+	};
 })(window);;/**
  * @file        Ycc.utils.js
  * @author      xiaohei
@@ -713,6 +720,22 @@
 				this.yccInstance.ctx.drawImage(layer.canvasDom,layer.x,layer.y,layer.width,layer.height);
 		}
 	};
+	
+	/**
+	 * 重新将所有图层绘制至舞台。不显示的图层也会更新。
+	 */
+	Ycc.LayerManager.prototype.reRenderAllLayerToStage = function () {
+		this.yccInstance.clearStage();
+		for(var i=0;i<this.yccInstance.layerList.length;i++){
+			var layer = this.yccInstance.layerList[i];
+			layer.reRender();
+			// 该图层是否可见
+			if(layer.show)
+				this.yccInstance.ctx.drawImage(layer.canvasDom,layer.x,layer.y,layer.width,layer.height);
+		}
+	};
+	
+	
 	
 	/**
 	 * 依次合并图层。队列后面的图层将被绘制在前面图层之上。

@@ -123,4 +123,11 @@
 		this.ctx.clearRect(0,0,this.getStageWidth(),this.getStageHeight());
 	};
 	
+	/**
+	 * 根据ycc.layerList重复舞台
+	 */
+	win.Ycc.prototype.reRenderStage = function () {
+		this.clearStage();
+		this.layerManager.renderAllLayerToStage();
+	};
 })(window);

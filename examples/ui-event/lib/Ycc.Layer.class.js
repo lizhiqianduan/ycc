@@ -380,6 +380,16 @@
 		for(var i=0;i<this.uiList.length;i++){
 			this.uiList[i].render();
 		}
+	};
+	
+	/**
+	 * 重绘图层。
+	 * <br>注意：并没有渲染至舞台。
+	 */
+	Ycc.Layer.prototype.reRender = function () {
+		this.clear();
+		this.render();
 	}
+	
 	
 })(window.Ycc);
