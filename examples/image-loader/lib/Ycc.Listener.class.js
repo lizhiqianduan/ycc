@@ -29,7 +29,7 @@
 		var ls = this.listeners[type];
 		if(!ls)
 			this.listeners[type] = [];
-		this.listeners[type].push(listener);
+		this.listeners[type].indexOf(listener) === -1 && this.listeners[type].push(listener);
 	};
 	
 	/**
@@ -38,8 +38,7 @@
 	 * @param data
 	 */
 	Ycc.Listener.prototype.triggerListener = function (type,data) {
-		
-		// console.log(this.id,type,data);
+		Ycc.utils.isFn(this["on"+type]) && this["on"+type].call(this,data);
 		
 		var ls = this.listeners[type];
 		if(!ls || !Ycc.utils.isArray(ls)) return;

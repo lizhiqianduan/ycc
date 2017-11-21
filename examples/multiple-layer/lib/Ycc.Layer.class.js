@@ -66,7 +66,7 @@
 		this.option = config;
 
 		/**
-		 * 存储图层中的所有UI
+		 * 存储图层中的所有UI。UI的顺序，即为图层中的渲染顺序。
 		 * @type {Ycc.UI[]}
 		 */
 		this.uiList = [];
@@ -215,35 +215,120 @@
 	};
 	
 	/**
-	 * 事件的初始化
+	 * 事件的初始化。
+	 * <br> 注：如果鼠标按下与抬起的位置有变动，默认不会触发click事件。
 	 * @private
-	 * @todo 需要算法将图层事件分发至图层中的UI
 	 */
 	Ycc.Layer.prototype._initEvent = function () {
 		var self = this;
+		// 记录鼠标按下的事件
+		var mouseDownYccEvent = null;
+		// 记录鼠标抬起的事件
+		var mouseUpYccEvent = null;
+		// 鼠标是否已经移动
+		var mouseHasMove = false;
+		
 		this.addListener("click",function (e) {
+			// 如果鼠标已经改变了位置，那么click事件不触发
+			if(mouseHasMove) return;
+			defaultMouseListener(e);
+		});
+		
+		this.addListener("mousedown",function (e) {
+			mouseHasMove = false;
+			mouseDownYccEvent = e;
+			defaultMouseListener(e);
+		});
+
+		this.addListener("mouseup",function (e) {
+			e.mouseDownYccEvent = mouseDownYccEvent = null;
+			mouseUpYccEvent = e;
+			defaultMouseListener(e);
+		});
+		
+		this.addListener("mousemove",mouseMoveListener);
+		
+		
+		/**
+		 * 图层中鼠标移动的监听器
+		 * @param e	{Ycc.Event}
+		 */
+		function mouseMoveListener(e) {
+			// 判断事件是否已经被阻止
+			if(e.stop) return;
+			// 判断是否真的移动
+			if(mouseDownYccEvent && e.x===mouseDownYccEvent.x&&e.y===mouseDownYccEvent.y) return;
+			// 解决webkit内核mouseup自动触发mousemove的BUG
+			if(mouseUpYccEvent && e.x===mouseUpYccEvent.x&&e.y===mouseUpYccEvent.y) {
+				return;
+			}
+
+			// 设置已经移动的标志位
+			mouseHasMove = true;
+			
+			// 如果鼠标已经按下，且按下时有目标，则表示拖拽事件
+			if(mouseDownYccEvent && mouseDownYccEvent.target){
+				var draggingEvent = new Ycc.Event("dragging");
+				draggingEvent.target = mouseDownYccEvent.target;
+				draggingEvent.x = e.x;
+				draggingEvent.y = e.y;
+				draggingEvent.mouseDownYccEvent = mouseDownYccEvent;
+				draggingEvent.target.triggerListener(draggingEvent.type,draggingEvent);
+			}
+			
+			// 下面处理普通的鼠标移动事件
+			for(var i = self.uiList.length-1;i>=0;i--){
+				var ui = self.uiList[i];
+				// 图层内部UI的相对坐标
+				var dot = new Ycc.Math.Dot(e.x - ui.belongTo.x,e.y - ui.belongTo.y);
+				// 如果位于rect内，触发事件,并阻止继续传递
+				if(dot.isInRect(ui.option.rect)){
+					e.stop = true;
+					e.mouseDownYccEvent = mouseDownYccEvent;
+					e.mouseUpYccEvent = mouseUpYccEvent;
+					e.target = ui;
+					ui.triggerListener(e.type,e);
+					break;
+				}
+			}
+		}
+		
+		
+		/**
+		 * 默认的事件监听器。默认鼠标事件触发点位于rect内，事件才转发给UI。
+		 * @param e	{Ycc.Event}	ycc事件
+		 */
+		function defaultMouseListener(e) {
+			if(e.stop) return;
+			for(var i = self.uiList.length-1;i>=0;i--){
+				var ui = self.uiList[i];
+				// 图层内部UI的相对坐标
+				var layerX = e.x - ui.belongTo.x;
+				var layerY = e.y - ui.belongTo.y;
+				var dot = new Ycc.Math.Dot(layerX,layerY);
+				// 如果位于rect内，并且事件未被阻止，触发事件,并阻止继续传递
+				if(dot.isInRect(ui.option.rect) && e.stop===false){
+					e.stop = true;
+					e.mouseDownYccEvent = mouseDownYccEvent;
+					e.mouseUpYccEvent = mouseUpYccEvent;
+					e.target = ui;
+					ui.triggerListener(e.type,e);
+					break;
+				}
+			}
+		}
+		
+		/**
+		 * 直接将事件转发给UI。不做任何处理。
+		 * @param e
+		 */
+		function broadcastDirect(e) {
+			e.mouseDownYccEvent = mouseDownYccEvent;
 			for(var i = 0;i<self.uiList.length;i++){
 				var ui = self.uiList[i];
-				var dot = new Ycc.Math.Dot(e.x,e.y);
-				if(dot.isInRect(ui.option.rect))
-					ui.triggerListener("click",e);
+				ui.triggerListener(e.type,e);
 			}
-		});
-		// this.addListener("mousemove",function (e) {
-		// 	console.log("mousemove",e);
-		// });
-		// this.addListener("mousedown",function (e) {
-		// 	console.log("mousedown",e);
-		// });
-		// this.addListener("mouseup",function (e) {
-		// 	console.log("mouseup",e);
-		// });
-		// this.addListener("mouseenter",function (e) {
-		// 	console.log("mouseenter",e);
-		// });
-		// this.addListener("mouseout",function (e) {
-		// 	console.log("mouseout",e);
-		// });
+		}
 		
 	};
 	
@@ -287,6 +372,14 @@
 		this.uiList.push(ui);
 	};
 	
-	
+	/**
+	 * 渲染Layer。
+	 * <br>注意：并没有渲染至舞台。
+	 */
+	Ycc.Layer.prototype.render = function () {
+		for(var i=0;i<this.uiList.length;i++){
+			this.uiList[i].render();
+		}
+	}
 	
 })(window.Ycc);

@@ -35,6 +35,12 @@
 		this.rect = new Ycc.Math.Rect();
 		
 		/**
+		 * UI所属的图层
+		 * @type {Ycc.Layer}
+		 */
+		this.belongTo = null;
+		
+		/**
 		 * 基础绘图UI
 		 * @type {Ycc.UI}
 		 */
@@ -51,6 +57,7 @@
 	 * @param layer	{Layer}		图层
 	 */
 	Ycc.UI.Base.prototype.init = function (layer) {
+		this.belongTo = layer;
 		this.ctx = layer.ctx;
 		this.baseUI = new Ycc.UI(layer.canvasDom);
 	};

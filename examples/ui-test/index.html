@@ -3,6 +3,11 @@
 <head>
 	<meta charset="UTF-8">
 	<title>UI图形测试</title>
+	<style>
+		#canvas canvas{
+			background-color: #ccc;
+		}
+	</style>
 </head>
 <body>
 
@@ -26,8 +31,9 @@
 <script src="./lib/Ycc.UI.SingleLineText.class.js"></script>
 <script src="./lib/Ycc.UI.MultiLineText.class.js"></script>
 <script src="./lib/Ycc.UI.Rect.class.js"></script>
+<script src="./lib/Ycc.UI.Line.class.js"></script>
 <script src="./lib/Ycc.PhotoManager.class.js"></script>
-<script src="./lib/Ycc.EventManager.class.js"></script>
+<script src="./lib/Ycc.Event.class.js"></script>
 <script src="./lib/Ycc.Layer.class.js"></script>
 <script src="./lib/Ycc.LayerManager.class.js"></script>
 
@@ -36,50 +42,56 @@
 	var canvas = document.createElement("canvas");
 	canvas.width = 800;
 	canvas.height = 600;
-	var ycc = new Ycc(canvas,{
-		canvasBgColor:"transparent"
-	});
-
 	document.getElementById("canvas").appendChild(canvas);
+
+
+	var ycc = new Ycc(canvas);
 
 	// 新建图层
 	var layer = ycc.layerManager.newLayer({enableEventManager:true});
 	// 设置UI属性
-	var config = {
-		content:"  123  45678  9012  345  6789  01234567  89012  34567\n1234567890123456789012345678901234\n12345678901234567890",
-		rect:new Ycc.Math.Rect(100,100,100,100),
+	var config,ui;
+	config ={
+		content:"  我是  多行文本的UI  超出的文字会被忽略  测试文字 测试文字 测试文字  01234567  89012  34567\n1234567890123456789012345678901234\n12345678901234567890",
+		rect:new Ycc.Math.Rect(100,100,200,100),
 		wordBreak:"break-word",
 		overflow:"hidden"
 	};
 	// 新建多行文本的UI
-	var ui = new Ycc.UI.MultiLineText(config);
-	// 监听事件
-	ui.addListener("click",function () {
-		console.log("我是",this.constructor.name);
-		console.log("我被点击了！")
-	});
+	ui = new Ycc.UI.MultiLineText(config);
 	// 添加至图层
 	layer.addUI(ui);
-
 	// 画一个辅助的小框来标识范围
 	ycc.baseUI.rect([config.rect.x,config.rect.y],[config.rect.x+config.rect.width,config.rect.y+config.rect.height]);
 
 
 	config = {
-		content:"sfsddfsdfsaf11111111111111111111111111111111111111111safsaf",
-		rect:new Ycc.Math.Rect(10,10,100,50),
+		content:"我是一个单行文本的UI 超出文字会被忽略 测试文字 测试文字 测试文字  01234567  89012",
+		rect:new Ycc.Math.Rect(10,10,400,50),
 		yAlign:"center",
 		overflow:"hidden"
 	};
-	layer.addUI(new Ycc.UI.SingleLineText(config));
+	ui = new Ycc.UI.SingleLineText(config);
+	layer.addUI(ui);
 	ycc.baseUI.rect([config.rect.x,config.rect.y],[config.rect.x+config.rect.width,config.rect.y+config.rect.height]);
+
+
+//	图层二
+	layer = ycc.layerManager.newLayer({enableEventManager:true});
+	config = {
+		rect:new Ycc.Math.Rect(320,100,30,50)
+	};
+	ui = new Ycc.UI.Rect(config);
+	layer.addUI(ui);
+	ycc.baseUI.rect([config.rect.x,config.rect.y],[config.rect.x+config.rect.width,config.rect.y+config.rect.height]);
+
 
 	config = {
-		rect:new Ycc.Math.Rect(300,300,30,50)
+		start:new Ycc.Math.Dot(0,80),
+		end:new Ycc.Math.Dot(800,80),
+		width:3
 	};
-	layer.addUI(new Ycc.UI.Rect(config));
-	ycc.baseUI.rect([config.rect.x,config.rect.y],[config.rect.x+config.rect.width,config.rect.y+config.rect.height]);
-
+	layer.addUI(new Ycc.UI.Line(config));
 
 
 	ycc.layerManager.renderAllLayerToStage();
