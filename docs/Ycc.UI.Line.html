@@ -634,7 +634,19 @@
             
             <span class="subtitle">Members</span>
             
+                <li data-name="Ycc.UI.Line#baseUI"><a href="Ycc.UI.Line.html#baseUI">baseUI</a></li>
+            
+                <li data-name="Ycc.UI.Line#belongTo"><a href="Ycc.UI.Line.html#belongTo">belongTo</a></li>
+            
+                <li data-name="Ycc.UI.Line#ctx"><a href="Ycc.UI.Line.html#ctx">ctx</a></li>
+            
+                <li data-name="Ycc.UI.Line#listeners"><a href="Ycc.UI.Line.html#listeners">listeners</a></li>
+            
                 <li data-name="Ycc.UI.Line#option"><a href="Ycc.UI.Line.html#option">option</a></li>
+            
+                <li data-name="Ycc.UI.Line#rect"><a href="Ycc.UI.Line.html#rect">rect</a></li>
+            
+                <li data-name="Ycc.UI.Line#uid"><a href="Ycc.UI.Line.html#uid">uid</a></li>
             
             </ul>
             <ul class="typedefs itemMembers">
@@ -644,7 +656,17 @@
             
             <span class="subtitle">Methods</span>
             
+                <li data-name="Ycc.UI.Line#addListener"><a href="Ycc.UI.Line.html#addListener">addListener</a></li>
+            
+                <li data-name="Ycc.UI.Line#getMaxContentInWidth"><a href="Ycc.UI.Line.html#getMaxContentInWidth">getMaxContentInWidth</a></li>
+            
+                <li data-name="Ycc.UI.Line#init"><a href="Ycc.UI.Line.html#init">init</a></li>
+            
+                <li data-name="Ycc.UI.Line#removeListener"><a href="Ycc.UI.Line.html#removeListener">removeListener</a></li>
+            
                 <li data-name="Ycc.UI.Line#render"><a href="Ycc.UI.Line.html#render">render</a></li>
+            
+                <li data-name="Ycc.UI.Line#triggerListener"><a href="Ycc.UI.Line.html#triggerListener">triggerListener</a></li>
             
             </ul>
             <ul class="events itemMembers">
@@ -712,7 +734,19 @@
             
             <span class="subtitle">Members</span>
             
+                <li data-name="Ycc.UI.Rect#baseUI"><a href="Ycc.UI.Rect.html#baseUI">baseUI</a></li>
+            
+                <li data-name="Ycc.UI.Rect#belongTo"><a href="Ycc.UI.Rect.html#belongTo">belongTo</a></li>
+            
+                <li data-name="Ycc.UI.Rect#ctx"><a href="Ycc.UI.Rect.html#ctx">ctx</a></li>
+            
+                <li data-name="Ycc.UI.Rect#listeners"><a href="Ycc.UI.Rect.html#listeners">listeners</a></li>
+            
                 <li data-name="Ycc.UI.Rect#option"><a href="Ycc.UI.Rect.html#option">option</a></li>
+            
+                <li data-name="Ycc.UI.Rect#rect"><a href="Ycc.UI.Rect.html#rect">rect</a></li>
+            
+                <li data-name="Ycc.UI.Rect#uid"><a href="Ycc.UI.Rect.html#uid">uid</a></li>
             
             </ul>
             <ul class="typedefs itemMembers">
@@ -722,7 +756,17 @@
             
             <span class="subtitle">Methods</span>
             
+                <li data-name="Ycc.UI.Rect#addListener"><a href="Ycc.UI.Rect.html#addListener">addListener</a></li>
+            
+                <li data-name="Ycc.UI.Rect#getMaxContentInWidth"><a href="Ycc.UI.Rect.html#getMaxContentInWidth">getMaxContentInWidth</a></li>
+            
+                <li data-name="Ycc.UI.Rect#init"><a href="Ycc.UI.Rect.html#init">init</a></li>
+            
+                <li data-name="Ycc.UI.Rect#removeListener"><a href="Ycc.UI.Rect.html#removeListener">removeListener</a></li>
+            
                 <li data-name="Ycc.UI.Rect#render"><a href="Ycc.UI.Rect.html#render">render</a></li>
+            
+                <li data-name="Ycc.UI.Rect#triggerListener"><a href="Ycc.UI.Rect.html#triggerListener">triggerListener</a></li>
             
             </ul>
             <ul class="events itemMembers">
@@ -815,7 +859,7 @@
     
         
         <div class="tag-source">
-            <a href="Ycc.UI.Line.class.js.html">Ycc.UI.Line.class.js</a>, <a href="Ycc.UI.Line.class.js.html#line21">line 21</a>
+            <a href="Ycc.UI.Line.class.js.html">Ycc.UI.Line.class.js</a>, <a href="Ycc.UI.Line.class.js.html#line22">line 22</a>
         </div>
         
     </div>
@@ -826,7 +870,7 @@
     
     
     <div class="description">
-        线段
+        线段。可设置属性如下
     </div>
     
 
@@ -873,7 +917,7 @@
             
             <td class="description last">
                 
-                
+                所有可配置的配置项
                 
 
 <table class="params">
@@ -885,6 +929,8 @@
 		
 		<th>Type</th>
 		
+		
+		<th>Default</th>
 		
 		
 		<th class="last">Description</th>
@@ -909,10 +955,14 @@
             </td>
             
             
+                <td class="default">
+                
+                </td>
+            
             
             <td class="description last">
                 
-                容纳区。会根据属性设置被修改</td>
+                容纳区。会根据属性设置动态修改。</td>
         </tr>
 	
 	
@@ -931,6 +981,10 @@
             
             </td>
             
+            
+                <td class="default">
+                
+                </td>
             
             
             <td class="description last">
@@ -955,6 +1009,10 @@
             </td>
             
             
+                <td class="default">
+                
+                </td>
+            
             
             <td class="description last">
                 
@@ -978,10 +1036,16 @@
             </td>
             
             
+                <td class="default">
+                
+                    1
+                
+                </td>
+            
             
             <td class="description last">
                 
-                终点</td>
+                线条宽度</td>
         </tr>
 	
 	
@@ -1001,10 +1065,16 @@
             </td>
             
             
+                <td class="default">
+                
+                    "black"
+                
+                </td>
+            
             
             <td class="description last">
                 
-                颜色</td>
+                线条颜色</td>
         </tr>
 	
 	
@@ -1061,6 +1131,12 @@
     </div>
     
     
+        <h3 class="subsection-title">Extends</h3>
+        
+        <ul>
+            <li><a href="Ycc.UI.Base.html">Ycc.UI.Base</a></li>
+        </ul>
+    
     
     
     
@@ -1074,6 +1150,186 @@
         <h3 class="subsection-title">Members</h3>
         
         <dl>
+            
+<dt>
+    <div class="nameContainer">
+        <h4 class="name" id="baseUI">baseUI<span class="type-signature type ycc.ui"><a href="Ycc.UI.html">Ycc.UI</a></span> </h4>
+    </div>
+    
+    
+</dt>
+<dd>
+    
+    <div class="description">
+        基础绘图UI
+    </div>
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <div class="nameContainer">
+        <h4 class="name" id="belongTo">belongTo<span class="type-signature type ycc.layer"><a href="Ycc.Layer.html">Ycc.Layer</a></span> </h4>
+    </div>
+    
+    
+</dt>
+<dd>
+    
+    <div class="description">
+        UI所属的图层
+    </div>
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <div class="nameContainer">
+        <h4 class="name" id="ctx">ctx<span class="type-signature type null">null</span> </h4>
+    </div>
+    
+    
+</dt>
+<dd>
+    
+    <div class="description">
+        绘图环境
+    </div>
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <div class="nameContainer">
+        <h4 class="name" id="listeners">listeners<span class="type-signature type object">Object</span> </h4>
+    </div>
+    
+    
+</dt>
+<dd>
+    
+    <div class="description">
+        所有的监听器。key为type，val为listener数组。
+    </div>
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+</dd>
+
+        
             
 <dt>
     <div class="nameContainer">
@@ -1118,6 +1374,96 @@
     
 </dd>
 
+        
+            
+<dt>
+    <div class="nameContainer">
+        <h4 class="name" id="rect">rect<span class="type-signature type ycc.math.rect"><a href="Ycc.Math.Rect.html">Ycc.Math.Rect</a></span> </h4>
+    </div>
+    
+    
+</dt>
+<dd>
+    
+    <div class="description">
+        UI的绘图区域
+    </div>
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <div class="nameContainer">
+        <h4 class="name" id="uid">uid<span class="type-signature type number">number</span> </h4>
+    </div>
+    
+    
+</dt>
+<dd>
+    
+    <div class="description">
+        UI的唯一ID
+    </div>
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+</dd>
+
         </dl>
     
     
@@ -1125,6 +1471,566 @@
         <h3 class="subsection-title">Methods</h3>
         
         <dl>
+            
+<dt>
+    <div class="nameContainer inherited">
+        <h4 class="name" id="addListener">
+            
+                <span class="inherited"><a href="Ycc.Listener.html#addListener">inherited</a></span>
+            
+            addListener<span class="signature">(type, listener)</span>
+        </h4>
+    
+        
+        <div class="tag-source">
+            <a href="Ycc.Listener.class.js.html">Ycc.Listener.class.js</a>, <a href="Ycc.Listener.class.js.html#line28">line 28</a>
+        </div>
+        
+    </div>
+
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        添加某个类型的监听器
+    </div>
+    
+
+    
+    
+    
+    
+    
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>type</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+            
+            
+            
+            <td class="description last">
+                
+                </td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>listener</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">function</span>
+
+
+            
+            </td>
+            
+            
+            
+            <td class="description last">
+                
+                </td>
+        </tr>
+	
+	
+	</tbody>
+</table>
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <div class="nameContainer inherited">
+        <h4 class="name" id="getMaxContentInWidth">
+            
+                <span class="inherited"><a href="Ycc.UI.Base.html#getMaxContentInWidth">inherited</a></span>
+            
+            getMaxContentInWidth<span class="signature">(content, width)</span><span class="glyphicon glyphicon-circle-arrow-right"></span><span class="type-signature returnType">{string}</span>
+        </h4>
+    
+        
+        <div class="tag-source">
+            <a href="Ycc.UI.Base.class.js.html">Ycc.UI.Base.class.js</a>, <a href="Ycc.UI.Base.class.js.html#line81">line 81</a>
+        </div>
+        
+    </div>
+
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        给定宽度，获取能容纳的最长单行字符串
+    </div>
+    
+
+    
+    
+    
+    
+    
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>content</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+            
+            
+            
+            <td class="description last">
+                
+                文本内容</td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>width</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+            
+            
+            
+            <td class="description last">
+                
+                指定宽度</td>
+        </tr>
+	
+	
+	</tbody>
+</table>
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    <h5>Returns:</h5>
+    
+
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Type</th>
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+    <tbody>
+    
+        <tr>
+            
+            <td class="type">
+            
+                        string
+                        
+                    
+            </td>
+            <td class="description last"></td>
+        </tr>
+    
+    </tbody>
+</table>
+
+    
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <div class="nameContainer inherited">
+        <h4 class="name" id="init">
+            
+                <span class="inherited"><a href="Ycc.UI.Base.html#init">inherited</a></span>
+            
+            init<span class="signature">(layer)</span>
+        </h4>
+    
+        
+        <div class="tag-source">
+            <a href="Ycc.UI.Base.class.js.html">Ycc.UI.Base.class.js</a>, <a href="Ycc.UI.Base.class.js.html#line59">line 59</a>
+        </div>
+        
+    </div>
+
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        在某个图层中初始化UI
+    </div>
+    
+
+    
+    
+    
+    
+    
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>layer</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">Layer</span>
+
+
+            
+            </td>
+            
+            
+            
+            <td class="description last">
+                
+                图层</td>
+        </tr>
+	
+	
+	</tbody>
+</table>
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <div class="nameContainer inherited">
+        <h4 class="name" id="removeListener">
+            
+                <span class="inherited"><a href="Ycc.Listener.html#removeListener">inherited</a></span>
+            
+            removeListener<span class="signature">(type, listener)</span>
+        </h4>
+    
+        
+        <div class="tag-source">
+            <a href="Ycc.Listener.class.js.html">Ycc.Listener.class.js</a>, <a href="Ycc.Listener.class.js.html#line56">line 56</a>
+        </div>
+        
+    </div>
+
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        移除某个类型的监听器
+    </div>
+    
+
+    
+    
+    
+    
+    
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>type</code></td>
+            
+            
+            <td class="type">
+            
+            </td>
+            
+            
+            
+            <td class="description last">
+                
+                </td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>listener</code></td>
+            
+            
+            <td class="type">
+            
+            </td>
+            
+            
+            
+            <td class="description last">
+                
+                </td>
+        </tr>
+	
+	
+	</tbody>
+</table>
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    
+    
+</dd>
+
+        
             
 <dt>
     <div class="nameContainer">
@@ -1135,7 +2041,7 @@
     
         
         <div class="tag-source">
-            <a href="Ycc.UI.Line.class.js.html">Ycc.UI.Line.class.js</a>, <a href="Ycc.UI.Line.class.js.html#line42">line 42</a>
+            <a href="Ycc.UI.Line.class.js.html">Ycc.UI.Line.class.js</a>, <a href="Ycc.UI.Line.class.js.html#line43">line 43</a>
         </div>
         
     </div>
@@ -1195,6 +2101,137 @@
     
 </dd>
 
+        
+            
+<dt>
+    <div class="nameContainer inherited">
+        <h4 class="name" id="triggerListener">
+            
+                <span class="inherited"><a href="Ycc.Listener.html#triggerListener">inherited</a></span>
+            
+            triggerListener<span class="signature">(type, data)</span>
+        </h4>
+    
+        
+        <div class="tag-source">
+            <a href="Ycc.Listener.class.js.html">Ycc.Listener.class.js</a>, <a href="Ycc.Listener.class.js.html#line40">line 40</a>
+        </div>
+        
+    </div>
+
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        触发某一类型的监听器
+    </div>
+    
+
+    
+    
+    
+    
+    
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>type</code></td>
+            
+            
+            <td class="type">
+            
+            </td>
+            
+            
+            
+            <td class="description last">
+                
+                </td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>data</code></td>
+            
+            
+            <td class="type">
+            
+            </td>
+            
+            
+            
+            <td class="description last">
+                
+                </td>
+        </tr>
+	
+	
+	</tbody>
+</table>
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    
+    
+</dd>
+
         </dl>
     
     
@@ -1212,7 +2249,7 @@
         
 
         <footer>
-            Documentation generated by <a target="_blank" href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Tue Nov 21 2017 17:06:29 GMT+0800 (中国标准时间)
+            Documentation generated by <a target="_blank" href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Tue Nov 21 2017 17:46:36 GMT+0800 (中国标准时间)
         </footer>
     </div>
 </div>
