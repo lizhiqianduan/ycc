@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <title>Source: Ycc.UI.Rect.class.js</title>
+    <title>Source: Ycc.Event.class.js</title>
     
     
     <script src="scripts/prettify/prettify.js"></script>
@@ -784,7 +784,7 @@
     </ul>
 </div>
     <div class="main">
-        <h1 class="page-title" data-filename="Ycc.UI.Rect.class.js.html">Source: Ycc.UI.Rect.class.js</h1>
+        <h1 class="page-title" data-filename="Ycc.Event.class.js.html">Source: Ycc.Event.class.js</h1>
         
 
 
@@ -792,10 +792,10 @@
     <section>
         <article>
             <pre class="prettyprint source "><code>/**
- * @file    Ycc.UI.Rect.class.js
+ * @file    Ycc.Event.class.js
  * @author  xiaohei
- * @date    2017/11/17
- * @description  Ycc.UI.Rect.class文件
+ * @date    2017/11/20
+ * @description  Ycc.Event.class文件
  */
 
 
@@ -803,45 +803,62 @@
 (function (Ycc) {
 	
 	/**
-	 * 方块
-	 * @param option	{object}
+	 * 事件的数据结构类
+	 * @param type {String}	事件类型
 	 * @constructor
 	 */
-	Ycc.UI.Rect = function Rect(option) {
-		Ycc.UI.Base.call(this);
+	Ycc.Event = function (type) {
+		/**
+		 * 事件类型
+		 * @type {string}
+		 */
+		this.type = type?type:"";
+		/**
+		 * 鼠标或点击位置
+		 * @type {number}
+		 */
+		this.x=0;
+		/**
+		 * 鼠标或点击位置
+		 * @type {number}
+		 */
+		this.y=0;
+		/**
+		 * ycc事件所对应的原始事件
+		 */
+		this.originEvent = null;
 		
 		/**
-		 * 配置项
+		 * 鼠标按下的ycc事件
+		 * @type {Ycc.Event}
 		 */
-		this.option = Ycc.utils.extend({
-			rect:null,
-			fill:true,
-			color:"black"
-		},option);
-		
-	};
-	Ycc.UI.Rect.prototype = new Ycc.UI.Base();
-	Ycc.UI.Rect.prototype.constructor = Ycc.UI.Rect;
-	
-	/**
-	 * 绘制
-	 */
-	Ycc.UI.Rect.prototype.render = function () {
-		var rect = this.option.rect;
+		this.mouseDownYccEvent = null;
 
-		this.ctx.save();
-		this.ctx.beginPath();
-		this.ctx.fillStyle = this.option.color;
-		this.ctx.strokeStyle = this.option.color;
-		this.ctx.rect(rect.x,rect.y,rect.width,rect.height);
-		this.ctx.closePath();
-		if(!this.option.fill)
-			this.ctx.stroke();
-		else
-			this.ctx.fill();
-		this.ctx.restore();
-	};
-	
+		/**
+		 * 鼠标抬起的ycc事件
+		 * @type {Ycc.Event}
+		 */
+		this.mouseUpYccEvent = null;
+
+		/**
+		 * 是否阻止向下传递。默认为false，不阻止
+		 * @type {boolean}
+		 */
+		this.stop = false;
+		
+		/**
+		 * 事件触发的对象
+		 * @type {Ycc.UI|null}
+		 */
+		this.target = null;
+		
+		/**
+		 * 事件触发时，鼠标的坐标与UI的坐标差。即(e.x-target.x,e.y-target.y)
+		 * @type {Ycc.Math.Dot|null}
+		 */
+		this.targetDeltaPosition = null;
+		
+	}
 	
 	
 	

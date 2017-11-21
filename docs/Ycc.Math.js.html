@@ -63,8 +63,6 @@
             
                 <li data-name="win.Ycc#stage"><a href="win.Ycc.html#stage">stage</a></li>
             
-                <li data-name="win.Ycc#stageEventManager"><a href="win.Ycc.html#stageEventManager">stageEventManager</a></li>
-            
                 <li data-name="win.Ycc#ticker"><a href="win.Ycc.html#ticker">ticker</a></li>
             
             </ul>
@@ -83,44 +81,46 @@
             
                 <li data-name="win.Ycc#init"><a href="win.Ycc.html#init">init</a></li>
             
+                <li data-name="win.Ycc#reRenderStage"><a href="win.Ycc.html#reRenderStage">reRenderStage</a></li>
+            
             </ul>
             <ul class="events itemMembers">
             
             </ul>
         </li>
     
-        <li class="item" data-name="Ycc.EventManager">
+        <li class="item" data-name="Ycc.Event">
             <span class="title">
-                <a href="Ycc.EventManager.html">Ycc.EventManager</a>
+                <a href="Ycc.Event.html">Ycc.Event</a>
                 
             </span>
             <ul class="members itemMembers">
             
             <span class="subtitle">Members</span>
             
-                <li data-name="Ycc.EventManager#canvasDom"><a href="Ycc.EventManager.html#canvasDom">canvasDom</a></li>
+                <li data-name="Ycc.Event#mouseDownYccEvent"><a href="Ycc.Event.html#mouseDownYccEvent">mouseDownYccEvent</a></li>
             
-                <li data-name="Ycc.EventManager#mouseDown"><a href="Ycc.EventManager.html#mouseDown">mouseDown</a></li>
+                <li data-name="Ycc.Event#mouseUpYccEvent"><a href="Ycc.Event.html#mouseUpYccEvent">mouseUpYccEvent</a></li>
             
-                <li data-name="Ycc.EventManager#mouseDownEvent"><a href="Ycc.EventManager.html#mouseDownEvent">mouseDownEvent</a></li>
+                <li data-name="Ycc.Event#originEvent"><a href="Ycc.Event.html#originEvent">originEvent</a></li>
             
-                <li data-name="Ycc.EventManager#mouseMoving"><a href="Ycc.EventManager.html#mouseMoving">mouseMoving</a></li>
+                <li data-name="Ycc.Event#stop"><a href="Ycc.Event.html#stop">stop</a></li>
             
-                <li data-name="Ycc.EventManager#proxyEventTypes"><a href="Ycc.EventManager.html#proxyEventTypes">proxyEventTypes</a></li>
+                <li data-name="Ycc.Event#target"><a href="Ycc.Event.html#target">target</a></li>
             
-                <li data-name="Ycc.EventManager#yccInstance"><a href="Ycc.EventManager.html#yccInstance">yccInstance</a></li>
+                <li data-name="Ycc.Event#targetDeltaPosition"><a href="Ycc.Event.html#targetDeltaPosition">targetDeltaPosition</a></li>
+            
+                <li data-name="Ycc.Event#type"><a href="Ycc.Event.html#type">type</a></li>
+            
+                <li data-name="Ycc.Event#x"><a href="Ycc.Event.html#x">x</a></li>
+            
+                <li data-name="Ycc.Event#y"><a href="Ycc.Event.html#y">y</a></li>
             
             </ul>
             <ul class="typedefs itemMembers">
             
             </ul>
             <ul class="methods itemMembers">
-            
-            <span class="subtitle">Methods</span>
-            
-                <li data-name="Ycc.EventManager#broadcastToLayer"><a href="Ycc.EventManager.html#broadcastToLayer">broadcastToLayer</a></li>
-            
-                <li data-name="Ycc.EventManager#init"><a href="Ycc.EventManager.html#init">init</a></li>
             
             </ul>
             <ul class="events itemMembers">
@@ -199,7 +199,11 @@
             
                 <li data-name="Ycc.Layer#removeListener"><a href="Ycc.Layer.html#removeListener">removeListener</a></li>
             
+                <li data-name="Ycc.Layer#render"><a href="Ycc.Layer.html#render">render</a></li>
+            
                 <li data-name="Ycc.Layer#renderToStage"><a href="Ycc.Layer.html#renderToStage">renderToStage</a></li>
+            
+                <li data-name="Ycc.Layer#reRender"><a href="Ycc.Layer.html#reRender">reRender</a></li>
             
                 <li data-name="Ycc.Layer#triggerListener"><a href="Ycc.Layer.html#triggerListener">triggerListener</a></li>
             
@@ -237,6 +241,8 @@
                 <li data-name="Ycc.LayerManager#newLayer"><a href="Ycc.LayerManager.html#newLayer">newLayer</a></li>
             
                 <li data-name="Ycc.LayerManager#renderAllLayerToStage"><a href="Ycc.LayerManager.html#renderAllLayerToStage">renderAllLayerToStage</a></li>
+            
+                <li data-name="Ycc.LayerManager#reRenderAllLayerToStage"><a href="Ycc.LayerManager.html#reRenderAllLayerToStage">reRenderAllLayerToStage</a></li>
             
             </ul>
             <ul class="events itemMembers">
@@ -583,6 +589,8 @@
             
                 <li data-name="Ycc.UI.Base#baseUI"><a href="Ycc.UI.Base.html#baseUI">baseUI</a></li>
             
+                <li data-name="Ycc.UI.Base#belongTo"><a href="Ycc.UI.Base.html#belongTo">belongTo</a></li>
+            
                 <li data-name="Ycc.UI.Base#ctx"><a href="Ycc.UI.Base.html#ctx">ctx</a></li>
             
                 <li data-name="Ycc.UI.Base#listeners"><a href="Ycc.UI.Base.html#listeners">listeners</a></li>
@@ -617,6 +625,33 @@
             </ul>
         </li>
     
+        <li class="item" data-name="Ycc.UI.Line">
+            <span class="title">
+                <a href="Ycc.UI.Line.html">Ycc.UI.Line</a>
+                
+            </span>
+            <ul class="members itemMembers">
+            
+            <span class="subtitle">Members</span>
+            
+                <li data-name="Ycc.UI.Line#option"><a href="Ycc.UI.Line.html#option">option</a></li>
+            
+            </ul>
+            <ul class="typedefs itemMembers">
+            
+            </ul>
+            <ul class="methods itemMembers">
+            
+            <span class="subtitle">Methods</span>
+            
+                <li data-name="Ycc.UI.Line#render"><a href="Ycc.UI.Line.html#render">render</a></li>
+            
+            </ul>
+            <ul class="events itemMembers">
+            
+            </ul>
+        </li>
+    
         <li class="item" data-name="Ycc.UI.MultiLineText">
             <span class="title">
                 <a href="Ycc.UI.MultiLineText.html">Ycc.UI.MultiLineText</a>
@@ -627,6 +662,8 @@
             <span class="subtitle">Members</span>
             
                 <li data-name="Ycc.UI.MultiLineText#baseUI"><a href="Ycc.UI.MultiLineText.html#baseUI">baseUI</a></li>
+            
+                <li data-name="Ycc.UI.MultiLineText#belongTo"><a href="Ycc.UI.MultiLineText.html#belongTo">belongTo</a></li>
             
                 <li data-name="Ycc.UI.MultiLineText#ctx"><a href="Ycc.UI.MultiLineText.html#ctx">ctx</a></li>
             
@@ -703,6 +740,8 @@
             <span class="subtitle">Members</span>
             
                 <li data-name="Ycc.UI.SingleLineText#baseUI"><a href="Ycc.UI.SingleLineText.html#baseUI">baseUI</a></li>
+            
+                <li data-name="Ycc.UI.SingleLineText#belongTo"><a href="Ycc.UI.SingleLineText.html#belongTo">belongTo</a></li>
             
                 <li data-name="Ycc.UI.SingleLineText#ctx"><a href="Ycc.UI.SingleLineText.html#ctx">ctx</a></li>
             
@@ -893,7 +932,7 @@
         
 
         <footer>
-            Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Fri Nov 17 2017 11:20:09 GMT+0800 (中国标准时间)
+            Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Tue Nov 21 2017 17:06:29 GMT+0800 (中国标准时间)
         </footer>
     </div>
 </div>

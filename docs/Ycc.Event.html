@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <title>Source: Ycc.EventManager.class.js</title>
+    <title>Class: Event</title>
     
     
     <script src="scripts/prettify/prettify.js"></script>
@@ -63,8 +63,6 @@
             
                 <li data-name="win.Ycc#stage"><a href="win.Ycc.html#stage">stage</a></li>
             
-                <li data-name="win.Ycc#stageEventManager"><a href="win.Ycc.html#stageEventManager">stageEventManager</a></li>
-            
                 <li data-name="win.Ycc#ticker"><a href="win.Ycc.html#ticker">ticker</a></li>
             
             </ul>
@@ -83,44 +81,46 @@
             
                 <li data-name="win.Ycc#init"><a href="win.Ycc.html#init">init</a></li>
             
+                <li data-name="win.Ycc#reRenderStage"><a href="win.Ycc.html#reRenderStage">reRenderStage</a></li>
+            
             </ul>
             <ul class="events itemMembers">
             
             </ul>
         </li>
     
-        <li class="item" data-name="Ycc.EventManager">
+        <li class="item" data-name="Ycc.Event">
             <span class="title">
-                <a href="Ycc.EventManager.html">Ycc.EventManager</a>
+                <a href="Ycc.Event.html">Ycc.Event</a>
                 
             </span>
             <ul class="members itemMembers">
             
             <span class="subtitle">Members</span>
             
-                <li data-name="Ycc.EventManager#canvasDom"><a href="Ycc.EventManager.html#canvasDom">canvasDom</a></li>
+                <li data-name="Ycc.Event#mouseDownYccEvent"><a href="Ycc.Event.html#mouseDownYccEvent">mouseDownYccEvent</a></li>
             
-                <li data-name="Ycc.EventManager#mouseDown"><a href="Ycc.EventManager.html#mouseDown">mouseDown</a></li>
+                <li data-name="Ycc.Event#mouseUpYccEvent"><a href="Ycc.Event.html#mouseUpYccEvent">mouseUpYccEvent</a></li>
             
-                <li data-name="Ycc.EventManager#mouseDownEvent"><a href="Ycc.EventManager.html#mouseDownEvent">mouseDownEvent</a></li>
+                <li data-name="Ycc.Event#originEvent"><a href="Ycc.Event.html#originEvent">originEvent</a></li>
             
-                <li data-name="Ycc.EventManager#mouseMoving"><a href="Ycc.EventManager.html#mouseMoving">mouseMoving</a></li>
+                <li data-name="Ycc.Event#stop"><a href="Ycc.Event.html#stop">stop</a></li>
             
-                <li data-name="Ycc.EventManager#proxyEventTypes"><a href="Ycc.EventManager.html#proxyEventTypes">proxyEventTypes</a></li>
+                <li data-name="Ycc.Event#target"><a href="Ycc.Event.html#target">target</a></li>
             
-                <li data-name="Ycc.EventManager#yccInstance"><a href="Ycc.EventManager.html#yccInstance">yccInstance</a></li>
+                <li data-name="Ycc.Event#targetDeltaPosition"><a href="Ycc.Event.html#targetDeltaPosition">targetDeltaPosition</a></li>
+            
+                <li data-name="Ycc.Event#type"><a href="Ycc.Event.html#type">type</a></li>
+            
+                <li data-name="Ycc.Event#x"><a href="Ycc.Event.html#x">x</a></li>
+            
+                <li data-name="Ycc.Event#y"><a href="Ycc.Event.html#y">y</a></li>
             
             </ul>
             <ul class="typedefs itemMembers">
             
             </ul>
             <ul class="methods itemMembers">
-            
-            <span class="subtitle">Methods</span>
-            
-                <li data-name="Ycc.EventManager#broadcastToLayer"><a href="Ycc.EventManager.html#broadcastToLayer">broadcastToLayer</a></li>
-            
-                <li data-name="Ycc.EventManager#init"><a href="Ycc.EventManager.html#init">init</a></li>
             
             </ul>
             <ul class="events itemMembers">
@@ -199,7 +199,11 @@
             
                 <li data-name="Ycc.Layer#removeListener"><a href="Ycc.Layer.html#removeListener">removeListener</a></li>
             
+                <li data-name="Ycc.Layer#render"><a href="Ycc.Layer.html#render">render</a></li>
+            
                 <li data-name="Ycc.Layer#renderToStage"><a href="Ycc.Layer.html#renderToStage">renderToStage</a></li>
+            
+                <li data-name="Ycc.Layer#reRender"><a href="Ycc.Layer.html#reRender">reRender</a></li>
             
                 <li data-name="Ycc.Layer#triggerListener"><a href="Ycc.Layer.html#triggerListener">triggerListener</a></li>
             
@@ -237,6 +241,8 @@
                 <li data-name="Ycc.LayerManager#newLayer"><a href="Ycc.LayerManager.html#newLayer">newLayer</a></li>
             
                 <li data-name="Ycc.LayerManager#renderAllLayerToStage"><a href="Ycc.LayerManager.html#renderAllLayerToStage">renderAllLayerToStage</a></li>
+            
+                <li data-name="Ycc.LayerManager#reRenderAllLayerToStage"><a href="Ycc.LayerManager.html#reRenderAllLayerToStage">reRenderAllLayerToStage</a></li>
             
             </ul>
             <ul class="events itemMembers">
@@ -583,6 +589,8 @@
             
                 <li data-name="Ycc.UI.Base#baseUI"><a href="Ycc.UI.Base.html#baseUI">baseUI</a></li>
             
+                <li data-name="Ycc.UI.Base#belongTo"><a href="Ycc.UI.Base.html#belongTo">belongTo</a></li>
+            
                 <li data-name="Ycc.UI.Base#ctx"><a href="Ycc.UI.Base.html#ctx">ctx</a></li>
             
                 <li data-name="Ycc.UI.Base#listeners"><a href="Ycc.UI.Base.html#listeners">listeners</a></li>
@@ -617,6 +625,33 @@
             </ul>
         </li>
     
+        <li class="item" data-name="Ycc.UI.Line">
+            <span class="title">
+                <a href="Ycc.UI.Line.html">Ycc.UI.Line</a>
+                
+            </span>
+            <ul class="members itemMembers">
+            
+            <span class="subtitle">Members</span>
+            
+                <li data-name="Ycc.UI.Line#option"><a href="Ycc.UI.Line.html#option">option</a></li>
+            
+            </ul>
+            <ul class="typedefs itemMembers">
+            
+            </ul>
+            <ul class="methods itemMembers">
+            
+            <span class="subtitle">Methods</span>
+            
+                <li data-name="Ycc.UI.Line#render"><a href="Ycc.UI.Line.html#render">render</a></li>
+            
+            </ul>
+            <ul class="events itemMembers">
+            
+            </ul>
+        </li>
+    
         <li class="item" data-name="Ycc.UI.MultiLineText">
             <span class="title">
                 <a href="Ycc.UI.MultiLineText.html">Ycc.UI.MultiLineText</a>
@@ -627,6 +662,8 @@
             <span class="subtitle">Members</span>
             
                 <li data-name="Ycc.UI.MultiLineText#baseUI"><a href="Ycc.UI.MultiLineText.html#baseUI">baseUI</a></li>
+            
+                <li data-name="Ycc.UI.MultiLineText#belongTo"><a href="Ycc.UI.MultiLineText.html#belongTo">belongTo</a></li>
             
                 <li data-name="Ycc.UI.MultiLineText#ctx"><a href="Ycc.UI.MultiLineText.html#ctx">ctx</a></li>
             
@@ -704,6 +741,8 @@
             
                 <li data-name="Ycc.UI.SingleLineText#baseUI"><a href="Ycc.UI.SingleLineText.html#baseUI">baseUI</a></li>
             
+                <li data-name="Ycc.UI.SingleLineText#belongTo"><a href="Ycc.UI.SingleLineText.html#belongTo">belongTo</a></li>
+            
                 <li data-name="Ycc.UI.SingleLineText#ctx"><a href="Ycc.UI.SingleLineText.html#ctx">ctx</a></li>
             
                 <li data-name="Ycc.UI.SingleLineText#displayContent"><a href="Ycc.UI.SingleLineText.html#displayContent">displayContent</a></li>
@@ -745,248 +784,572 @@
     </ul>
 </div>
     <div class="main">
-        <h1 class="page-title" data-filename="Ycc.EventManager.class.js.html">Source: Ycc.EventManager.class.js</h1>
+        <h1 class="page-title" data-filename="Ycc.Event.html">Class: Event</h1>
         
 
 
+
+<section>
     
-    <section>
-        <article>
-            <pre class="prettyprint source "><code>/**
- * @file    Ycc.EventManager.class.js
- * @author  xiaohei
- * @date    2017/9/30
- * @description  Ycc.EventManager.class文件。
- * 	Ycc实例的事件管理类
- * @requires Ycc.utils
- */
+<header>
+    <h2>
+    Event
+    </h2>
+    
+</header>  
+
+<article>
+    <div class="container-overview">
+    
+    
+    
+        
+<dt>
+    <div class="nameContainer">
+        <h4 class="name" id="Event">
+            
+            new Ycc.Event<span class="signature">(type)</span>
+        </h4>
+    
+        
+        <div class="tag-source">
+            <a href="Ycc.Event.class.js.html">Ycc.Event.class.js</a>, <a href="Ycc.Event.class.js.html#line17">line 17</a>
+        </div>
+        
+    </div>
+
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        事件的数据结构类
+    </div>
+    
+
+    
+    
+    
+    
+    
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>type</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
 
 
-(function (Ycc) {
+            
+            </td>
+            
+            
+            
+            <td class="description last">
+                
+                事件类型</td>
+        </tr>
 	
+	
+	</tbody>
+</table>
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
 
-	/**
-	 * 空函数
-	 */
-	var noop = function () {};
-	
-	/**
-	 * 事件的数据结构类
-	 * @param type {String}	事件类型
-	 * @constructor
-	 */
-	var YccEvent = function (type) {
-		/**
-		 * 事件类型
-		 * @type {string}
-		 */
-		this.type = type?type:"";
-		/**
-		 * 鼠标或点击位置
-		 * @type {number}
-		 */
-		this.x=0;
-		/**
-		 * 鼠标或点击位置
-		 * @type {number}
-		 */
-		this.y=0;
-		/**
-		 * ycc事件所对应的原始事件
-		 */
-		this.originEvent = null;
-		
-	};
-	
-	
-	
-	
-	
-	
-	
-	
-	/**
-	 * Ycc实例的事件管理类。只监听舞台的事件。
-	 * 此类会托管原生的事件，剔除多余事件属性，保留必要属性。
-	 * 还会根据情况生成一些其他事件，方便使用。
-	 * 每个EventManager都跟一个canvas元素绑定。
-	 * @param yccInstance	{Ycc}
-	 * @constructor
-	 */
-	Ycc.EventManager = function (yccInstance) {
-		
-		/**
-		 * Ycc实例
-		 * @type {Ycc}
-		 */
-		this.yccInstance = yccInstance;
-		
-		/**
-		 * @type {HTMLElement}
-		 */
-		this.canvasDom = yccInstance.stage;
-		
-		/**
-		 * 鼠标是否按下的标识
-		 * @type {boolean}
-		 */
-		this.mouseDown = false;
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+</dl>
 
-		/**
-		 * 鼠标按下时的YccEvent
-		 * @type {YccEvent}
-		 */
-		this.mouseDownEvent = null;
+    
+    
 
-		/**
-		 * 鼠标是否正在移动的标识
-		 * @type {boolean}
-		 */
-		this.mouseMoving = false;
-		
-		/**
-		 * 被托管的原生事件类型
-		 * @type {Array}
-		 */
-		this.proxyEventTypes = ["mousemove","mousedown","mouseup","click","mouseenter","mouseout"];
-		
-		
-		// 初始化
-		this.init();
-	};
-	
-	
-	/**
-	 * 初始化
-	 */
-	Ycc.EventManager.prototype.init = function () {
-		var self = this;
-		// canvas元素
-		var dom = this.canvasDom;
+    
 
-		// 托管的事件类型
-		var proxyEventTypes = self.proxyEventTypes;
-		
-		for(var i = 0;i&lt;proxyEventTypes.length;i++){
-			var type = proxyEventTypes[i];
-			dom.addEventListener(type,filterOriginEvent(type,self));
-		}
-	};
-	
-	
-	/**
-	 * 将事件分发至舞台中所有的图层
-	 * @param type
-	 * @param yccEvent
-	 * @todo 需要判断事件是否发生在图层之上，并不需要所有图层都分发
-	 */
-	Ycc.EventManager.prototype.broadcastToLayer = function (type, yccEvent) {
-		var self = this.yccInstance;
-		for(var i=self.layerList.length-1;i>=0;i--){
-			var layer = self.layerList[i];
-			if(!layer.enableEventManager) continue;
-			layer.triggerListener(type,yccEvent);
-		}
-	};
-	
-	/**
-	 * 代理原生事件
-	 * @param _type					原生js的事件类型
-	 * @param eventManagerInstance	事件管理模块的实例
-	 * @returns {Function}
-	 */
-	function filterOriginEvent(_type,eventManagerInstance) {
-		
-		/**
-		 * @param e 原生js的事件实例
-		 */
-		return function (e) {
-			
-			// ycc事件实例
-			var yccEvent = new YccEvent();
-			yccEvent.type = _type;
-			yccEvent.originEvent = e;
-			yccEvent.x = e.clientX - eventManagerInstance.canvasDom.getBoundingClientRect().left;
-			yccEvent.y = e.clientY - eventManagerInstance.canvasDom.getBoundingClientRect().top;
-			
-			/**
-			 * 鼠标按下事件
-			 */
-			if(_type === "mousedown"){
-				// 修改标识、初始化
-				eventManagerInstance.mouseDown = true;
-				eventManagerInstance.mouseMoving = false;
-				eventManagerInstance.mouseDownEvent = yccEvent;
-				// 触发ycc托管的事件
-				// Ycc.utils.isFn(eventManagerInstance["on"+_type])&amp;&amp;eventManagerInstance["on"+_type](yccEvent);
-				eventManagerInstance.broadcastToLayer(_type,yccEvent);
-				return null;
-			}
-			
-			/**
-			 * 鼠标移动事件
-			 */
-			if(_type === "mousemove"){
-				// 修改标识
-				eventManagerInstance.mouseMoving = true;
-				// eventManagerInstance["on"+_type](yccEvent);
-				// 实测某些浏览器坐标位置没改变，移动事件仍然触发。此处进行过滤
-				if(eventManagerInstance.mouseDown &amp;&amp; (yccEvent.x!==eventManagerInstance.mouseDownEvent.x ||  yccEvent.y!==eventManagerInstance.mouseDownEvent.y)){
-					yccEvent.type = "dragging";
-					yccEvent.originEvent = e;
-					// 触发ycc自定义事件
-					// Ycc.utils.isFn(eventManagerInstance["on"+yccEvent.type])&amp;&amp;eventManagerInstance["on"+yccEvent.type](yccEvent);
-					eventManagerInstance.broadcastToLayer(_type,yccEvent);
-				}
-				// 触发ycc托管的事件
-				// Ycc.utils.isFn(eventManagerInstance["on"+_type])&amp;&amp;eventManagerInstance["on"+_type](yccEvent);
-				eventManagerInstance.broadcastToLayer(_type,yccEvent);
-				return null;
-			}
-			
-			/**
-			 * 鼠标抬起事件
-			 */
-			if(_type === "mouseup"){
-				// 修改标识
-				eventManagerInstance.mouseDown = false;
-				eventManagerInstance.mouseMoving = false;
-				// 触发ycc托管的事件
-				// Ycc.utils.isFn(eventManagerInstance["on"+_type])&amp;&amp;eventManagerInstance["on"+_type](yccEvent);
-				eventManagerInstance.broadcastToLayer(_type,yccEvent);
-				return null;
-			}
-			
-			/**
-			 * 鼠标点击事件
-			 */
-			if(_type === "click"){
-				// 修改标识
-				eventManagerInstance.mouseDown = false;
-				eventManagerInstance.mouseMoving = false;
-				// 触发ycc托管的事件
-				// Ycc.utils.isFn(eventManagerInstance["on"+_type])&amp;&amp;eventManagerInstance["on"+_type](yccEvent);
-				eventManagerInstance.broadcastToLayer(_type,yccEvent);
-				return null;
-			}
-			
-			// 若没有特殊处理，默认直接触发托管的事件
-			// Ycc.utils.isFn(eventManagerInstance["on"+_type])&amp;&amp;eventManagerInstance["on"+_type](yccEvent);
-			eventManagerInstance.broadcastToLayer(_type,yccEvent);
-			return null;
-			
+    
+    
+    
+    
+    
+    
+    
+</dd>
 
-		};
-	}
-	
-	
-	
-	
-	
-})(window.Ycc);</code></pre>
-        </article>
-    </section>
+    
+    </div>
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+        <h3 class="subsection-title">Members</h3>
+        
+        <dl>
+            
+<dt>
+    <div class="nameContainer">
+        <h4 class="name" id="mouseDownYccEvent">mouseDownYccEvent<span class="type-signature type ycc.event"><a href="Ycc.Event.html">Ycc.Event</a></span> </h4>
+    </div>
+    
+    
+</dt>
+<dd>
+    
+    <div class="description">
+        鼠标按下的ycc事件
+    </div>
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
 
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <div class="nameContainer">
+        <h4 class="name" id="mouseUpYccEvent">mouseUpYccEvent<span class="type-signature type ycc.event"><a href="Ycc.Event.html">Ycc.Event</a></span> </h4>
+    </div>
+    
+    
+</dt>
+<dd>
+    
+    <div class="description">
+        鼠标抬起的ycc事件
+    </div>
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <div class="nameContainer">
+        <h4 class="name" id="originEvent">originEvent</h4>
+    </div>
+    
+    
+</dt>
+<dd>
+    
+    <div class="description">
+        ycc事件所对应的原始事件
+    </div>
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <div class="nameContainer">
+        <h4 class="name" id="stop">stop<span class="type-signature type boolean">boolean</span> </h4>
+    </div>
+    
+    
+</dt>
+<dd>
+    
+    <div class="description">
+        是否阻止向下传递。默认为false，不阻止
+    </div>
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <div class="nameContainer">
+        <h4 class="name" id="target">target<span class="type-signature type ycc.ui"><a href="Ycc.UI.html">Ycc.UI</a></span> <span class="type-signature type null">null</span> </h4>
+    </div>
+    
+    
+</dt>
+<dd>
+    
+    <div class="description">
+        事件触发的对象
+    </div>
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <div class="nameContainer">
+        <h4 class="name" id="targetDeltaPosition">targetDeltaPosition<span class="type-signature type ycc.math.dot"><a href="Ycc.Math.Dot.html">Ycc.Math.Dot</a></span> <span class="type-signature type null">null</span> </h4>
+    </div>
+    
+    
+</dt>
+<dd>
+    
+    <div class="description">
+        事件触发时，鼠标的坐标与UI的坐标差。即(e.x-target.x,e.y-target.y)
+    </div>
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <div class="nameContainer">
+        <h4 class="name" id="type">type<span class="type-signature type string">string</span> </h4>
+    </div>
+    
+    
+</dt>
+<dd>
+    
+    <div class="description">
+        事件类型
+    </div>
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <div class="nameContainer">
+        <h4 class="name" id="x">x<span class="type-signature type number">number</span> </h4>
+    </div>
+    
+    
+</dt>
+<dd>
+    
+    <div class="description">
+        鼠标或点击位置
+    </div>
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <div class="nameContainer">
+        <h4 class="name" id="y">y<span class="type-signature type number">number</span> </h4>
+    </div>
+    
+    
+</dt>
+<dd>
+    
+    <div class="description">
+        鼠标或点击位置
+    </div>
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+</dd>
+
+        </dl>
+    
+    
+    
+    
+    
+    
+    
+</article>
+
+</section>  
 
 
 
@@ -995,7 +1358,7 @@
         
 
         <footer>
-            Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Fri Nov 17 2017 11:20:09 GMT+0800 (中国标准时间)
+            Documentation generated by <a target="_blank" href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Tue Nov 21 2017 17:06:29 GMT+0800 (中国标准时间)
         </footer>
     </div>
 </div>
