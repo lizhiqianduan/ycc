@@ -65,8 +65,8 @@
 	// 拖拽
 	ui.ondragging = function (e) {
 		console.log("我是",this.constructor.name,"我",e.type,e);
-		this.option.rect.x = e.x;
-		this.option.rect.y = e.y;
+		this.option.rect.x = e.x-e.mouseDownYccEvent.targetDeltaPosition.x;
+		this.option.rect.y = e.y-e.mouseDownYccEvent.targetDeltaPosition.y;
 		ycc.layerManager.reRenderAllLayerToStage();
 	};
 	// 添加至图层

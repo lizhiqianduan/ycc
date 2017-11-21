@@ -59,6 +59,12 @@
 		 */
 		this.target = null;
 		
+		/**
+		 * 事件触发时，鼠标的坐标与UI的坐标差。即(e.x-target.x,e.y-target.y)
+		 * @type {Ycc.Math.Dot|null}
+		 */
+		this.targetDeltaPosition = null;
+		
 	}
 	
 	
