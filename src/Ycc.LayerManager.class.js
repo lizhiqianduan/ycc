@@ -66,6 +66,22 @@
 	};
 	
 	/**
+	 * 重新将所有图层绘制至舞台。不显示的图层也会更新。
+	 */
+	Ycc.LayerManager.prototype.reRenderAllLayerToStage = function () {
+		this.yccInstance.clearStage();
+		for(var i=0;i<this.yccInstance.layerList.length;i++){
+			var layer = this.yccInstance.layerList[i];
+			layer.reRender();
+			// 该图层是否可见
+			if(layer.show)
+				this.yccInstance.ctx.drawImage(layer.canvasDom,layer.x,layer.y,layer.width,layer.height);
+		}
+	};
+	
+	
+	
+	/**
 	 * 依次合并图层。队列后面的图层将被绘制在前面图层之上。
 	 * @param layerArray {Layer[]}	图层队列
 	 * @return {*}
