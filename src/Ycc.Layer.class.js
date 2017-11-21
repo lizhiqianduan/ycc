@@ -277,7 +277,7 @@
 			}
 			
 			// 下面处理普通的鼠标移动事件
-			for(var i = 0;i<self.uiList.length;i++){
+			for(var i = self.uiList.length-1;i>=0;i--){
 				var ui = self.uiList[i];
 				// 图层内部UI的相对坐标
 				var dot = new Ycc.Math.Dot(e.x - ui.belongTo.x,e.y - ui.belongTo.y);
@@ -300,7 +300,7 @@
 		 */
 		function defaultMouseListener(e) {
 			if(e.stop) return;
-			for(var i = 0;i<self.uiList.length;i++){
+			for(var i = self.uiList.length-1;i>=0;i--){
 				var ui = self.uiList[i];
 				// 图层内部UI的相对坐标
 				var layerX = e.x - ui.belongTo.x;
