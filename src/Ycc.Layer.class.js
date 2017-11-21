@@ -312,6 +312,7 @@
 					e.mouseDownYccEvent = mouseDownYccEvent;
 					e.mouseUpYccEvent = mouseUpYccEvent;
 					e.target = ui;
+					e.targetDeltaPosition = new Ycc.Math.Dot(e.x-ui.option.rect.x,e.y-ui.option.rect.y);
 					ui.triggerListener(e.type,e);
 					break;
 				}
