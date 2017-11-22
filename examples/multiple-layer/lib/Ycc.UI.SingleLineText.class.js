@@ -14,11 +14,11 @@
 	 * 绘制单行文本
 	 * @constructor
 	 * @extends Ycc.UI.Base
-	 * @param option	{object}		配置项
-	 * @param option.content	{string}	内容
-	 * @param [option.color=black]	{string}	颜色
-	 * @param option.rect	{Ycc.Math.Rect}	文字的绘制区域。若超出长度，此区域会被修改
-	 * @param option.overflow	{string}	水平方向超出rect之后的显示方式
+	 * @param option	{object}		所有可配置的配置项
+	 * @param option.content=""	{string}	内容
+	 * @param option.color=black	{string}	颜色
+	 * @param option.rect	{Ycc.Math.Rect}	容纳区。会根据属性设置动态修改。
+	 * @param option.overflow=auto	{string}	水平方向超出rect之后的显示方式
 	 * 		<br> `hidden` -- 直接隐藏
 	 * 		<br> `auto`	-- 修改rect大小，完全显示
 	 * @return {Ycc.UI}

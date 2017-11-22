@@ -9,14 +9,15 @@
 (function (Ycc) {
 	
 	/**
-	 * 线段
-	 * @param option	{object}
-	 * @param option.rect	{Ycc.Math.Rect}	容纳区。会根据属性设置被修改
+	 * 线段。可设置属性如下
+	 * @param option	{object}		所有可配置的配置项
+	 * @param option.rect	{Ycc.Math.Rect}	容纳区。会根据属性设置动态修改。
 	 * @param option.start	{Ycc.Math.Dot}	起点
 	 * @param option.end	{Ycc.Math.Dot}	终点
-	 * @param option.width	{number}	终点
-	 * @param option.color	{string}	颜色
+	 * @param option.width=1	{number}	线条宽度
+	 * @param option.color="black"	{string}	线条颜色
 	 * @constructor
+	 * @extends Ycc.UI.Base
 	 */
 	Ycc.UI.Line = function Line(option) {
 		Ycc.UI.Base.call(this);

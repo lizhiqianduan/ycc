@@ -14,16 +14,16 @@
 	 * 多行文本UI
 	 * @constructor
 	 * @extends Ycc.UI.Base
-	 * @param option	{object}		配置项
-	 * @param option.content	{string}	内容
-	 * @param [option.color=black]	{string}	颜色
+	 * @param option	{object}		所有可配置的配置项
+	 * @param option.content=""	{string}	内容
+	 * @param option.color=black	{string}	颜色
 	 * @param option.rect	{Ycc.Math.Rect}	文字的绘制区域。若超出长度，此区域会被修改
-	 * @param [option.wordBreak=break-all]	{string}	水平方向文字超出换行
+	 * @param option.wordBreak=break-all	{string}	水平方向文字超出换行
 	 * 		<br>`break-all`		超出即换行
 	 * 		<br>`break-word`		在单词处换行
 	 * 		<br>`no-break`		不换行，超出即隐藏
 	 * 		<br>默认为`no-break`
-	 * @param [option.overflow=auto]	{string}	垂直方向超出rect之后的显示方式
+	 * @param option.overflow=auto	{string}	垂直方向超出rect之后的显示方式
 	 * 		<br> `hidden` -- 直接隐藏
 	 * 		<br> `auto`	-- 修改rect大小，完全显示
 	 */

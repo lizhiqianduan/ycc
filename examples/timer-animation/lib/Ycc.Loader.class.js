@@ -14,7 +14,11 @@
 	 * @constructor
 	 */
 	Ycc.Loader = function () {
-	
+		/**
+		 * 保存加载之后的所有图片资源。键为资源名称；值为Image元素
+		 * @type {{}}
+		 */
+		this.imageRes = {};
 	};
 	
 	
@@ -22,8 +26,9 @@
 	 * 加载单个图片资源
 	 * @param imageSrc	{String}	图片的路径
 	 * @param endCb		{Function}	加载成功的回调
+	 * @private
 	 */
-	Ycc.Loader.prototype.loadImage = function (imageSrc,endCb) {
+	Ycc.Loader.prototype._loadImage = function (imageSrc,endCb) {
 		var img = new Image();
 		img.src = imageSrc;
 		img.onload = function () {
@@ -38,27 +43,25 @@
 	 * @param endCb			{function}	全部加载完成的回调
 	 */
 	Ycc.Loader.prototype.loadImageList = function (imagesSrc,endCb,progressCb) {
+		var self = this;
 		// 已加载图片的个数
 		var loadedNum = 0;
-		// 记录加载的资源
-		var res = {};
 		// 资源的名称
 		var keys = Object.keys(imagesSrc);
 		for(var i =0;i<keys.length;i++){
 			var src = imagesSrc[keys[i]];
-			this.loadImage(src,(function (key) {
+			this._loadImage(src,(function (key) {
 				return function (img) {
-					res[key] = img;
+					self.imageRes[key] = img;
 					loadedNum++;
 					Ycc.utils.isFn(progressCb)&&progressCb(img);
 					if(loadedNum===keys.length){
-						Ycc.utils.isFn(endCb)&&endCb(res);
+						Ycc.utils.isFn(endCb)&&endCb(self.imageRes);
 					}
 				}
 				
 			})(keys[i]));
 		}
-		
 	}
 	
 	

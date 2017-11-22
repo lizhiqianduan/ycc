@@ -11,8 +11,12 @@
 	
 	/**
 	 * 方块
-	 * @param option	{object}
+	 * @param option	{object}		所有可配置的配置项
+	 * @param option.rect	{Ycc.Math.Rect}	容纳区。会根据属性设置动态修改。
+	 * @param option.fill=true {boolean}	填充or描边
+	 * @param option.color=black {string} 方块颜色
 	 * @constructor
+	 * @extends Ycc.UI.Base
 	 */
 	Ycc.UI.Rect = function Rect(option) {
 		Ycc.UI.Base.call(this);

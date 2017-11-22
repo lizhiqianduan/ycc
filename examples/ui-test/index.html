@@ -32,6 +32,7 @@
 <script src="./lib/Ycc.UI.MultiLineText.class.js"></script>
 <script src="./lib/Ycc.UI.Rect.class.js"></script>
 <script src="./lib/Ycc.UI.Line.class.js"></script>
+<script src="./lib/Ycc.UI.Image.class.js"></script>
 <script src="./lib/Ycc.PhotoManager.class.js"></script>
 <script src="./lib/Ycc.Event.class.js"></script>
 <script src="./lib/Ycc.Layer.class.js"></script>
@@ -92,6 +93,21 @@
 		width:3
 	};
 	layer.addUI(new Ycc.UI.Line(config));
+
+	new Ycc.Loader().loadImageList({
+		a:"http://lizhiqianduan.com/myblog/images/icon.jpg"
+	},function (imgs) {
+		var config2 = {
+			res:imgs.a,
+			rect:new Ycc.Math.Rect(0,220,600,200),
+			fillMode:"none",
+			rectBgColor:"blue"
+		};
+		layer.addUI(new Ycc.UI.Image(config2));
+		ycc.layerManager.reRenderAllLayerToStage();
+	});
+
+
 
 
 	ycc.layerManager.renderAllLayerToStage();
