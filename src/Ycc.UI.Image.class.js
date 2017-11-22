@@ -90,47 +90,71 @@
 			}
 		}else if(this.option.fillMode === "scale9Grid"){
 			var centerRect = this.option.scale9GridRect;
+			
+			var grid = [];
+
 			var src,dest;
 			
 			// 第1块
-			src = new Ycc.Math.Rect(0,0,centerRect.x,centerRect.y);
-			dest = new Ycc.Math.Rect(rect.x,rect.y,centerRect.x,centerRect.y);
-			this.ctx.drawImage(this.option.res,
-				// 源
-				src.x,src.y,src.width,src.height,
-				// 目标
-				dest.x,dest.y,dest.width,dest.height
-			);
-
+			grid[0]={};
+			grid[0].src = new Ycc.Math.Rect(0,0,centerRect.x,centerRect.y);
+			grid[0].dest = new Ycc.Math.Rect(rect.x,rect.y,centerRect.x,centerRect.y);
+			
 			// 第3块
-			src = new Ycc.Math.Rect(centerRect.x+centerRect.width,0,img.width-centerRect.x-centerRect.width,centerRect.y);
-			dest = new Ycc.Math.Rect(rect.width-src.width+rect.x,rect.y,src.width,src.height);
-			this.ctx.drawImage(this.option.res,
-				// 源
-				src.x,src.y,src.width,src.height,
-				// 目标
-				dest.x,dest.y,dest.width,dest.height
-			);
+			grid[2]={};
+			grid[2].src = new Ycc.Math.Rect(centerRect.x+centerRect.width,0,img.width-centerRect.x-centerRect.width,centerRect.y);
+			grid[2].dest = new Ycc.Math.Rect(rect.width-grid[2].src.width+rect.x,rect.y,grid[2].src.width,grid[2].src.height);
 			
 			// 第7块
-			src = new Ycc.Math.Rect(0,centerRect.y+centerRect.height,centerRect.x,img.height-centerRect.y-centerRect.height);
-			dest = new Ycc.Math.Rect(rect.x,rect.y+rect.height-src.height,src.width,src.height);
-			this.ctx.drawImage(this.option.res,
-				// 源
-				src.x,src.y,src.width,src.height,
-				// 目标
-				dest.x,dest.y,dest.width,dest.height
-			);
+			grid[6]={};
+			grid[6].src = new Ycc.Math.Rect(0,centerRect.y+centerRect.height,centerRect.x,img.height-centerRect.y-centerRect.height);
+			grid[6].dest = new Ycc.Math.Rect(rect.x,rect.y+rect.height-grid[6].src.height,grid[6].src.width,grid[6].src.height);
 			
 			// 第9块
-			src = new Ycc.Math.Rect(centerRect.x+centerRect.width,centerRect.y+centerRect.height,img.width-centerRect.x-centerRect.width,img.height-centerRect.y-centerRect.height);
-			dest = new Ycc.Math.Rect(rect.width-src.width+rect.x,rect.y+rect.height-src.height,src.width,src.height);
-			this.ctx.drawImage(this.option.res,
-				// 源
-				src.x,src.y,src.width,src.height,
-				// 目标
-				dest.x,dest.y,dest.width,dest.height
-			);
+			grid[8]={};
+			grid[8].src = new Ycc.Math.Rect(centerRect.x+centerRect.width,centerRect.y+centerRect.height,img.width-centerRect.x-centerRect.width,img.height-centerRect.y-centerRect.height);
+			grid[8].dest = new Ycc.Math.Rect(rect.width-grid[8].src.width+rect.x,rect.y+rect.height-grid[8].src.height,grid[8].src.width,grid[8].src.height);
+			
+			
+			// 第2块
+			grid[1]={};
+			grid[1].src = new Ycc.Math.Rect(centerRect.x,0,centerRect.width,centerRect.y);
+			grid[1].dest = new Ycc.Math.Rect(grid[0].dest.x+grid[0].dest.width,rect.y,rect.width-grid[0].dest.width-grid[2].dest.width,centerRect.y);
+			
+			// 第4块
+			grid[3]={};
+			grid[3].src = new Ycc.Math.Rect(grid[0].src.x,centerRect.y,grid[0].src.width,centerRect.height);
+			grid[3].dest = new Ycc.Math.Rect(grid[0].dest.x,grid[0].dest.y+grid[0].dest.height,grid[0].dest.width,rect.height-grid[0].dest.height-grid[6].dest.height);
+			
+			// 第6块
+			grid[5]={};
+			grid[5].src = new Ycc.Math.Rect(grid[2].src.x,centerRect.y,grid[2].src.width,centerRect.height);
+			grid[5].dest = new Ycc.Math.Rect(grid[2].dest.x,grid[3].dest.y,grid[2].dest.width,grid[3].dest.height);
+			
+			// 第8块
+			grid[7]={};
+			grid[7].src = new Ycc.Math.Rect(grid[1].src.x,grid[6].src.y,centerRect.width,grid[6].src.height);
+			grid[7].dest = new Ycc.Math.Rect(grid[1].dest.x,grid[6].dest.y,grid[1].dest.width,grid[6].dest.height);
+			
+			// 第5块
+			grid[4]={};
+			grid[4].src = new Ycc.Math.Rect(centerRect.x,centerRect.y,centerRect.width,centerRect.height);
+			grid[4].dest = new Ycc.Math.Rect(grid[1].dest.x,grid[5].dest.y,grid[1].dest.width,grid[5].dest.height);
+			
+			
+			
+			for(var k=0;k<grid.length;k++){
+				if(!grid[k]) continue;
+				src = grid[k].src;
+				dest = grid[k].dest;
+				this.ctx.drawImage(this.option.res,
+					// 源
+					src.x,src.y,src.width,src.height,
+					// 目标
+					dest.x,dest.y,dest.width,dest.height
+				);
+				
+			}
 			
 		}
 		
