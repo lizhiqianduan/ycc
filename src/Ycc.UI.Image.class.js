@@ -71,15 +71,16 @@
 			// x,y方向能容纳的img个数
 			var wCount = parseInt(rect.width/img.width)+1;
 			var hCount = parseInt(rect.height/img.height)+1;
-			var xRest = img.width;
-			var yRest = img.height;
+
 			for(var i=0;i<wCount;i++){
 				for(var j=0;j<hCount;j++){
+					var xRest = img.width;
+					var yRest = img.height;
 					if(i===wCount-1)
 						xRest = rect.width-i*img.width;
 					if(j===hCount-1)
-						yRest = rect.width-j*img.height;
-
+						yRest = rect.height-j*img.height;
+					console.log(xRest,yRest);
 					this.ctx.drawImage(this.option.res,
 						0,0,
 						xRest,yRest,
