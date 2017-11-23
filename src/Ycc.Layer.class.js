@@ -311,7 +311,7 @@
 				var layerY = e.y - ui.belongTo.y;
 				var dot = new Ycc.Math.Dot(layerX,layerY);
 				// 如果位于rect内，并且事件未被阻止，触发事件,并阻止继续传递
-				if(dot.isInRect(ui.option.rect) && e.stop===false){
+				if(ui.option.rect && dot.isInRect(ui.option.rect) && e.stop===false){
 					e.stop = true;
 					e.mouseDownYccEvent = mouseDownYccEvent;
 					e.mouseUpYccEvent = mouseUpYccEvent;
@@ -373,8 +373,18 @@
 	 */
 	Ycc.Layer.prototype.addUI = function (ui) {
 		ui.init(this);
-		ui.render();
 		this.uiList.push(ui);
+	};
+	
+	/**
+	 * 删除图层内的某个UI图形
+	 * @param ui
+	 */
+	Ycc.Layer.prototype.removeUI = function (ui) {
+		var index = this.uiList.indexOf(ui);
+		if(index!==-1){
+			this.uiList.splice(index,1);
+		}
 	};
 	
 	/**
