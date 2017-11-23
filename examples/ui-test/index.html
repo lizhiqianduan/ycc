@@ -76,9 +76,6 @@
 	layer.addUI(ui);
 	ycc.baseUI.rect([config.rect.x,config.rect.y],[config.rect.x+config.rect.width,config.rect.y+config.rect.height]);
 
-
-//	图层二
-	layer = ycc.layerManager.newLayer({enableEventManager:true});
 	config = {
 		rect:new Ycc.Math.Rect(320,100,30,50)
 	};
@@ -95,15 +92,27 @@
 	layer.addUI(new Ycc.UI.Line(config));
 
 	new Ycc.Loader().loadImageList({
-		a:"http://lizhiqianduan.com/myblog/images/icon.jpg"
+		icon:"http://lizhiqianduan.com/myblog/images/icon.jpg",
+		scale9Grid:"./bg.png"
 	},function (imgs) {
 		var config2 = {
-			res:imgs.a,
-			rect:new Ycc.Math.Rect(0,220,600,200),
+			res:imgs.icon,
+			rect:new Ycc.Math.Rect(0,220,300,100),
 			fillMode:"repeat",
 			rectBgColor:"blue"
 		};
 		layer.addUI(new Ycc.UI.Image(config2));
+
+
+		config2 = {
+			res:imgs.scale9Grid,
+			rect:new Ycc.Math.Rect(350,220,300,100),
+			fillMode:"scale9Grid",
+			scale9GridRect:new Ycc.Math.Rect(15,15,20,20)
+		};
+
+		layer.addUI(new Ycc.UI.Image(config2));
+
 		ycc.layerManager.reRenderAllLayerToStage();
 	});
 
