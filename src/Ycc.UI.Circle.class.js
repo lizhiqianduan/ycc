@@ -35,7 +35,7 @@
 		},option);
 		
 		// 重新计算rect
-		this.option.rect = new Ycc.Math.Rect(this.option.point.x-r,this.option.point.y-r,2*r,2*r);
+		this.option.rect = new Ycc.Math.Rect(this.option.point.x-this.option.r,this.option.point.y-this.option.r,2*this.option.r,2*this.option.r);
 		
 	};
 	Ycc.UI.Circle.prototype = new Ycc.UI.Base();
