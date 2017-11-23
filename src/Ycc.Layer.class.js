@@ -266,14 +266,18 @@
 			// 设置已经移动的标志位
 			mouseHasMove = true;
 			
-			// 如果鼠标已经按下，且按下时有目标，则表示拖拽事件
-			if(mouseDownYccEvent && mouseDownYccEvent.target){
+			// 如果鼠标已经按下，则表示拖拽事件
+			if(mouseDownYccEvent){
 				var draggingEvent = new Ycc.Event("dragging");
-				draggingEvent.target = mouseDownYccEvent.target;
 				draggingEvent.x = e.x;
 				draggingEvent.y = e.y;
 				draggingEvent.mouseDownYccEvent = mouseDownYccEvent;
-				draggingEvent.target.triggerListener(draggingEvent.type,draggingEvent);
+				// 先触发图层的拖拽事件，该事件没有target属性
+				self.triggerListener(draggingEvent.type,draggingEvent);
+				if(mouseDownYccEvent.target){
+					draggingEvent.target = mouseDownYccEvent.target;
+					draggingEvent.target.triggerListener(draggingEvent.type,draggingEvent);
+				}
 			}
 			
 			// 下面处理普通的鼠标移动事件
