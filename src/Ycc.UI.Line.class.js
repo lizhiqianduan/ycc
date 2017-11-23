@@ -44,8 +44,8 @@
 		this.option.rect = new Ycc.Math.Rect();
 		this.option.rect.x = this.option.start.x<this.option.end.x?this.option.start.x:this.option.end.x;
 		this.option.rect.y = this.option.start.y<this.option.end.y?this.option.start.y:this.option.end.y;
-		this.option.width = Math.abs(this.option.start.x-this.option.end.x);
-		this.option.height = Math.abs(this.option.start.y-this.option.end.y);
+		this.option.rect.width = Math.abs(this.option.start.x-this.option.end.x);
+		this.option.rect.height = Math.abs(this.option.start.y-this.option.end.y);
 		
 		this.ctx.save();
 		this.ctx.strokeStyle = this.option.color;
