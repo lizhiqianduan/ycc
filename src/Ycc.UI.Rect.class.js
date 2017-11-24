@@ -19,17 +19,20 @@
 	 * @extends Ycc.UI.Base
 	 */
 	Ycc.UI.Rect = function Rect(option) {
-		Ycc.UI.Base.call(this);
+		Ycc.UI.Base.call(this,option);
 		
 		/**
 		 * 配置项
 		 */
-		this.option = Ycc.utils.extend({
-			rect:null,
-			fill:true,
-			color:"black"
-		},option);
+		// this.option = Ycc.utils.extend({
+		// 	rect:null,
+		// 	fill:true,
+		// 	color:"black"
+		// },option);
 		
+		this.fill = true;
+		this.color = "black";
+		this.extend(option);
 	};
 	Ycc.UI.Rect.prototype = new Ycc.UI.Base();
 	Ycc.UI.Rect.prototype.constructor = Ycc.UI.Rect;
@@ -38,15 +41,15 @@
 	 * 绘制
 	 */
 	Ycc.UI.Rect.prototype.render = function () {
-		var rect = this.option.rect;
+		var rect = this.rect;
 
 		this.ctx.save();
 		this.ctx.beginPath();
-		this.ctx.fillStyle = this.option.color;
-		this.ctx.strokeStyle = this.option.color;
+		this.ctx.fillStyle = this.color;
+		this.ctx.strokeStyle = this.color;
 		this.ctx.rect(rect.x,rect.y,rect.width,rect.height);
 		this.ctx.closePath();
-		if(!this.option.fill)
+		if(!this.fill)
 			this.ctx.stroke();
 		else
 			this.ctx.fill();

@@ -28,21 +28,21 @@
 	 * 		<br> `auto`	-- 修改rect大小，完全显示
 	 */
 	Ycc.UI.MultiLineText = function MultiLineText(option) {
-		Ycc.UI.Base.call(this);
+		Ycc.UI.Base.call(this,option);
 		
-		/**
-		 * 配置项
-		 */
-		this.option = Ycc.utils.extend({
-			content:"",
-			fontSize:"16px",
-			lineHeight:24,
-			fill:true,
-			color:"black",
-			rect:null,
-			wordBreak:"break-all",
-			overflow:"auto"
-		},option);
+		// /**
+		//  * 配置项
+		//  */
+		// this.option = Ycc.utils.extend({
+		// 	content:"",
+		// 	fontSize:"16px",
+		// 	lineHeight:24,
+		// 	fill:true,
+		// 	color:"black",
+		// 	rect:null,
+		// 	wordBreak:"break-all",
+		// 	overflow:"auto"
+		// },option);
 		
 		/**
 		 * 显示在文本框中的文本行。私有属性，不允许修改。
@@ -50,7 +50,15 @@
 		 */
 		this.displayLines = [];
 		
-		
+		this.content = "";
+		this.fontSize = "16px";
+		this.lineHeight = 24;
+		this.fill = true;
+		this.color = "black";
+		this.wordBreak = "break-all";
+		this.overflow = "auto";
+
+		this.extend(option);
 	};
 	Ycc.UI.MultiLineText.prototype = new Ycc.UI.Base();
 	Ycc.UI.MultiLineText.prototype.constructor = Ycc.UI.MultiLineText;
@@ -70,7 +78,7 @@
 		
 		
 		// 修改引用
-		var config = this.option;
+		var config = this;
 		var lines = config.content.split(/(?:\r\n|\r|\n)/);
 		
 		this.ctx.save();

@@ -25,29 +25,36 @@
 	 */
 
 	Ycc.UI.SingleLineText = function SingleLineText(option) {
-		Ycc.UI.Base.call(this);
+		Ycc.UI.Base.call(this,option);
 		
-		/**
-		 * 配置项
-		 */
-		this.option = Ycc.utils.extend({
-			content:"",
-			fontSize:"16px",
-			fill:true,
-			color:"black",
-			rect:null,
-			xAlign:"left",
-			yAlign:"center",
-			overflow:"auto"
-		},option);
+		// /**
+		//  * 配置项
+		//  */
+		// this.option = Ycc.utils.extend({
+		// 	content:"",
+		// 	fontSize:"16px",
+		// 	fill:true,
+		// 	color:"black",
+		// 	rect:null,
+		// 	xAlign:"left",
+		// 	yAlign:"center",
+		// 	overflow:"auto"
+		// },option);
 		
 		/**
 		 * 区域内显示的文本
 		 * @type {string}
 		 */
-		this.displayContent = this.option.content;
+		this.displayContent = "";
 		
-		
+		this.content = "";
+		this.fontSize = "16px";
+		this.fill = true;
+		this.color = "black";
+		this.xAlign = "left";
+		this.yAlign = "center";
+		this.overflow = "auto";
+		this.extend(option);
 	};
 	Ycc.UI.SingleLineText.prototype = new Ycc.UI.Base();
 	Ycc.UI.SingleLineText.prototype.constructor = Ycc.UI.SingleLineText;
@@ -74,10 +81,12 @@
 		// 内容的长度
 		var contentWidth;
 		// 配置项
-		var option = this.option;
+		var option = this;
 		
-		option.rect = option.rect || new Ycc.Math.Rect(0,0,this.ctx.width,fontSize);
+		option.rect.width = option.rect.width || this.belongTo.width;
+		option.rect.height = option.rect.height || this.belongTo.height;
 		option.color = option.color || self.ctx.fillStyle;
+		option.displayContent = option.content;
 		
 		x = option.rect.x;
 		y = option.rect.y;

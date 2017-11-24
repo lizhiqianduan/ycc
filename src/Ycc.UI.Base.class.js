@@ -15,7 +15,6 @@
 	 * 所有UI类的基类
 	 * @constructor
 	 * @extends Ycc.Listener
-	 * @todo 需要传递参数，将所有公共参数都放在此类中
 	 */
 	Ycc.UI.Base = function (option) {
 		Ycc.Listener.call(this);

@@ -26,18 +26,25 @@
 	 * @extends Ycc.UI.Base
 	 */
 	Ycc.UI.Image = function (option) {
-		Ycc.UI.Base.call(this);
+		Ycc.UI.Base.call(this,option);
 		
-		/**
-		 * 配置项
-		 */
-		this.option = Ycc.utils.extend({
-			rect:null,
-			rectBgColor:"transparent",
-			fillMode:"none",
-			res:null,
-			scale9GridRect:null
-		},option);
+		// /**
+		//  * 配置项
+		//  */
+		// this = Ycc.utils.extend({
+		// 	rect:null,
+		// 	rectBgColor:"transparent",
+		// 	fillMode:"none",
+		// 	res:null,
+		// 	scale9GridRect:null
+		// },option);
+		
+		this.fillMode="none";
+		this.res=null;
+		this.scale9GridRect=null;
+		
+		this.extend(option);
+		
 	};
 	Ycc.UI.Image.prototype = new Ycc.UI.Base();
 	Ycc.UI.Image.prototype.constructor = Ycc.UI.Image;
@@ -48,26 +55,26 @@
 	 * 绘制
 	 */
 	Ycc.UI.Image.prototype.render = function () {
-		var rect = this.option.rect;
-		var img = this.option.res;
+		var rect = this.rect;
+		var img = this.res;
 		this.ctx.save();
 		this.ctx.beginPath();
 		this.ctx.rect(rect.x,rect.y,rect.width,rect.height);
 		this.ctx.closePath();
-		this.ctx.fillStyle = this.option.rectBgColor;
+		this.ctx.fillStyle = this.rectBgColor;
 		this.ctx.fill();
 		this.ctx.restore();
 
 
-		if(this.option.fillMode === "none")
-			this.ctx.drawImage(this.option.res,0,0,rect.width,rect.height,rect.x,rect.y,rect.width,rect.height);
-		else if(this.option.fillMode === "scale")
-			this.ctx.drawImage(this.option.res,0,0,img.width,img.height,rect.x,rect.y,rect.width,rect.height);
-		else if(this.option.fillMode === "auto"){
+		if(this.fillMode === "none")
+			this.ctx.drawImage(this.res,0,0,rect.width,rect.height,rect.x,rect.y,rect.width,rect.height);
+		else if(this.fillMode === "scale")
+			this.ctx.drawImage(this.res,0,0,img.width,img.height,rect.x,rect.y,rect.width,rect.height);
+		else if(this.fillMode === "auto"){
 			rect.width = img.width;
 			rect.height = img.height;
-			this.ctx.drawImage(this.option.res,0,0,img.width,img.height,rect.x,rect.y,rect.width,rect.height);
-		}else if(this.option.fillMode === "repeat"){
+			this.ctx.drawImage(this.res,0,0,img.width,img.height,rect.x,rect.y,rect.width,rect.height);
+		}else if(this.fillMode === "repeat"){
 			// x,y方向能容纳的img个数
 			var wCount = parseInt(rect.width/img.width)+1;
 			var hCount = parseInt(rect.height/img.height)+1;
@@ -81,15 +88,15 @@
 					if(j===hCount-1)
 						yRest = rect.height-j*img.height;
 					console.log(xRest,yRest);
-					this.ctx.drawImage(this.option.res,
+					this.ctx.drawImage(this.res,
 						0,0,
 						xRest,yRest,
 						rect.x+img.width*i,rect.y+img.height*j,
 						xRest,yRest);
 				}
 			}
-		}else if(this.option.fillMode === "scale9Grid"){
-			var centerRect = this.option.scale9GridRect;
+		}else if(this.fillMode === "scale9Grid"){
+			var centerRect = this.scale9GridRect;
 			
 			var grid = [];
 
@@ -147,7 +154,7 @@
 				if(!grid[k]) continue;
 				src = grid[k].src;
 				dest = grid[k].dest;
-				this.ctx.drawImage(this.option.res,
+				this.ctx.drawImage(this.res,
 					// 源
 					src.x,src.y,src.width,src.height,
 					// 目标
