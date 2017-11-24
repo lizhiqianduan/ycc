@@ -28,23 +28,31 @@
 	Ycc.UI.Image = function (option) {
 		Ycc.UI.Base.call(this,option);
 		
-		// /**
-		//  * 配置项
-		//  */
-		// this = Ycc.utils.extend({
-		// 	rect:null,
-		// 	rectBgColor:"transparent",
-		// 	fillMode:"none",
-		// 	res:null,
-		// 	scale9GridRect:null
-		// },option);
-		
-		this.fillMode="none";
-		this.res=null;
+		/**
+		 * 填充方式
+		 * 		<br> none -- 无填充方式。左上角对齐，超出隐藏，不修改rect大小。
+		 * 		<br> repeat -- 重复。左上角对齐，重复平铺图片，不修改rect大小，超出隐藏。
+		 * 		<br> scale -- 缩放。左上角对齐，缩放至整个rect区域，不修改rect大小。
+		 * 		<br> auto -- 自动。左上角对齐，rect大小自动适配图片。若图片超出rect，会动态修改rect大小。
+		 * 		<br> scale9Grid -- 9宫格模式填充。左上角对齐，中间区域将拉伸，不允许图片超出rect区域大小，不会修改rect大小。		 *
+		 * @type {string}
+		 */
+		this.fillMode = "none";
+
+		/**
+		 * 需要填充的图片资源。注：必须已加载完成。
+		 * @type {Image}
+		 */
+		this.res = null;
+
+		/**
+		 * 9宫格相对于res图片的中间区域，当且仅当fillMode为scale9Grid有效。
+		 * @type {Ycc.Math.Rect}
+		 */
 		this.scale9GridRect=null;
 		
+
 		this.extend(option);
-		
 	};
 	Ycc.UI.Image.prototype = new Ycc.UI.Base();
 	Ycc.UI.Image.prototype.constructor = Ycc.UI.Image;
