@@ -12,7 +12,8 @@
 	var uid = 0;
 	
 	/**
-	 * 所有UI类的基类
+	 * 所有UI类的基类。
+	 * <br> 所有UI都必须遵循先计算、后绘制的流程
 	 * @constructor
 	 * @extends Ycc.Listener
 	 */
@@ -69,6 +70,18 @@
 		this.belongTo = layer;
 		this.ctx = layer.ctx;
 		this.baseUI = new Ycc.UI(layer.canvasDom);
+
+		// 初始化时计算一次属性
+		this.computeUIProps();
+	};
+	
+	/**
+	 * 计算UI的各种属性。此操作必须在绘制之前调用。
+	 * <br> 计算与绘制分离的好处是，在绘制UI之前就可以提前确定元素的各种信息，从而判断是否需要绘制。
+	 * @override
+	 */
+	Ycc.UI.Base.prototype.computeUIProps = function () {
+	
 	};
 	
 
