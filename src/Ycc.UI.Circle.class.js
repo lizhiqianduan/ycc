@@ -20,23 +20,17 @@
 	 * @constructor
 	 * @extends Ycc.UI.Base
 	 */
-	Ycc.UI.Circle = function Rect(option) {
-		Ycc.UI.Base.call(this);
+	Ycc.UI.Circle = function Circle(option) {
+		Ycc.UI.Base.call(this,option);
 		
-		/**
-		 * 配置项
-		 */
-		this.option = Ycc.utils.extend({
-			rect:null,
-			fill:true,
-			color:"black",
-			point:null,
-			r:10
-		},option);
+		this.point = null;
+		this.r = 10;
+		this.color = "black";
+		this.fill = true;
 		
+		this.extend(option);
 		// 重新计算rect
-		this.option.rect = new Ycc.Math.Rect(this.option.point.x-this.option.r,this.option.point.y-this.option.r,2*this.option.r,2*this.option.r);
-		
+		this.rect = new Ycc.Math.Rect(this.point.x-this.r,this.point.y-this.r,2*this.r,2*this.r);
 	};
 	Ycc.UI.Circle.prototype = new Ycc.UI.Base();
 	Ycc.UI.Circle.prototype.constructor = Ycc.UI.Circle;
@@ -48,19 +42,19 @@
 		
 		this.ctx.save();
 		this.ctx.beginPath();
-		this.ctx.fillStyle = this.option.color;
-		this.ctx.strokeStyle = this.option.color;
+		this.ctx.fillStyle = this.color;
+		this.ctx.strokeStyle = this.color;
 		
 		this.ctx.arc(
-			this.option.point.x,
-			this.option.point.y,
-			this.option.r,
+			this.point.x,
+			this.point.y,
+			this.r,
 			0,
 			2*Math.PI
 		);
 		
 		this.ctx.closePath();
-		if(!this.option.fill)
+		if(!this.fill)
 			this.ctx.stroke();
 		else
 			this.ctx.fill();
