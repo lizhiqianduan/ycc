@@ -84,6 +84,18 @@
 	
 	};
 	
+	/**
+	 * 渲染rect的背景
+	 */
+	Ycc.UI.Base.prototype.renderRectBgColor = function () {
+		this.ctx.save();
+		this.ctx.fillStyle = this.rectBgColor;
+		this.ctx.beginPath();
+		this.ctx.rect(this.rect.x,this.rect.y,this.rect.width,this.rect.height);
+		this.ctx.closePath();
+		this.restore();
+	};
+	
 
 	/**
 	 * 渲染至绘图环境。
