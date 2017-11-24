@@ -286,7 +286,7 @@
 				// 图层内部UI的相对坐标
 				var dot = new Ycc.Math.Dot(e.x - ui.belongTo.x,e.y - ui.belongTo.y);
 				// 如果位于rect内，触发事件,并阻止继续传递
-				if(dot.isInRect(ui.option.rect)){
+				if(dot.isInRect(ui.rect)){
 					e.stop = true;
 					e.mouseDownYccEvent = mouseDownYccEvent;
 					e.mouseUpYccEvent = mouseUpYccEvent;
@@ -311,12 +311,12 @@
 				var layerY = e.y - ui.belongTo.y;
 				var dot = new Ycc.Math.Dot(layerX,layerY);
 				// 如果位于rect内，并且事件未被阻止，触发事件,并阻止继续传递
-				if(ui.option.rect && dot.isInRect(ui.option.rect) && e.stop===false){
+				if(ui.rect && dot.isInRect(ui.rect) && e.stop===false){
 					e.stop = true;
 					e.mouseDownYccEvent = mouseDownYccEvent;
 					e.mouseUpYccEvent = mouseUpYccEvent;
 					e.target = ui;
-					e.targetDeltaPosition = new Ycc.Math.Dot(e.x-ui.option.rect.x,e.y-ui.option.rect.y);
+					e.targetDeltaPosition = new Ycc.Math.Dot(e.x-ui.rect.x,e.y-ui.rect.y);
 					ui.triggerListener(e.type,e);
 					break;
 				}

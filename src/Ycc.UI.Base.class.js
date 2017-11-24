@@ -5,6 +5,7 @@
  * @description  Ycc.UI.Base.class文件。
  * 所有容器UI的基础类
  * @requires Ycc.UI
+ * @requires Ycc.utils
  */
 
 (function (Ycc) {
@@ -14,8 +15,9 @@
 	 * 所有UI类的基类
 	 * @constructor
 	 * @extends Ycc.Listener
+	 * @todo 需要传递参数，将所有公共参数都放在此类中
 	 */
-	Ycc.UI.Base = function () {
+	Ycc.UI.Base = function (option) {
 		Ycc.Listener.call(this);
 		
 		/**
@@ -35,6 +37,12 @@
 		this.rect = new Ycc.Math.Rect();
 		
 		/**
+		 * 区域的背景色
+		 * @type {string}
+		 */
+		this.rectBgColor = "transparent";
+		
+		/**
 		 * UI所属的图层
 		 * @type {Ycc.Layer}
 		 */
@@ -46,6 +54,8 @@
 		 */
 		this.baseUI = null;
 		
+		
+		this.extend(option);
 	};
 	
 	Ycc.UI.Base.prototype = new Ycc.Listener();
@@ -91,6 +101,22 @@
 				return content.slice(0,i-1);
 			}
 		}
+	};
+	
+	
+	/**
+	 * 合并参数
+	 * @param option
+	 * @return {Ycc.UI}
+	 */
+	Ycc.UI.Base.prototype.extend = function (option) {
+		option = option || {};
+		for(var key in this){
+			if(typeof option[key]!=="undefined"){
+				this[key] = option[key];
+			}
+		}
+		return this;
 	}
 
 
