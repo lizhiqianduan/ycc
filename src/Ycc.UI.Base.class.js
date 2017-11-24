@@ -93,6 +93,7 @@
 		this.ctx.beginPath();
 		this.ctx.rect(this.rect.x,this.rect.y,this.rect.width,this.rect.height);
 		this.ctx.closePath();
+		this.ctx.fill();
 		this.ctx.restore();
 	};
 	
