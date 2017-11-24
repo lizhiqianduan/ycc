@@ -29,11 +29,23 @@
 		this.fill = true;
 		
 		this.extend(option);
-		// 重新计算rect
-		this.rect = new Ycc.Math.Rect(this.point.x-this.r,this.point.y-this.r,2*this.r,2*this.r);
 	};
 	Ycc.UI.Circle.prototype = new Ycc.UI.Base();
 	Ycc.UI.Circle.prototype.constructor = Ycc.UI.Circle;
+	
+	
+	/**
+	 * 计算UI的各种属性。此操作必须在绘制之前调用。
+	 * <br> 计算与绘制分离的好处是，在绘制UI之前就可以提前确定元素的各种信息，从而判断是否需要绘制。
+	 * @override
+	 */
+	Ycc.UI.Circle.prototype.computeUIProps = function () {
+		var x=this.point.x,
+			y=this.point.y,
+			r=this.r;
+		this.rect = new Ycc.Math.Rect(x-r,y-r,2*r,2*r);
+	};
+	
 	
 	/**
 	 * 绘制

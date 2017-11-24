@@ -58,6 +58,18 @@
 	Ycc.UI.Image.prototype.constructor = Ycc.UI.Image;
 	
 	
+	/**
+	 * 计算UI的各种属性。此操作必须在绘制之前调用。
+	 * <br> 计算与绘制分离的好处是，在绘制UI之前就可以提前确定元素的各种信息，从而判断是否需要绘制。
+	 * @override
+	 */
+	Ycc.UI.Image.prototype.computeUIProps = function () {
+		if(this.fillMode === "auto"){
+			this.rect.width = this.res.width;
+			this.rect.height = this.res.height;
+		}
+	};
+	
 	
 	/**
 	 * 绘制
@@ -79,8 +91,6 @@
 		else if(this.fillMode === "scale")
 			this.ctx.drawImage(this.res,0,0,img.width,img.height,rect.x,rect.y,rect.width,rect.height);
 		else if(this.fillMode === "auto"){
-			rect.width = img.width;
-			rect.height = img.height;
 			this.ctx.drawImage(this.res,0,0,img.width,img.height,rect.x,rect.y,rect.width,rect.height);
 		}else if(this.fillMode === "repeat"){
 			// x,y方向能容纳的img个数
@@ -95,7 +105,6 @@
 						xRest = rect.width-i*img.width;
 					if(j===hCount-1)
 						yRest = rect.height-j*img.height;
-					console.log(xRest,yRest);
 					this.ctx.drawImage(this.res,
 						0,0,
 						xRest,yRest,

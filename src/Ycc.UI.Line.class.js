@@ -43,15 +43,22 @@
 	};
 	Ycc.UI.Line.prototype = new Ycc.UI.Base();
 	Ycc.UI.Line.prototype.constructor = Ycc.UI.Line;
-	
+
 	/**
-	 * 绘制
+	 * 计算UI的各种属性。此操作必须在绘制之前调用。
+	 * <br> 计算与绘制分离的好处是，在绘制UI之前就可以提前确定元素的各种信息，从而判断是否需要绘制。
+	 * @override
 	 */
-	Ycc.UI.Line.prototype.render = function () {
+	Ycc.UI.Line.prototype.computeUIProps = function () {
 		this.rect.x = this.start.x<this.end.x?this.start.x:this.end.x;
 		this.rect.y = this.start.y<this.end.y?this.start.y:this.end.y;
 		this.rect.width = Math.abs(this.start.x-this.end.x);
 		this.rect.height = Math.abs(this.start.y-this.end.y);
+	};
+	/**
+	 * 绘制
+	 */
+	Ycc.UI.Line.prototype.render = function () {
 		
 		this.ctx.save();
 		this.ctx.strokeStyle = this.color;
