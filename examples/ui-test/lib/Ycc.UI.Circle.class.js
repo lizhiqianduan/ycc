@@ -20,47 +20,54 @@
 	 * @constructor
 	 * @extends Ycc.UI.Base
 	 */
-	Ycc.UI.Circle = function Rect(option) {
-		Ycc.UI.Base.call(this);
+	Ycc.UI.Circle = function Circle(option) {
+		Ycc.UI.Base.call(this,option);
 		
-		/**
-		 * 配置项
-		 */
-		this.option = Ycc.utils.extend({
-			rect:null,
-			fill:true,
-			color:"black",
-			point:null,
-			r:10
-		},option);
+		this.point = null;
+		this.r = 10;
+		this.color = "black";
+		this.fill = true;
 		
-		// 重新计算rect
-		this.option.rect = new Ycc.Math.Rect(this.option.point.x-r,this.option.point.y-r,2*r,2*r);
-		
+		this.extend(option);
 	};
 	Ycc.UI.Circle.prototype = new Ycc.UI.Base();
 	Ycc.UI.Circle.prototype.constructor = Ycc.UI.Circle;
+	
+	
+	/**
+	 * 计算UI的各种属性。此操作必须在绘制之前调用。
+	 * <br> 计算与绘制分离的好处是，在绘制UI之前就可以提前确定元素的各种信息，从而判断是否需要绘制。
+	 * @override
+	 */
+	Ycc.UI.Circle.prototype.computeUIProps = function () {
+		var x=this.point.x,
+			y=this.point.y,
+			r=this.r;
+		this.rect = new Ycc.Math.Rect(x-r,y-r,2*r,2*r);
+	};
+	
 	
 	/**
 	 * 绘制
 	 */
 	Ycc.UI.Circle.prototype.render = function () {
+		this.renderRectBgColor();
 		
 		this.ctx.save();
 		this.ctx.beginPath();
-		this.ctx.fillStyle = this.option.color;
-		this.ctx.strokeStyle = this.option.color;
+		this.ctx.fillStyle = this.color;
+		this.ctx.strokeStyle = this.color;
 		
 		this.ctx.arc(
-			this.option.point.x,
-			this.option.point.y,
-			this.option.r,
+			this.point.x,
+			this.point.y,
+			this.r,
 			0,
 			2*Math.PI
 		);
 		
 		this.ctx.closePath();
-		if(!this.option.fill)
+		if(!this.fill)
 			this.ctx.stroke();
 		else
 			this.ctx.fill();

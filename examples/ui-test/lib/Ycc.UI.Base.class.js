@@ -5,17 +5,19 @@
  * @description  Ycc.UI.Base.class文件。
  * 所有容器UI的基础类
  * @requires Ycc.UI
+ * @requires Ycc.utils
  */
 
 (function (Ycc) {
 	var uid = 0;
 	
 	/**
-	 * 所有UI类的基类
+	 * 所有UI类的基类。
+	 * <br> 所有UI都必须遵循先计算、后绘制的流程
 	 * @constructor
 	 * @extends Ycc.Listener
 	 */
-	Ycc.UI.Base = function () {
+	Ycc.UI.Base = function (option) {
 		Ycc.Listener.call(this);
 		
 		/**
@@ -35,6 +37,12 @@
 		this.rect = new Ycc.Math.Rect();
 		
 		/**
+		 * 区域的背景色
+		 * @type {string}
+		 */
+		this.rectBgColor = "transparent";
+		
+		/**
 		 * UI所属的图层
 		 * @type {Ycc.Layer}
 		 */
@@ -46,6 +54,8 @@
 		 */
 		this.baseUI = null;
 		
+		
+		this.extend(option);
 	};
 	
 	Ycc.UI.Base.prototype = new Ycc.Listener();
@@ -60,11 +70,37 @@
 		this.belongTo = layer;
 		this.ctx = layer.ctx;
 		this.baseUI = new Ycc.UI(layer.canvasDom);
+
+		// 初始化时计算一次属性
+		this.computeUIProps();
+	};
+	
+	/**
+	 * 计算UI的各种属性。此操作必须在绘制之前调用。
+	 * <br> 计算与绘制分离的好处是，在绘制UI之前就可以提前确定元素的各种信息，从而判断是否需要绘制。
+	 * @override
+	 */
+	Ycc.UI.Base.prototype.computeUIProps = function () {
+	
+	};
+	
+	/**
+	 * 渲染rect的背景
+	 */
+	Ycc.UI.Base.prototype.renderRectBgColor = function () {
+		this.ctx.save();
+		this.ctx.fillStyle = this.rectBgColor;
+		this.ctx.beginPath();
+		this.ctx.rect(this.rect.x,this.rect.y,this.rect.width,this.rect.height);
+		this.ctx.closePath();
+		this.ctx.fill();
+		this.ctx.restore();
 	};
 	
 
 	/**
-	 * 渲染至绘图环境
+	 * 渲染至绘图环境。
+	 * 		<br> 注意：重写此方法时，不能修改UI类的属性。修改属性，应该放在computeUIProps方法内。
 	 * @param [ctx]	绘图环境。可选
 	 * @override
 	 */
@@ -91,6 +127,22 @@
 				return content.slice(0,i-1);
 			}
 		}
+	};
+	
+	
+	/**
+	 * 合并参数
+	 * @param option
+	 * @return {Ycc.UI}
+	 */
+	Ycc.UI.Base.prototype.extend = function (option) {
+		option = option || {};
+		for(var key in this){
+			if(typeof option[key]!=="undefined"){
+				this[key] = option[key];
+			}
+		}
+		return this;
 	}
 
 

@@ -33,6 +33,7 @@
 <script src="./lib/Ycc.UI.Rect.class.js"></script>
 <script src="./lib/Ycc.UI.Line.class.js"></script>
 <script src="./lib/Ycc.UI.Image.class.js"></script>
+<script src="./lib/Ycc.UI.Circle.class.js"></script>
 <script src="./lib/Ycc.PhotoManager.class.js"></script>
 <script src="./lib/Ycc.Event.class.js"></script>
 <script src="./lib/Ycc.Layer.class.js"></script>
@@ -55,6 +56,7 @@
 	config ={
 		content:"  我是  多行文本的UI  超出的文字会被忽略  测试文字 测试文字 测试文字  01234567  89012  34567\n1234567890123456789012345678901234\n12345678901234567890",
 		rect:new Ycc.Math.Rect(100,100,200,100),
+		rectBgColor:"green",
 		wordBreak:"break-word",
 		overflow:"hidden"
 	};
@@ -69,6 +71,7 @@
 	config = {
 		content:"我是一个单行文本的UI 超出文字会被忽略 测试文字 测试文字 测试文字  01234567  89012",
 		rect:new Ycc.Math.Rect(10,10,400,50),
+		rectBgColor:"green",
 		yAlign:"center",
 		overflow:"hidden"
 	};
@@ -81,7 +84,6 @@
 	};
 	ui = new Ycc.UI.Rect(config);
 	layer.addUI(ui);
-	ycc.baseUI.rect([config.rect.x,config.rect.y],[config.rect.x+config.rect.width,config.rect.y+config.rect.height]);
 
 
 	config = {
@@ -90,6 +92,16 @@
 		width:3
 	};
 	layer.addUI(new Ycc.UI.Line(config));
+
+
+	config = {
+		point:{x:40,y:400},
+		r:20
+	};
+	ui = new Ycc.UI.Circle(config);
+	layer.addUI(ui);
+
+
 
 	new Ycc.Loader().loadImageList({
 		icon:"http://lizhiqianduan.com/myblog/images/icon.jpg",
