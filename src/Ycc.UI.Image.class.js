@@ -75,6 +75,8 @@
 	 * 绘制
 	 */
 	Ycc.UI.Image.prototype.render = function () {
+		this.renderRectBgColor();
+		
 		var rect = this.rect;
 		var img = this.res;
 		this.ctx.save();

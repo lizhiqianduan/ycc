@@ -22,18 +22,6 @@
 	Ycc.UI.Line = function Line(option) {
 		Ycc.UI.Base.call(this,option);
 		
-		/**
-		 * 配置项
-		 */
-		// this.option = Ycc.utils.extend({
-		// 	rect:null,
-		// 	start:null,
-		// 	end:null,
-		// 	width:1,
-		// 	color:"black"
-		// },option);
-		
-		
 		this.start = null;
 		this.end = null;
 		this.width = 1;
@@ -59,6 +47,7 @@
 	 * 绘制
 	 */
 	Ycc.UI.Line.prototype.render = function () {
+		this.renderRectBgColor();
 		
 		this.ctx.save();
 		this.ctx.strokeStyle = this.color;

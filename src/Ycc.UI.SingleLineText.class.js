@@ -74,6 +74,8 @@
 	 * @param ctx
 	 */
 	Ycc.UI.SingleLineText.prototype.render = function (ctx) {
+		this.renderRectBgColor();
+		
 		var self = this;
 
 		self.ctx = ctx || self.ctx;

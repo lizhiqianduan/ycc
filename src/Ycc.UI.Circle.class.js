@@ -51,6 +51,7 @@
 	 * 绘制
 	 */
 	Ycc.UI.Circle.prototype.render = function () {
+		this.renderRectBgColor();
 		
 		this.ctx.save();
 		this.ctx.beginPath();
