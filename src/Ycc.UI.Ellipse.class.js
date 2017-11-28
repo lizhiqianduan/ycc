@@ -23,7 +23,7 @@
 	Ycc.UI.Ellipse = function Ellipse(option) {
 		Ycc.UI.Base.call(this,option);
 		
-		this.point = null;
+		this.point = new Ycc.Math.Dot();
 		this.width = 20;
 		this.height = 10;
 		this.angle = 0;
@@ -31,7 +31,7 @@
 		// centrePoint,width,height,rotateAngle,fill
 		
 		this.color = "black";
-		this.fill = true;
+		this.fill = false;
 		
 		this.extend(option);
 	};
@@ -91,6 +91,7 @@
 		this.ctx.arc(this.point.x / ratioX,  this.point.y/ ratioY, r/2, 0, 2 * Math.PI, false);
 		this.ctx.closePath();
 		
+		this.ctx.fillStyle = this.ctx.strokeStyle = this.color;
 		if(!this.fill)
 			this.ctx.stroke();
 		else
