@@ -28,21 +28,21 @@
 	 * 		<br> `auto`	-- 修改rect大小，完全显示
 	 */
 	Ycc.UI.MultiLineText = function MultiLineText(option) {
-		Ycc.UI.Base.call(this);
+		Ycc.UI.Base.call(this,option);
 		
-		/**
-		 * 配置项
-		 */
-		this.option = Ycc.utils.extend({
-			content:"",
-			fontSize:"16px",
-			lineHeight:24,
-			fill:true,
-			color:"black",
-			rect:null,
-			wordBreak:"break-all",
-			overflow:"auto"
-		},option);
+		// /**
+		//  * 配置项
+		//  */
+		// this.option = Ycc.utils.extend({
+		// 	content:"",
+		// 	fontSize:"16px",
+		// 	lineHeight:24,
+		// 	fill:true,
+		// 	color:"black",
+		// 	rect:null,
+		// 	wordBreak:"break-all",
+		// 	overflow:"auto"
+		// },option);
 		
 		/**
 		 * 显示在文本框中的文本行。私有属性，不允许修改。
@@ -50,50 +50,35 @@
 		 */
 		this.displayLines = [];
 		
-		
+		this.content = "";
+		this.fontSize = "16px";
+		this.lineHeight = 24;
+		this.fill = true;
+		this.color = "black";
+		this.wordBreak = "break-all";
+		this.overflow = "auto";
+
+		this.extend(option);
 	};
 	Ycc.UI.MultiLineText.prototype = new Ycc.UI.Base();
 	Ycc.UI.MultiLineText.prototype.constructor = Ycc.UI.MultiLineText;
+	
+	
+	
 	/**
-	 * 渲染至ctx
-	 * @param ctx
+	 * 计算UI的各种属性。此操作必须在绘制之前调用。
+	 * <br> 计算与绘制分离的好处是，在绘制UI之前就可以提前确定元素的各种信息，从而判断是否需要绘制。
+	 * @override
 	 */
-	Ycc.UI.MultiLineText.prototype.render = function (ctx) {
+	Ycc.UI.MultiLineText.prototype.computeUIProps = function () {
 		var self = this;
-		
-		self.ctx = ctx || self.ctx;
-		
-		if(!self.ctx){
-			console.error("[Ycc error]:","ctx is null !");
-			return;
-		}
-		
-		
-		// 修改引用
-		var config = this.option;
-		var lines = config.content.split(/(?:\r\n|\r|\n)/);
-		
-		this.ctx.save();
-		this.ctx.fillStyle = config.color;
-		this.ctx.strokeStyle = config.color;
-		
-		// 存储需要实时绘制的每行文字
-		var renderLines = getRenderLines();
-		self.displayLines = renderLines;
-		if(config.overflow==="auto"){
+		// 文本行
+		var lines = this.content.split(/(?:\r\n|\r|\n)/);
+		// 待显示的文本行
+		this.displayLines = getRenderLines();
+		if(config.overflow === "auto"){
 			config.rect.height = config.lineHeight*renderLines.length;
 		}
-		// 绘制
-		for(var i = 0;i<renderLines.length;i++){
-			var x = config.rect.x;
-			var y = config.rect.y + i*config.lineHeight;
-			if(y+config.lineHeight>config.rect.y+config.rect.height){
-				break;
-			}
-			this.baseUI.text([x,y],renderLines[i],config.fill);
-		}
-		this.ctx.restore();
-		
 		
 		/**
 		 * 获取需要实际绘制的文本行数组
@@ -210,6 +195,44 @@
 				}
 			}
 		}
+	};
+	
+	
+	
+	/**
+	 * 渲染至ctx
+	 * @param ctx
+	 */
+	Ycc.UI.MultiLineText.prototype.render = function (ctx) {
+		this.renderRectBgColor();
+		
+		var self = this;
+		
+		self.ctx = ctx || self.ctx;
+		
+		if(!self.ctx){
+			console.error("[Ycc error]:","ctx is null !");
+			return;
+		}
+		
+		
+		// 引用
+		var config = this;
+		
+		this.ctx.save();
+		this.ctx.fillStyle = config.color;
+		this.ctx.strokeStyle = config.color;
+		
+		// 绘制
+		for(var i = 0;i<self.displayLines.length;i++){
+			var x = config.rect.x;
+			var y = config.rect.y + i*config.lineHeight;
+			if(y+config.lineHeight>config.rect.y+config.rect.height){
+				break;
+			}
+			this.baseUI.text([x,y],self.displayLines[i],config.fill);
+		}
+		this.ctx.restore();
 	};
 	
 	

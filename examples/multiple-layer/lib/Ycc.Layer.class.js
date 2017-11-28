@@ -266,14 +266,18 @@
 			// 设置已经移动的标志位
 			mouseHasMove = true;
 			
-			// 如果鼠标已经按下，且按下时有目标，则表示拖拽事件
-			if(mouseDownYccEvent && mouseDownYccEvent.target){
+			// 如果鼠标已经按下，则表示拖拽事件
+			if(mouseDownYccEvent){
 				var draggingEvent = new Ycc.Event("dragging");
-				draggingEvent.target = mouseDownYccEvent.target;
 				draggingEvent.x = e.x;
 				draggingEvent.y = e.y;
 				draggingEvent.mouseDownYccEvent = mouseDownYccEvent;
-				draggingEvent.target.triggerListener(draggingEvent.type,draggingEvent);
+				// 先触发图层的拖拽事件，该事件没有target属性
+				self.triggerListener(draggingEvent.type,draggingEvent);
+				if(mouseDownYccEvent.target){
+					draggingEvent.target = mouseDownYccEvent.target;
+					draggingEvent.target.triggerListener(draggingEvent.type,draggingEvent);
+				}
 			}
 			
 			// 下面处理普通的鼠标移动事件
@@ -282,7 +286,7 @@
 				// 图层内部UI的相对坐标
 				var dot = new Ycc.Math.Dot(e.x - ui.belongTo.x,e.y - ui.belongTo.y);
 				// 如果位于rect内，触发事件,并阻止继续传递
-				if(dot.isInRect(ui.option.rect)){
+				if(dot.isInRect(ui.rect)){
 					e.stop = true;
 					e.mouseDownYccEvent = mouseDownYccEvent;
 					e.mouseUpYccEvent = mouseUpYccEvent;
@@ -307,12 +311,12 @@
 				var layerY = e.y - ui.belongTo.y;
 				var dot = new Ycc.Math.Dot(layerX,layerY);
 				// 如果位于rect内，并且事件未被阻止，触发事件,并阻止继续传递
-				if(dot.isInRect(ui.option.rect) && e.stop===false){
+				if(ui.rect && dot.isInRect(ui.rect) && e.stop===false){
 					e.stop = true;
 					e.mouseDownYccEvent = mouseDownYccEvent;
 					e.mouseUpYccEvent = mouseUpYccEvent;
 					e.target = ui;
-					e.targetDeltaPosition = new Ycc.Math.Dot(e.x-ui.option.rect.x,e.y-ui.option.rect.y);
+					e.targetDeltaPosition = new Ycc.Math.Dot(e.x-ui.rect.x,e.y-ui.rect.y);
 					ui.triggerListener(e.type,e);
 					break;
 				}
@@ -369,8 +373,18 @@
 	 */
 	Ycc.Layer.prototype.addUI = function (ui) {
 		ui.init(this);
-		ui.render();
 		this.uiList.push(ui);
+	};
+	
+	/**
+	 * 删除图层内的某个UI图形
+	 * @param ui
+	 */
+	Ycc.Layer.prototype.removeUI = function (ui) {
+		var index = this.uiList.indexOf(ui);
+		if(index!==-1){
+			this.uiList.splice(index,1);
+		}
 	};
 	
 	/**

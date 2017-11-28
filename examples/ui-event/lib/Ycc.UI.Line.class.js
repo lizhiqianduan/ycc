@@ -20,40 +20,42 @@
 	 * @extends Ycc.UI.Base
 	 */
 	Ycc.UI.Line = function Line(option) {
-		Ycc.UI.Base.call(this);
+		Ycc.UI.Base.call(this,option);
 		
-		/**
-		 * 配置项
-		 */
-		this.option = Ycc.utils.extend({
-			rect:null,
-			start:null,
-			end:null,
-			width:1,
-			color:"black"
-		},option);
+		this.start = new Ycc.Math.Dot(0,0);
+		this.end = new Ycc.Math.Dot(0,0);
+		this.width = 1;
+		this.color = "black";
 		
+		this.extend(option);
 	};
 	Ycc.UI.Line.prototype = new Ycc.UI.Base();
 	Ycc.UI.Line.prototype.constructor = Ycc.UI.Line;
-	
+
+	/**
+	 * 计算UI的各种属性。此操作必须在绘制之前调用。
+	 * <br> 计算与绘制分离的好处是，在绘制UI之前就可以提前确定元素的各种信息，从而判断是否需要绘制。
+	 * @override
+	 */
+	Ycc.UI.Line.prototype.computeUIProps = function () {
+		this.rect.x = this.start.x<this.end.x?this.start.x:this.end.x;
+		this.rect.y = this.start.y<this.end.y?this.start.y:this.end.y;
+		this.rect.width = Math.abs(this.start.x-this.end.x);
+		this.rect.height = Math.abs(this.start.y-this.end.y);
+	};
 	/**
 	 * 绘制
 	 */
 	Ycc.UI.Line.prototype.render = function () {
-		this.option.rect = new Ycc.Math.Rect();
-		this.option.rect.x = this.option.start.x<this.option.end.x?this.option.start.x:this.option.end.x;
-		this.option.rect.y = this.option.start.y<this.option.end.y?this.option.start.y:this.option.end.y;
-		this.option.width = Math.abs(this.option.start.x-this.option.end.x);
-		this.option.height = Math.abs(this.option.start.y-this.option.end.y);
+		this.renderRectBgColor();
 		
 		this.ctx.save();
-		this.ctx.strokeStyle = this.option.color;
-		this.ctx.strokeWidth = this.option.width;
+		this.ctx.strokeStyle = this.color;
+		this.ctx.strokeWidth = this.width;
 		
 		this.ctx.beginPath();
-		this.ctx.moveTo(this.option.start.x, this.option.start.y);
-		this.ctx.lineTo(this.option.end.x, this.option.end.y);
+		this.ctx.moveTo(this.start.x, this.start.y);
+		this.ctx.lineTo(this.end.x, this.end.y);
 		this.ctx.stroke();
 		this.ctx.closePath();
 		this.ctx.restore();

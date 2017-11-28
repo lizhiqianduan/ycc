@@ -69,10 +69,21 @@
 
 <script src="./lib/Ycc.Math.js"></script>
 <script src="./lib/Ycc.Loader.class.js"></script>
+<script src="./lib/Ycc.Listener.class.js"></script>
+<script src="./lib/Ycc.Event.class.js"></script>
+
 <script src="./lib/Ycc.UI.class.js"></script>
+<script src="./lib/Ycc.UI.Base.class.js"></script>
+<script src="./lib/Ycc.UI.Rect.class.js"></script>
+<script src="./lib/Ycc.UI.Line.class.js"></script>
+<script src="./lib/Ycc.UI.BrokenLine.class.js"></script>
+<script src="./lib/Ycc.UI.Image.class.js"></script>
+<script src="./lib/Ycc.UI.Ellipse.class.js"></script>
+
+
+<script src="./lib/Ycc.Layer.class.js"></script>
 <script src="./lib/Ycc.LayerManager.class.js"></script>
 <script src="./lib/Ycc.PhotoManager.class.js"></script>
-<script src="./lib/Ycc.EventManager.class.js"></script>
 
 
 
@@ -117,13 +128,18 @@
 		layer = ycc.layerManager.newLayer({name:"试卷图层"});
 		layer.enableEventManager = true;
 
-		layer.eventManager.onclick = function (e) {
-//			console.log(this,e);
+		layer.onclick = function (e) {
+			console.log(this,e);
 		};
 
-		layer.ui.image(imgs.paper,[0,0]);
-		ycc.layerManager.renderAllLayerToStage();
+//		layer.ui.image(imgs.paper,[0,0]);
+		layer.addUI(new Ycc.UI.Image({
+			rect:new Ycc.Math.Rect(0,0,imgs.paper.width,imgs.paper.height),
+			res:imgs.paper
+		}));
+		ycc.layerManager.reRenderAllLayerToStage();
 		ycc.photoManager.takePhoto();
+
 	});
 
 
@@ -166,24 +182,23 @@
 	 * 画直线
 	 */
 	function line() {
-		var hasDragged = false;
-		layer.eventManager.onclick = function (e) { };
-		layer.eventManager.ondragging = function (e) {
-			hasDragged = true;
-			var startDot = [layer.eventManager.mouseDownEvent.x,layer.eventManager.mouseDownEvent.y];
-			var endDot = [e.x,e.y];
+		var ui = null;
 
-			// 显示上一张保存的图
-			ycc.photoManager.showLastPhoto();
-			// 将图层清空
-			layer.clear();
-			// 在图层上绘制UI
-			layer.ui.line(translateDotByScale(startDot),translateDotByScale(endDot));
-			// 渲染图层至舞台
-			ycc.layerManager.renderAllLayerToStage();
+		var hasDragged = false;
+		layer.onclick = function (e) { };
+		layer.onmousedown = function (e) {
+			ui = new Ycc.UI.Line();
+			layer.addUI(ui);
+		};
+		layer.ondragging = function (e) {
+			hasDragged = true;
+			ui.start = translateDotByScale(e.mouseDownYccEvent);
+			ui.end = translateDotByScale(e);
+			ycc.layerManager.reRenderAllLayerToStage();
 
 		};
-		layer.eventManager.onmouseup = function (e) {
+		layer.onmouseup = function (e) {
+			ui = null;
 			if(!hasDragged) return null;
 			ycc.photoManager.takePhoto();
 			showPhotoToHtml();
@@ -198,22 +213,23 @@
 	function pen() {
 		var startDot = [];
 		var hasMoved = false;
-
-		layer.eventManager.onclick = function (e) {};
-		layer.eventManager.onmousedown = function (e) {
-			startDot = translateDotByScale([e.x,e.y]);
+		var ui = null;
+		layer.onclick = function (e) {};
+		layer.onmousedown = function (e) {
+			startDot = translateDotByScale(new Ycc.Math.Dot(e.x,e.y));
+			ui = new Ycc.UI.BrokenLine({color:"red",width:3});
+			ui.pointList.push(startDot);
+			layer.addUI(ui);
 		};
-		layer.eventManager.ondragging = function (e) {
+		layer.ondragging = function (e) {
 			hasMoved = true;
-			var moveDot = translateDotByScale([e.x,e.y]);
+			var moveDot = translateDotByScale(new Ycc.Math.Dot(e.x,e.y));
+			ui.pointList.push(moveDot);
 
-			ycc.photoManager.showLastPhoto();
-			layer.ui.line(startDot,moveDot);
-			ycc.layerManager.renderAllLayerToStage();
-
-			startDot = moveDot;
+			ycc.layerManager.reRenderAllLayerToStage();
+//			startDot = moveDot;
 		};
-		layer.eventManager.onmouseup = function (e) {
+		layer.onmouseup = function (e) {
 			if(!hasMoved) return null;
 			ycc.photoManager.takePhoto();
 			showPhotoToHtml();
@@ -227,17 +243,23 @@
 	 */
 	function rect() {
 		var hasDragged = false;
-		layer.eventManager.onclick = function (e) {};
-		layer.eventManager.ondragging = function (e) {
-			hasDragged = true;
-			var startDot = [layer.eventManager.mouseDownEvent.x,layer.eventManager.mouseDownEvent.y];
-			var endDot = [e.x,e.y];
-			ycc.photoManager.showLastPhoto();
-			layer.clear();
-			layer.ui.rect(translateDotByScale(startDot),translateDotByScale(endDot));
-			ycc.layerManager.renderAllLayerToStage();
+		var rect;
+		layer.onclick = function (e) {};
+		layer.onmousedown = function () {
+			rect = new Ycc.UI.Rect({
+				fill:false,
+				color:"red"
+			});
+			layer.addUI(rect);
 		};
-		layer.eventManager.onmouseup = function (e) {
+		layer.ondragging = function (e) {
+			hasDragged = true;
+			var startDot = new Ycc.Math.Dot(e.mouseDownYccEvent.x,e.mouseDownYccEvent.y);
+			var endDot = new Ycc.Math.Dot(e.x,e.y);
+			rect.rect = new Ycc.Math.Rect(startDot.x,startDot.y,endDot.x-startDot.x,endDot.y-startDot.y);
+			ycc.layerManager.reRenderAllLayerToStage();
+		};
+		layer.onmouseup = function (e) {
 			if(!hasDragged) return null;
 			ycc.photoManager.takePhoto();
 			showPhotoToHtml();
@@ -252,36 +274,31 @@
 	function ellipse(hasRotate) {
 		var hasDragged = false;
 
-		layer.eventManager.onclick = function (e) {};
 
-		layer.eventManager.ondragging = function (e) {
+		var ui;
+		layer.onclick = function (e) {};
+		layer.onmousedown = function () {
+			ui = new Ycc.UI.Ellipse();
+			layer.addUI(ui);
+		};
+
+
+		layer.onclick = function (e) {};
+
+		layer.ondragging = function (e) {
 			hasDragged = true;
-			var startDot = translateDotByScale([layer.eventManager.mouseDownEvent.x,layer.eventManager.mouseDownEvent.y]);
-			var endDot = translateDotByScale([e.x,e.y]);
+			var startDot = translateDotByScale(new Ycc.Math.Dot(e.mouseDownYccEvent.x,e.mouseDownYccEvent.y));
+			var endDot = translateDotByScale(new Ycc.Math.Dot(e.x,e.y));
 
-			var entryPoint = [0,0];
-			var width = 0;
-			var height = 0;
-			var rotateAngle = 0;
-			if(hasRotate){
-				entryPoint = [(startDot[0]+endDot[0])/2,(startDot[1]+endDot[1])/2];
-				width = Math.pow(Math.pow(startDot[0]-endDot[0],2)+Math.pow(startDot[1]-endDot[1],2),0.5)/2;
-				height = 30;
-				rotateAngle = Math.acos((endDot[0]-startDot[0])/width/2)*180/Math.PI;
-				if(endDot[1]-startDot[1]<=0) rotateAngle = -1*rotateAngle;
-			}else{
-				entryPoint = [(startDot[0]+endDot[0])/2,(startDot[1]+endDot[1])/2];
-				width = Math.abs(endDot[0] - startDot[0])/2;
-				height = Math.abs(endDot[1] - startDot[1])/2;
-				rotateAngle = 0;
-			}
-			ycc.photoManager.showLastPhoto();
-			layer.clear();
-			layer.ui.ellipse(entryPoint,width,height,rotateAngle);
-			ycc.layerManager.renderAllLayerToStage();
+			ui.point.x = (startDot.x+endDot.x)/2;
+			ui.point.y = (startDot.y+endDot.y)/2;
+			ui.width = Math.abs(endDot.x - startDot.x)/2;
+			ui.height = Math.abs(endDot.y - startDot.y)/2;
+			ui.angle = 0;
+			ycc.layerManager.reRenderAllLayerToStage();
 
 		};
-		layer.eventManager.onmouseup = function (e) {
+		layer.onmouseup = function (e) {
 			if(!hasDragged) return null;
 			ycc.photoManager.takePhoto();
 			showPhotoToHtml();
@@ -293,18 +310,12 @@
 	 * 画勾
 	 */
 	function gou() {
-		layer.eventManager.ondragging = function (e) {};
-		layer.eventManager.onmouseup = function (e) {};
-		layer.eventManager.onclick = function (e) {
-			var endDot = translateDotByScale([e.x,e.y]);
-
-			ycc.photoManager.showLastPhoto();
-			layer.clear();
-			layer.ui.scale(0.2,0.2);
-			layer.ui.image(imageRes.tick,[endDot[0]*5-70,endDot[1]*5-240]);
-			layer.ui.scale(5,5);
-			ycc.layerManager.renderAllLayerToStage();
-
+		layer.ondragging = function (e) {};
+		layer.onmouseup = function (e) {};
+		layer.onclick = function (e) {
+			var endDot = translateDotByScale(new Ycc.Math.Dot(e.x-22,e.y-56));
+			layer.addUI(new Ycc.UI.Image({res:imageRes.tick,rect:new Ycc.Math.Rect(endDot.x,endDot.y,64,64),fillMode:"scale"}));
+			ycc.layerManager.reRenderAllLayerToStage();
 			ycc.photoManager.takePhoto();
 			showPhotoToHtml();
 		}
@@ -314,18 +325,12 @@
 	 * 画叉
 	 */
 	function cross(){
-		layer.eventManager.ondragging = function (e) {};
-		layer.eventManager.onmouseup = function (e) {};
-		layer.eventManager.onclick = function (e) {
-			var endDot = translateDotByScale([e.x,e.y]);
-
-			ycc.photoManager.showLastPhoto();
-			layer.clear();
-			layer.ui.scale(0.2,0.2);
-			layer.ui.image(imageRes.cross,[endDot[0]*5-100,endDot[1]*5-128]);
-			layer.ui.scale(5,5);
-			ycc.layerManager.renderAllLayerToStage();
-
+		layer.ondragging = function (e) {};
+		layer.onmouseup = function (e) {};
+		layer.onclick = function (e) {
+			var endDot = translateDotByScale(new Ycc.Math.Dot(e.x-30,e.y-38));
+			layer.addUI(new Ycc.UI.Image({res:imageRes.cross,rect:new Ycc.Math.Rect(endDot.x,endDot.y,64,64),fillMode:"scale"}));
+			ycc.layerManager.reRenderAllLayerToStage();
 			ycc.photoManager.takePhoto();
 			showPhotoToHtml();
 		}
@@ -354,6 +359,7 @@
 	 * 点击回退
 	 */
 	function goBack() {
+		layer.uiList.pop();
 		layer.clear();
 		var photos = ycc.photoManager.getHistoryPhotos();
 		if(photos.length>=2){
@@ -368,14 +374,25 @@
 	/**
 	 * 变换一个点，根据缩放比例变化一个点的坐标
 	 * @param dot
-	 * @returns {[number,number]}
+	 * @param dot.x
+	 * @param dot.y
+	 * @returns {Ycc.Math.Dot}
 	 */
 	function translateDotByScale(dot){
-		var res = [0,0];
-		res[0]= dot[0]/scale;
-		res[1]= dot[1]/scale;
+//		var res = [0,0];
+//		res[0]= dot[0]/scale;
+//		res[1]= dot[1]/scale;
+//		return res;
+
+		var res = {x:0,y:0};
+		res.x= dot.x/scale;
+		res.y= dot.y/scale;
 		return res;
 	}
+
+
+
+
 
 
 

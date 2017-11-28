@@ -34,6 +34,7 @@
 <script src="./lib/Ycc.UI.Line.class.js"></script>
 <script src="./lib/Ycc.UI.Image.class.js"></script>
 <script src="./lib/Ycc.UI.Circle.class.js"></script>
+<script src="./lib/Ycc.UI.Ellipse.class.js"></script>
 <script src="./lib/Ycc.PhotoManager.class.js"></script>
 <script src="./lib/Ycc.Event.class.js"></script>
 <script src="./lib/Ycc.Layer.class.js"></script>
@@ -101,7 +102,16 @@
 	ui = new Ycc.UI.Circle(config);
 	layer.addUI(ui);
 
-
+	config = {
+		point:{x:180,y:400},
+		r:20,
+		width:100,
+		height:50,
+		angle:45,
+		rectBgColor:"green"
+	};
+	ui = new Ycc.UI.Ellipse(config);
+	layer.addUI(ui);
 
 	new Ycc.Loader().loadImageList({
 		icon:"http://lizhiqianduan.com/myblog/images/icon.jpg",

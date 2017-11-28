@@ -22,8 +22,8 @@
 	Ycc.UI.Line = function Line(option) {
 		Ycc.UI.Base.call(this,option);
 		
-		this.start = null;
-		this.end = null;
+		this.start = new Ycc.Math.Dot(0,0);
+		this.end = new Ycc.Math.Dot(0,0);
 		this.width = 1;
 		this.color = "black";
 		
