@@ -43,6 +43,24 @@
 		this.rectBgColor = "transparent";
 		
 		/**
+		 * 线条宽度
+		 * @type {number}
+		 */
+		this.lineWidth = 1;
+		
+		/**
+		 * 填充颜色
+		 * @type {string}
+		 */
+		this.fillStyle = "black";
+
+		/**
+		 * 线条颜色
+		 * @type {string}
+		 */
+		this.strokeStyle = "black";
+		
+		/**
 		 * UI所属的图层
 		 * @type {Ycc.Layer}
 		 */
