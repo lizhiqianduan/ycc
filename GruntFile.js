@@ -71,9 +71,11 @@ module.exports = function(grunt){
 			{expand:true,cwd:"./build", src: '*.js', dest: 'examples/image-loader/lib/'},
 			{expand:true,cwd:"./build", src: '*.js', dest: 'examples/ui-test/lib/'},
 			{expand:true,cwd:"./build", src: '*.js', dest: 'examples/ui-event/lib/'},
+			{expand:true,cwd:"./build", src: '*.js', dest: 'examples/ui-ellipse/lib/'},
 			{expand:true,cwd:"./build", src: '*.js', dest: 'examples/multiple-layer/lib/'},
 			{expand:true,cwd:"./build", src: '*.js', dest: 'examples/timer-animation/lib/'},
   		]
+		
 		
     });
 
