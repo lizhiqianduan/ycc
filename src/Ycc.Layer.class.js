@@ -227,6 +227,8 @@
 		var mouseUpYccEvent = null;
 		// 鼠标是否已经移动
 		var mouseHasMove = false;
+		// 是否有拖拽事件触发的标志位
+		var dragFlag = false;
 		
 		this.addListener("click",function (e) {
 			// 如果鼠标已经改变了位置，那么click事件不触发
@@ -236,13 +238,26 @@
 		
 		this.addListener("mousedown",function (e) {
 			mouseHasMove = false;
+			dragFlag = false;
 			mouseDownYccEvent = e;
 			defaultMouseListener(e);
 		});
 
 		this.addListener("mouseup",function (e) {
+			if(dragFlag){
+				var dragendEvent = new Ycc.Event("dragend");
+				dragendEvent.x = e.x;
+				dragendEvent.y = e.y;
+				dragendEvent.mouseDownYccEvent = mouseDownYccEvent;
+				self.triggerListener("dragend",dragendEvent);
+				if(mouseDownYccEvent.target){
+					self.target = mouseDownYccEvent.target;
+					self.target.triggerListener("dragend",dragendEvent);
+				}
+			}
 			e.mouseDownYccEvent = mouseDownYccEvent = null;
 			mouseUpYccEvent = e;
+			
 			defaultMouseListener(e);
 		});
 		
@@ -266,8 +281,26 @@
 			// 设置已经移动的标志位
 			mouseHasMove = true;
 			
-			// 如果鼠标已经按下，则表示拖拽事件
+			// 如果鼠标已经按下，则表示拖拽事件。
 			if(mouseDownYccEvent){
+				// 1.拖拽之前，触发一次dragstart事件
+				if(!dragFlag){
+					var dragStartEvent = new Ycc.Event("dragstart");
+					dragStartEvent.x = mouseDownYccEvent.x;
+					dragStartEvent.y = mouseDownYccEvent.y;
+					dragStartEvent.mouseDownYccEvent = mouseDownYccEvent;
+					
+					// 先触发图层的拖拽事件，该事件没有target属性
+					self.triggerListener(dragStartEvent.type,dragStartEvent);
+					if(mouseDownYccEvent.target){
+						dragStartEvent.target = mouseDownYccEvent.target;
+						dragStartEvent.target.triggerListener(dragStartEvent.type,dragStartEvent);
+					}
+				}
+
+				// 2.修改拖拽已经发生的标志位
+				dragFlag = true;
+				// 3.触发dragging事件
 				var draggingEvent = new Ycc.Event("dragging");
 				draggingEvent.x = e.x;
 				draggingEvent.y = e.y;
@@ -278,6 +311,8 @@
 					draggingEvent.target = mouseDownYccEvent.target;
 					draggingEvent.target.triggerListener(draggingEvent.type,draggingEvent);
 				}
+				// 触发拖拽事件时，不再触发鼠标的移动事件，所以此处直接返回
+				return null;
 			}
 			
 			// 下面处理普通的鼠标移动事件

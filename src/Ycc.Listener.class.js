@@ -42,6 +42,11 @@
 		 */
 		this.onmousemove = null;
 		/**
+		 * 拖拽开始 的监听。默认为null
+		 * @type {function}
+		 */
+		this.ondragstart = null;
+		/**
 		 * 拖拽 的监听。默认为null
 		 * @type {function}
 		 */
