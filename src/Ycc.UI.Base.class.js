@@ -41,6 +41,12 @@
 		 * @type {string}
 		 */
 		this.rectBgColor = "transparent";
+
+		/**
+		 * 背景色的透明度。默认不透明
+		 * @type {number}
+		 */
+		this.rectBgAlpha = 1;
 		
 		/**
 		 * 线条宽度
@@ -107,6 +113,7 @@
 	 */
 	Ycc.UI.Base.prototype.renderRectBgColor = function () {
 		this.ctx.save();
+		this.ctx.globalAlpha = this.rectBgAlpha;
 		this.ctx.fillStyle = this.rectBgColor;
 		this.ctx.beginPath();
 		this.ctx.rect(this.rect.x,this.rect.y,this.rect.width,this.rect.height);
