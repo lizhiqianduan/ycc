@@ -78,6 +78,18 @@
 		 */
 		this.baseUI = null;
 		
+		/**
+		 * 初始化之前的hook
+		 * @type {function}
+		 */
+		this.beforeInit = null;
+		
+		/**
+		 * 初始化之后的hook
+		 * @type {function}
+		 */
+		this.afterInit = null;
+		
 		
 		this.extend(option);
 	};
@@ -91,12 +103,14 @@
 	 * @param layer	{Layer}		图层
 	 */
 	Ycc.UI.Base.prototype.init = function (layer) {
+		Ycc.utils.isFn(this.beforeInit) && this.beforeInit();
 		this.belongTo = layer;
 		this.ctx = layer.ctx;
 		this.baseUI = new Ycc.UI(layer.canvasDom);
 
 		// 初始化时计算一次属性
 		this.computeUIProps();
+		Ycc.utils.isFn(this.afterInit) && this.afterInit();
 	};
 	
 	/**
