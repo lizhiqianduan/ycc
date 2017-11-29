@@ -13,14 +13,27 @@ module.exports = function(grunt){
                 },
                 target: {
                     src: [
-                    	'src/Ycc.class.js',
-                        'src/Ycc.utils.js',
-						'src/Ycc.Config.class.js',
-						'src/Ycc.UI.class.js',
+						// core
+						'src/Ycc.class.js',
+						'src/Ycc.utils.js',
+						'src/Ycc.Math.js',
+						'src/Ycc.Ticker.class.js',
 						'src/Ycc.Loader.class.js',
+						'src/Ycc.Event.class.js',
+						'src/Ycc.Listener.class.js',
+						'src/Ycc.Layer.class.js',
 						'src/Ycc.LayerManager.class.js',
-						'src/Ycc.EventManager.class.js',
-						'src/Ycc.PhotoManager.class.js'
+						'src/Ycc.PhotoManager.class.js',
+						'src/Ycc.UI.class.js',
+						'src/Ycc.UI.Base.class.js',
+						
+						// ui
+						'src/Ycc.UI.Ellipse.class.js',
+						'src/Ycc.UI.Image.class.js',
+						'src/Ycc.UI.Line.class.js',
+						'src/Ycc.UI.MultiLineText.class.js',
+						'src/Ycc.UI.Rect.class.js',
+						'src/Ycc.UI.SingleLineText.class.js',
                     ],
                     dest: 'build/ycc.js'
                 }
