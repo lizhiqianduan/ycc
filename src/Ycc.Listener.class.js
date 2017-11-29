@@ -10,13 +10,47 @@
 
 (function (Ycc) {
 	
-	
+	/**
+	 * 事件监听类。供Layer及UI类继承
+	 * @constructor
+	 */
 	Ycc.Listener = function () {
 		/**
 		 * 所有的监听器。key为type，val为listener数组。
 		 * @type {{}}
 		 */
 		this.listeners = {};
+		
+		/**
+		 * 点击 的监听。默认为null
+		 * @type {function}
+		 */
+		this.onclick = null;
+		/**
+		 * 鼠标按下 的监听。默认为null
+		 * @type {function}
+		 */
+		this.onmousedown = null;
+		/**
+		 * 鼠标抬起 的监听。默认为null
+		 * @type {function}
+		 */
+		this.onmouseup = null;
+		/**
+		 * 鼠标移动 的监听。默认为null
+		 * @type {function}
+		 */
+		this.onmousemove = null;
+		/**
+		 * 拖拽 的监听。默认为null
+		 * @type {function}
+		 */
+		this.ondragging = null;
+		/**
+		 * 拖拽结束 的监听。默认为null
+		 * @type {function}
+		 */
+		this.ondraggend = null;
 	};
 	
 	
