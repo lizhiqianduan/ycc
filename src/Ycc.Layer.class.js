@@ -438,7 +438,10 @@
 	 */
 	Ycc.Layer.prototype.reRender = function () {
 		this.clear();
-		this.render();
+		for(var i=0;i<this.uiList.length;i++){
+			this.uiList[i].computeUIProps();
+			this.uiList[i].render();
+		}
 	}
 	
 	
