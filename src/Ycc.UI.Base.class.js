@@ -73,6 +73,12 @@
 		this.belongTo = null;
 		
 		/**
+		 * 用户自定义的数据
+		 * @type {null}
+		 */
+		this.userdata = null;
+		
+		/**
 		 * 基础绘图UI
 		 * @type {Ycc.UI}
 		 */
