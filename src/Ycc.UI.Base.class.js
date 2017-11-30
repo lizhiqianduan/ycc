@@ -76,7 +76,7 @@
 		 * 用户自定义的数据
 		 * @type {null}
 		 */
-		this.userdata = null;
+		this.userData = null;
 		
 		/**
 		 * 基础绘图UI
