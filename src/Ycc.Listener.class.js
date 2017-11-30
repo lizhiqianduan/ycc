@@ -20,6 +20,11 @@
 		 * @type {{}}
 		 */
 		this.listeners = {};
+		/**
+		 * 被阻止的事件类型。key为type，val为boolean
+		 * @type {{}}
+		 */
+		this.stopType = {};
 		
 		/**
 		 * 点击 的监听。默认为null
@@ -71,18 +76,29 @@
 		this.listeners[type].indexOf(listener) === -1 && this.listeners[type].push(listener);
 	};
 	
+	
+	/**
+	 * 阻止某个事件类型继续传递
+	 * @param type
+	 */
+	Ycc.Listener.prototype.stop = function (type) {
+		this.stopType[type] = true;
+	};
+	
 	/**
 	 * 触发某一类型的监听器
 	 * @param type
 	 * @param data
 	 */
 	Ycc.Listener.prototype.triggerListener = function (type,data) {
-		Ycc.utils.isFn(this["on"+type]) && this["on"+type].call(this,data);
-		
+		if(!this.stopType[type])
+			Ycc.utils.isFn(this["on"+type]) && this["on"+type].call(this,data);
+
 		var ls = this.listeners[type];
 		if(!ls || !Ycc.utils.isArray(ls)) return;
 		for(var i=0;i<ls.length;i++){
-			ls[i].call(this,data);
+			if(!this.stopType[type])
+				ls[i].call(this,data);
 		}
 	};
 	
