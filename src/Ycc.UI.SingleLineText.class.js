@@ -33,12 +33,46 @@
 		 */
 		this.displayContent = "";
 		
+		/**
+		 * 期望绘制的文本内容
+		 * @type {string}
+		 */
 		this.content = "";
+
+		/**
+		 * 文字大小
+		 * @type {string}
+		 */
 		this.fontSize = "16px";
+		
+		/**
+		 * 文字描边or填充
+		 * @type {boolean}
+		 */
 		this.fill = true;
+		
+		/**
+		 * 文字颜色
+		 * @type {string}
+		 */
 		this.color = "black";
+
+		/**
+		 * 文字在区域内x方向的排列方式。 `left` or `center`
+		 * @type {string}
+		 */
 		this.xAlign = "left";
+		
+		/**
+		 * 文字在区域内y方向的排列方式
+		 * @type {string}
+		 */
 		this.yAlign = "center";
+		
+		/**
+		 * 文字超出后的处理方式。 `auto` or `hidden`
+		 * @type {string}
+		 */
 		this.overflow = "auto";
 
 		this.extend(option);
@@ -95,6 +129,12 @@
 		var option = this;
 		
 		x = option.rect.x;
+		
+		if(this.xAlign==="center"){
+			var textWidth = this.ctx.measureText(this.displayContent).width;
+			x+=(this.rect.width-textWidth)/2;
+		}
+		
 		y = option.rect.y;
 		
 		if(fontSize>option.rect.height){
