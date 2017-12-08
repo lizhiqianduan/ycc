@@ -27,6 +27,12 @@
 		this.ctrlSize = 6;
 		
 		/**
+		 * 拖拽是否允许超出舞台
+		 * @type {boolean}
+		 */
+		this.enableDragOut = false;
+		
+		/**
 		 * 是否填充
 		 * @type {boolean}
 		 */
@@ -142,12 +148,32 @@
 				this.rect.x = e.x-e.mouseDownYccEvent.targetDeltaPosition.x;
 				this.rect.y = e.y-e.mouseDownYccEvent.targetDeltaPosition.y;
 			}
+			
+			// 处理选择器的最小宽度
 			if(this.rect.width<=this.ctrlSize*2){
 				this.rect.width = this.ctrlSize*2;
 			}
+			// 处理选择器的最小高度
 			if(this.rect.height<=this.ctrlSize*2){
 				this.rect.height = this.ctrlSize*2;
 			}
+			
+			// 处理不允许拖拽出舞台
+			if(!this.enableDragOut){
+				var stageW = this.belongTo.yccInstance.getStageWidth();
+				var stageH = this.belongTo.yccInstance.getStageHeight();
+				if(this.rect.x<=0) this.rect.x=0;
+				if(this.rect.y<=0) this.rect.y=0;
+				if(this.rect.x+this.rect.width>=stageW){
+					this.rect.x = stageW-this.rect.width;
+				}
+				if(this.rect.y+this.rect.height>=stageH){
+					this.rect.y = stageH-this.rect.height;
+				}
+				
+			}
+			
+			
 
 			/**
 			 * @todo 此处是否在UI内渲染，有待考虑
