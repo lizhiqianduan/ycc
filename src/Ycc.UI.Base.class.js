@@ -168,7 +168,6 @@
 		for(var i = 0;i<content.length;i++){
 			out = content.slice(0,i+1);
 			outW = this.ctx.measureText(out).width;
-			console.log(outW,width);
 			if(outW>width){
 				return content.slice(0,i);
 			}
