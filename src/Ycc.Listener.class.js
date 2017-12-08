@@ -60,7 +60,7 @@
 		 * 拖拽结束 的监听。默认为null
 		 * @type {function}
 		 */
-		this.ondraggend = null;
+		this.ondragend = null;
 	};
 	
 	

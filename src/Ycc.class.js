@@ -12,36 +12,21 @@
 (function (win) {
 	
 	/**
-	 * 应用启动入口类，每个实例都与一个舞台绑定。
-	 * 每个舞台都是一个canvas元素，该元素会被添加至HTML结构中。
-	 *
-	 * @param canvasDom		canvas的HTML元素。即，显示舞台
-	 * @param [config]		canvas初始化的属性。字体大小、填充颜色、线条颜色、默认背景等。
+	 * 应用启动入口类，每个实例都与一个canvas绑定。
+	 * 该canvas元素会被添加至HTML结构中，作为应用的显示舞台。
 	 * @constructor
 	 */
-	win.Ycc = function Ycc(canvasDom,config){
+	win.Ycc = function Ycc(){
 		/**
 		 * canvas的Dom对象
 		 */
-		this.canvasDom = canvasDom;
+		this.canvasDom = null;
 		
-		/**
-		 * 显示舞台
-		 */
-		this.stage = canvasDom;
 		/**
 		 * 绘图环境
 		 * @type {CanvasRenderingContext2D}
 		 */
-		this.ctx = this.canvasDom.getContext("2d");
-		/**
-		 * 可绘图区的宽
-		 */
-		this.ctxWidth = this.canvasDom.width;
-		/**
-		 * 可绘图区的高
-		 */
-		this.ctxHeight = this.canvasDom.height;
+		this.ctx = null;
 		
 		/**
 		 * Layer对象数组。包含所有的图层
@@ -50,48 +35,69 @@
 		this.layerList = [];
 
 		/**
-		 * 实例的全局配置项
-		 */
-		this.config = config?config:{};
-		
-		/**
 		 * 实例的快照管理模块
 		 * @type {Ycc.PhotoManager}
 		 */
-		this.photoManager = Ycc.PhotoManager?new Ycc.PhotoManager(this):null;
+		this.photoManager = null;
 		
 		/**
 		 * ycc的图层管理器
 		 * @type {null}
 		 */
-		this.layerManager = Ycc.LayerManager?new Ycc.LayerManager(this):null;
+		this.layerManager = null;
 		
 		/**
 		 * 系统心跳管理器
 		 */
-		this.ticker = Ycc.Ticker?new Ycc.Ticker(this):null;
+		this.ticker = null;
+		
+		/**
+		 * 资源加载器
+		 * @type {Ycc.Loader}
+		 */
+		this.loader = new Ycc.Loader();
 		
 		/**
 		 * 基础绘图UI。这些绘图操作会直接作用于舞台。
 		 * @type {Ycc.UI}
 		 */
-		this.baseUI = new Ycc.UI(this.stage);
-		
-		this.init();
+		this.baseUI = null;
 	};
 	
 	/**
 	 * 获取舞台的宽
 	 */
 	win.Ycc.prototype.getStageWidth = function () {
-		return this.stage.width;
+		return this.ctx.canvas.width;
 	};
 	
 	/**
 	 * 获取舞台的高
 	 */
 	win.Ycc.prototype.getStageHeight = function () {
-		return this.stage.height;
+		return this.ctx.canvas.height;
+	};
+	
+	/**
+	 * 绑定canvas元素
+	 * @param canvasDom		canvas的HTML元素。即，显示舞台
+	 */
+	win.Ycc.prototype.bindCanvas = function (canvasDom) {
+		this.canvasDom = canvasDom;
+		
+		this.ctx = this.canvasDom.getContext("2d");
+		
+		this.layerList = [];
+		
+		this.photoManager = new Ycc.PhotoManager(this);
+		
+		this.layerManager = new Ycc.LayerManager(this);
+		
+		this.ticker = new Ycc.Ticker(this);
+		
+		this.baseUI = new Ycc.UI(this.ctx.canvas);
+		
+		this.init();
 	};
 	
 	/**
@@ -102,11 +108,11 @@
 		// 代理的原生鼠标事件，默认每个图层都触发
 		var proxyEventTypes = ["mousemove","mousedown","mouseup","click","mouseenter","mouseout"];
 		for(var i = 0;i<proxyEventTypes.length;i++){
-			this.stage.addEventListener(proxyEventTypes[i],function (e) {
+			this.ctx.canvas.addEventListener(proxyEventTypes[i],function (e) {
 				var yccEvent = new Ycc.Event(e.type);
 				yccEvent.originEvent = e;
-				yccEvent.x = parseInt(e.clientX - self.stage.getBoundingClientRect().left);
-				yccEvent.y = parseInt(e.clientY - self.stage.getBoundingClientRect().top);
+				yccEvent.x = parseInt(e.clientX - self.ctx.canvas.getBoundingClientRect().left);
+				yccEvent.y = parseInt(e.clientY - self.ctx.canvas.getBoundingClientRect().top);
 				for(var i=self.layerList.length-1;i>=0;i--){
 					var layer = self.layerList[i];
 					if(!layer.enableEventManager) continue;
