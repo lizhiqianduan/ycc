@@ -54,11 +54,23 @@
 
 <script src="./lib/Ycc.class.js"></script>
 <script src="./lib/Ycc.utils.js"></script>
+<script src="./lib/Ycc.Math.js"></script>
 <script src="./lib/Ycc.Loader.class.js"></script>
+<script src="./lib/Ycc.Listener.class.js"></script>
 <script src="./lib/Ycc.UI.class.js"></script>
-<script src="./lib/Ycc.LayerManager.class.js"></script>
+<script src="./lib/Ycc.UI.Base.class.js"></script>
+<script src="./lib/Ycc.UI.SingleLineText.class.js"></script>
+<script src="./lib/Ycc.UI.MultiLineText.class.js"></script>
+<script src="./lib/Ycc.UI.Rect.class.js"></script>
+<script src="./lib/Ycc.UI.Line.class.js"></script>
+<script src="./lib/Ycc.UI.BrokenLine.class.js"></script>
+<script src="./lib/Ycc.UI.Image.class.js"></script>
+<script src="./lib/Ycc.UI.Circle.class.js"></script>
+<script src="./lib/Ycc.UI.Ellipse.class.js"></script>
 <script src="./lib/Ycc.PhotoManager.class.js"></script>
-<script src="./lib/Ycc.EventManager.class.js"></script>
+<script src="./lib/Ycc.Event.class.js"></script>
+<script src="./lib/Ycc.Layer.class.js"></script>
+<script src="./lib/Ycc.LayerManager.class.js"></script>
 
 
 <script>
@@ -85,23 +97,22 @@
 		function pen() {
 			var startDot = [];
 			var hasMoved = false;
-
-			layer.eventManager.onclick = function (e) {};
-			layer.eventManager.onmousedown = function (e) {
-				startDot = ([e.x,e.y]);
+			var ui = null;
+			layer.onclick = function (e) {};
+			layer.onmousedown = function (e) {
+				startDot = (new Ycc.Math.Dot(e.x,e.y));
+				ui = new Ycc.UI.BrokenLine({color:"red",width:3});
+				ui.pointList.push(startDot);
+				layer.addUI(ui);
 			};
-			layer.eventManager.ondragging = function (e) {
+			layer.ondragging = function (e) {
 				hasMoved = true;
-				var moveDot = ([e.x,e.y]);
-
-				ycc.photoManager.showLastPhoto();
-				layer.ui.line(startDot,moveDot);
-				ycc.layerManager.renderAllLayerToStage();
+				var moveDot = (new Ycc.Math.Dot(e.x,e.y));
+				ui.pointList.push(moveDot);
 				renderLayerToHtml();
-
-				startDot = moveDot;
+				ycc.layerManager.reRenderAllLayerToStage();
 			};
-			layer.eventManager.onmouseup = function (e) {
+			layer.onmouseup = function (e) {
 				if(!hasMoved) return null;
 				ycc.photoManager.takePhoto();
 				hasMoved = false;

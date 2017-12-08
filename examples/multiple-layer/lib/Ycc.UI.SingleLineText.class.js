@@ -37,6 +37,10 @@
 		this.fontSize = "16px";
 		this.fill = true;
 		this.color = "black";
+		/**
+		 * @todo  未实现
+		 * @type {string}
+		 */
 		this.xAlign = "left";
 		this.yAlign = "center";
 		this.overflow = "auto";

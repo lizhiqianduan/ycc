@@ -41,6 +41,12 @@
 		 * @type {string}
 		 */
 		this.rectBgColor = "transparent";
+
+		/**
+		 * 背景色的透明度。默认不透明
+		 * @type {number}
+		 */
+		this.rectBgAlpha = 1;
 		
 		/**
 		 * 线条宽度
@@ -67,10 +73,28 @@
 		this.belongTo = null;
 		
 		/**
+		 * 用户自定义的数据
+		 * @type {null}
+		 */
+		this.userData = null;
+		
+		/**
 		 * 基础绘图UI
 		 * @type {Ycc.UI}
 		 */
 		this.baseUI = null;
+		
+		/**
+		 * 初始化之前的hook
+		 * @type {function}
+		 */
+		this.beforeInit = null;
+		
+		/**
+		 * 初始化之后的hook
+		 * @type {function}
+		 */
+		this.afterInit = null;
 		
 		
 		this.extend(option);
@@ -85,12 +109,14 @@
 	 * @param layer	{Layer}		图层
 	 */
 	Ycc.UI.Base.prototype.init = function (layer) {
+		Ycc.utils.isFn(this.beforeInit) && this.beforeInit();
 		this.belongTo = layer;
 		this.ctx = layer.ctx;
 		this.baseUI = new Ycc.UI(layer.canvasDom);
 
 		// 初始化时计算一次属性
 		this.computeUIProps();
+		Ycc.utils.isFn(this.afterInit) && this.afterInit();
 	};
 	
 	/**
@@ -107,6 +133,7 @@
 	 */
 	Ycc.UI.Base.prototype.renderRectBgColor = function () {
 		this.ctx.save();
+		this.ctx.globalAlpha = this.rectBgAlpha;
 		this.ctx.fillStyle = this.rectBgColor;
 		this.ctx.beginPath();
 		this.ctx.rect(this.rect.x,this.rect.y,this.rect.width,this.rect.height);
@@ -139,10 +166,10 @@
 		if(this.ctx.measureText(content).width<=width)
 			return content;
 		for(var i = 0;i<content.length;i++){
-			out = content.slice(0,i);
+			out = content.slice(0,i+1);
 			outW = this.ctx.measureText(out).width;
 			if(outW>width){
-				return content.slice(0,i-1);
+				return content.slice(0,i);
 			}
 		}
 	};
