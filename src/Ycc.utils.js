@@ -40,7 +40,7 @@
 	Ycc.utils.mergeObject = function(target,src){
 		src = src || {};
 		for(var key in target){
-			if(typeof src[key]!=="undefined"){
+			if(typeof src[key]!==undefined){
 				target[key] = src[key];
 			}
 		}
