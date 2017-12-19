@@ -59,6 +59,12 @@
 		 */
 		this.ctrlRect4 = new Ycc.Math.Rect();
 		
+		/**
+		 * 选框选择后，下方按钮的配置项
+		 * @type {Ycc.UI.SingleLineText[]}
+		 */
+		this.btns = [];
+		
 		this.extend(option);
 		
 		this._initUI();
@@ -66,6 +72,21 @@
 	Ycc.UI.CropRect.prototype = new Ycc.UI.Base();
 	Ycc.UI.CropRect.prototype.constructor = Ycc.UI.CropRect;
 	
+	
+	/**
+	 * 是否显示框选后的操作按钮
+	 * @param show {Boolean}	`true`--显示 `false`--隐藏
+	 */
+	Ycc.UI.CropRect.prototype.showBtns = function (show) {
+		if(this.btns.length>0){
+			for(var i =0;i<this.btns.length;i++){
+				if(Ycc.utils.isObj(this.btns[i])){
+					this.btns[i].show = show;
+				}
+			}
+			this.belongTo.yccInstance.layerManager.reRenderAllLayerToStage();
+		}
+	};
 	
 	/**
 	 * 计算UI的各种属性。此操作必须在绘制之前调用。
