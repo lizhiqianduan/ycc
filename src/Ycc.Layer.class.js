@@ -119,8 +119,9 @@
 		
 		
 		
-		
-		Ycc.utils.extend(this,option);
+		// 合并参数
+		Ycc.utils.mergeObject(this,option);
+		// 初始化
 		this.init();
 	};
 	Ycc.Layer.prototype = new Ycc.Listener();
