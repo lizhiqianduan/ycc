@@ -185,7 +185,7 @@
 				dragendEvent.y = e.y;
 				dragendEvent.mouseDownYccEvent = mouseDownYccEvent;
 				self.triggerListener("dragend",dragendEvent);
-				if(mouseDownYccEvent.target){
+				if(mouseDownYccEvent&&mouseDownYccEvent.target){
 					self.target = mouseDownYccEvent.target;
 					self.target.triggerListener("dragend",dragendEvent);
 				}

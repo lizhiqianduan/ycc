@@ -110,6 +110,19 @@
 			this.yccInstance.layerList[i].enableEventManager = false;
 		}
 		layer.enableEventManager = true;
+		return this;
+	};
+	
+	/**
+	 * 允许所有图层接收舞台事件
+	 * @param enable
+	 * @return {Ycc.LayerManager}
+	 */
+	Ycc.LayerManager.prototype.enableEventManagerAll = function (enable) {
+		for(var i=0;i<this.yccInstance.layerList.length;i++) {
+			this.yccInstance.layerList[i].enableEventManager = enable;
+		}
+		return this;
 	};
 	
 	

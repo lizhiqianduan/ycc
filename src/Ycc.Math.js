@@ -140,7 +140,6 @@
 		this.y = y0<y1?y0:y1;
 		this.width = Math.abs(this.width);
 		this.height = Math.abs(this.height);
-		console.log(this);
 	};
 
 	

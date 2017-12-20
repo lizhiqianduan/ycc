@@ -133,8 +133,6 @@
 			ui.rect.y=this.rect.y+this.rect.height+2;
 			totalW += ui.rect.width;
 		}
-
-		
 	};
 	
 	/**
