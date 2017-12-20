@@ -2,6 +2,7 @@
  * Created by xiaohei on 2016/4/1.
  */
 var grunt = require("grunt");
+var fs = require("fs");
 
 module.exports = function(grunt){
 	
@@ -33,6 +34,7 @@ module.exports = function(grunt){
 						'src/Ycc.UI.Line.class.js',
 						'src/Ycc.UI.MultiLineText.class.js',
 						'src/Ycc.UI.Rect.class.js',
+						'src/Ycc.UI.CropRect.class.js',
 						'src/Ycc.UI.SingleLineText.class.js',
                     ],
                     dest: 'build/ycc.js'
@@ -79,19 +81,16 @@ module.exports = function(grunt){
             tasks: ["clean","concat","uglify","jsdoc","copy"]
         },
 		copy:[
-			{expand:true,cwd:"./src", src: '*.js', dest: 'build/'},
-			{expand:true,cwd:"./build", src: '*.js', dest: 'examples/simple-editor/lib/'},
-			{expand:true,cwd:"./build", src: '*.js', dest: 'examples/image-loader/lib/'},
-			{expand:true,cwd:"./build", src: '*.js', dest: 'examples/ui-test/lib/'},
-			{expand:true,cwd:"./build", src: '*.js', dest: 'examples/ui-event/lib/'},
-			{expand:true,cwd:"./build", src: '*.js', dest: 'examples/ui-ellipse/lib/'},
-			{expand:true,cwd:"./build", src: '*.js', dest: 'examples/multiple-layer/lib/'},
-			{expand:true,cwd:"./build", src: '*.js', dest: 'examples/timer-animation/lib/'},
-  		]
+				{expand:true,cwd:"./src", src: '*.js', dest: 'build/'}
+  			].concat(fs.readdirSync("./examples").map(function (t) {
+  				return {expand:true,cwd:"./build", src: '*.js', dest: 'examples/'+t+'/lib/'};
+  			}))
 		
 		
     });
 
+    
+    
     
     // 加载包含 "uglify" 任务的插件。
     grunt.loadNpmTasks('grunt-contrib-uglify');
@@ -102,5 +101,5 @@ module.exports = function(grunt){
 	grunt.loadNpmTasks('grunt-jsdoc');
     // 默认被执行的任务列表。
     grunt.registerTask('default', ['watch']);
-    grunt.registerTask('build', ['concat','uglify',"copy"]);
+    grunt.registerTask('build', ["clean","concat","uglify","jsdoc","copy"]);
 };
