@@ -27,6 +27,12 @@
 		this.stopType = {};
 		
 		/**
+		 * 是否阻止所有的事件触发
+		 * @type {boolean}
+		 */
+		this.stopAllEvent = false;
+		
+		/**
 		 * 点击 的监听。默认为null
 		 * @type {function}
 		 */
@@ -91,6 +97,8 @@
 	 * @param data
 	 */
 	Ycc.Listener.prototype.triggerListener = function (type,data) {
+		if(this.stopAllEvent) return;
+		
 		if(!this.stopType[type])
 			Ycc.utils.isFn(this["on"+type]) && this["on"+type].call(this,data);
 
