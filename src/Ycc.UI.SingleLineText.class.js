@@ -124,9 +124,13 @@
 	 * @param ctx
 	 */
 	Ycc.UI.SingleLineText.prototype.render = function (ctx) {
+		var self = this;
+		
+		// 设置画布属性再计算，否则计算内容长度会有偏差
+		self.belongTo._setCtxProps(self);
+
 		this.renderRectBgColor();
 		
-		var self = this;
 
 		self.ctx = ctx || self.ctx;
 		
@@ -164,7 +168,8 @@
 		this.ctx.save();
 		this.ctx.fillStyle = option.color;
 		this.ctx.strokeStyle = option.color;
-		this.baseUI.text([x,y],self.displayContent,option.fill);
+		// this.baseUI.text([x,y],self.displayContent,option.fill);
+		this.ctx.fillText(self.displayContent,x,y);
 		this.ctx.restore();
 	};
 	

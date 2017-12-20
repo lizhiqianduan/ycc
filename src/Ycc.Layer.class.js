@@ -319,7 +319,7 @@
 			fontSize:"16px",
 			fontFamily:"微软雅黑",
 			font:"16px 微软雅黑",
-			textBaseline:"top",
+			textBaseline:"hanging",
 			fillStyle:"red",
 			strokeStyle:"blue"
 		};
