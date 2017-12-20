@@ -142,8 +142,10 @@
 	 * @private
 	 */
 	Ycc.UI.CropRect.prototype._initUI = function () {
+		var self = this;
 		this.userData = this.userData?this.userData:{};
 		this.addListener("dragstart",function (e) {
+			self.showBtns(false);
 			this.userData.ctrlStart = 0;
 			this.userData.dragStartPosition = new Ycc.Math.Rect(this.rect);
 			var dot = new Ycc.Math.Dot(e);
@@ -236,6 +238,10 @@
 			 * @todo 此处是否在UI内渲染，有待考虑
 			 */
 			this.belongTo.yccInstance.layerManager.reRenderAllLayerToStage();
+		});
+		
+		this.addListener("dragend",function (e) {
+			self.showBtns(true);
 		});
 	};
 	
