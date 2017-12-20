@@ -375,6 +375,7 @@
 	 */
 	Ycc.Layer.prototype.render = function () {
 		for(var i=0;i<this.uiList.length;i++){
+			if(!this.uiList[i].show) continue;
 			this.uiList[i].render();
 		}
 	};
@@ -386,6 +387,7 @@
 	Ycc.Layer.prototype.reRender = function () {
 		this.clear();
 		for(var i=0;i<this.uiList.length;i++){
+			if(!this.uiList[i].show) continue;
 			this.uiList[i].computeUIProps();
 			this.uiList[i].render();
 		}
