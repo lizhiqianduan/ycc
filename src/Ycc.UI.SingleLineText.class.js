@@ -89,6 +89,9 @@
 	Ycc.UI.SingleLineText.prototype.computeUIProps = function () {
 		var self = this;
 		
+		// 设置画布属性再计算，否则计算内容长度会有偏差
+		self.belongTo._setCtxProps(self);
+		
 		// 内容的长度
 		var contentWidth = this.ctx.measureText(this.content).width;
 		
@@ -101,6 +104,19 @@
 			}else if(this.overflow === "auto"){
 				this.rect.width = contentWidth;
 			}
+		}
+		
+		if(this.overflow === "hidden"){
+			if(contentWidth>this.rect.width)
+				self.displayContent = self.getMaxContentInWidth(this.content,this.rect.width);
+		}else if(this.overflow === "auto"){
+			if(contentWidth>this.rect.width){
+				this.rect.width = contentWidth;
+			}
+			if(parseInt(this.fontSize)>this.rect.height){
+				this.rect.height = parseInt(this.fontSize);
+			}
+			
 		}
 	};
 	/**

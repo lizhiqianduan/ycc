@@ -24,7 +24,9 @@
 	 */
 	Ycc.Layer = function(yccInstance,option){
 	 	Ycc.Listener.call(this);
-	 	
+
+	 	option = option || {};
+
 		/**
 		 * 存储图层中的所有UI。UI的顺序，即为图层中的渲染顺序。
 		 * @type {Ycc.UI[]}
@@ -141,6 +143,8 @@
 		this.ctx = canvasDom.getContext('2d');
 		this.canvasDom = canvasDom;
 		
+		// 初始化画布属性
+		self._setCtxProps();
 		// 初始化图层事件
 		self._initEvent();
 	};
@@ -306,13 +310,25 @@
 	/**
 	 * 设置画布所有的属性
 	 */
-	Ycc.Layer.prototype._setCtxProps = function () {
+	Ycc.Layer.prototype._setCtxProps = function (props) {
 		var self = this;
-		var ctxConfig = this.ctxConfig;
-		ctxConfig["font"] = [ctxConfig.fontStyle,ctxConfig.fontVariant,ctxConfig.fontWeight,ctxConfig.fontSize,ctxConfig.fontFamily].join(" ");
-		for(var key in self.ctxConfig){
-			if(!self.ctxConfig.hasOwnProperty(key)) continue;
-			self.ctx[key] = self.ctxConfig[key];
+		var ctxConfig = {
+			fontStyle:"normal",
+			fontVariant:"normal",
+			fontWeight:"normal",
+			fontSize:"16px",
+			fontFamily:"微软雅黑",
+			font:"16px 微软雅黑",
+			textBaseline:"top",
+			fillStyle:"red",
+			strokeStyle:"blue"
+		};
+		ctxConfig = Ycc.utils.extend(ctxConfig,props);
+		
+		ctxConfig.font = [ctxConfig.fontStyle,ctxConfig.fontVariant,ctxConfig.fontWeight,ctxConfig.fontSize,ctxConfig.fontFamily].join(" ");
+		for(var key in ctxConfig){
+			if(!ctxConfig.hasOwnProperty(key)) continue;
+			self.ctx[key] = ctxConfig[key];
 		}
 	};
 	

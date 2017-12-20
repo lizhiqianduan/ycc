@@ -89,14 +89,52 @@
 	};
 	
 	/**
+	 * 设置区块的操作按钮
+	 * @param btns
+	 */
+	Ycc.UI.CropRect.prototype.setCtrlBtns = function (btns) {
+		this.btns = btns;
+		var self = this;
+		
+		// 添加文字按钮到图层
+		if(this.btns.length!==0){
+			this.btns.forEach(function (btn) {
+				self.belongTo.addUI(btn);
+			})
+		}
+		
+	};
+	
+	/**
 	 * 计算UI的各种属性。此操作必须在绘制之前调用。
 	 */
 	Ycc.UI.CropRect.prototype.computeUIProps = function () {
+		// 设置画布属性再计算，否则计算内容长度会有偏差
+		this.belongTo._setCtxProps(this);
+		
 		var rect = this.rect;
+		var totalW = 0;
+		// 计算控制点的属性
 		this.ctrlRect1 = (new Ycc.Math.Rect(rect.x,rect.y,this.ctrlSize,this.ctrlSize));
 		this.ctrlRect2 = (new Ycc.Math.Rect(rect.x+rect.width-this.ctrlSize,rect.y,this.ctrlSize,this.ctrlSize));
 		this.ctrlRect3 = (new Ycc.Math.Rect(rect.x,rect.y+rect.height-this.ctrlSize,this.ctrlSize,this.ctrlSize));
 		this.ctrlRect4 = (new Ycc.Math.Rect(rect.x+rect.width-this.ctrlSize,rect.y+rect.height-this.ctrlSize,this.ctrlSize,this.ctrlSize));
+	
+		// 计算操作按钮的属性
+		if(this.btns.length===0) return;
+		for(var i=0;i<this.btns.length;i++){
+			var ui = this.btns[i];
+			ui.overflow="auto";
+			ui.xAlign="center";
+			
+			ui.rect.width=parseInt(this.ctx.measureText(ui.content).width+20);
+			// ui.rect.width=60;
+			ui.rect.x=this.rect.x+totalW;
+			ui.rect.y=this.rect.y+this.rect.height+2;
+			totalW += ui.rect.width;
+		}
+
+		
 	};
 	
 	/**
@@ -194,8 +232,6 @@
 				
 			}
 			
-			
-
 			/**
 			 * @todo 此处是否在UI内渲染，有待考虑
 			 */
