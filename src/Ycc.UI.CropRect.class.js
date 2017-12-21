@@ -133,6 +133,9 @@
 		// 操作按钮左上角的起点坐标
 		var x0 = this.rect.x;
 		var y0 = this.rect.y+this.rect.height;
+		// 舞台的宽高
+		var stageW = this.belongTo.yccInstance.getStageWidth();
+		var stageH = this.belongTo.yccInstance.getStageHeight();
 		// 计算控制点的属性
 		this.ctrlRect1 = (new Ycc.Math.Rect(rect.x,rect.y,this.ctrlSize,this.ctrlSize));
 		this.ctrlRect2 = (new Ycc.Math.Rect(rect.x+rect.width-this.ctrlSize,rect.y,this.ctrlSize,this.ctrlSize));
@@ -150,10 +153,16 @@
 			totalW += btn.rect.width+1;
 		}
 		// 操作按钮越界后的处理
-		if(x0+totalW>this.belongTo.yccInstance.getStageWidth())
-			x0 = this.belongTo.yccInstance.getStageWidth()-totalW;
-		if(y0+this.btnHeight>this.belongTo.yccInstance.getStageHeight())
-			y0 = this.rect.y-this.btnHeight-2;
+		if(x0+totalW>stageW)
+			x0 = stageW-totalW;
+		if(y0+this.btnHeight>stageH){
+			// 上边也放不下
+			if(this.rect.y<this.btnHeight){
+				y0 = 0;
+			}else{
+				y0 = this.rect.y-this.btnHeight-2;
+			}
+		}
 		// 计算操作按钮的位置
 		for(var i=0;i<this.btns.length;i++){
 			var ui = this.btns[i];
