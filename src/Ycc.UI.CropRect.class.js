@@ -71,6 +71,12 @@
 		 */
 		this.btnHeight = 38;
 		
+		/**
+		 * 下方按钮左右的间距
+		 * @type {number}
+		 */
+		this.btnVerticalPadding = 10;
+		
 		
 		this.extend(option);
 		
@@ -120,26 +126,45 @@
 		this.belongTo._setCtxProps(this);
 		
 		var rect = this.rect;
+		// 操作按钮的总长度
 		var totalW = 0;
+		// 循环内临时变量
+		var tempW = 0;
+		// 操作按钮左上角的起点坐标
+		var x0 = this.rect.x;
+		var y0 = this.rect.y+this.rect.height;
 		// 计算控制点的属性
 		this.ctrlRect1 = (new Ycc.Math.Rect(rect.x,rect.y,this.ctrlSize,this.ctrlSize));
 		this.ctrlRect2 = (new Ycc.Math.Rect(rect.x+rect.width-this.ctrlSize,rect.y,this.ctrlSize,this.ctrlSize));
 		this.ctrlRect3 = (new Ycc.Math.Rect(rect.x,rect.y+rect.height-this.ctrlSize,this.ctrlSize,this.ctrlSize));
 		this.ctrlRect4 = (new Ycc.Math.Rect(rect.x+rect.width-this.ctrlSize,rect.y+rect.height-this.ctrlSize,this.ctrlSize,this.ctrlSize));
 	
-		// 计算操作按钮的属性
+		// 设置操作按钮的属性，并求其总长度
 		if(this.btns.length===0) return;
+		for(var k=0;k<this.btns.length;k++){
+			var btn = this.btns[k];
+			btn.overflow="auto";
+			btn.xAlign="center";
+			btn.rect.width=parseInt(this.ctx.measureText(btn.content).width+2*this.btnVerticalPadding);
+			btn.rect.height = this.btnHeight;
+			totalW += btn.rect.width+1;
+		}
+		// 操作按钮越界后的处理
+		if(x0+totalW>this.belongTo.yccInstance.getStageWidth())
+			x0 = this.belongTo.yccInstance.getStageWidth()-totalW;
+		if(y0+this.btnHeight>this.belongTo.yccInstance.getStageHeight())
+			y0 = this.rect.y-this.btnHeight-2;
+		// 计算操作按钮的位置
 		for(var i=0;i<this.btns.length;i++){
 			var ui = this.btns[i];
-			ui.overflow="auto";
-			ui.xAlign="center";
-			
-			ui.rect.width=parseInt(this.ctx.measureText(ui.content).width+20);
-			ui.rect.height = this.btnHeight;
-			ui.rect.x=this.rect.x+totalW;
-			ui.rect.y=this.rect.y+this.rect.height+2;
-			totalW += ui.rect.width+1;
+			ui.rect.x=x0+tempW;
+			ui.rect.y=y0+2;
+			tempW += ui.rect.width+1;
 		}
+		
+		
+		
+		
 	};
 	
 	/**
@@ -150,7 +175,7 @@
 		var self = this;
 		this.userData = this.userData?this.userData:{};
 		this.addListener("dragstart",function (e) {
-			self.showBtns(false);
+			// self.showBtns(false);
 			// 标识第几个变换控制点
 			this.userData.ctrlStart = 0;
 			// 拖拽开始时选框的位置
