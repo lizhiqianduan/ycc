@@ -106,12 +106,27 @@
 	 * @param btns
 	 */
 	Ycc.UI.CropRect.prototype.setCtrlBtns = function (btns) {
-		this.btns = btns;
 		var self = this;
-		
 		// 添加文字按钮到图层
-		if(this.btns.length!==0){
-			this.btns.forEach(function (btn) {
+		if(btns.length!==0){
+			btns.forEach(function (config) {
+				// 默认参数
+				config = Ycc.utils.extend({
+					content:"",
+					rectBgColor:"#666",
+					color:"#fff",
+					onclick:function () {}
+				},config);
+				var btn = new Ycc.UI.SingleLineText(config);
+				btn.addListener("mouseover",function () {
+					this.color="#ccc";
+					this.belongTo.yccInstance.layerManager.reRenderAllLayerToStage();
+				});
+				btn.addListener("mouseout",function () {
+					this.color="#fff";
+					this.belongTo.yccInstance.layerManager.reRenderAllLayerToStage();
+				});
+				self.btns.push(btn);
 				self.belongTo.addUI(btn);
 			})
 		}
