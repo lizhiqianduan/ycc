@@ -65,6 +65,13 @@
 		 */
 		this.btns = [];
 		
+		/**
+		 * 下方按钮的高度
+		 * @type {number}
+		 */
+		this.btnHeight = 38;
+		
+		
 		this.extend(option);
 		
 		this._initUI();
@@ -128,10 +135,10 @@
 			ui.xAlign="center";
 			
 			ui.rect.width=parseInt(this.ctx.measureText(ui.content).width+20);
-			// ui.rect.width=60;
+			ui.rect.height = this.btnHeight;
 			ui.rect.x=this.rect.x+totalW;
 			ui.rect.y=this.rect.y+this.rect.height+2;
-			totalW += ui.rect.width;
+			totalW += ui.rect.width+1;
 		}
 	};
 	

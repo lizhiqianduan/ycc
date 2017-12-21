@@ -25,7 +25,7 @@
 	 * @constructor
 	 * @extends Ycc.UI.Base
 	 */
-	Ycc.UI.Image = function (option) {
+	Ycc.UI.Image = function Image(option) {
 		Ycc.UI.Base.call(this,option);
 		
 		/**

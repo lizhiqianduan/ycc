@@ -391,7 +391,25 @@
 			this.uiList[i].computeUIProps();
 			this.uiList[i].render();
 		}
-	}
+	};
+	
+	/**
+	 * 获取图层中某个点所对应的最上层UI。
+	 *
+	 * @param dot {Ycc.Math.Dot}
+	 * @return {UI}
+	 */
+	Ycc.Layer.prototype.getUIFromPointer = function (dot) {
+		var self = this;
+		for(var i =self.uiList.length-1;i>=0;i--){
+			var ui = self.uiList[i];
+			// 如果位于rect内
+			if(dot.isInRect(ui.rect)){
+				return ui;
+			}
+		}
+		return null;
+	};
 	
 	
 })(window.Ycc);

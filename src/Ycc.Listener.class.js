@@ -67,6 +67,16 @@
 		 * @type {function}
 		 */
 		this.ondragend = null;
+		/**
+		 * 鼠标移入 的监听。默认为null
+		 * @type {function}
+		 */
+		this.onmouseover = null;
+		/**
+		 * 鼠标移出 的监听。默认为null
+		 * @type {function}
+		 */
+		this.onmouseout = null;
 	};
 	
 	

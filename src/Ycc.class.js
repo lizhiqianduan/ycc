@@ -104,6 +104,14 @@
 	 * 类初始化
 	 */
 	win.Ycc.prototype.init = function () {
+		this._initStageEvent();
+	};
+	
+	/**
+	 * 初始化舞台的事件监听器
+	 * @private
+	 */
+	win.Ycc.prototype._initStageEvent = function () {
 		var self = this;
 		// 代理的原生鼠标事件，默认每个图层都触发
 		var proxyEventTypes = ["mousemove","mousedown","mouseup","click","mouseenter","mouseout"];
@@ -120,6 +128,46 @@
 				}
 			})
 		}
+		
+		// 处理UI的mouseover、mouseout事件
+		this.ctx.canvas.addEventListener("mousemove",function (e) {
+			// 坐标
+			var x = parseInt(e.clientX - self.ctx.canvas.getBoundingClientRect().left);
+			var y = parseInt(e.clientY - self.ctx.canvas.getBoundingClientRect().top);
+			var event;
+			// 鼠标所指的最上层的UI
+			var ui=null;
+			
+			for(var i=self.layerList.length-1;i>=0;i--){
+				var layer = self.layerList[i];
+				ui = layer.getUIFromPointer(new Ycc.Math.Dot(x,y));
+				if(ui===null) continue;
+				if(ui!==null) break;
+			}
+			if(ui!==null){
+				if(ui===this.___overUI){
+					event = new Ycc.Event('mouseover');
+					event.x = x;
+					event.y = y;
+					ui.triggerListener("mouseover",event);
+				}else{
+					event = new Ycc.Event('mouseout');
+					event.x = x;
+					event.y = y;
+					this.___overUI&&this.___overUI.triggerListener("mouseout",event);
+					this.___overUI=ui;
+				}
+			}else{
+				if(this.___overUI){
+					event = new Ycc.Event('mouseout');
+					event.x = x;
+					event.y = y;
+					this.___overUI.triggerListener("mouseout",event);
+					this.___overUI = null;
+				}
+			}
+		})
+		
 	};
 	
 	/**
