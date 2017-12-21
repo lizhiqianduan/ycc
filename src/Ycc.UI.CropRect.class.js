@@ -151,8 +151,12 @@
 		this.userData = this.userData?this.userData:{};
 		this.addListener("dragstart",function (e) {
 			self.showBtns(false);
+			// 标识第几个变换控制点
 			this.userData.ctrlStart = 0;
+			// 拖拽开始时选框的位置
 			this.userData.dragStartPosition = new Ycc.Math.Rect(this.rect);
+			// 拖拽开始时鼠标的位置
+			this.userData.dragStartMousePosition = new Ycc.Math.Dot(e);
 			var dot = new Ycc.Math.Dot(e);
 			for(var i=1;i<=4;i++){
 				if(dot.isInRect(this["ctrlRect"+i])){
@@ -163,13 +167,18 @@
 		});
 		
 		this.addListener("dragging",function (e) {
+			// 拖拽开始的起点位置
 			var r = this.userData.dragStartPosition;
+			// 拖拽开始时鼠标的位置
+			var m = this.userData.dragStartMousePosition;
+			// 选框位置信息的暂存值
 			var x,y,width,height;
 			// 控制点的拖拽事件
 			if(this.userData.ctrlStart<=4&&this.userData.ctrlStart>=1){
+				// 拖动左上角控制点
 				if(this.userData.ctrlStart===1 ){
-					x = e.x;
-					y = e.y;
+					x = e.x-(m.x-r.x);
+					y = e.y-(m.y-r.y);
 					width = r.width-(e.x-r.x);
 					height = r.height-(e.y-r.y);
 					if(x<=r.x+r.width-this.ctrlSize*2)
@@ -178,29 +187,32 @@
 						this.rect.y = y;
 					
 				}
+				// 拖动右上角控制点
 				if(this.userData.ctrlStart===2){
 					x = r.x;
-					y = e.y;
-					width = e.x-r.x;
+					y = e.y-(m.y-r.y);
+					width = e.x-r.x+(r.width+r.x-m.x);
 					height = r.height-(e.y-r.y);
 					this.rect.x = x;
 					if(y<=r.y+r.height-this.ctrlSize*2)
 						this.rect.y = y;
 				}
+				// 拖动左下角控制点
 				if(this.userData.ctrlStart===3){
-					x = e.x;
+					x = e.x-(m.x-r.x);
 					y = r.y;
 					width = r.width-(e.x-r.x);
-					height = e.y - r.y;
+					height = e.y - r.y + (r.height+r.y-m.y);
 					if(x<=r.x+r.width-this.ctrlSize*2)
 						this.rect.x = x;
 					this.rect.y = y;
 				}
+				// 拖动右下角控制点
 				if(this.userData.ctrlStart===4){
 					this.rect.x = r.x;
 					this.rect.y = r.y;
-					this.rect.width = (e.x-r.x);
-					this.rect.height = (e.y-r.y);
+					this.rect.width = (e.x-r.x)+(r.x+r.width-m.x);
+					this.rect.height = (e.y-r.y)+(r.y+r.height-m.y);
 				}
 				
 				
