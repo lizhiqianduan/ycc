@@ -127,7 +127,7 @@
 					if(!layer.enableEventManager) continue;
 					layer.triggerListener(e.type,yccEvent);
 				}
-			})
+			});
 		}
 		
 		// 处理UI的mouseover、mouseout事件
@@ -173,7 +173,26 @@
 					this.___overUI = null;
 				}
 			}
-		})
+		});
+		
+		// 若鼠标超出舞台，给所有图层广播一个mouseup事件，解决拖拽超出舞台的问题。
+		this.ctx.canvas.addEventListener("mouseout",function (e) {
+			var yccEvent = new Ycc.Event({
+				type:"mouseup",
+				x:parseInt(e.clientX - self.ctx.canvas.getBoundingClientRect().left),
+				y:parseInt(e.clientY - self.ctx.canvas.getBoundingClientRect().top)
+			});
+			if(yccEvent.x>parseInt(this.width)) yccEvent.x = parseInt(this.width);
+			if(yccEvent.x<0) yccEvent.x=0;
+			if(yccEvent.y>parseInt(this.height)) yccEvent.y = parseInt(this.height);
+			if(yccEvent.y<0) yccEvent.y=0;
+			
+			for(var i=self.layerList.length-1;i>=0;i--){
+				var layer = self.layerList[i];
+				if(!layer.enableEventManager) continue;
+				layer.triggerListener(yccEvent.type,yccEvent);
+			}
+		});
 		
 	};
 	
