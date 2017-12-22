@@ -180,10 +180,12 @@
 
 		this.addListener("mouseup",function (e) {
 			if(dragFlag){
-				var dragendEvent = new Ycc.Event("dragend");
-				dragendEvent.x = e.x;
-				dragendEvent.y = e.y;
-				dragendEvent.mouseDownYccEvent = mouseDownYccEvent;
+				var dragendEvent = new Ycc.Event({
+					type:"dragend",
+					x:e.x,
+					y:e.y,
+					mouseDownYccEvent:mouseDownYccEvent
+				});
 				self.triggerListener("dragend",dragendEvent);
 				if(mouseDownYccEvent&&mouseDownYccEvent.target){
 					self.target = mouseDownYccEvent.target;
@@ -220,10 +222,12 @@
 			if(mouseDownYccEvent){
 				// 1.拖拽之前，触发一次dragstart事件
 				if(!dragFlag){
-					var dragStartEvent = new Ycc.Event("dragstart");
-					dragStartEvent.x = mouseDownYccEvent.x;
-					dragStartEvent.y = mouseDownYccEvent.y;
-					dragStartEvent.mouseDownYccEvent = mouseDownYccEvent;
+					var dragStartEvent = new Ycc.Event({
+						type:"dragstart",
+						x:mouseDownYccEvent.x,
+						y:mouseDownYccEvent.y,
+						mouseDownYccEvent:mouseDownYccEvent
+					});
 					
 					// 先触发图层的拖拽事件，该事件没有target属性
 					self.triggerListener(dragStartEvent.type,dragStartEvent);
@@ -236,10 +240,12 @@
 				// 2.修改拖拽已经发生的标志位
 				dragFlag = true;
 				// 3.触发dragging事件
-				var draggingEvent = new Ycc.Event("dragging");
-				draggingEvent.x = e.x;
-				draggingEvent.y = e.y;
-				draggingEvent.mouseDownYccEvent = mouseDownYccEvent;
+				var draggingEvent = new Ycc.Event({
+					type:"dragging",
+					x:e.x,
+					y:e.y,
+					mouseDownYccEvent:mouseDownYccEvent
+				});
 				// 先触发图层的拖拽事件，该事件没有target属性
 				self.triggerListener(draggingEvent.type,draggingEvent);
 				if(mouseDownYccEvent.target){

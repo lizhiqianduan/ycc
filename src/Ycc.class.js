@@ -117,10 +117,11 @@
 		var proxyEventTypes = ["mousemove","mousedown","mouseup","click","mouseenter","mouseout"];
 		for(var i = 0;i<proxyEventTypes.length;i++){
 			this.ctx.canvas.addEventListener(proxyEventTypes[i],function (e) {
-				var yccEvent = new Ycc.Event(e.type);
-				yccEvent.originEvent = e;
-				yccEvent.x = parseInt(e.clientX - self.ctx.canvas.getBoundingClientRect().left);
-				yccEvent.y = parseInt(e.clientY - self.ctx.canvas.getBoundingClientRect().top);
+				var yccEvent = new Ycc.Event({
+					type:e.type,
+					x:parseInt(e.clientX - self.ctx.canvas.getBoundingClientRect().left),
+					y:parseInt(e.clientY - self.ctx.canvas.getBoundingClientRect().top)
+				});
 				for(var i=self.layerList.length-1;i>=0;i--){
 					var layer = self.layerList[i];
 					if(!layer.enableEventManager) continue;
@@ -146,22 +147,28 @@
 			}
 			if(ui!==null){
 				if(ui===this.___overUI){
-					event = new Ycc.Event('mouseover');
-					event.x = x;
-					event.y = y;
+					event = new Ycc.Event({
+						type:'mouseover',
+						x:x,
+						y:y
+					});
 					ui.triggerListener("mouseover",event);
 				}else{
-					event = new Ycc.Event('mouseout');
-					event.x = x;
-					event.y = y;
+					event = new Ycc.Event({
+						type:'mouseout',
+						x:x,
+						y:y
+					});
 					this.___overUI&&this.___overUI.triggerListener("mouseout",event);
 					this.___overUI=ui;
 				}
 			}else{
 				if(this.___overUI){
-					event = new Ycc.Event('mouseout');
-					event.x = x;
-					event.y = y;
+					event = new Ycc.Event({
+						type:'mouseout',
+						x:x,
+						y:y
+					});
 					this.___overUI.triggerListener("mouseout",event);
 					this.___overUI = null;
 				}

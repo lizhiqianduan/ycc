@@ -65,7 +65,10 @@
 		 */
 		this.targetDeltaPosition = null;
 		
-	}
+		if(Ycc.utils.isObj(type)){
+			Ycc.utils.mergeObject(this,type);
+		}
+	};
 	
 	
 	
