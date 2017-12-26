@@ -72,6 +72,7 @@
 	 */
 	Ycc.UI.MultiLineText.prototype.computeUIProps = function () {
 		var self = this;
+		var config = this;
 		// 文本行
 		var lines = this.content.split(/(?:\r\n|\r|\n)/);
 		// 待显示的文本行

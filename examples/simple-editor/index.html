@@ -68,6 +68,7 @@
 <script src="./lib/Ycc.utils.js"></script>
 
 <script src="./lib/Ycc.Math.js"></script>
+<script src="./lib/Ycc.Ticker.class.js"></script>
 <script src="./lib/Ycc.Loader.class.js"></script>
 <script src="./lib/Ycc.Listener.class.js"></script>
 <script src="./lib/Ycc.Event.class.js"></script>
@@ -124,7 +125,8 @@
 		document.getElementById("canvas").appendChild(canvas);
 
 
-		ycc = new Ycc(canvas);
+		ycc = new Ycc();
+		ycc.bindCanvas(canvas);
 		layer = ycc.layerManager.newLayer({name:"试卷图层"});
 		layer.enableEventManager = true;
 

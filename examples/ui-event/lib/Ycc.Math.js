@@ -123,8 +123,24 @@
 			this.width = arguments[2];
 			this.height = arguments[3];
 		}
+		
+		
+		this.toPositive();
 	};
 	
+	/**
+	 * 将矩形的长和宽转换为正数
+	 */
+	Ycc.Math.Rect.prototype.toPositive = function () {
+		var x0 = this.x,
+			y0 = this.y,
+			x1 = this.x + this.width,
+			y1 = this.y + this.height;
+		this.x = x0<x1?x0:x1;
+		this.y = y0<y1?y0:y1;
+		this.width = Math.abs(this.width);
+		this.height = Math.abs(this.height);
+	};
 
 	
 })(window.Ycc);

@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>网阅框题操作</title>
+</head>
+<body>
+<button onclick="rect()">框题</button>
+<br>
+
+</body>
+</html>
+
+<script src="lib/ycc.js"></script>
+<script>
+
+
+
+
+
+	var ycc = new Ycc();
+	var maxWidth = 1024;
+	var scale = 1;
+
+	ycc.loader.loadImageList({paper:"./paper.gif"},onLoad);
+
+
+	function onLoad(res) {
+		var canvas = document.createElement("canvas");
+		scale = maxWidth/res.paper.width;
+		canvas.width = maxWidth;
+		canvas.height = res.paper.height*scale;
+		document.body.appendChild(canvas);
+		ycc.bindCanvas(canvas);
+		var _layer = ycc.layerManager.newLayer();
+		_layer.addUI(new Ycc.UI.Image({res:res.paper,rect:new Ycc.Math.Rect(0,0,canvas.width,canvas.height),fillMode:"scale"}));
+		ycc.layerManager.reRenderAllLayerToStage();
+	}
+
+
+
+
+	/**
+	 * 画方框
+	 */
+	function rect() {
+		var cropRect;
+		// 禁止其他图层的事件
+		ycc.layerManager.enableEventManagerAll(false)
+		// 新建框图的图层
+		.newLayer({
+			enableEventManager:true,
+			ondragstart:function (e) {
+				cropRect = new Ycc.UI.CropRect({
+					ctrlSize:10,
+					fill:false,
+					strokeStyle:"red",
+					fillStyle:"red",
+					lineWidth:10,
+					rectBgColor:"rgba(255, 1, 1, 1);",
+					rectBgAlpha:0.2
+				});
+				this.addUI(cropRect);
+				cropRect.setCtrlBtns([
+					{
+						content:"保存",
+						onclick:function () {
+							console.log(this);
+						}
+					},
+					{content:"增宽"},
+					{content:"变窄"},
+					{content:"查看当前框图"},
+					{content:"查看所有框图"},
+					{content:"删除"}
+				]);
+
+
+			},
+			ondragging:function (e) {
+				var startDot = new Ycc.Math.Dot(e.mouseDownYccEvent.x,e.mouseDownYccEvent.y);
+				var endDot = new Ycc.Math.Dot(e.x,e.y);
+				cropRect.rect = new Ycc.Math.Rect(startDot.x,startDot.y,endDot.x-startDot.x,endDot.y-startDot.y);
+				this.yccInstance.layerManager.reRenderAllLayerToStage();
+			},
+			ondragend:function (e) {
+				// 恢复所有图层的事件监听
+				this.yccInstance.layerManager.enableEventManagerAll(true);
+				this.ondragging = null;
+				this.ondragstart = null;
+			}
+		});
+	}
+
+
+
+</script>
+
+
+

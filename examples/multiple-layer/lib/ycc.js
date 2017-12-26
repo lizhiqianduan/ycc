@@ -12,36 +12,21 @@
 (function (win) {
 	
 	/**
-	 * 应用启动入口类，每个实例都与一个舞台绑定。
-	 * 每个舞台都是一个canvas元素，该元素会被添加至HTML结构中。
-	 *
-	 * @param canvasDom		canvas的HTML元素。即，显示舞台
-	 * @param [config]		canvas初始化的属性。字体大小、填充颜色、线条颜色、默认背景等。
+	 * 应用启动入口类，每个实例都与一个canvas绑定。
+	 * 该canvas元素会被添加至HTML结构中，作为应用的显示舞台。
 	 * @constructor
 	 */
-	win.Ycc = function Ycc(canvasDom,config){
+	win.Ycc = function Ycc(){
 		/**
 		 * canvas的Dom对象
 		 */
-		this.canvasDom = canvasDom;
+		this.canvasDom = null;
 		
-		/**
-		 * 显示舞台
-		 */
-		this.stage = canvasDom;
 		/**
 		 * 绘图环境
 		 * @type {CanvasRenderingContext2D}
 		 */
-		this.ctx = this.canvasDom.getContext("2d");
-		/**
-		 * 可绘图区的宽
-		 */
-		this.ctxWidth = this.canvasDom.width;
-		/**
-		 * 可绘图区的高
-		 */
-		this.ctxHeight = this.canvasDom.height;
+		this.ctx = null;
 		
 		/**
 		 * Layer对象数组。包含所有的图层
@@ -50,70 +35,165 @@
 		this.layerList = [];
 
 		/**
-		 * 实例的全局配置项
-		 */
-		this.config = config?config:{};
-		
-		/**
 		 * 实例的快照管理模块
 		 * @type {Ycc.PhotoManager}
 		 */
-		this.photoManager = Ycc.PhotoManager?new Ycc.PhotoManager(this):null;
+		this.photoManager = null;
 		
 		/**
 		 * ycc的图层管理器
 		 * @type {null}
 		 */
-		this.layerManager = Ycc.LayerManager?new Ycc.LayerManager(this):null;
+		this.layerManager = null;
 		
 		/**
 		 * 系统心跳管理器
 		 */
-		this.ticker = Ycc.Ticker?new Ycc.Ticker(this):null;
+		this.ticker = null;
+		
+		/**
+		 * 资源加载器
+		 * @type {Ycc.Loader}
+		 */
+		this.loader = new Ycc.Loader();
 		
 		/**
 		 * 基础绘图UI。这些绘图操作会直接作用于舞台。
 		 * @type {Ycc.UI}
 		 */
-		this.baseUI = new Ycc.UI(this.stage);
-		
-		this.init();
+		this.baseUI = null;
 	};
 	
 	/**
 	 * 获取舞台的宽
 	 */
 	win.Ycc.prototype.getStageWidth = function () {
-		return this.stage.width;
+		return this.ctx.canvas.width;
 	};
 	
 	/**
 	 * 获取舞台的高
 	 */
 	win.Ycc.prototype.getStageHeight = function () {
-		return this.stage.height;
+		return this.ctx.canvas.height;
+	};
+	
+	/**
+	 * 绑定canvas元素
+	 * @param canvasDom		canvas的HTML元素。即，显示舞台
+	 */
+	win.Ycc.prototype.bindCanvas = function (canvasDom) {
+		this.canvasDom = canvasDom;
+		
+		this.ctx = this.canvasDom.getContext("2d");
+		
+		this.layerList = [];
+		
+		this.photoManager = new Ycc.PhotoManager(this);
+		
+		this.layerManager = new Ycc.LayerManager(this);
+		
+		this.ticker = new Ycc.Ticker(this);
+		
+		this.baseUI = new Ycc.UI(this.ctx.canvas);
+		
+		this.init();
 	};
 	
 	/**
 	 * 类初始化
 	 */
 	win.Ycc.prototype.init = function () {
+		this._initStageEvent();
+	};
+	
+	/**
+	 * 初始化舞台的事件监听器
+	 * @private
+	 */
+	win.Ycc.prototype._initStageEvent = function () {
 		var self = this;
 		// 代理的原生鼠标事件，默认每个图层都触发
 		var proxyEventTypes = ["mousemove","mousedown","mouseup","click","mouseenter","mouseout"];
 		for(var i = 0;i<proxyEventTypes.length;i++){
-			this.stage.addEventListener(proxyEventTypes[i],function (e) {
-				var yccEvent = new Ycc.Event(e.type);
-				yccEvent.originEvent = e;
-				yccEvent.x = parseInt(e.clientX - self.stage.getBoundingClientRect().left);
-				yccEvent.y = parseInt(e.clientY - self.stage.getBoundingClientRect().top);
+			this.ctx.canvas.addEventListener(proxyEventTypes[i],function (e) {
+				var yccEvent = new Ycc.Event({
+					type:e.type,
+					x:parseInt(e.clientX - self.ctx.canvas.getBoundingClientRect().left),
+					y:parseInt(e.clientY - self.ctx.canvas.getBoundingClientRect().top)
+				});
 				for(var i=self.layerList.length-1;i>=0;i--){
 					var layer = self.layerList[i];
 					if(!layer.enableEventManager) continue;
 					layer.triggerListener(e.type,yccEvent);
 				}
-			})
+			});
 		}
+		
+		// 处理UI的mouseover、mouseout事件
+		this.ctx.canvas.addEventListener("mousemove",function (e) {
+			// 坐标
+			var x = parseInt(e.clientX - self.ctx.canvas.getBoundingClientRect().left);
+			var y = parseInt(e.clientY - self.ctx.canvas.getBoundingClientRect().top);
+			var event;
+			// 鼠标所指的最上层的UI
+			var ui=null;
+			
+			for(var i=self.layerList.length-1;i>=0;i--){
+				var layer = self.layerList[i];
+				ui = layer.getUIFromPointer(new Ycc.Math.Dot(x,y));
+				if(ui===null) continue;
+				if(ui!==null) break;
+			}
+			if(ui!==null){
+				if(ui===this.___overUI){
+					event = new Ycc.Event({
+						type:'mouseover',
+						x:x,
+						y:y
+					});
+					ui.triggerListener("mouseover",event);
+				}else{
+					event = new Ycc.Event({
+						type:'mouseout',
+						x:x,
+						y:y
+					});
+					this.___overUI&&this.___overUI.triggerListener("mouseout",event);
+					this.___overUI=ui;
+				}
+			}else{
+				if(this.___overUI){
+					event = new Ycc.Event({
+						type:'mouseout',
+						x:x,
+						y:y
+					});
+					this.___overUI.triggerListener("mouseout",event);
+					this.___overUI = null;
+				}
+			}
+		});
+		
+		// 若鼠标超出舞台，给所有图层广播一个mouseup事件，解决拖拽超出舞台的问题。
+		this.ctx.canvas.addEventListener("mouseout",function (e) {
+			var yccEvent = new Ycc.Event({
+				type:"mouseup",
+				x:parseInt(e.clientX - self.ctx.canvas.getBoundingClientRect().left),
+				y:parseInt(e.clientY - self.ctx.canvas.getBoundingClientRect().top)
+			});
+			if(yccEvent.x>parseInt(this.width)) yccEvent.x = parseInt(this.width);
+			if(yccEvent.x<0) yccEvent.x=0;
+			if(yccEvent.y>parseInt(this.height)) yccEvent.y = parseInt(this.height);
+			if(yccEvent.y<0) yccEvent.y=0;
+			
+			for(var i=self.layerList.length-1;i>=0;i--){
+				var layer = self.layerList[i];
+				if(!layer.enableEventManager) continue;
+				layer.triggerListener(yccEvent.type,yccEvent);
+			}
+		});
+		
 	};
 	
 	/**
@@ -173,10 +253,10 @@
 		src = src || {};
 		for(var key in target){
 			if(typeof src[key]!=="undefined"){
-				this[key] = option[key];
+				target[key] = src[key];
 			}
 		}
-		return this;
+		return target;
 	};
 	
 	/**
@@ -393,8 +473,24 @@
 			this.width = arguments[2];
 			this.height = arguments[3];
 		}
+		
+		
+		this.toPositive();
 	};
 	
+	/**
+	 * 将矩形的长和宽转换为正数
+	 */
+	Ycc.Math.Rect.prototype.toPositive = function () {
+		var x0 = this.x,
+			y0 = this.y,
+			x1 = this.x + this.width,
+			y1 = this.y + this.height;
+		this.x = x0<x1?x0:x1;
+		this.y = y0<y1?y0:y1;
+		this.width = Math.abs(this.width);
+		this.height = Math.abs(this.height);
+	};
 
 	
 })(window.Ycc);;/**
@@ -737,7 +833,10 @@
 		 */
 		this.targetDeltaPosition = null;
 		
-	}
+		if(Ycc.utils.isObj(type)){
+			Ycc.utils.mergeObject(this,type);
+		}
+	};
 	
 	
 	
@@ -768,6 +867,12 @@
 		 * @type {{}}
 		 */
 		this.stopType = {};
+		
+		/**
+		 * 是否阻止所有的事件触发
+		 * @type {boolean}
+		 */
+		this.stopAllEvent = false;
 		
 		/**
 		 * 点击 的监听。默认为null
@@ -803,7 +908,17 @@
 		 * 拖拽结束 的监听。默认为null
 		 * @type {function}
 		 */
-		this.ondraggend = null;
+		this.ondragend = null;
+		/**
+		 * 鼠标移入 的监听。默认为null
+		 * @type {function}
+		 */
+		this.onmouseover = null;
+		/**
+		 * 鼠标移出 的监听。默认为null
+		 * @type {function}
+		 */
+		this.onmouseout = null;
 	};
 	
 	
@@ -834,6 +949,8 @@
 	 * @param data
 	 */
 	Ycc.Listener.prototype.triggerListener = function (type,data) {
+		if(this.stopAllEvent) return;
+		
 		if(!this.stopType[type])
 			Ycc.utils.isFn(this["on"+type]) && this["on"+type].call(this,data);
 
@@ -892,62 +1009,14 @@
 	 */
 	Ycc.Layer = function(yccInstance,option){
 	 	Ycc.Listener.call(this);
-	 	
 
-		
-		var defaultConfig = {
-			name:"",
-			type:"ui",
-			
-			// 图层在舞台的渲染位置
-			x:0,
-			y:0,
-			
-			// 图层的高宽
-			width:yccInstance.getStageWidth(),
-			height:yccInstance.getStageHeight(),
-			show:true,
-			enableEventManager:false,
-			enableFrameEvent:false,
-			ctxConfig:{
-				fontStyle:"normal",
-				fontVariant:"normal",
-				fontWeight:"normal",
-				fontSize:"16px",
-				fontFamily:"微软雅黑",
-				font:"16px 微软雅黑",
-				textBaseline:"top",
-				fillStyle:"red",
-				strokeStyle:"blue"
-			}
-		};
-		// 深拷贝
-		var config = Ycc.utils.extend(defaultConfig,option,true);
-		
-		var canvasDom = document.createElement("canvas");
-		canvasDom.width = config.width;
-		canvasDom.height = config.height;
-		
-		 /**
-		  * 配置项
-		  */
-		this.option = config;
+	 	option = option || {};
 
 		/**
 		 * 存储图层中的所有UI。UI的顺序，即为图层中的渲染顺序。
 		 * @type {Ycc.UI[]}
 		 */
 		this.uiList = [];
-		
-		/**
-		 * 绘图环境的默认属性配置项
-		 * @type {ctxConfig|{}}
-		 */
-		this.ctxConfig = config.ctxConfig;
-		/**
-		 * 初始化配置项
-		 */
-		this.config = config;
 		
 		/**
 		 * ycc实例的引用
@@ -957,18 +1026,13 @@
 		 * 虚拟canvas元素的引用
 		 * @type {Element}
 		 */
-		this.canvasDom = canvasDom;
-		
-		/**
-		 * 画布属性的双向绑定
-		 */
-		this.canvasDom._props = {};
+		this.canvasDom = null;
 		
 		/**
 		 * 当前图层的绘图环境
 		 * @type {CanvasRenderingContext2D}
 		 */
-		this.ctx = this.canvasDom.getContext('2d');
+		this.ctx = null;
 		
 		/**
 		 * 图层id
@@ -980,7 +1044,7 @@
 		 * `ui`表示用于绘图的图层。`tool`表示辅助的工具图层。`text`表示文字图层。
 		 * 默认为`ui`。
 		 */
-		this.type = config.type;
+		this.type = "ui";
 		
 		/**
 		 * 图层中的文字。仅当图层type为text时有值。
@@ -992,47 +1056,47 @@
 		 * 图层名称
 		 * @type {string}
 		 */
-		this.name = config.name?config.name:"图层_"+this.type+"_"+this.id;
+		this.name = option.name?option.name:"图层_"+this.type+"_"+this.id;
 		
 		/**
 		 * 图层位置的x坐标。默认与舞台左上角重合
 		 * @type {number}
 		 */
-		this.x = config.x;
+		this.x = 0;
 		
 		/**
 		 * 图层位置的Y坐标。默认与舞台左上角重合
 		 * @type {number}
 		 */
-		this.y = config.y;
+		this.y = 0;
 		
 		/**
 		 * 图层宽
 		 * @type {number}
 		 */
-		this.width = config.width;
+		this.width = yccInstance.getStageWidth();
 		/**
 		 * 图层高
 		 * @type {number}
 		 */
-		this.height = config.height;
+		this.height = yccInstance.getStageHeight();
 		
 		/**
 		 * 图层是否显示
 		 */
-		this.show = config.show;
+		this.show = true;
 		
 		/**
 		 * 是否监听舞台的事件。用于控制舞台事件是否广播至图层。默认关闭
 		 * @type {boolean}
 		 */
-		this.enableEventManager = config.enableEventManager;
+		this.enableEventManager = false;
 		
 		/**
-		 * 是否接收每帧更新的通知
+		 * 是否接收每帧更新的通知。默认为false
 		 * @type {boolean}
 		 */
-		this.enableFrameEvent = config.enableFrameEvent;
+		this.enableFrameEvent = false;
 		
 		/**
 		 * 若接收通知，此函数为接收通知的回调函数。当且仅当enableFrameEvent为true时生效
@@ -1040,6 +1104,11 @@
 		 */
 		this.onFrameComing = function () {};
 		
+		
+		
+		// 合并参数
+		Ycc.utils.mergeObject(this,option);
+		// 初始化
 		this.init();
 	};
 	Ycc.Layer.prototype = new Ycc.Listener();
@@ -1051,35 +1120,18 @@
 	 */
 	Ycc.Layer.prototype.init = function () {
 		var self = this;
-		// 初始化画布的属性
-		if(!this.ctxConfig || !Ycc.utils.isObj(this.ctxConfig))
-			return null;
-		// 设置画布的所有属性
+		var canvasDom = document.createElement("canvas");
+		canvasDom.width = this.width;
+		canvasDom.height = this.height;
+		
+		// 初始化图层属性
+		this.ctx = canvasDom.getContext('2d');
+		this.canvasDom = canvasDom;
+		
+		// 初始化画布属性
 		self._setCtxProps();
+		// 初始化图层事件
 		self._initEvent();
-		//双向绑定ctx的属性
-		var ctxConfig = this.ctxConfig;
-		for(var key in ctxConfig){
-			if(!ctxConfig.hasOwnProperty(key)) continue;
-			Object.defineProperty(this.ctx.canvas._props,key,{
-				enumerable : true,
-				configurable : true,
-				set : (function(k){
-					return function (newValue) {
-						// 修改_props的属性后自动设置画布的属性
-						self.ctxConfig[k] = newValue;
-						self._setCtxProps();
-					};
-				})(key),
-				get:(function(k){
-					return function () {
-						return self.ctxConfig[k];
-					};
-				})(key)
-			})
-		}
-		
-		
 	};
 	
 	/**
@@ -1113,12 +1165,14 @@
 
 		this.addListener("mouseup",function (e) {
 			if(dragFlag){
-				var dragendEvent = new Ycc.Event("dragend");
-				dragendEvent.x = e.x;
-				dragendEvent.y = e.y;
-				dragendEvent.mouseDownYccEvent = mouseDownYccEvent;
+				var dragendEvent = new Ycc.Event({
+					type:"dragend",
+					x:e.x,
+					y:e.y,
+					mouseDownYccEvent:mouseDownYccEvent
+				});
 				self.triggerListener("dragend",dragendEvent);
-				if(mouseDownYccEvent.target){
+				if(mouseDownYccEvent&&mouseDownYccEvent.target){
 					self.target = mouseDownYccEvent.target;
 					self.target.triggerListener("dragend",dragendEvent);
 				}
@@ -1153,10 +1207,12 @@
 			if(mouseDownYccEvent){
 				// 1.拖拽之前，触发一次dragstart事件
 				if(!dragFlag){
-					var dragStartEvent = new Ycc.Event("dragstart");
-					dragStartEvent.x = mouseDownYccEvent.x;
-					dragStartEvent.y = mouseDownYccEvent.y;
-					dragStartEvent.mouseDownYccEvent = mouseDownYccEvent;
+					var dragStartEvent = new Ycc.Event({
+						type:"dragstart",
+						x:mouseDownYccEvent.x,
+						y:mouseDownYccEvent.y,
+						mouseDownYccEvent:mouseDownYccEvent
+					});
 					
 					// 先触发图层的拖拽事件，该事件没有target属性
 					self.triggerListener(dragStartEvent.type,dragStartEvent);
@@ -1169,10 +1225,12 @@
 				// 2.修改拖拽已经发生的标志位
 				dragFlag = true;
 				// 3.触发dragging事件
-				var draggingEvent = new Ycc.Event("dragging");
-				draggingEvent.x = e.x;
-				draggingEvent.y = e.y;
-				draggingEvent.mouseDownYccEvent = mouseDownYccEvent;
+				var draggingEvent = new Ycc.Event({
+					type:"dragging",
+					x:e.x,
+					y:e.y,
+					mouseDownYccEvent:mouseDownYccEvent
+				});
 				// 先触发图层的拖拽事件，该事件没有target属性
 				self.triggerListener(draggingEvent.type,draggingEvent);
 				if(mouseDownYccEvent.target){
@@ -1243,13 +1301,25 @@
 	/**
 	 * 设置画布所有的属性
 	 */
-	Ycc.Layer.prototype._setCtxProps = function () {
+	Ycc.Layer.prototype._setCtxProps = function (props) {
 		var self = this;
-		var ctxConfig = this.ctxConfig;
-		ctxConfig["font"] = [ctxConfig.fontStyle,ctxConfig.fontVariant,ctxConfig.fontWeight,ctxConfig.fontSize,ctxConfig.fontFamily].join(" ");
-		for(var key in self.ctxConfig){
-			if(!self.ctxConfig.hasOwnProperty(key)) continue;
-			self.ctx[key] = self.ctxConfig[key];
+		var ctxConfig = {
+			fontStyle:"normal",
+			fontVariant:"normal",
+			fontWeight:"normal",
+			fontSize:"16px",
+			fontFamily:"微软雅黑",
+			font:"16px 微软雅黑",
+			textBaseline:"hanging",
+			fillStyle:"red",
+			strokeStyle:"blue"
+		};
+		ctxConfig = Ycc.utils.extend(ctxConfig,props);
+		
+		ctxConfig.font = [ctxConfig.fontStyle,ctxConfig.fontVariant,ctxConfig.fontWeight,ctxConfig.fontSize,ctxConfig.fontFamily].join(" ");
+		for(var key in ctxConfig){
+			if(!ctxConfig.hasOwnProperty(key)) continue;
+			self.ctx[key] = ctxConfig[key];
 		}
 	};
 	
@@ -1267,7 +1337,7 @@
 	 */
 	Ycc.Layer.prototype.renderToStage = function () {
 		if(this.show)
-			this.yccInstance.ctx.drawImage(this.canvasDom,0,0,this.width,this.height);
+			this.yccInstance.ctx.drawImage(this.ctx.canvas,0,0,this.width,this.height);
 	};
 	
 	/**
@@ -1296,6 +1366,7 @@
 	 */
 	Ycc.Layer.prototype.render = function () {
 		for(var i=0;i<this.uiList.length;i++){
+			if(!this.uiList[i].show) continue;
 			this.uiList[i].render();
 		}
 	};
@@ -1307,10 +1378,29 @@
 	Ycc.Layer.prototype.reRender = function () {
 		this.clear();
 		for(var i=0;i<this.uiList.length;i++){
+			if(!this.uiList[i].show) continue;
 			this.uiList[i].computeUIProps();
 			this.uiList[i].render();
 		}
-	}
+	};
+	
+	/**
+	 * 获取图层中某个点所对应的最上层UI。
+	 *
+	 * @param dot {Ycc.Math.Dot}
+	 * @return {UI}
+	 */
+	Ycc.Layer.prototype.getUIFromPointer = function (dot) {
+		var self = this;
+		for(var i =self.uiList.length-1;i>=0;i--){
+			var ui = self.uiList[i];
+			// 如果位于rect内
+			if(dot.isInRect(ui.rect)){
+				return ui;
+			}
+		}
+		return null;
+	};
 	
 	
 })(window.Ycc);;/**
@@ -1425,6 +1515,19 @@
 			this.yccInstance.layerList[i].enableEventManager = false;
 		}
 		layer.enableEventManager = true;
+		return this;
+	};
+	
+	/**
+	 * 允许所有图层接收舞台事件
+	 * @param enable
+	 * @return {Ycc.LayerManager}
+	 */
+	Ycc.LayerManager.prototype.enableEventManagerAll = function (enable) {
+		for(var i=0;i<this.yccInstance.layerList.length;i++) {
+			this.yccInstance.layerList[i].enableEventManager = enable;
+		}
+		return this;
 	};
 	
 	
@@ -1916,6 +2019,12 @@
 		this.rectBgAlpha = 1;
 		
 		/**
+		 * 是否显示
+		 * @type {boolean}
+		 */
+		this.show = true;
+		
+		/**
 		 * 线条宽度
 		 * @type {number}
 		 */
@@ -2192,7 +2301,7 @@
 	 * @constructor
 	 * @extends Ycc.UI.Base
 	 */
-	Ycc.UI.Image = function (option) {
+	Ycc.UI.Image = function Image(option) {
 		Ycc.UI.Base.call(this,option);
 		
 		/**
@@ -2497,6 +2606,7 @@
 	 */
 	Ycc.UI.MultiLineText.prototype.computeUIProps = function () {
 		var self = this;
+		var config = this;
 		// 文本行
 		var lines = this.content.split(/(?:\r\n|\r|\n)/);
 		// 待显示的文本行
@@ -2754,6 +2864,12 @@
 		this.ctrlSize = 6;
 		
 		/**
+		 * 拖拽是否允许超出舞台
+		 * @type {boolean}
+		 */
+		this.enableDragOut = false;
+		
+		/**
 		 * 是否填充
 		 * @type {boolean}
 		 */
@@ -2780,6 +2896,25 @@
 		 */
 		this.ctrlRect4 = new Ycc.Math.Rect();
 		
+		/**
+		 * 选框选择后，下方按钮的配置项
+		 * @type {Ycc.UI.SingleLineText[]}
+		 */
+		this.btns = [];
+		
+		/**
+		 * 下方按钮的高度
+		 * @type {number}
+		 */
+		this.btnHeight = 38;
+		
+		/**
+		 * 下方按钮左右的间距
+		 * @type {number}
+		 */
+		this.btnVerticalPadding = 10;
+		
+		
 		this.extend(option);
 		
 		this._initUI();
@@ -2789,14 +2924,108 @@
 	
 	
 	/**
+	 * 是否显示框选后的操作按钮
+	 * @param show {Boolean}	`true`--显示 `false`--隐藏
+	 */
+	Ycc.UI.CropRect.prototype.showBtns = function (show) {
+		if(this.btns.length>0){
+			for(var i =0;i<this.btns.length;i++){
+				if(Ycc.utils.isObj(this.btns[i])){
+					this.btns[i].show = show;
+				}
+			}
+			this.belongTo.yccInstance.layerManager.reRenderAllLayerToStage();
+		}
+	};
+	
+	/**
+	 * 设置区块的操作按钮
+	 * @param btns
+	 */
+	Ycc.UI.CropRect.prototype.setCtrlBtns = function (btns) {
+		var self = this;
+		// 添加文字按钮到图层
+		if(btns.length!==0){
+			btns.forEach(function (config) {
+				// 默认参数
+				config = Ycc.utils.extend({
+					content:"",
+					rectBgColor:"#666",
+					color:"#fff",
+					onclick:function () {}
+				},config);
+				var btn = new Ycc.UI.SingleLineText(config);
+				btn.addListener("mouseover",function () {
+					this.color="#ccc";
+					this.belongTo.yccInstance.layerManager.reRenderAllLayerToStage();
+				});
+				btn.addListener("mouseout",function () {
+					this.color="#fff";
+					this.belongTo.yccInstance.layerManager.reRenderAllLayerToStage();
+				});
+				self.btns.push(btn);
+				self.belongTo.addUI(btn);
+			})
+		}
+		
+	};
+	
+	/**
 	 * 计算UI的各种属性。此操作必须在绘制之前调用。
 	 */
 	Ycc.UI.CropRect.prototype.computeUIProps = function () {
+		// 设置画布属性再计算，否则计算内容长度会有偏差
+		this.belongTo._setCtxProps(this);
+		
 		var rect = this.rect;
+		// 操作按钮的总长度
+		var totalW = 0;
+		// 循环内临时变量
+		var tempW = 0;
+		// 操作按钮左上角的起点坐标
+		var x0 = this.rect.x;
+		var y0 = this.rect.y+this.rect.height;
+		// 舞台的宽高
+		var stageW = this.belongTo.yccInstance.getStageWidth();
+		var stageH = this.belongTo.yccInstance.getStageHeight();
+		// 计算控制点的属性
 		this.ctrlRect1 = (new Ycc.Math.Rect(rect.x,rect.y,this.ctrlSize,this.ctrlSize));
 		this.ctrlRect2 = (new Ycc.Math.Rect(rect.x+rect.width-this.ctrlSize,rect.y,this.ctrlSize,this.ctrlSize));
 		this.ctrlRect3 = (new Ycc.Math.Rect(rect.x,rect.y+rect.height-this.ctrlSize,this.ctrlSize,this.ctrlSize));
 		this.ctrlRect4 = (new Ycc.Math.Rect(rect.x+rect.width-this.ctrlSize,rect.y+rect.height-this.ctrlSize,this.ctrlSize,this.ctrlSize));
+	
+		// 设置操作按钮的属性，并求其总长度
+		if(this.btns.length===0) return;
+		for(var k=0;k<this.btns.length;k++){
+			var btn = this.btns[k];
+			btn.overflow="auto";
+			btn.xAlign="center";
+			btn.rect.width=parseInt(this.ctx.measureText(btn.content).width+2*this.btnVerticalPadding);
+			btn.rect.height = this.btnHeight;
+			totalW += btn.rect.width+1;
+		}
+		// 操作按钮越界后的处理
+		if(x0+totalW>stageW)
+			x0 = stageW-totalW;
+		if(y0+this.btnHeight>stageH){
+			// 上边也放不下
+			if(this.rect.y<this.btnHeight){
+				y0 = 0;
+			}else{
+				y0 = this.rect.y-this.btnHeight-2;
+			}
+		}
+		// 计算操作按钮的位置
+		for(var i=0;i<this.btns.length;i++){
+			var ui = this.btns[i];
+			ui.rect.x=x0+tempW;
+			ui.rect.y=y0+2;
+			tempW += ui.rect.width+1;
+		}
+		
+		
+		
+		
 	};
 	
 	/**
@@ -2804,10 +3033,16 @@
 	 * @private
 	 */
 	Ycc.UI.CropRect.prototype._initUI = function () {
+		var self = this;
 		this.userData = this.userData?this.userData:{};
 		this.addListener("dragstart",function (e) {
+			// self.showBtns(false);
+			// 标识第几个变换控制点
 			this.userData.ctrlStart = 0;
+			// 拖拽开始时选框的位置
 			this.userData.dragStartPosition = new Ycc.Math.Rect(this.rect);
+			// 拖拽开始时鼠标的位置
+			this.userData.dragStartMousePosition = new Ycc.Math.Dot(e);
 			var dot = new Ycc.Math.Dot(e);
 			for(var i=1;i<=4;i++){
 				if(dot.isInRect(this["ctrlRect"+i])){
@@ -2818,13 +3053,18 @@
 		});
 		
 		this.addListener("dragging",function (e) {
+			// 拖拽开始的起点位置
 			var r = this.userData.dragStartPosition;
+			// 拖拽开始时鼠标的位置
+			var m = this.userData.dragStartMousePosition;
+			// 选框位置信息的暂存值
 			var x,y,width,height;
 			// 控制点的拖拽事件
 			if(this.userData.ctrlStart<=4&&this.userData.ctrlStart>=1){
+				// 拖动左上角控制点
 				if(this.userData.ctrlStart===1 ){
-					x = e.x;
-					y = e.y;
+					x = e.x-(m.x-r.x);
+					y = e.y-(m.y-r.y);
 					width = r.width-(e.x-r.x);
 					height = r.height-(e.y-r.y);
 					if(x<=r.x+r.width-this.ctrlSize*2)
@@ -2833,29 +3073,32 @@
 						this.rect.y = y;
 					
 				}
+				// 拖动右上角控制点
 				if(this.userData.ctrlStart===2){
 					x = r.x;
-					y = e.y;
-					width = e.x-r.x;
+					y = e.y-(m.y-r.y);
+					width = e.x-r.x+(r.width+r.x-m.x);
 					height = r.height-(e.y-r.y);
 					this.rect.x = x;
 					if(y<=r.y+r.height-this.ctrlSize*2)
 						this.rect.y = y;
 				}
+				// 拖动左下角控制点
 				if(this.userData.ctrlStart===3){
-					x = e.x;
+					x = e.x-(m.x-r.x);
 					y = r.y;
 					width = r.width-(e.x-r.x);
-					height = e.y - r.y;
+					height = e.y - r.y + (r.height+r.y-m.y);
 					if(x<=r.x+r.width-this.ctrlSize*2)
 						this.rect.x = x;
 					this.rect.y = y;
 				}
+				// 拖动右下角控制点
 				if(this.userData.ctrlStart===4){
 					this.rect.x = r.x;
 					this.rect.y = r.y;
-					this.rect.width = (e.x-r.x);
-					this.rect.height = (e.y-r.y);
+					this.rect.width = (e.x-r.x)+(r.x+r.width-m.x);
+					this.rect.height = (e.y-r.y)+(r.y+r.height-m.y);
 				}
 				
 				
@@ -2869,17 +3112,39 @@
 				this.rect.x = e.x-e.mouseDownYccEvent.targetDeltaPosition.x;
 				this.rect.y = e.y-e.mouseDownYccEvent.targetDeltaPosition.y;
 			}
+			
+			// 处理选择器的最小宽度
 			if(this.rect.width<=this.ctrlSize*2){
 				this.rect.width = this.ctrlSize*2;
 			}
+			// 处理选择器的最小高度
 			if(this.rect.height<=this.ctrlSize*2){
 				this.rect.height = this.ctrlSize*2;
 			}
-
+			
+			// 处理不允许拖拽出舞台
+			if(!this.enableDragOut){
+				var stageW = this.belongTo.yccInstance.getStageWidth();
+				var stageH = this.belongTo.yccInstance.getStageHeight();
+				if(this.rect.x<=0) this.rect.x=0;
+				if(this.rect.y<=0) this.rect.y=0;
+				if(this.rect.x+this.rect.width>=stageW){
+					this.rect.x = stageW-this.rect.width;
+				}
+				if(this.rect.y+this.rect.height>=stageH){
+					this.rect.y = stageH-this.rect.height;
+				}
+				
+			}
+			
 			/**
 			 * @todo 此处是否在UI内渲染，有待考虑
 			 */
 			this.belongTo.yccInstance.layerManager.reRenderAllLayerToStage();
+		});
+		
+		this.addListener("dragend",function (e) {
+			self.showBtns(true);
 		});
 	};
 	
@@ -2952,16 +3217,46 @@
 		 */
 		this.displayContent = "";
 		
-		this.content = "";
-		this.fontSize = "16px";
-		this.fill = true;
-		this.color = "black";
 		/**
-		 * @todo  未实现
+		 * 期望绘制的文本内容
+		 * @type {string}
+		 */
+		this.content = "";
+
+		/**
+		 * 文字大小
+		 * @type {string}
+		 */
+		this.fontSize = "16px";
+		
+		/**
+		 * 文字描边or填充
+		 * @type {boolean}
+		 */
+		this.fill = true;
+		
+		/**
+		 * 文字颜色
+		 * @type {string}
+		 */
+		this.color = "black";
+
+		/**
+		 * 文字在区域内x方向的排列方式。 `left` or `center`
 		 * @type {string}
 		 */
 		this.xAlign = "left";
+		
+		/**
+		 * 文字在区域内y方向的排列方式
+		 * @type {string}
+		 */
 		this.yAlign = "center";
+		
+		/**
+		 * 文字超出后的处理方式。 `auto` or `hidden`
+		 * @type {string}
+		 */
 		this.overflow = "auto";
 
 		this.extend(option);
@@ -2978,6 +3273,9 @@
 	Ycc.UI.SingleLineText.prototype.computeUIProps = function () {
 		var self = this;
 		
+		// 设置画布属性再计算，否则计算内容长度会有偏差
+		self.belongTo._setCtxProps(self);
+		
 		// 内容的长度
 		var contentWidth = this.ctx.measureText(this.content).width;
 		
@@ -2991,15 +3289,32 @@
 				this.rect.width = contentWidth;
 			}
 		}
+		
+		if(this.overflow === "hidden"){
+			if(contentWidth>this.rect.width)
+				self.displayContent = self.getMaxContentInWidth(this.content,this.rect.width);
+		}else if(this.overflow === "auto"){
+			if(contentWidth>this.rect.width){
+				this.rect.width = contentWidth;
+			}
+			if(parseInt(this.fontSize)>this.rect.height){
+				this.rect.height = parseInt(this.fontSize);
+			}
+			
+		}
 	};
 	/**
 	 * 渲染至ctx
 	 * @param ctx
 	 */
 	Ycc.UI.SingleLineText.prototype.render = function (ctx) {
+		var self = this;
+		
+		// 设置画布属性再计算，否则计算内容长度会有偏差
+		self.belongTo._setCtxProps(self);
+
 		this.renderRectBgColor();
 		
-		var self = this;
 
 		self.ctx = ctx || self.ctx;
 		
@@ -3018,6 +3333,12 @@
 		var option = this;
 		
 		x = option.rect.x;
+		
+		if(this.xAlign==="center"){
+			var textWidth = this.ctx.measureText(this.displayContent).width;
+			x+=(this.rect.width-textWidth)/2;
+		}
+		
 		y = option.rect.y;
 		
 		if(fontSize>option.rect.height){
@@ -3031,7 +3352,8 @@
 		this.ctx.save();
 		this.ctx.fillStyle = option.color;
 		this.ctx.strokeStyle = option.color;
-		this.baseUI.text([x,y],self.displayContent,option.fill);
+		// this.baseUI.text([x,y],self.displayContent,option.fill);
+		this.ctx.fillText(self.displayContent,x,y);
 		this.ctx.restore();
 	};
 	

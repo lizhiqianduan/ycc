@@ -33,6 +33,21 @@
     };
 	
 	/**
+	 * 合并对象：覆盖target对象的字段。浅拷贝。prototype内的属性也会被覆盖。
+	 * @param target	{object}	待覆盖的目标对象
+	 * @param src	{object}	源对象
+	 */
+	Ycc.utils.mergeObject = function(target,src){
+		src = src || {};
+		for(var key in target){
+			if(typeof src[key]!=="undefined"){
+				target[key] = src[key];
+			}
+		}
+		return target;
+	};
+	
+	/**
      * 判断字符串
 	 * @param str
 	 * @return {boolean}

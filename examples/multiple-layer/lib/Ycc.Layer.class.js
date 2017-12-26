@@ -24,62 +24,14 @@
 	 */
 	Ycc.Layer = function(yccInstance,option){
 	 	Ycc.Listener.call(this);
-	 	
 
-		
-		var defaultConfig = {
-			name:"",
-			type:"ui",
-			
-			// 图层在舞台的渲染位置
-			x:0,
-			y:0,
-			
-			// 图层的高宽
-			width:yccInstance.getStageWidth(),
-			height:yccInstance.getStageHeight(),
-			show:true,
-			enableEventManager:false,
-			enableFrameEvent:false,
-			ctxConfig:{
-				fontStyle:"normal",
-				fontVariant:"normal",
-				fontWeight:"normal",
-				fontSize:"16px",
-				fontFamily:"微软雅黑",
-				font:"16px 微软雅黑",
-				textBaseline:"top",
-				fillStyle:"red",
-				strokeStyle:"blue"
-			}
-		};
-		// 深拷贝
-		var config = Ycc.utils.extend(defaultConfig,option,true);
-		
-		var canvasDom = document.createElement("canvas");
-		canvasDom.width = config.width;
-		canvasDom.height = config.height;
-		
-		 /**
-		  * 配置项
-		  */
-		this.option = config;
+	 	option = option || {};
 
 		/**
 		 * 存储图层中的所有UI。UI的顺序，即为图层中的渲染顺序。
 		 * @type {Ycc.UI[]}
 		 */
 		this.uiList = [];
-		
-		/**
-		 * 绘图环境的默认属性配置项
-		 * @type {ctxConfig|{}}
-		 */
-		this.ctxConfig = config.ctxConfig;
-		/**
-		 * 初始化配置项
-		 */
-		this.config = config;
 		
 		/**
 		 * ycc实例的引用
@@ -89,18 +41,13 @@
 		 * 虚拟canvas元素的引用
 		 * @type {Element}
 		 */
-		this.canvasDom = canvasDom;
-		
-		/**
-		 * 画布属性的双向绑定
-		 */
-		this.canvasDom._props = {};
+		this.canvasDom = null;
 		
 		/**
 		 * 当前图层的绘图环境
 		 * @type {CanvasRenderingContext2D}
 		 */
-		this.ctx = this.canvasDom.getContext('2d');
+		this.ctx = null;
 		
 		/**
 		 * 图层id
@@ -112,7 +59,7 @@
 		 * `ui`表示用于绘图的图层。`tool`表示辅助的工具图层。`text`表示文字图层。
 		 * 默认为`ui`。
 		 */
-		this.type = config.type;
+		this.type = "ui";
 		
 		/**
 		 * 图层中的文字。仅当图层type为text时有值。
@@ -124,47 +71,47 @@
 		 * 图层名称
 		 * @type {string}
 		 */
-		this.name = config.name?config.name:"图层_"+this.type+"_"+this.id;
+		this.name = option.name?option.name:"图层_"+this.type+"_"+this.id;
 		
 		/**
 		 * 图层位置的x坐标。默认与舞台左上角重合
 		 * @type {number}
 		 */
-		this.x = config.x;
+		this.x = 0;
 		
 		/**
 		 * 图层位置的Y坐标。默认与舞台左上角重合
 		 * @type {number}
 		 */
-		this.y = config.y;
+		this.y = 0;
 		
 		/**
 		 * 图层宽
 		 * @type {number}
 		 */
-		this.width = config.width;
+		this.width = yccInstance.getStageWidth();
 		/**
 		 * 图层高
 		 * @type {number}
 		 */
-		this.height = config.height;
+		this.height = yccInstance.getStageHeight();
 		
 		/**
 		 * 图层是否显示
 		 */
-		this.show = config.show;
+		this.show = true;
 		
 		/**
 		 * 是否监听舞台的事件。用于控制舞台事件是否广播至图层。默认关闭
 		 * @type {boolean}
 		 */
-		this.enableEventManager = config.enableEventManager;
+		this.enableEventManager = false;
 		
 		/**
-		 * 是否接收每帧更新的通知
+		 * 是否接收每帧更新的通知。默认为false
 		 * @type {boolean}
 		 */
-		this.enableFrameEvent = config.enableFrameEvent;
+		this.enableFrameEvent = false;
 		
 		/**
 		 * 若接收通知，此函数为接收通知的回调函数。当且仅当enableFrameEvent为true时生效
@@ -172,6 +119,11 @@
 		 */
 		this.onFrameComing = function () {};
 		
+		
+		
+		// 合并参数
+		Ycc.utils.mergeObject(this,option);
+		// 初始化
 		this.init();
 	};
 	Ycc.Layer.prototype = new Ycc.Listener();
@@ -183,35 +135,18 @@
 	 */
 	Ycc.Layer.prototype.init = function () {
 		var self = this;
-		// 初始化画布的属性
-		if(!this.ctxConfig || !Ycc.utils.isObj(this.ctxConfig))
-			return null;
-		// 设置画布的所有属性
+		var canvasDom = document.createElement("canvas");
+		canvasDom.width = this.width;
+		canvasDom.height = this.height;
+		
+		// 初始化图层属性
+		this.ctx = canvasDom.getContext('2d');
+		this.canvasDom = canvasDom;
+		
+		// 初始化画布属性
 		self._setCtxProps();
+		// 初始化图层事件
 		self._initEvent();
-		//双向绑定ctx的属性
-		var ctxConfig = this.ctxConfig;
-		for(var key in ctxConfig){
-			if(!ctxConfig.hasOwnProperty(key)) continue;
-			Object.defineProperty(this.ctx.canvas._props,key,{
-				enumerable : true,
-				configurable : true,
-				set : (function(k){
-					return function (newValue) {
-						// 修改_props的属性后自动设置画布的属性
-						self.ctxConfig[k] = newValue;
-						self._setCtxProps();
-					};
-				})(key),
-				get:(function(k){
-					return function () {
-						return self.ctxConfig[k];
-					};
-				})(key)
-			})
-		}
-		
-		
 	};
 	
 	/**
@@ -245,12 +180,14 @@
 
 		this.addListener("mouseup",function (e) {
 			if(dragFlag){
-				var dragendEvent = new Ycc.Event("dragend");
-				dragendEvent.x = e.x;
-				dragendEvent.y = e.y;
-				dragendEvent.mouseDownYccEvent = mouseDownYccEvent;
+				var dragendEvent = new Ycc.Event({
+					type:"dragend",
+					x:e.x,
+					y:e.y,
+					mouseDownYccEvent:mouseDownYccEvent
+				});
 				self.triggerListener("dragend",dragendEvent);
-				if(mouseDownYccEvent.target){
+				if(mouseDownYccEvent&&mouseDownYccEvent.target){
 					self.target = mouseDownYccEvent.target;
 					self.target.triggerListener("dragend",dragendEvent);
 				}
@@ -285,10 +222,12 @@
 			if(mouseDownYccEvent){
 				// 1.拖拽之前，触发一次dragstart事件
 				if(!dragFlag){
-					var dragStartEvent = new Ycc.Event("dragstart");
-					dragStartEvent.x = mouseDownYccEvent.x;
-					dragStartEvent.y = mouseDownYccEvent.y;
-					dragStartEvent.mouseDownYccEvent = mouseDownYccEvent;
+					var dragStartEvent = new Ycc.Event({
+						type:"dragstart",
+						x:mouseDownYccEvent.x,
+						y:mouseDownYccEvent.y,
+						mouseDownYccEvent:mouseDownYccEvent
+					});
 					
 					// 先触发图层的拖拽事件，该事件没有target属性
 					self.triggerListener(dragStartEvent.type,dragStartEvent);
@@ -301,10 +240,12 @@
 				// 2.修改拖拽已经发生的标志位
 				dragFlag = true;
 				// 3.触发dragging事件
-				var draggingEvent = new Ycc.Event("dragging");
-				draggingEvent.x = e.x;
-				draggingEvent.y = e.y;
-				draggingEvent.mouseDownYccEvent = mouseDownYccEvent;
+				var draggingEvent = new Ycc.Event({
+					type:"dragging",
+					x:e.x,
+					y:e.y,
+					mouseDownYccEvent:mouseDownYccEvent
+				});
 				// 先触发图层的拖拽事件，该事件没有target属性
 				self.triggerListener(draggingEvent.type,draggingEvent);
 				if(mouseDownYccEvent.target){
@@ -375,13 +316,25 @@
 	/**
 	 * 设置画布所有的属性
 	 */
-	Ycc.Layer.prototype._setCtxProps = function () {
+	Ycc.Layer.prototype._setCtxProps = function (props) {
 		var self = this;
-		var ctxConfig = this.ctxConfig;
-		ctxConfig["font"] = [ctxConfig.fontStyle,ctxConfig.fontVariant,ctxConfig.fontWeight,ctxConfig.fontSize,ctxConfig.fontFamily].join(" ");
-		for(var key in self.ctxConfig){
-			if(!self.ctxConfig.hasOwnProperty(key)) continue;
-			self.ctx[key] = self.ctxConfig[key];
+		var ctxConfig = {
+			fontStyle:"normal",
+			fontVariant:"normal",
+			fontWeight:"normal",
+			fontSize:"16px",
+			fontFamily:"微软雅黑",
+			font:"16px 微软雅黑",
+			textBaseline:"hanging",
+			fillStyle:"red",
+			strokeStyle:"blue"
+		};
+		ctxConfig = Ycc.utils.extend(ctxConfig,props);
+		
+		ctxConfig.font = [ctxConfig.fontStyle,ctxConfig.fontVariant,ctxConfig.fontWeight,ctxConfig.fontSize,ctxConfig.fontFamily].join(" ");
+		for(var key in ctxConfig){
+			if(!ctxConfig.hasOwnProperty(key)) continue;
+			self.ctx[key] = ctxConfig[key];
 		}
 	};
 	
@@ -399,7 +352,7 @@
 	 */
 	Ycc.Layer.prototype.renderToStage = function () {
 		if(this.show)
-			this.yccInstance.ctx.drawImage(this.canvasDom,0,0,this.width,this.height);
+			this.yccInstance.ctx.drawImage(this.ctx.canvas,0,0,this.width,this.height);
 	};
 	
 	/**
@@ -428,6 +381,7 @@
 	 */
 	Ycc.Layer.prototype.render = function () {
 		for(var i=0;i<this.uiList.length;i++){
+			if(!this.uiList[i].show) continue;
 			this.uiList[i].render();
 		}
 	};
@@ -439,10 +393,29 @@
 	Ycc.Layer.prototype.reRender = function () {
 		this.clear();
 		for(var i=0;i<this.uiList.length;i++){
+			if(!this.uiList[i].show) continue;
 			this.uiList[i].computeUIProps();
 			this.uiList[i].render();
 		}
-	}
+	};
+	
+	/**
+	 * 获取图层中某个点所对应的最上层UI。
+	 *
+	 * @param dot {Ycc.Math.Dot}
+	 * @return {UI}
+	 */
+	Ycc.Layer.prototype.getUIFromPointer = function (dot) {
+		var self = this;
+		for(var i =self.uiList.length-1;i>=0;i--){
+			var ui = self.uiList[i];
+			// 如果位于rect内
+			if(dot.isInRect(ui.rect)){
+				return ui;
+			}
+		}
+		return null;
+	};
 	
 	
 })(window.Ycc);

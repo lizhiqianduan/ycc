@@ -33,12 +33,46 @@
 		 */
 		this.displayContent = "";
 		
+		/**
+		 * 期望绘制的文本内容
+		 * @type {string}
+		 */
 		this.content = "";
+
+		/**
+		 * 文字大小
+		 * @type {string}
+		 */
 		this.fontSize = "16px";
+		
+		/**
+		 * 文字描边or填充
+		 * @type {boolean}
+		 */
 		this.fill = true;
+		
+		/**
+		 * 文字颜色
+		 * @type {string}
+		 */
 		this.color = "black";
+
+		/**
+		 * 文字在区域内x方向的排列方式。 `left` or `center`
+		 * @type {string}
+		 */
 		this.xAlign = "left";
+		
+		/**
+		 * 文字在区域内y方向的排列方式
+		 * @type {string}
+		 */
 		this.yAlign = "center";
+		
+		/**
+		 * 文字超出后的处理方式。 `auto` or `hidden`
+		 * @type {string}
+		 */
 		this.overflow = "auto";
 
 		this.extend(option);
@@ -55,6 +89,9 @@
 	Ycc.UI.SingleLineText.prototype.computeUIProps = function () {
 		var self = this;
 		
+		// 设置画布属性再计算，否则计算内容长度会有偏差
+		self.belongTo._setCtxProps(self);
+		
 		// 内容的长度
 		var contentWidth = this.ctx.measureText(this.content).width;
 		
@@ -68,15 +105,32 @@
 				this.rect.width = contentWidth;
 			}
 		}
+		
+		if(this.overflow === "hidden"){
+			if(contentWidth>this.rect.width)
+				self.displayContent = self.getMaxContentInWidth(this.content,this.rect.width);
+		}else if(this.overflow === "auto"){
+			if(contentWidth>this.rect.width){
+				this.rect.width = contentWidth;
+			}
+			if(parseInt(this.fontSize)>this.rect.height){
+				this.rect.height = parseInt(this.fontSize);
+			}
+			
+		}
 	};
 	/**
 	 * 渲染至ctx
 	 * @param ctx
 	 */
 	Ycc.UI.SingleLineText.prototype.render = function (ctx) {
+		var self = this;
+		
+		// 设置画布属性再计算，否则计算内容长度会有偏差
+		self.belongTo._setCtxProps(self);
+
 		this.renderRectBgColor();
 		
-		var self = this;
 
 		self.ctx = ctx || self.ctx;
 		
@@ -95,6 +149,12 @@
 		var option = this;
 		
 		x = option.rect.x;
+		
+		if(this.xAlign==="center"){
+			var textWidth = this.ctx.measureText(this.displayContent).width;
+			x+=(this.rect.width-textWidth)/2;
+		}
+		
 		y = option.rect.y;
 		
 		if(fontSize>option.rect.height){
@@ -108,7 +168,8 @@
 		this.ctx.save();
 		this.ctx.fillStyle = option.color;
 		this.ctx.strokeStyle = option.color;
-		this.baseUI.text([x,y],self.displayContent,option.fill);
+		// this.baseUI.text([x,y],self.displayContent,option.fill);
+		this.ctx.fillText(self.displayContent,x,y);
 		this.ctx.restore();
 	};
 	

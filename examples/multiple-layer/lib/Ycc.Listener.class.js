@@ -27,6 +27,12 @@
 		this.stopType = {};
 		
 		/**
+		 * 是否阻止所有的事件触发
+		 * @type {boolean}
+		 */
+		this.stopAllEvent = false;
+		
+		/**
 		 * 点击 的监听。默认为null
 		 * @type {function}
 		 */
@@ -60,7 +66,17 @@
 		 * 拖拽结束 的监听。默认为null
 		 * @type {function}
 		 */
-		this.ondraggend = null;
+		this.ondragend = null;
+		/**
+		 * 鼠标移入 的监听。默认为null
+		 * @type {function}
+		 */
+		this.onmouseover = null;
+		/**
+		 * 鼠标移出 的监听。默认为null
+		 * @type {function}
+		 */
+		this.onmouseout = null;
 	};
 	
 	
@@ -91,6 +107,8 @@
 	 * @param data
 	 */
 	Ycc.Listener.prototype.triggerListener = function (type,data) {
+		if(this.stopAllEvent) return;
+		
 		if(!this.stopType[type])
 			Ycc.utils.isFn(this["on"+type]) && this["on"+type].call(this,data);
 

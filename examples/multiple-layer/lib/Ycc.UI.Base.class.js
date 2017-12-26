@@ -49,6 +49,12 @@
 		this.rectBgAlpha = 1;
 		
 		/**
+		 * 是否显示
+		 * @type {boolean}
+		 */
+		this.show = true;
+		
+		/**
 		 * 线条宽度
 		 * @type {number}
 		 */
