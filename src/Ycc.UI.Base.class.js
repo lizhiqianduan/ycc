@@ -37,6 +37,31 @@
 		this.rect = new Ycc.Math.Rect();
 		
 		/**
+		 * UI对象的锚点坐标
+		 * @type {Ycc.Math.Dot}
+		 */
+		this.anchor = new Ycc.Math.Dot(0,0);
+		
+		/**
+		 * x方向的缩放比例
+		 * @type {number}
+		 */
+		this.scaleX = 1;
+
+		/**
+		 * y方向的缩放比例
+		 * @type {number}
+		 */
+		this.scaleY = 1;
+		
+		/**
+		 * 相对于锚点的旋转角度
+		 * @type {number}
+		 */
+		this.rotation = 0;
+		
+		
+		/**
 		 * 区域的背景色
 		 * @type {string}
 		 */
