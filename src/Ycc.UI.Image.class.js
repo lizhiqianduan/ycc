@@ -75,6 +75,8 @@
 	 * 绘制
 	 */
 	Ycc.UI.Image.prototype.render = function () {
+		this.ctx.save();
+		this.scaleAndRotate();
 		this.renderRectBgColor();
 		
 		var rect = this.rect;
@@ -88,8 +90,6 @@
 		// this.ctx.restore();
 
 		
-		this.ctx.save();
-		this.scaleAndRotate();
 
 		if(this.fillMode === "none")
 			this.ctx.drawImage(this.res,0,0,rect.width,rect.height,rect.x,rect.y,rect.width,rect.height);
