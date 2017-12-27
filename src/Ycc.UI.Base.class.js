@@ -179,6 +179,21 @@
 		this.ctx.restore();
 	};
 	
+	/**
+	 * 坐标系的缩放和旋转。
+	 * 先缩放、再旋转。
+	 * @todo 子类渲染前需要调用此方法
+	 */
+	Ycc.UI.Base.prototype.scaleAndRotate = function () {
+		// 坐标系缩放
+		this.ctx.scale(this.scaleX,this.scaleY);
+		
+		// 坐标系旋转
+		this.ctx.translate(this.anchorX+this.rect.x,this.anchorY+this.rect.y);
+		this.ctx.rotate(this.rotation*Math.PI/180);
+		this.ctx.translate(-this.anchorX-this.rect.x,-this.anchorY-this.rect.y);
+	};
+	
 
 	/**
 	 * 渲染至绘图环境。
