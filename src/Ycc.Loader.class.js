@@ -19,6 +19,13 @@
 		 * @type {{}}
 		 */
 		this.imageRes = {};
+		
+		/**
+		 * 是否缓存图片。
+		 * imageRes中key相同时，不会重复加载。
+		 * @type {boolean}
+		 */
+		this.cache = true;
 	};
 	
 	
@@ -50,19 +57,40 @@
 		var keys = Object.keys(imagesSrc);
 		for(var i =0;i<keys.length;i++){
 			var src = imagesSrc[keys[i]];
+			if(self.cache){
+				var img = self.imageRes[keys[i]];
+				if(img){
+					imageOnload(img);
+					continue;
+				}
+			}
+			
+			
 			this._loadImage(src,(function (key) {
 				return function (img) {
 					self.imageRes[key] = img;
-					loadedNum++;
-					Ycc.utils.isFn(progressCb)&&progressCb(img);
-					if(loadedNum===keys.length){
-						Ycc.utils.isFn(endCb)&&endCb(self.imageRes);
-					}
+					imageOnload(img);
 				}
 				
 			})(keys[i]));
 		}
-	}
+		
+		function imageOnload(img) {
+			loadedNum++;
+			Ycc.utils.isFn(progressCb)&&progressCb(img);
+			if(loadedNum===keys.length){
+				Ycc.utils.isFn(endCb)&&endCb(self.imageRes);
+			}
+		}
+	};
+	
+	/**
+	 * 是否使用缓存
+	 * @param b {boolean}
+	 */
+	Ycc.Loader.prototype.useCache = function (b) {
+		this.cache = b;
+	};
 	
 	
 	
