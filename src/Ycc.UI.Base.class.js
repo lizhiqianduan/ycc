@@ -37,10 +37,16 @@
 		this.rect = new Ycc.Math.Rect();
 		
 		/**
-		 * UI对象的锚点坐标
-		 * @type {Ycc.Math.Dot}
+		 * UI对象的锚点坐标。相对坐标。相对于rect的x
+		 * @type {number}
 		 */
-		this.anchor = new Ycc.Math.Dot(0,0);
+		this.anchorX = 0;
+
+		/**
+		 * UI对象的锚点坐标。相对坐标。相对于rect的y
+		 * @type {number}
+		 */
+		this.anchorY = 0;
 		
 		/**
 		 * x方向的缩放比例

@@ -79,14 +79,26 @@
 		
 		var rect = this.rect;
 		var img = this.res;
-		this.ctx.save();
-		this.ctx.beginPath();
-		this.ctx.rect(rect.x,rect.y,rect.width,rect.height);
-		this.ctx.closePath();
-		this.ctx.fillStyle = this.rectBgColor;
-		this.ctx.fill();
-		this.ctx.restore();
+		// this.ctx.save();
+		// this.ctx.beginPath();
+		// this.ctx.rect(rect.x,rect.y,rect.width,rect.height);
+		// this.ctx.closePath();
+		// this.ctx.fillStyle = this.rectBgColor;
+		// this.ctx.fill();
+		// this.ctx.restore();
 
+		
+		this.ctx.save();
+		
+		// 坐标系缩放
+		this.ctx.scale(this.scaleX,this.scaleY);
+
+		// 坐标系旋转
+		this.ctx.translate(this.anchorX+this.rect.x,this.anchorY+this.rect.y);
+		this.ctx.rotate(this.rotation*Math.PI/180);
+		this.ctx.translate(-this.anchorX-this.rect.x,-this.anchorY-this.rect.y);
+		
+		
 
 		if(this.fillMode === "none")
 			this.ctx.drawImage(this.res,0,0,rect.width,rect.height,rect.x,rect.y,rect.width,rect.height);
@@ -183,7 +195,7 @@
 			}
 			
 		}
-		
+		this.ctx.restore();
 		
 	};
 	
