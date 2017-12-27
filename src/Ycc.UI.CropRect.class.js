@@ -343,6 +343,16 @@
 	};
 	
 	
+	/**
+	 * 删除自身及操作按钮
+	 */
+	Ycc.UI.CropRect.prototype.removeSelf = function () {
+		this.belongTo.removeUI(this);
+		this.btns.forEach(function (t) {
+			t.removeSelf();
+		});
+	};
+	
 	
 	
 })(window.Ycc);

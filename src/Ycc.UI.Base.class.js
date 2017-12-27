@@ -180,6 +180,14 @@
 	};
 	
 	/**
+	 * 删除自身。
+	 * 若子类包含多个UI，需要重载
+	 */
+	Ycc.UI.Base.prototype.removeSelf = function () {
+		this.belongTo.removeUI(this);
+	};
+	
+	/**
 	 * 坐标系的缩放和旋转。
 	 * 先缩放、再旋转。
 	 * @todo 子类渲染前需要调用此方法
