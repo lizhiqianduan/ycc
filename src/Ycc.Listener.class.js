@@ -25,6 +25,12 @@
 		 * @type {{}}
 		 */
 		this.stopType = {};
+
+		/**
+		 * 被禁用的事件类型。key为type，val为boolean
+		 * @type {{}}
+		 */
+		this.disableType = {};
 		
 		/**
 		 * 是否阻止所有的事件触发
@@ -108,6 +114,7 @@
 	 */
 	Ycc.Listener.prototype.triggerListener = function (type,data) {
 		if(this.stopAllEvent) return;
+		if(this.disableType[type]) return;
 		
 		if(!this.stopType[type])
 			Ycc.utils.isFn(this["on"+type]) && this["on"+type].call(this,data);
@@ -135,7 +142,23 @@
 				return;
 			}
 		}
-	}
+	};
+	
+	/**
+	 * 禁止某个事件触发
+	 * @param type
+	 */
+	Ycc.Listener.prototype.disableEvent = function (type) {
+		this.disableType[type] = true;
+	};
+	
+	/**
+	 * 恢复某个事件的触发
+	 * @param type
+	 */
+	Ycc.Listener.prototype.resumeEvent = function (type) {
+		this.disableType[type] = false;
+	};
 	
 	
 	
