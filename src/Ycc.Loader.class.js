@@ -83,6 +83,36 @@
 			}
 		}
 	};
+
+	/**
+	 * 依次加载图片
+	 * @param imageArr
+	 * @param imageArr.name
+	 * @param imageArr.url
+	 * @param imageArr.img
+	 * @param endCb
+	 * @param progressCb
+	 */
+	Ycc.Loader.prototype.loadImgOneByOne = function (imageArr, endCb, progressCb) {
+		
+		if(imageArr.length===0){
+			endCb();
+			return;
+		}
+		var self = this;
+		var img = new Image();
+		imageArr[0].img = img;
+		img.src = imageArr[0].url;
+		img.onload = function () {
+			Ycc.utils.isFn(progressCb) && progressCb(imageArr[0],true);
+			self.loadImgOneByOne(imageArr.slice(1),endCb,progressCb);
+		};
+		img.onerror = function () {
+			Ycc.utils.isFn(progressCb) && progressCb(imageArr[0],false);
+			self.loadImgOneByOne(imageArr.slice(1),endCb,progressCb);
+		};
+		
+	};
 	
 	/**
 	 * 是否使用缓存
