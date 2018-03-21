@@ -25,6 +25,13 @@
 		 * @type {number}
 		 */
 		this.uid = uid++;
+		
+		/**
+		 * UI实例的名字
+		 * @type {string}
+		 */
+		this.name = "";
+		
 		/**
 		 * 绘图环境
 		 * @type {null}

@@ -77,6 +77,11 @@
 		 */
 		this.btnVerticalPadding = 10;
 		
+		/**
+		 * 是否将名字显示在左上角
+		 * @type {boolean}
+		 */
+		this.showName = true;
 		
 		this.extend(option);
 		
@@ -339,7 +344,18 @@
 		this.ctx.rect(this.ctrlRect4.x,this.ctrlRect4.y,this.ctrlRect4.width,this.ctrlRect4.height);
 		this.ctx.closePath();
 		this.ctx.fill();
+		
 		this.ctx.restore();
+		
+		// 绘制名字
+		this.ctx.save();
+		this.ctx.beginPath();
+		this.ctx.fillStyle="blue";
+		this.ctx.font="normal normal bold 14px Arial";
+		this.ctx.fillText(this.name,rect.x+10,rect.y+10);
+		this.ctx.closePath();
+		this.ctx.restore();
+		
 	};
 	
 	
