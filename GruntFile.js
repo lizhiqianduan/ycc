@@ -32,6 +32,7 @@ module.exports = function(grunt){
 						'src/Ycc.UI.Ellipse.class.js',
 						'src/Ycc.UI.Image.class.js',
 						'src/Ycc.UI.Line.class.js',
+						'src/Ycc.UI.BrokenLine.class.js',
 						'src/Ycc.UI.MultiLineText.class.js',
 						'src/Ycc.UI.Rect.class.js',
 						'src/Ycc.UI.CropRect.class.js',
@@ -78,7 +79,7 @@ module.exports = function(grunt){
 				livereload: 9000
 			},
 			files:["./src/*.js","./test/*.html","./GruntFile.js"],
-            tasks: ["clean","concat","uglify","jsdoc","copy"]
+            tasks: ["clean","concat","uglify","copy","jsdoc"]
         },
 		copy:[
 				{expand:true,cwd:"./src", src: '*.js', dest: 'build/'}
@@ -101,5 +102,5 @@ module.exports = function(grunt){
 	grunt.loadNpmTasks('grunt-jsdoc');
     // 默认被执行的任务列表。
     grunt.registerTask('default', ['watch']);
-    grunt.registerTask('build', ["clean","concat","uglify","jsdoc","copy"]);
+    grunt.registerTask('build', ["clean","concat","uglify","copy","jsdoc"]);
 };
