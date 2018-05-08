@@ -5,7 +5,12 @@
   "main": "ycc.js",
   "scripts": {
     "start": "grunt",
-    "build": "grunt build"
+    "build": "grunt build",
+    "doc":"grunt jsdoc",
+    "clean":"grunt clean",
+    "min":"grunt uglify",
+    "concat":"grunt concat",
+    "release":"grunt release"
   },
   "repository": {
     "type": "git",
