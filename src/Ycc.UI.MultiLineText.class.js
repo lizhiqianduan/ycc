@@ -78,7 +78,7 @@
 		// 待显示的文本行
 		this.displayLines = getRenderLines();
 		if(config.overflow === "auto"){
-			config.rect.height = config.lineHeight*renderLines.length;
+			config.rect.height = config.lineHeight*this.displayLines.length;
 		}
 		
 		/**

@@ -17,21 +17,8 @@
 
 <script src="http://localhost:9000/livereload.js"></script>
 
-<script src="./lib/Ycc.class.js"></script>
-<script src="./lib/Ycc.utils.js"></script>
-<script src="./lib/Ycc.Math.js"></script>
-<script src="./lib/Ycc.Loader.class.js"></script>
-<script src="./lib/Ycc.Listener.class.js"></script>
-<script src="./lib/Ycc.UI.class.js"></script>
-<script src="./lib/Ycc.UI.Base.class.js"></script>
-<script src="./lib/Ycc.UI.SingleLineText.class.js"></script>
-<script src="./lib/Ycc.UI.MultiLineText.class.js"></script>
-<script src="./lib/Ycc.UI.Rect.class.js"></script>
-<script src="./lib/Ycc.UI.Line.class.js"></script>
-<script src="./lib/Ycc.PhotoManager.class.js"></script>
-<script src="./lib/Ycc.Event.class.js"></script>
-<script src="./lib/Ycc.Layer.class.js"></script>
-<script src="./lib/Ycc.LayerManager.class.js"></script>
+<script src="../../build/ycc.js"></script>
+
 
 <script>
 	var canvas = document.createElement("canvas");
@@ -39,7 +26,8 @@
 	canvas.height = 600;
 	document.getElementById("canvas").appendChild(canvas);
 
-	var ycc = new Ycc(canvas);
+	var ycc = new Ycc();
+	ycc.bindCanvas(canvas);
 	// 新建图层
 	var layer = ycc.layerManager.newLayer({enableEventManager:true});
 	// 设置UI属性
@@ -65,8 +53,8 @@
 	// 拖拽
 	ui.ondragging = function (e) {
 		console.log("我是",this.constructor.name,"我",e.type,e);
-		this.option.rect.x = e.x-e.mouseDownYccEvent.targetDeltaPosition.x;
-		this.option.rect.y = e.y-e.mouseDownYccEvent.targetDeltaPosition.y;
+		this.rect.x = e.x-e.mouseDownYccEvent.targetDeltaPosition.x;
+		this.rect.y = e.y-e.mouseDownYccEvent.targetDeltaPosition.y;
 		ycc.layerManager.reRenderAllLayerToStage();
 	};
 	// 添加至图层
@@ -80,7 +68,7 @@
 	var down = null;
 	var draggingListener = null;
 	ui.onmousedown = function (e) {
-		down = {x:this.option.rect.x,y:this.option.rect.y};
+		down = {x:this.rect.x,y:this.rect.y};
 		console.log("我是",this.constructor.name,"我",e.type,e);
 	};
 	ui.onmouseup = function (e) {
@@ -95,8 +83,8 @@
 		var self = this;
 		if(down && !draggingListener){
 			draggingListener = function (e2) {
-				self.option.rect.x = down.x + e2.x-e.mouseDownYccEvent.x;
-				self.option.rect.y = down.y + e2.y-e.mouseDownYccEvent.y;
+				self.rect.x = down.x + e2.x-e.mouseDownYccEvent.x;
+				self.rect.y = down.y + e2.y-e.mouseDownYccEvent.y;
 				ycc.layerManager.reRenderAllLayerToStage();
 			};
 			this.belongTo.addListener("mousemove",draggingListener);
@@ -105,7 +93,7 @@
 	layer.addUI(ui);
 
 //	全部绘制
-	ycc.layerManager.renderAllLayerToStage();
+	ycc.layerManager.reRenderAllLayerToStage();
 
 
 

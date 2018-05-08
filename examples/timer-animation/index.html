@@ -14,20 +14,7 @@
 
 <script src="http://localhost:9000/livereload.js"></script>
 
-<script src="./lib/Ycc.class.js"></script>
-<script src="./lib/Ycc.utils.js"></script>
-<script src="./lib/Ycc.Math.js"></script>
-<script src="./lib/Ycc.Loader.class.js"></script>
-<script src="./lib/Ycc.Listener.class.js"></script>
-<script src="./lib/Ycc.UI.class.js"></script>
-<script src="./lib/Ycc.UI.Base.class.js"></script>
-<script src="./lib/Ycc.UI.Rect.class.js"></script>
-<script src="./lib/Ycc.UI.Circle.class.js"></script>
-<script src="./lib/Ycc.Layer.class.js"></script>
-<script src="./lib/Ycc.LayerManager.class.js"></script>
-<script src="./lib/Ycc.PhotoManager.class.js"></script>
-
-<script src="./lib/Ycc.Ticker.class.js"></script>
+<script src="../../build/ycc.js"></script>
 
 
 <script>
@@ -35,7 +22,8 @@
 	var width = canvas.width;
 	var height = canvas.height;
 
-	ycc = new Ycc(canvas);
+	ycc = new Ycc();
+	ycc.bindCanvas(canvas);
 	ycc.ticker.start();
 
 	var layer = ycc.layerManager.newLayer({enableFrameEvent:true});
@@ -58,12 +46,14 @@
 		else
 			y-=stepPx;
 	};
+	var circle = new Ycc.UI.Circle({point:new Ycc.Math.Dot(x,y),r:20});
+	layer.addUI(circle);
 	layer.onFrameComing = function () {
 		update();
 		layer.clear();
-		ycc.clearStage();
-		layer.addUI(new Ycc.UI.Circle({point:new Ycc.Math.Dot(x,y),r:20}));
-		layer.renderToStage();
+		circle.point.x=x;
+		circle.point.y=y;
+		ycc.layerManager.reRenderAllLayerToStage();
 	}
 
 </script>
