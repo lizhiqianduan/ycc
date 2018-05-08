@@ -33,7 +33,12 @@
 		document.body.appendChild(canvas);
 		ycc.bindCanvas(canvas);
 		var _layer = ycc.layerManager.newLayer();
-		_layer.addUI(new Ycc.UI.Image({res:res.paper,rect:new Ycc.Math.Rect(0,0,canvas.width,canvas.height),fillMode:"scale"}));
+		_layer.addUI(new Ycc.UI.Image({
+			res:res.paper,
+			rect:new Ycc.Math.Rect(0,0,canvas.width,canvas.height),
+			fillMode:"scale"
+
+		}));
 		ycc.layerManager.reRenderAllLayerToStage();
 	}
 
@@ -52,6 +57,7 @@
 			enableEventManager:true,
 			ondragstart:function (e) {
 				cropRect = new Ycc.UI.CropRect({
+					name:''+Date.now(),
 					ctrlSize:10,
 					fill:false,
 					strokeStyle:"red",

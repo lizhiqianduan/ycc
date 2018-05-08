@@ -121,7 +121,6 @@
 		canvas.width = imageRes.paper.width;
 		canvas.height = imageRes.paper.height;
 		originWidth = canvas.width;
-		canvas.style.width = canvas.width+"px";
 		document.getElementById("canvas").appendChild(canvas);
 
 
@@ -168,7 +167,17 @@
 	 */
 	function zoomIn() {
 		scale+=0.1;
+
+//		ycc.canvasDom.width = ycc.canvasDom.width*scale;
+//		ycc.canvasDom.height = ycc.canvasDom.height*scale;
+//		ycc.layerManager.reRenderAllLayerToStage();
+
 		ycc.canvasDom.style.width = originWidth*scale+"px";
+		ycc.layerList[0].uiList[0].scaleX = scale;
+		ycc.layerList[0].uiList[0].scaleY = scale;
+		ycc.layerManager.reRenderAllLayerToStage();
+
+//		ycc.canvasDom.style.width = originWidth*scale+"px";
 	}
 
 	/**
