@@ -26,6 +26,7 @@
 
 	Ycc.UI.SingleLineText = function SingleLineText(option) {
 		Ycc.UI.Base.call(this,option);
+		this.yccClass = Ycc.UI.SingleLineText;
 		
 		/**
 		 * 区域内显示的文本

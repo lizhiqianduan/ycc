@@ -21,6 +21,7 @@
 	 */
 	Ycc.UI.Line = function Line(option) {
 		Ycc.UI.Base.call(this,option);
+		this.yccClass = Ycc.UI.Line;
 		
 		this.start = new Ycc.Math.Dot(0,0);
 		this.end = new Ycc.Math.Dot(0,0);

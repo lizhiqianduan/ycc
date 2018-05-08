@@ -22,15 +22,15 @@
 	 */
 	Ycc.UI.BrokenLine = function BrokenLine(option) {
 		Ycc.UI.Base.call(this,option);
+
+		this.yccClass = Ycc.UI.BrokenLine;
 		
 		this.pointList = [];
 		this.width = 1;
 		this.color = "black";
-		
 		this.extend(option);
 	};
 	Ycc.UI.BrokenLine.prototype = new Ycc.UI.Base();
-	Ycc.UI.BrokenLine.prototype.constructor = Ycc.UI.BrokenLine;
 	
 	/**
 	 * 计算UI的各种属性。此操作必须在绘制之前调用。

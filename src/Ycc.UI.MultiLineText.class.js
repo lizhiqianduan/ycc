@@ -29,6 +29,7 @@
 	 */
 	Ycc.UI.MultiLineText = function MultiLineText(option) {
 		Ycc.UI.Base.call(this,option);
+		this.yccClass = Ycc.UI.MultiLineText;
 		
 		// /**
 		//  * 配置项

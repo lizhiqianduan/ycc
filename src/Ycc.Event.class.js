@@ -15,6 +15,8 @@
 	 * @constructor
 	 */
 	Ycc.Event = function (type) {
+		this.yccClass = Ycc.Event;
+		
 		/**
 		 * 事件类型
 		 * @type {string}

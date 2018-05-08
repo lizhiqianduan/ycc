@@ -17,6 +17,8 @@
 	 * @constructor
 	 */
 	Ycc.Ticker = function (yccInstance) {
+		this.yccClass = Ycc.Ticker;
+
 		/**
 		 * ycc实例的引用
 		 * @type {Ycc}

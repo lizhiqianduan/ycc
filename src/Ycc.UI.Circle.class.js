@@ -22,6 +22,7 @@
 	 */
 	Ycc.UI.Circle = function Circle(option) {
 		Ycc.UI.Base.call(this,option);
+		this.yccClass = Ycc.UI.Circle;
 		
 		this.point = null;
 		this.r = 10;
@@ -31,7 +32,6 @@
 		this.extend(option);
 	};
 	Ycc.UI.Circle.prototype = new Ycc.UI.Base();
-	Ycc.UI.Circle.prototype.constructor = Ycc.UI.Circle;
 	
 	
 	/**

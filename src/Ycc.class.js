@@ -79,10 +79,12 @@
 	};
 	
 	/**
-	 * 绑定canvas元素
+	 * 绑定canvas元素，一个canvas绑定一个ycc实例
 	 * @param canvasDom		canvas的HTML元素。即，显示舞台
 	 */
 	win.Ycc.prototype.bindCanvas = function (canvasDom) {
+		canvasDom._ycc = this;
+		
 		this.canvasDom = canvasDom;
 		
 		this.ctx = this.canvasDom.getContext("2d");

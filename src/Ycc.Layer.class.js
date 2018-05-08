@@ -135,9 +135,10 @@
 	 */
 	Ycc.Layer.prototype.init = function () {
 		var self = this;
-		var canvasDom = document.createElement("canvas");
-		canvasDom.width = this.width;
-		canvasDom.height = this.height;
+		var canvasDom = this.yccInstance.canvasDom;
+		// var canvasDom = document.createElement("canvas");
+		// canvasDom.width = this.width;
+		// canvasDom.height = this.height;
 		
 		// 初始化图层属性
 		this.ctx = canvasDom.getContext('2d');

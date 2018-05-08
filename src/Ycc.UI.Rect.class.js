@@ -20,6 +20,7 @@
 	 */
 	Ycc.UI.Rect = function Rect(option) {
 		Ycc.UI.Base.call(this,option);
+		this.yccClass = Ycc.UI.Rect;
 		
 		/**
 		 * 配置项

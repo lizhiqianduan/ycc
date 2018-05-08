@@ -15,6 +15,7 @@
 	 * @constructor
 	 */
 	Ycc.Listener = function () {
+		this.yccClass = Ycc.Listener;
 		/**
 		 * 所有的监听器。key为type，val为listener数组。
 		 * @type {{}}

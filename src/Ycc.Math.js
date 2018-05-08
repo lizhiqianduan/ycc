@@ -86,6 +86,12 @@
 	 */
 	Ycc.Math.Rect = function (rect) {
 		/**
+		 * 构造器的引用
+		 * @type {function}
+		 */
+		this.yccClass = Ycc.Math.Rect;
+		
+		/**
 		 * 左上角x坐标
 		 * @type {number}
 		 */

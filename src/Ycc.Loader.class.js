@@ -14,6 +14,8 @@
 	 * @constructor
 	 */
 	Ycc.Loader = function () {
+		this.yccClass = Ycc.Loader;
+		
 		/**
 		 * 保存加载之后的所有图片资源。键为资源名称；值为Image元素
 		 * @type {{}}

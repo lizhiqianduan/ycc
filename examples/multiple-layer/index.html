@@ -70,7 +70,7 @@
 	function newLayer() {
 		var layer = ycc.layerManager.newLayer({enableEventManager:true});
 		ycc.layerManager.enableEventManagerOnly(layer);
-		ycc.layerManager.renderAllLayerToStage();
+		ycc.layerManager.reRenderAllLayerToStage();
 		pen();
 		renderLayerToHtml();
 
@@ -118,27 +118,32 @@
 				canvas.id = "ycc-layer-"+layer.id;
 				layerDom.appendChild(canvas);
 			}
-			var ctx = canvas.getContext("2d");
-			ctx.drawImage(layer.canvasDom,0,0,layer.width,layer.height);
+			var layerYcc = new Ycc();
+			layerYcc.bindCanvas(canvas);
+			var newLayer = layerYcc.layerManager.newLayer({enableEventManager:true});
+			layer.uiList.forEach(function (ui) {
+				newLayer.addUI(ui.clone());
+			});
+			layerYcc.layerManager.reRenderAllLayerToStage();
 
 			// 点击事件
-			canvas.onclick = function (_layer) {
+			canvas.onclick = function (_ycc,_layer) {
 				return function () {
 					layerDom.removeChild(this);
 					// 清空舞台
-					ycc.clearStage();
+					_ycc.clearStage();
 					// 删除图层
-					ycc.layerManager.deleteLayer(_layer);
+					_ycc.layerManager.deleteLayer(_layer);
 					// 重新渲染所有图层
-					ycc.layerManager.renderAllLayerToStage();
+					_ycc.layerManager.renderAllLayerToStage();
 					// 将最后一个图层设置为当前绘制图层
-					ycc.layerManager.enableEventManagerOnly(ycc.layerList[ycc.layerList.length-1]);
+					_ycc.layerManager.enableEventManagerOnly(ycc.layerList[ycc.layerList.length-1]);
 					// 拍照
-					ycc.photoManager.takePhoto();
+					_ycc.photoManager.takePhoto();
 					// 重新渲染图层列表
 					renderLayerToHtml();
 				};
-			}(layer)
+			}(layerYcc,newLayer)
 		}
 	}
 

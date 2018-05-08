@@ -27,6 +27,7 @@
 	 */
 	Ycc.UI.Image = function Image(option) {
 		Ycc.UI.Base.call(this,option);
+		this.yccClass = Ycc.UI.Image;
 		
 		/**
 		 * 填充方式

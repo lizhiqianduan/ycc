@@ -19,6 +19,7 @@
 	 */
 	Ycc.UI.CropRect = function CropRect(option) {
 		Ycc.UI.Base.call(this,option);
+		this.yccClass = Ycc.UI.CropRect;
 		
 		/**
 		 * 控制点的大小
@@ -88,7 +89,6 @@
 		this._initUI();
 	};
 	Ycc.UI.CropRect.prototype = new Ycc.UI.Base();
-	Ycc.UI.CropRect.prototype.constructor = Ycc.UI.CropRect;
 	
 	
 	/**

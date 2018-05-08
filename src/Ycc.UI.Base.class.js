@@ -21,6 +21,11 @@
 		Ycc.Listener.call(this);
 		
 		/**
+		 * 构造器的引用，Ycc中的每个类都有此属性
+		 */
+		this.yccClass = Ycc.UI.Base;
+		
+		/**
 		 * UI的唯一ID
 		 * @type {number}
 		 */
@@ -145,7 +150,7 @@
 	};
 	
 	Ycc.UI.Base.prototype = new Ycc.Listener();
-	Ycc.UI.Base.prototype.constructor = Ycc.UI.Base;
+	//Ycc.UI.Base.prototype.constructor = Ycc.UI.Base;
 	
 	
 	/**
@@ -255,6 +260,17 @@
 			}
 		}
 		return this;
+	};
+	
+	
+	/**
+	 * 克隆ui
+	 * @return {Ycc.UI}
+	 */
+	Ycc.UI.Base.prototype.clone = function () {
+		var ui = new this.yccClass();
+		ui.extend(this);
+		return ui;
 	}
 
 

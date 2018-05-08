@@ -22,6 +22,7 @@
 	 */
 	Ycc.UI.Ellipse = function Ellipse(option) {
 		Ycc.UI.Base.call(this,option);
+		this.yccClass = Ycc.UI.Ellipse;
 		
 		this.point = new Ycc.Math.Dot();
 		this.width = 20;
