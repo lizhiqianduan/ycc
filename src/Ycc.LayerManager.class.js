@@ -72,10 +72,9 @@
 		this.yccInstance.clearStage();
 		for(var i=0;i<this.yccInstance.layerList.length;i++){
 			var layer = this.yccInstance.layerList[i];
-			layer.reRender();
 			// 该图层是否可见
 			if(layer.show)
-				this.yccInstance.ctx.drawImage(layer.canvasDom,layer.x,layer.y,layer.width,layer.height);
+				layer.reRender();
 		}
 	};
 	

@@ -392,7 +392,7 @@
 	 * <br>注意：并没有渲染至舞台。
 	 */
 	Ycc.Layer.prototype.reRender = function () {
-		this.clear();
+		// this.clear();
 		for(var i=0;i<this.uiList.length;i++){
 			if(!this.uiList[i].show) continue;
 			this.uiList[i].computeUIProps();
