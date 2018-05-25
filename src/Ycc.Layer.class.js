@@ -277,23 +277,22 @@
 		
 		/**
 		 * 默认的事件监听器。默认鼠标事件触发点位于rect内，事件才转发给UI。
+		 * @todo 其他事件需要考虑图层坐标
 		 * @param e	{Ycc.Event}	ycc事件
 		 */
 		function defaultMouseListener(e) {
 			if(e.stop) return;
 			for(var i = self.uiList.length-1;i>=0;i--){
 				var ui = self.uiList[i];
-				// 图层内部UI的相对坐标
-				var layerX = e.x - ui.belongTo.x;
-				var layerY = e.y - ui.belongTo.y;
-				var dot = new Ycc.Math.Dot(layerX,layerY);
+				// 在舞台转发给图层时，已经考虑了图层位置，此处需要绝对坐标，所以加回来
+				var dot = new Ycc.Math.Dot(e.x+ui.belongTo.x,e.y+ui.belongTo.y);
 				// 如果位于rect内，并且事件未被阻止，触发事件,并阻止继续传递
-				if(ui.rect && dot.isInRect(ui.rect) && e.stop===false){
+				if(ui.rect && dot.isInRect(ui.getAbsolutePosition()) && e.stop===false){
 					e.stop = true;
 					e.mouseDownYccEvent = mouseDownYccEvent;
 					e.mouseUpYccEvent = mouseUpYccEvent;
 					e.target = ui;
-					e.targetDeltaPosition = new Ycc.Math.Dot(e.x-ui.rect.x,e.y-ui.rect.y);
+					e.targetDeltaPosition = new Ycc.Math.Dot(e.x-ui.getAbsolutePosition().x,e.y-ui.getAbsolutePosition().y);
 					ui.triggerListener(e.type,e);
 					break;
 				}
@@ -403,15 +402,15 @@
 	/**
 	 * 获取图层中某个点所对应的最上层UI。
 	 *
-	 * @param dot {Ycc.Math.Dot}
+	 * @param dot {Ycc.Math.Dot}	点坐标，为舞台的绝对坐标
 	 * @return {UI}
 	 */
 	Ycc.Layer.prototype.getUIFromPointer = function (dot) {
 		var self = this;
 		for(var i =self.uiList.length-1;i>=0;i--){
 			var ui = self.uiList[i];
-			// 如果位于rect内
-			if(dot.isInRect(ui.rect)){
+			// 如果位于rect内，此处应该根据绝对坐标比较
+			if(dot.isInRect(ui.getAbsolutePosition())){
 				return ui;
 			}
 		}

@@ -45,12 +45,12 @@
 			var point = this.pointList[i];
 			if(point.x<minx)
 				minx = point.x;
-			else
+			else if(point.x>maxx)
 				maxx = point.x;
 			
 			if(point.y<miny)
 				miny = point.y;
-			else
+			else if(point.y>maxy)
 				maxy = point.y;
 		}
 		

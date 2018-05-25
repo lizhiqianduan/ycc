@@ -129,6 +129,9 @@
 				for(var i=self.layerList.length-1;i>=0;i--){
 					var layer = self.layerList[i];
 					if(!layer.enableEventManager) continue;
+					// 考虑图层位置坐标
+					yccEvent.x-=layer.x;
+					yccEvent.y-=layer.y;
 					layer.triggerListener(e.type,yccEvent);
 				}
 			});

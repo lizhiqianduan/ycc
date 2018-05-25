@@ -277,12 +277,14 @@
 	
 	/**
 	 * 获取UI的绝对坐标，主要考虑图层坐标
-	 * @return {Ycc.Math.Dot}
+	 * @return {Ycc.Math.Rect}
 	 */
 	Ycc.UI.Base.prototype.getAbsolutePosition = function(){
-		var pos = new Ycc.Math.Dot(0,0);
-		pos.x = this.x+this.belongTo.x;
-		pos.y = this.y+this.belongTo.y;
+		var pos = new Ycc.Math.Rect();
+		pos.x = this.rect.x+this.belongTo.x;
+		pos.y = this.rect.y+this.belongTo.y;
+		pos.width = this.rect.width;
+		pos.height = this.rect.height;
 		return pos;
 	};
 	
