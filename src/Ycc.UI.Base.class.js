@@ -29,7 +29,7 @@
 		 * UI的唯一ID
 		 * @type {number}
 		 */
-		this.uid = uid++;
+		this.id = uid++;
 		
 		/**
 		 * UI实例的名字

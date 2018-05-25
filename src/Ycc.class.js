@@ -100,6 +100,8 @@
 		this.baseUI = new Ycc.UI(this.ctx.canvas);
 		
 		this.init();
+		
+		return this;
 	};
 	
 	/**
@@ -212,4 +214,36 @@
 		this.clearStage();
 		this.layerManager.renderAllLayerToStage();
 	};
+	
+	/**
+	 * 根据id查找图层
+	 * @param id 图层id
+	 * @return {Ycc.Layer}
+	 */
+	win.Ycc.prototype.findLayerById = function (id) {
+		for(var i =0;i<this.layerList.length;i++){
+			var layer = this.layerList[i];
+			if(layer.id===id)
+				return layer;
+		}
+		return null;
+	};
+	
+	/**
+	 * 根据id查找UI
+	 * @param id UI的id
+	 * @return {Ycc.UI}
+	 */
+	win.Ycc.prototype.findUiById = function (id) {
+		for(var i =0;i<this.layerList.length;i++){
+			var layer = this.layerList[i];
+			for(var j=0;j<layer.uiList.length;j++){
+				var ui = layer.uiList[j];
+				if(ui.id===id)
+					return ui;
+			}
+		}
+		return null;
+	};
+	
 })(window);

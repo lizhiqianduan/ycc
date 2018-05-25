@@ -131,7 +131,26 @@
             }
             return newArr;
         }
-    }
+    };
+	
+	/**
+	 * 迷你模板，替换__field__，其中的`field`为`renderObj`中的字段
+	 * 返回替换后的模板文本
+	 * @param tpl 模板字符串
+	 * @param renderObj	渲染的对象
+	 * @return {string}
+	 */
+	Ycc.utils.renderTpl=function (tpl,renderObj) {
+		return tpl.replace(/__.+?__/g,function (txt) {
+			console.log('匹配到的文本-->',txt);
+			var key = txt.slice(2).slice(0,-2).trim();
+			if(renderObj[key]!==undefined)
+				return renderObj[key];
+			else
+				return txt;
+		});
+	}
+	
 
 
 })(Ycc);
