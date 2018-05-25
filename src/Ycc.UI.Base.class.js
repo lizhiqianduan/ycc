@@ -50,12 +50,14 @@
 		
 		/**
 		 * UI对象的锚点坐标。相对坐标。相对于rect的x
+		 * 锚点坐标主要用于图形的旋转、平移、缩放
 		 * @type {number}
 		 */
 		this.anchorX = 0;
 
 		/**
 		 * UI对象的锚点坐标。相对坐标。相对于rect的y
+		 * 锚点坐标主要用于图形的旋转、平移、缩放
 		 * @type {number}
 		 */
 		this.anchorY = 0;
@@ -271,7 +273,44 @@
 		var ui = new this.yccClass();
 		ui.extend(this);
 		return ui;
-	}
+	};
+	
+	/**
+	 * 获取UI的绝对坐标，主要考虑图层坐标
+	 * @return {Ycc.Math.Dot}
+	 */
+	Ycc.UI.Base.prototype.getAbsolutePosition = function(){
+		var pos = new Ycc.Math.Dot(0,0);
+		pos.x = this.x+this.belongTo.x;
+		pos.y = this.y+this.belongTo.y;
+		return pos;
+	};
+	
+	
+	/**
+	 * 根据图层坐标，将点坐标转换为舞台的绝对坐标
+	 * @todo 所有UI类render的时候都应该加上这个转换
+	 * @param dotOrArr
+	 * @return {Ycc.Math.Dot | Ycc.Math.Dot[]}
+	 */
+	Ycc.UI.Base.prototype.transformToAbsolute = function (dotOrArr) {
+		var res = null;
+		if(Ycc.utils.isArray(dotOrArr)){
+			res = [];
+			for(var i=0;i<dotOrArr.length;i++){
+				var resDot = new Ycc.Math.Dot(0,0);
+				var dot = dotOrArr[i];
+				resDot.x=this.belongTo.x+dot.x;
+				resDot.y=this.belongTo.y+dot.y;
+				res.push(resDot);
+			}
+			return res;
+		}
+		res = new Ycc.Math.Dot(0,0);
+		res.x = this.belongTo.x+(-dotOrArr.x);
+		res.x = this.belongTo.y+(-dotOrArr.y);
+		return res;
+	};
 
 
 

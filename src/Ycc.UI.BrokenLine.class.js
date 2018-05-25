@@ -69,9 +69,11 @@
 		this.ctx.strokeStyle = this.color;
 		this.ctx.strokeWidth = this.width;
 		this.ctx.beginPath();
-		this.ctx.moveTo(this.pointList[0].x, this.pointList[0].y);
-		for(var i =1;i<this.pointList.length;i++){
-			this.ctx.lineTo(this.pointList[i].x, this.pointList[i].y);
+		// 因为直接操作舞台，所以绘制之前需要转换成舞台绝对坐标
+		var pointList = this.transformToAbsolute(this.pointList);
+		this.ctx.moveTo(pointList[0].x, pointList[0].y);
+		for(var i =1;i<pointList.length;i++){
+			this.ctx.lineTo(pointList[i].x, pointList[i].y);
 		}
 		this.ctx.stroke();
 		this.ctx.closePath();
