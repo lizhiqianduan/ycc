@@ -3,10 +3,10 @@
 <head>
 	<meta charset="UTF-8">
 	<title>多图层示例</title>
-
+	<link href="https://cdn.bootcss.com/pure/1.0.0/pure.css" rel="stylesheet">
 	<style>
 		#stage{
-			width:820px;
+			width:620px;
 			float:left;
 		}
 		canvas{
@@ -14,7 +14,6 @@
 		}
 		.right-section{
 			float:left;
-			width:200px;
 		}
 		#layer canvas{
 			width:190px;
@@ -29,22 +28,58 @@
 <br>
 <br>
 <div id="stage">
-	<div>绘图区 <br>（图层原本为透明色，灰色仅仅是为了显示效果）</div>
-	<canvas width="800" height="600">
-
-	</canvas>
+	<div>绘图区（拖动鼠标绘制） <button onclick="newLayer()">新建图层</button></div>
+	<br>
+	<canvas width="600" height="400"></canvas>
+	<br>
+	<span>注：图层原本为透明色，灰色仅仅是为了显示效果</span>
 </div>
 
 <div class="right-section">
-	<div class="ctrl">
-		<button onclick="newLayer()">新建图层</button>
-	</div>
-
+	<h4>图层信息 </h4>
+	<span style="color: red; display: none;font-size: 12px;" id="tip">没有图层，请点击新建图层</span>
 	<div id="layer">
-		<div>图层列表（点击可删除图层）</div>
-		<hr>
+
 	</div>
 </div>
+
+
+
+
+
+<!-- 新增图层的模板 -->
+<div  id="layer-box-tpl" style="display: none;">
+	<div class="layer-box" id="__tplID__"
+		 style="margin-top: 10px;border-bottom:1px solid #000;padding:10px 0;width:400px;">
+		<canvas width="600" height="400"></canvas>
+		<div style="float: right;width: 200px;">
+			<button class="pure-button" onclick="deleteLayer('__id__')">删除图层</button><br><br>
+		</div>
+		<div class="props">
+			<div class="title" style="font-weight: bold;">图层属性</div>
+			<form class="pure-form pure-g">
+				<div class="pure-control-group pure-u-1-2 pure-g">
+					<label>id</label>
+					<input class="pure-input-1-2" disabled value="__id__">
+				</div>
+				<div class="pure-control-group pure-u-1-2 pure-g">
+					<label>name</label>
+					<input class="pure-input-1-2" disabled value="__name__">
+				</div>
+				<div class="pure-control-group pure-u-1-2 pure-g">
+					<label>x</label>
+					<input type="number" class="pure-input-1-2" value=__x__ onchange="propsOnChange(__id__,'x',parseInt(this.value))">
+				</div>
+				<div class="pure-control-group pure-u-1-2 pure-g">
+					<label>y</label>
+					<input type="number" class="pure-input-1-2" value=__y__ onchange="propsOnChange(__id__,'y',parseInt(this.value))">
+				</div>
+			</form>
+		</div>
+	</div>
+</div>
+
+
 
 </body>
 </html>
@@ -67,7 +102,20 @@
 
 
 
+	/**
+	 * 属性更改监听
+	 * */
+	function propsOnChange(layerId,prop,val){
+		console.log('on change...',layerId,prop,val);
+		var layer = ycc.findLayerById(layerId);
+		layer[prop] = val;
+		ycc.layerManager.reRenderAllLayerToStage();
+	}
+	/**
+	 *
+	 * */
 	function newLayer() {
+		document.getElementById('tip').style.display = "none";
 		var layer = ycc.layerManager.newLayer({enableEventManager:true});
 		ycc.layerManager.enableEventManagerOnly(layer);
 		ycc.layerManager.reRenderAllLayerToStage();
@@ -83,9 +131,12 @@
 			var hasMoved = false;
 			var ui = null;
 			layer.onclick = function (e) {};
-			layer.onmousedown = function (e) {
+			layer.ondragstart = function (e) {
+				console.log(e.x,e.y);
 				startDot = (new Ycc.Math.Dot(e.x,e.y));
-				ui = new Ycc.UI.BrokenLine({color:"red",width:3});
+				ui = new Ycc.UI.BrokenLine({color:"red",width:3,onclick:function (e) {
+					console.log(e);
+				}});
 				ui.pointList.push(startDot);
 				layer.addUI(ui);
 			};
@@ -93,11 +144,11 @@
 				hasMoved = true;
 				var moveDot = (new Ycc.Math.Dot(e.x,e.y));
 				ui.pointList.push(moveDot);
-				renderLayerToHtml();
 				ycc.layerManager.reRenderAllLayerToStage();
 			};
 			layer.onmouseup = function (e) {
 				if(!hasMoved) return null;
+				renderLayerToHtml();
 				ycc.photoManager.takePhoto();
 				hasMoved = false;
 			};
@@ -106,47 +157,43 @@
 
 	}
 
+	function deleteLayer(layerId) {
+		layerId  = parseInt(layerId);
+		ycc.layerManager.deleteLayer(ycc.findLayerById(layerId));
+		ycc.layerManager.reRenderAllLayerToStage();
+		document.getElementById("ycc-layer-"+layerId).remove();
+		if(ycc.layerList.length===0)
+			document.getElementById('tip').style.display = "inline";
+	}
+
 	function renderLayerToHtml() {
+		layerDom.innerHTML="";
 		for(var i=ycc.layerList.length-1;i>=0;i--){
 			var layer = ycc.layerList[i];
-			var canvas = document.getElementById("ycc-layer-"+layer.id);// || document.createElement("canvas");
-			// 没有元素则新建dom
-			if(!canvas){
-				canvas = document.createElement("canvas");
-				canvas.width = layer.width;
-				canvas.height = layer.height;
-				canvas.id = "ycc-layer-"+layer.id;
-				layerDom.appendChild(canvas);
-			}
-			var layerYcc = new Ycc();
-			layerYcc.bindCanvas(canvas);
+			var renderData = Ycc.utils.mergeObject({
+				x:0,
+				y:0,
+				name:0,
+				id:0
+			},layer,false);
+			renderData.tplID = "ycc-layer-"+layer.id;
+			console.log(renderData);
+			layerDom.innerHTML+=Ycc.utils.renderTpl(document.getElementById("layer-box-tpl").innerHTML,renderData);
+		}
+
+		for(var j=ycc.layerList.length-1;j>=0;j--){
+			var _layer = ycc.layerList[j];
+			var _tplID = "ycc-layer-"+_layer.id;
+			var canvasList = document.getElementById(_tplID).getElementsByTagName("canvas");
+			var canvas = canvasList[0];
+			var layerYcc = new Ycc().bindCanvas(canvas);
 			var newLayer = layerYcc.layerManager.newLayer({enableEventManager:true});
-			layer.uiList.forEach(function (ui) {
+			_layer.uiList.forEach(function (ui) {
 				newLayer.addUI(ui.clone());
 			});
 			layerYcc.layerManager.reRenderAllLayerToStage();
-
-			// 点击事件
-			canvas.onclick = function (_ycc,_layer) {
-				return function () {
-					layerDom.removeChild(this);
-					// 清空舞台
-					_ycc.clearStage();
-					// 删除图层
-					_ycc.layerManager.deleteLayer(_layer);
-					// 重新渲染所有图层
-					_ycc.layerManager.renderAllLayerToStage();
-					// 将最后一个图层设置为当前绘制图层
-					_ycc.layerManager.enableEventManagerOnly(ycc.layerList[ycc.layerList.length-1]);
-					// 拍照
-					_ycc.photoManager.takePhoto();
-					// 重新渲染图层列表
-					renderLayerToHtml();
-				};
-			}(layerYcc,newLayer)
 		}
 	}
-
 
 
 </script>
