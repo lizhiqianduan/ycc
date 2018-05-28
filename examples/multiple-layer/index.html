@@ -54,6 +54,7 @@
 		<canvas width="600" height="400"></canvas>
 		<div style="float: right;width: 200px;">
 			<button class="pure-button" onclick="deleteLayer('__id__')">删除图层</button><br><br>
+			<button class="pure-button" onclick="showLayer('__id__')">图层显隐</button><br><br>
 		</div>
 		<div class="props">
 			<div class="title" style="font-weight: bold;">图层属性</div>
@@ -158,6 +159,10 @@
 
 	}
 
+	/**
+	 * 删除图层的点击事件
+	 * @param layerId
+	 */
 	function deleteLayer(layerId) {
 		layerId  = parseInt(layerId);
 		ycc.layerManager.deleteLayer(ycc.findLayerById(layerId));
@@ -167,6 +172,18 @@
 			document.getElementById('tip').style.display = "inline";
 	}
 
+	/**
+	 * 图层显示和隐藏
+	 * */
+	function showLayer(layerId) {
+		layerId  = parseInt(layerId);
+		ycc.findLayerById(layerId).show = !ycc.findLayerById(layerId).show;
+		ycc.layerManager.reRenderAllLayerToStage();
+	}
+
+	/**
+	 * 绘制图层至右侧canvas
+	 */
 	function renderLayerToHtml() {
 		layerDom.innerHTML="";
 		for(var i=ycc.layerList.length-1;i>=0;i--){
