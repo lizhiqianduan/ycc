@@ -133,17 +133,18 @@
 			layer.onclick = function (e) {};
 			layer.ondragstart = function (e) {
 				console.log(e.x,e.y);
-				startDot = (new Ycc.Math.Dot(e.x,e.y));
+				startDot = layer.transformToLocal(new Ycc.Math.Dot(e.x,e.y));
 				ui = new Ycc.UI.BrokenLine({color:"red",width:3,onclick:function (e) {
 					console.log(e);
 				}});
-				ui.pointList.push(startDot);
 				layer.addUI(ui);
+				ui.pointList.push(startDot);
 			};
 			layer.ondragging = function (e) {
 				hasMoved = true;
-				var moveDot = (new Ycc.Math.Dot(e.x,e.y));
+				var moveDot = layer.transformToLocal(new Ycc.Math.Dot(e.x,e.y));
 				ui.pointList.push(moveDot);
+				ui.computeUIProps();
 				ycc.layerManager.reRenderAllLayerToStage();
 			};
 			layer.onmouseup = function (e) {

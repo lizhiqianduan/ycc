@@ -278,14 +278,13 @@
 		/**
 		 * 默认的事件监听器。默认鼠标事件触发点位于rect内，事件才转发给UI。
 		 * @todo 其他事件需要考虑图层坐标
-		 * @param e	{Ycc.Event}	ycc事件
+		 * @param e	{Ycc.Event}	ycc事件，e中的坐标值x、y为绝对坐标
 		 */
 		function defaultMouseListener(e) {
 			if(e.stop) return;
 			for(var i = self.uiList.length-1;i>=0;i--){
 				var ui = self.uiList[i];
-				// 在舞台转发给图层时，已经考虑了图层位置，此处需要绝对坐标，所以加回来
-				var dot = new Ycc.Math.Dot(e.x+ui.belongTo.x,e.y+ui.belongTo.y);
+				var dot = new Ycc.Math.Dot(e.x,e.y);
 				// 如果位于rect内，并且事件未被阻止，触发事件,并阻止继续传递
 				if(ui.rect && dot.isInRect(ui.getAbsolutePosition()) && e.stop===false){
 					e.stop = true;
@@ -430,15 +429,15 @@
 			for(var i=0;i<dotOrArr.length;i++){
 				var resDot = new Ycc.Math.Dot(0,0);
 				var dot = dotOrArr[i];
-				resDot.x=this.belongTo.x+dot.x;
-				resDot.y=this.belongTo.y+dot.y;
+				resDot.x=this.x+dot.x;
+				resDot.y=this.y+dot.y;
 				res.push(resDot);
 			}
 			return res;
 		}
 		res = new Ycc.Math.Dot(0,0);
-		res.x = this.belongTo.x+(dotOrArr.x);
-		res.x = this.belongTo.y+(dotOrArr.y);
+		res.x = this.x+(dotOrArr.x);
+		res.y = this.y+(dotOrArr.y);
 		return res;
 	};
 	
@@ -454,15 +453,15 @@
 			for(var i=0;i<dotOrArr.length;i++){
 				var resDot = new Ycc.Math.Dot(0,0);
 				var dot = dotOrArr[i];
-				resDot.x=dot.x-this.belongTo.x;
-				resDot.y=dot.y-this.belongTo.y;
+				resDot.x=dot.x-this.x;
+				resDot.y=dot.y-this.y;
 				res.push(resDot);
 			}
 			return res;
 		}
 		res = new Ycc.Math.Dot(0,0);
-		res.x = (dotOrArr.x)-this.belongTo.x;
-		res.x = (dotOrArr.y)-this.belongTo.y;
+		res.x = (dotOrArr.x)-this.x;
+		res.y = (dotOrArr.y)-this.y;
 		return res;
 	};
 	

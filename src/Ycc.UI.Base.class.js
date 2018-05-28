@@ -310,7 +310,7 @@
 		}
 		res = new Ycc.Math.Dot(0,0);
 		res.x = this.belongTo.x+this.rect.x+dotOrArr.x;
-		res.x = this.belongTo.y+this.rect.y+dotOrArr.y;
+		res.y = this.belongTo.y+this.rect.y+dotOrArr.y;
 		return res;
 	};
 	
@@ -334,7 +334,7 @@
 		}
 		res = new Ycc.Math.Dot(0,0);
 		res.x = dotOrArr.x-(this.belongTo.x+this.rect.x);
-		res.x = dotOrArr.y-(this.belongTo.y+this.rect.y);
+		res.y = dotOrArr.y-(this.belongTo.y+this.rect.y);
 		return res;
 	};
 
