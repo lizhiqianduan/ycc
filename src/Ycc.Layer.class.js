@@ -418,4 +418,52 @@
 	};
 	
 	
+	/**
+	 * 根据图层坐标，将图层内某个点的相对坐标（相对于图层），转换为舞台的绝对坐标
+	 * @param dotOrArr	{Ycc.Math.Dot | Ycc.Math.Dot[]}
+	 * @return {Ycc.Math.Dot | Ycc.Math.Dot[]}
+	 */
+	Ycc.Layer.prototype.transformToAbsolute = function (dotOrArr) {
+		var res = null;
+		if(Ycc.utils.isArray(dotOrArr)){
+			res = [];
+			for(var i=0;i<dotOrArr.length;i++){
+				var resDot = new Ycc.Math.Dot(0,0);
+				var dot = dotOrArr[i];
+				resDot.x=this.belongTo.x+dot.x;
+				resDot.y=this.belongTo.y+dot.y;
+				res.push(resDot);
+			}
+			return res;
+		}
+		res = new Ycc.Math.Dot(0,0);
+		res.x = this.belongTo.x+(dotOrArr.x);
+		res.x = this.belongTo.y+(dotOrArr.y);
+		return res;
+	};
+	
+	/**
+	 * 根据图层坐标，将某个点的绝对坐标，转换为图层内的相对坐标
+	 * @param dotOrArr	{Ycc.Math.Dot | Ycc.Math.Dot[]}
+	 * @return {Ycc.Math.Dot | Ycc.Math.Dot[]}
+	 */
+	Ycc.Layer.prototype.transformToLocal = function (dotOrArr) {
+		var res = null;
+		if(Ycc.utils.isArray(dotOrArr)){
+			res = [];
+			for(var i=0;i<dotOrArr.length;i++){
+				var resDot = new Ycc.Math.Dot(0,0);
+				var dot = dotOrArr[i];
+				resDot.x=dot.x-this.belongTo.x;
+				resDot.y=dot.y-this.belongTo.y;
+				res.push(resDot);
+			}
+			return res;
+		}
+		res = new Ycc.Math.Dot(0,0);
+		res.x = (dotOrArr.x)-this.belongTo.x;
+		res.x = (dotOrArr.y)-this.belongTo.y;
+		return res;
+	};
+	
 })(window.Ycc);

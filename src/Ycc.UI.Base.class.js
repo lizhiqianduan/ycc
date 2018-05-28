@@ -290,9 +290,9 @@
 	
 	
 	/**
-	 * 根据图层坐标，将点坐标转换为舞台的绝对坐标
+	 * 根据图层坐标和UI位置坐标，将UI内某个点的相对坐标（相对于UI），转换为舞台的绝对坐标
 	 * @todo 所有UI类render的时候都应该加上这个转换
-	 * @param dotOrArr
+	 * @param dotOrArr {Ycc.Math.Dot | Ycc.Math.Dot[]}
 	 * @return {Ycc.Math.Dot | Ycc.Math.Dot[]}
 	 */
 	Ycc.UI.Base.prototype.transformToAbsolute = function (dotOrArr) {
@@ -302,18 +302,41 @@
 			for(var i=0;i<dotOrArr.length;i++){
 				var resDot = new Ycc.Math.Dot(0,0);
 				var dot = dotOrArr[i];
-				resDot.x=this.belongTo.x+dot.x;
-				resDot.y=this.belongTo.y+dot.y;
+				resDot.x=this.belongTo.x+this.rect.x+dot.x;
+				resDot.y=this.belongTo.y+this.rect.y+dot.y;
 				res.push(resDot);
 			}
 			return res;
 		}
 		res = new Ycc.Math.Dot(0,0);
-		res.x = this.belongTo.x+(-dotOrArr.x);
-		res.x = this.belongTo.y+(-dotOrArr.y);
+		res.x = this.belongTo.x+this.rect.x+dotOrArr.x;
+		res.x = this.belongTo.y+this.rect.y+dotOrArr.y;
 		return res;
 	};
-
+	
+	/**
+	 * 根据图层坐标和UI位置坐标，将某个点的绝对坐标，转换为相对于UI的相对坐标
+	 * @param dotOrArr {Ycc.Math.Dot | Ycc.Math.Dot[]}
+	 * @return {Ycc.Math.Dot | Ycc.Math.Dot[]}
+	 */
+	Ycc.UI.Base.prototype.transformToLocal = function (dotOrArr) {
+		var res = null;
+		if(Ycc.utils.isArray(dotOrArr)){
+			res = [];
+			for(var i=0;i<dotOrArr.length;i++){
+				var resDot = new Ycc.Math.Dot(0,0);
+				var dot = dotOrArr[i];
+				resDot.x=dot.x-(this.belongTo.x+this.rect.x);
+				resDot.y=dot.y-(this.belongTo.y+this.rect.y);
+				res.push(resDot);
+			}
+			return res;
+		}
+		res = new Ycc.Math.Dot(0,0);
+		res.x = dotOrArr.x-(this.belongTo.x+this.rect.x);
+		res.x = dotOrArr.y-(this.belongTo.y+this.rect.y);
+		return res;
+	};
 
 
 })(window.Ycc);
