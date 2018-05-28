@@ -62,7 +62,9 @@
 		this.target = null;
 		
 		/**
-		 * 事件触发时，鼠标的坐标与UI的坐标差。即(e.x-target.x,e.y-target.y)
+		 * 事件触发时，鼠标的坐标与UI的坐标差。
+		 * 即(e.x-target.x,e.y-target.y)，
+		 * 该属性只在事件类型为mousedown、dragstart、dragging时有效
 		 * @type {Ycc.Math.Dot|null}
 		 */
 		this.targetDeltaPosition = null;
@@ -71,6 +73,24 @@
 			Ycc.utils.mergeObject(this,type);
 		}
 	};
+	
+	/**
+	 * 鼠标按下事件，全局保存，若存在，则表明鼠标处于按下状态
+	 * @type {Ycc.Event}
+	 */
+	Ycc.Event.mouseDownEvent = null;
+
+	/**
+	 * 鼠标抬起事件，全局保存，若存在，则表明鼠标处于抬起状态
+	 * @type {Ycc.Event}
+	 */
+	Ycc.Event.mouseUpEvent = null;
+	
+	/**
+	 * 拖拽开始的标志位
+	 * @type {null}
+	 */
+	Ycc.Event.dragStartFlag = false;
 	
 	
 	

@@ -147,7 +147,7 @@
 		// 初始化画布属性
 		self._setCtxProps();
 		// 初始化图层事件
-		self._initEvent();
+		// self._initEvent();
 	};
 	
 	/**

@@ -117,21 +117,98 @@
 	 */
 	win.Ycc.prototype._initStageEvent = function () {
 		var self = this;
-		// 代理的原生鼠标事件，默认每个图层都触发
+		// 代理的原生鼠标事件
 		var proxyEventTypes = ["mousemove","mousedown","mouseup","click","mouseenter","mouseout"];
 		for(var i = 0;i<proxyEventTypes.length;i++){
 			this.ctx.canvas.addEventListener(proxyEventTypes[i],function (e) {
-				var yccEvent = new Ycc.Event({
+				
+				// 当前鼠标在canvas中的绝对位置
+				var x = parseInt(e.clientX - self.ctx.canvas.getBoundingClientRect().left),
+					y=parseInt(e.clientY - self.ctx.canvas.getBoundingClientRect().top);
+				
+				// 鼠标所指的顶层UI
+				var ui = self.getUIFromPointer(new Ycc.Math.Dot(x,y));
+				
+				// 将事件传递给图层，只传递给开启了事件系统的图层
+				triggerLayerEvent(e.type,{
 					type:e.type,
-					x:parseInt(e.clientX - self.ctx.canvas.getBoundingClientRect().left),
-					y:parseInt(e.clientY - self.ctx.canvas.getBoundingClientRect().top)
+					x:x,
+					y:y,
+					target:layer
 				});
-				for(var i=self.layerList.length-1;i>=0;i--){
-					var layer = self.layerList[i];
-					if(!layer.enableEventManager) continue;
-					// 传递绝对坐标
-					layer.triggerListener(e.type,yccEvent);
+				
+				// 将事件传递给UI
+				ui&&ui.triggerListener(e.type,new Ycc.Event({
+					type:e.type,
+					x:x,
+					y:y,
+					target:ui
+				}));
+				
+				
+				// 设置全局鼠标按下标志
+				if(e.type==="mousedown"){
+					Ycc.Event.mouseDownEvent = new Ycc.Event({x:x,y:y,type:e.type,target:ui});
+					if(ui) Ycc.Event.mouseDownEvent.targetDeltaPosition = new Ycc.Math.Dot(x-ui.getAbsolutePosition().x,y-ui.getAbsolutePosition().y);
+					Ycc.Event.mouseUpEvent = null;
+					Ycc.Event.dragStartFlag = false;
 				}
+				if(e.type==="mouseup"){
+					Ycc.Event.mouseDownEvent = null;
+					Ycc.Event.mouseUpEvent = new Ycc.Event({x:x,y:y,type:e.type});
+					Ycc.Event.dragStartFlag = false;
+				}
+				
+				// 模拟触发dragging事件
+				if(e.type==="mousemove" && Ycc.Event.mouseDownEvent){
+					// 判断是否真的移动
+					if(Ycc.Event.mouseDownEvent && e.x===Ycc.Event.mouseDownEvent.x&&e.y===Ycc.Event.mouseDownEvent.y) return;
+					// 解决webkit内核mouseup自动触发mousemove的BUG
+					if(Ycc.Event.mouseUpEvent && e.x===Ycc.Event.mouseDownEvent.x&&e.y===Ycc.Event.mouseDownEvent.y) {
+						return;
+					}
+					
+					// dragging之前，触发一次dragstart事件
+					if(!Ycc.Event.dragStartFlag){
+						// 触发图层dragstart
+						triggerLayerEvent('dragstart',{
+							type:"dragstart",
+							x:Ycc.Event.mouseDownEvent.x,
+							y:Ycc.Event.mouseDownEvent.y
+						});
+						// TODO 触发顶层UI dragstart
+						// 将事件传递给UI，需判断是否有顶层UI
+						Ycc.Event.mouseDownEvent&&Ycc.Event.mouseDownEvent.target&&Ycc.Event.mouseDownEvent.target.triggerListener("dragstart",new Ycc.Event({
+							type:"dragstart",
+							x:Ycc.Event.mouseDownEvent.x,
+							y:Ycc.Event.mouseDownEvent.y,
+							target:ui,
+							targetDeltaPosition:Ycc.Event.mouseDownEvent.targetDeltaPosition
+						}));
+						
+						Ycc.Event.dragStartFlag = true;
+					}
+					
+					// 触发图层的dragging事件，只传递给开启了事件系统的图层
+					triggerLayerEvent("dragging",{
+						type:"dragging",
+						x:x,
+						y:y
+					});
+					// TODO 触发顶层UI dragging
+					// 将事件传递给UI，需判断是否有顶层UI
+					Ycc.Event.mouseDownEvent&&Ycc.Event.mouseDownEvent.target&&Ycc.Event.mouseDownEvent.target.triggerListener("dragging",new Ycc.Event({
+						type:"dragging",
+						x:x,
+						y:y,
+						target:Ycc.Event.mouseDownEvent.target,
+						targetDeltaPosition:Ycc.Event.mouseDownEvent.targetDeltaPosition
+					}));
+
+				}
+				
+				
+				
 			});
 		}
 		
@@ -199,6 +276,24 @@
 			}
 		});
 		
+		
+		/**
+		 * 触发图层事件
+ 		 * @param type	事件类型字符串
+		 * @param eventOpt	事件初始构造对象
+		 */
+		function triggerLayerEvent(type,eventOpt){
+			eventOpt=eventOpt||{};
+			for(var i=self.layerList.length-1;i>=0;i--){
+				var layer = self.layerList[i];
+				if(!layer.enableEventManager) continue;
+				layer.enableEventManager&&layer.triggerListener(type,new Ycc.Event(eventOpt));
+			}
+		}
+		
+		
+		
+		
 	};
 	
 	/**
@@ -247,4 +342,27 @@
 		return null;
 	};
 	
+	/**
+	 * 获取舞台中某个点所对应的最上层UI。
+	 * @param dot {Ycc.Math.Dot}	点坐标，为舞台的绝对坐标
+	 * @param uiIsShow {Boolean}	是否只获取显示在舞台上的UI，默认为true
+	 * @return {UI}
+	 */
+	win.Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
+		var self = this;
+		uiIsShow = Ycc.utils.isBoolean(uiIsShow)?uiIsShow:true;
+		for(var j=self.layerList.length-1;j>=0;j--){
+			var layer = self.layerList[j];
+			if(uiIsShow&&!layer.show) continue;
+			for(var i =layer.uiList.length-1;i>=0;i--){
+				var ui = layer.uiList[i];
+				if(uiIsShow&&!ui.show) continue;
+				// 如果位于rect内，此处应该根据绝对坐标比较
+				if(dot.isInRect(ui.getAbsolutePosition())){
+					return ui;
+				}
+			}
+		}
+		return null;
+	};
 })(window);

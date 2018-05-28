@@ -3,6 +3,9 @@
 <head>
 	<meta charset="UTF-8">
 	<title>UI事件的示例</title>
+	<style>
+		canvas{background-color: #ccc;}
+	</style>
 </head>
 <body>
 
@@ -32,7 +35,7 @@
 	var layer = ycc.layerManager.newLayer({enableEventManager:true});
 	// 设置UI属性
 	var config = {
-		content:"  我是  可以拖拽的  多行文本框  测试文字  测试文字 测试文字 测试文字  01234567",
+		content:"我是  可以拖拽的  多行文本框  测试文字  测试文字 测试文字 测试文字  01234567",
 		rect:new Ycc.Math.Rect(100,100,100,100),
 		wordBreak:"break-word",
 		overflow:"auto"
@@ -42,26 +45,29 @@
 
 	// 点击
 	ui.addListener("click",function (e) {
-		console.log("我是",this.constructor.name,"我",e.type,e);
+		console.log("我是",this.yccClass.name,"我",e.type,e);
 	});
+	ui.onmousemove = function (e) {
+		console.log("我是",this.yccClass.name,"我",e.type,e);
+	};
 	// 另一种方式的监听
 	ui.onclick = function (e) {
-		console.log("我是",this.constructor.name,"我方式二监听",e.type,e);
+		console.log("我是",this.yccClass.name,"我方式二监听",e.type,e);
 	};
 
 
 	// 拖拽
 	ui.ondragging = function (e) {
-		console.log("我是",this.constructor.name,"我",e.type,e);
-		this.rect.x = e.x-e.mouseDownYccEvent.targetDeltaPosition.x;
-		this.rect.y = e.y-e.mouseDownYccEvent.targetDeltaPosition.y;
+		console.log("我是",this.yccClass.name,"我",e.type,e);
+		this.rect.x = e.x-e./*mouseDownYccEvent.*/targetDeltaPosition.x;
+		this.rect.y = e.y-e./*mouseDownYccEvent.*/targetDeltaPosition.y;
 		ycc.layerManager.reRenderAllLayerToStage();
 	};
 	// 添加至图层
 	layer.addUI(ui);
 
 	/****************** 下面是使用普通的mousemove模拟拖拽 *****************************/
-	config = {
+	/*config = {
 		rect:new Ycc.Math.Rect(100,100,30,50)
 	};
 	ui = new Ycc.UI.Rect(config);
@@ -70,28 +76,28 @@
 	ui.onmousedown = function (e) {
 		down = {x:this.rect.x,y:this.rect.y};
 		console.log("我是",this.constructor.name,"我",e.type,e);
-	};
-	ui.onmouseup = function (e) {
-		console.log("我是",this.constructor.name,"我",e.type,e);
-		down = null;
-		this.belongTo.removeListener("mousemove",draggingListener);
-		draggingListener = null;
-	};
-
-	ui.onmousemove = function (e) {
-		console.log("我是",this.constructor.name,"我",e.type,e);
-		var self = this;
-		if(down && !draggingListener){
-			draggingListener = function (e2) {
-				self.rect.x = down.x + e2.x-e.mouseDownYccEvent.x;
-				self.rect.y = down.y + e2.y-e.mouseDownYccEvent.y;
-				ycc.layerManager.reRenderAllLayerToStage();
-			};
-			this.belongTo.addListener("mousemove",draggingListener);
-		}
+		ui.onmousemove = function (e) {
+			console.log("我是",ui.yccClass.constructor,"我",e.type,e);
+			var self = this;
+			if(down){
+				draggingListener = function (e2) {
+					console.log(e2);
+					self.rect.x = e2.x - down.x;
+					self.rect.y = e2.y - down.y;
+					ycc.layerManager.reRenderAllLayerToStage();
+				};
+				this.belongTo.addListener("mousemove",draggingListener);
+			}
+		};
+		ui.onmouseup = function (e) {
+			console.log("我是",ui.yccClass.constructor,"我",e.type,e);
+			down = null;
+			this.belongTo.removeListener("mousemove",draggingListener);
+			draggingListener = null;
+		};
 	};
 	layer.addUI(ui);
-
+*/
 //	全部绘制
 	ycc.layerManager.reRenderAllLayerToStage();
 

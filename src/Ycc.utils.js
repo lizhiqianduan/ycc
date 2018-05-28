@@ -63,8 +63,17 @@
 	 */
     Ycc.utils.isNum = function(str) {
         return typeof(str) === "number";
-
     };
+	
+	/**
+	 * 判断boolean
+	 * @param str
+	 * @return {boolean}
+	 */
+	Ycc.utils.isBoolean = function(str) {
+		return typeof(str) === "boolean";
+	};
+	
 	
 	/**
      * 判断对象
