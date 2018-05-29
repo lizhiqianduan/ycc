@@ -133,8 +133,7 @@
 				triggerLayerEvent(e.type,{
 					type:e.type,
 					x:x,
-					y:y,
-					target:layer
+					y:y
 				});
 				
 				// 将事件传递给UI
