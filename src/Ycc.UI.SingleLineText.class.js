@@ -130,9 +130,6 @@
 		// 设置画布属性再计算，否则计算内容长度会有偏差
 		self.belongTo._setCtxProps(self);
 
-		this.renderRectBgColor();
-		
-
 		self.ctx = ctx || self.ctx;
 		
 		if(!self.ctx){

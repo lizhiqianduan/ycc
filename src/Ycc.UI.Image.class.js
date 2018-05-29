@@ -78,7 +78,6 @@
 	Ycc.UI.Image.prototype.render = function () {
 		this.ctx.save();
 		this.scaleAndRotate();
-		this.renderRectBgColor();
 		
 		var rect = this.rect;
 		var img = this.res;

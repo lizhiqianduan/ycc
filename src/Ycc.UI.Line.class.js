@@ -48,8 +48,6 @@
 	 * 绘制
 	 */
 	Ycc.UI.Line.prototype.render = function () {
-		this.renderRectBgColor();
-		
 		this.ctx.save();
 		this.ctx.strokeStyle = this.color;
 		this.ctx.strokeWidth = this.width;

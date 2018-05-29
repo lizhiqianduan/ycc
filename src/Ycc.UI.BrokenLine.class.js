@@ -69,7 +69,6 @@
 	 */
 	Ycc.UI.BrokenLine.prototype.render = function () {
 		if(this.pointList.length<2) return null;
-		this.renderRectBgColor();
 		
 		this.ctx.save();
 		this.ctx.strokeStyle = this.color;

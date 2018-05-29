@@ -71,7 +71,7 @@
 		 */
 		this.config = config || {
 			debug:{
-				drawContainer:true
+				drawContainer:false
 			}
 		};
 	};

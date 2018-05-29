@@ -71,8 +71,6 @@
 	 * 绘制
 	 */
 	Ycc.UI.Ellipse.prototype.render = function () {
-		this.renderRectBgColor();
-		
 		var width = this.width,
 			rotateAngle=this.angle,
 			height=this.height;

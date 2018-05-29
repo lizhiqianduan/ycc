@@ -355,12 +355,18 @@
 	};
 	
 	/**
-	 * 添加一个UI图形至图层
+	 * 添加一个UI图形至图层，如果设置了beforUI，该UI会被添加至该UI之前
 	 * @param ui {Ycc.UI}	UI图形
+	 * @param beforeUI {Ycc.UI|null}	UI图形
 	 */
-	Ycc.Layer.prototype.addUI = function (ui) {
+	Ycc.Layer.prototype.addUI = function (ui,beforeUI) {
 		ui.init(this);
-		this.uiList.push(ui);
+		if(!beforeUI)
+			return this.uiList.push(ui);
+		var index = this.uiList.indexOf(beforeUI);
+		if(index===-1)
+			return this.uiList.push(ui);
+		this.uiList.splice(index,0,ui);
 	};
 	
 	/**

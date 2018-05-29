@@ -206,7 +206,6 @@
 	 * @param ctx
 	 */
 	Ycc.UI.MultiLineText.prototype.render = function (ctx) {
-		this.renderRectBgColor();
 		
 		var self = this;
 		

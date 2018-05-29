@@ -42,7 +42,6 @@
 	 * 绘制
 	 */
 	Ycc.UI.Rect.prototype.render = function () {
-		this.renderRectBgColor();
 		
 		var rect = this.rect;
 

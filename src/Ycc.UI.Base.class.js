@@ -252,6 +252,21 @@
 	};
 	
 	/**
+	 * 绘制UI的容器（红色小方框）
+	 * @private
+	 */
+	Ycc.UI.Base.prototype._renderContainer = function () {
+		var rect = this.rect;
+		this.ctx.save();
+		this.ctx.beginPath();
+		this.ctx.strokeStyle = "#ff0000";
+		this.ctx.rect(rect.x,rect.y,rect.width,rect.height);
+		this.ctx.closePath();
+		this.ctx.stroke();
+		this.ctx.restore();
+	};
+	
+	/**
 	 * 渲染统一调用的入口，供图层统一调用。
 	 * 新增渲染过程中的hook函数。
 	 * 此方法不允许重载、覆盖
@@ -263,17 +278,12 @@
 		this.computeUIProps();
 		this.triggerListener('computeend',new Ycc.Event("computeend"));
 		
-		// 全局UI配置项
+		// 绘制UI的背景，rectBgColor、rectBgAlpha
+		this.renderRectBgColor();
+		
+		// 全局UI配置项，是否绘制UI的容器
 		if(this.belongTo.yccInstance.config.debug.drawContainer){
-			console.log(this);
-			var rect = this.rect;
-			this.ctx.save();
-			this.ctx.beginPath();
-			this.ctx.strokeStyle = "#ff0000";
-			this.ctx.rect(rect.x,rect.y,rect.width,rect.height);
-			this.ctx.closePath();
-			this.ctx.stroke();
-			this.ctx.restore();
+			this._renderContainer();
 		}
 		
 		

@@ -320,7 +320,6 @@
 	 * 绘制
 	 */
 	Ycc.UI.CropRect.prototype.render = function () {
-		this.renderRectBgColor();
 		
 		var rect = this.rect;
 		
