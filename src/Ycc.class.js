@@ -113,6 +113,8 @@
 	
 	/**
 	 * 初始化舞台的事件监听器
+	 * 所有鼠标事件均由舞台转发，转发的坐标均为绝对坐标。
+	 * `layer`和`ui`可以调用各自的`transformToLocal`方法，将绝对坐标转换为自己的相对坐标。
 	 * @private
 	 */
 	win.Ycc.prototype._initStageEvent = function () {
@@ -155,7 +157,23 @@
 				if(e.type==="mouseup"){
 					Ycc.Event.mouseDownEvent = null;
 					Ycc.Event.mouseUpEvent = new Ycc.Event({x:x,y:y,type:e.type});
-					Ycc.Event.dragStartFlag = false;
+					if(Ycc.Event.dragStartFlag){
+						Ycc.Event.dragStartFlag = false;
+						triggerLayerEvent('dragend',{
+							type:"dragend",
+							x:e.x,
+							y:e.y
+						});
+						// 触发顶层UI dragend
+						// 将事件传递给UI，需判断是否有顶层UI
+						Ycc.Event.mouseDownEvent&&Ycc.Event.mouseDownEvent.target&&Ycc.Event.mouseDownEvent.target.triggerListener("dragend",new Ycc.Event({
+							type:"dragend",
+							x:e.x,
+							y:e.y,
+							target:Ycc.Event.mouseDownEvent.target,
+							targetDeltaPosition:Ycc.Event.mouseDownEvent.targetDeltaPosition
+						}));
+					}
 				}
 				
 				// 模拟触发dragging事件

@@ -182,7 +182,7 @@
 		};
 		layer.ondragging = function (e) {
 			hasDragged = true;
-			ui.start = translateDotByScale(e.mouseDownYccEvent);
+			ui.start = translateDotByScale(Ycc.Event.mouseDownEvent);
 			ui.end = translateDotByScale(e);
 			ycc.layerManager.reRenderAllLayerToStage();
 
@@ -244,7 +244,7 @@
 		};
 		layer.ondragging = function (e) {
 			hasDragged = true;
-			var startDot = new Ycc.Math.Dot(e.mouseDownYccEvent.x,e.mouseDownYccEvent.y);
+			var startDot = new Ycc.Math.Dot(Ycc.Event.mouseDownEvent.x,Ycc.Event.mouseDownEvent.y);
 			var endDot = new Ycc.Math.Dot(e.x,e.y);
 			rect.rect = new Ycc.Math.Rect(startDot.x,startDot.y,endDot.x-startDot.x,endDot.y-startDot.y);
 			ycc.layerManager.reRenderAllLayerToStage();
@@ -277,7 +277,7 @@
 
 		layer.ondragging = function (e) {
 			hasDragged = true;
-			var startDot = translateDotByScale(new Ycc.Math.Dot(e.mouseDownYccEvent.x,e.mouseDownYccEvent.y));
+			var startDot = translateDotByScale(new Ycc.Math.Dot(Ycc.Event.mouseDownEvent.x,Ycc.Event.mouseDownEvent.y));
 			var endDot = translateDotByScale(new Ycc.Math.Dot(e.x,e.y));
 
 			ui.point.x = (startDot.x+endDot.x)/2;
@@ -328,15 +328,12 @@
 
 
 	function text() {
-		layer.eventManager.ondragging = function (e) {};
-		layer.eventManager.onmouseup = function (e) {};
-		layer.eventManager.onclick = function (e) {
+		layer.ondragging = function (e) {};
+		layer.onmouseup = function (e) {};
+		layer.onclick = function (e) {
 			var endDot = translateDotByScale([e.x,e.y]);
-
-			ycc.photoManager.showLastPhoto();
-			layer.clear();
-			layer.ui.text(endDot,"1111111111111111111\n222222222222222222222",true);
-			ycc.layerManager.renderAllLayerToStage();
+			layer.addUI(new Ycc.UI.MultiLineText({content:"1111111111111111111\n222222222222222222222",rect:new Ycc.Math.Rect(e.x,e.y,500,0)}));
+			ycc.layerManager.reRenderAllLayerToStage();
 			ycc.photoManager.takePhoto();
 			showPhotoToHtml();
 		}

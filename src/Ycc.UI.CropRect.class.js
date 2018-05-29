@@ -277,8 +277,8 @@
 				
 			}else{
 				// 选框的拖拽事件
-				this.rect.x = e.x-e.mouseDownYccEvent.targetDeltaPosition.x;
-				this.rect.y = e.y-e.mouseDownYccEvent.targetDeltaPosition.y;
+				this.rect.x = e.x-Ycc.Event.mouseDownEvent.targetDeltaPosition.x;
+				this.rect.y = e.y-Ycc.Event.mouseDownEvent.targetDeltaPosition.y;
 			}
 			
 			// 处理选择器的最小宽度

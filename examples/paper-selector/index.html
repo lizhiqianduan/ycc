@@ -84,7 +84,7 @@
 
 			},
 			ondragging:function (e) {
-				var startDot = new Ycc.Math.Dot(e.mouseDownYccEvent.x,e.mouseDownYccEvent.y);
+				var startDot = new Ycc.Math.Dot(Ycc.Event.mouseDownEvent.x,Ycc.Event.mouseDownEvent.y);
 				var endDot = new Ycc.Math.Dot(e.x,e.y);
 				cropRect.rect = new Ycc.Math.Rect(startDot.x,startDot.y,endDot.x-startDot.x,endDot.y-startDot.y);
 				this.yccInstance.layerManager.reRenderAllLayerToStage();
