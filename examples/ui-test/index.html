@@ -31,7 +31,7 @@
 	document.getElementById("canvas").appendChild(canvas);
 
 
-	var ycc = new Ycc();
+	var ycc = new Ycc({debug:{drawContainer:true}});
 	ycc.bindCanvas(canvas);
 	// 新建图层
 	var layer = ycc.layerManager.newLayer({enableEventManager:true});

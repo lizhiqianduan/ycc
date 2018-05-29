@@ -14,9 +14,11 @@
 	/**
 	 * 应用启动入口类，每个实例都与一个canvas绑定。
 	 * 该canvas元素会被添加至HTML结构中，作为应用的显示舞台。
+	 * @param config {Object} 整个ycc的配置项
+	 * @param config.debug.drawContainer {Boolean} 是否显示所有UI的容纳区域
 	 * @constructor
 	 */
-	win.Ycc = function Ycc(){
+	win.Ycc = function Ycc(config){
 		/**
 		 * canvas的Dom对象
 		 */
@@ -62,6 +64,16 @@
 		 * @type {Ycc.UI}
 		 */
 		this.baseUI = null;
+		
+		/**
+		 * 整个ycc的配置项
+		 * @type {*|{}}
+		 */
+		this.config = config || {
+			debug:{
+				drawContainer:true
+			}
+		};
 	};
 	
 	/**

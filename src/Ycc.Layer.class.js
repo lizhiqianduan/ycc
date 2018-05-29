@@ -393,8 +393,7 @@
 		// this.clear();
 		for(var i=0;i<this.uiList.length;i++){
 			if(!this.uiList[i].show) continue;
-			this.uiList[i].computeUIProps();
-			this.uiList[i].render();
+			this.uiList[i].__render();
 		}
 	};
 	

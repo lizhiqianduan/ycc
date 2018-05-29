@@ -147,6 +147,18 @@
 		 */
 		this.afterInit = null;
 		
+		/**
+		 * 渲染前的hook，应该在重载的render方法中触发
+		 * @type {function}
+		 */
+		this.onrenderstart = null;
+		
+		/**
+		 * 渲染后的hook，应该在重载的render方法中触发
+		 * @type {function}
+		 */
+		this.onrenderend = null;
+		
 		
 		this.extend(option);
 	};
@@ -225,6 +237,40 @@
 	 */
 	Ycc.UI.Base.prototype.render = function (ctx) {
 	
+	};
+	
+	/**
+	 * 渲染统一调用的入口，供图层统一调用。
+	 * 新增渲染过程中的hook函数。
+	 * 此方法不允许重载、覆盖
+	 * @param [ctx]	绘图环境。可选
+	 * @private
+	 */
+	Ycc.UI.Base.prototype.__render = function (ctx) {
+		
+		this.triggerListener('computestart',new Ycc.Event("computestart"));
+		this.computeUIProps();
+		this.triggerListener('computeend',new Ycc.Event("computeend"));
+		
+		// 全局UI配置项
+		if(this.belongTo.yccInstance.config.debug.drawContainer){
+			console.log(this);
+			var rect = this.rect;
+			this.ctx.save();
+			this.ctx.beginPath();
+			this.ctx.strokeStyle = "#ff0000";
+			this.ctx.rect(rect.x,rect.y,rect.width,rect.height);
+			this.ctx.closePath();
+			this.ctx.stroke();
+			this.ctx.restore();
+		}
+		
+		
+		
+		
+		this.triggerListener('renderstart',new Ycc.Event("renderstart"));
+		this.render(ctx);
+		this.triggerListener('renderend',new Ycc.Event("renderend"));
 	};
 	
 	/**

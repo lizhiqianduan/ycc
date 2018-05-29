@@ -19,7 +19,7 @@
 		
 		/**
 		 * 事件类型
-		 * @type {string}
+		 * @type {string|Object}
 		 */
 		this.type = type?type:"";
 		/**
