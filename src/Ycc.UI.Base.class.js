@@ -146,15 +146,27 @@
 		 * @type {function}
 		 */
 		this.afterInit = null;
+
+		/**
+		 * 计算属性前的hook
+		 * @type {function}
+		 */
+		this.oncomputestart = null;
 		
 		/**
-		 * 渲染前的hook，应该在重载的render方法中触发
+		 * 计算属性后的hook
+		 * @type {function}
+		 */
+		this.oncomputeend = null;
+		
+		/**
+		 * 渲染前的hook
 		 * @type {function}
 		 */
 		this.onrenderstart = null;
 		
 		/**
-		 * 渲染后的hook，应该在重载的render方法中触发
+		 * 渲染后的hook
 		 * @type {function}
 		 */
 		this.onrenderend = null;
@@ -247,7 +259,6 @@
 	 * @private
 	 */
 	Ycc.UI.Base.prototype.__render = function (ctx) {
-		
 		this.triggerListener('computestart',new Ycc.Event("computestart"));
 		this.computeUIProps();
 		this.triggerListener('computeend',new Ycc.Event("computeend"));
