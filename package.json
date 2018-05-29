@@ -6,11 +6,12 @@
   "scripts": {
     "start": "grunt",
     "build": "grunt build",
-    "doc":"grunt jsdoc",
-    "clean":"grunt clean",
-    "min":"grunt uglify",
-    "concat":"grunt concat",
-    "release":"grunt release"
+    "doc": "grunt jsdoc",
+    "clean": "grunt clean",
+    "min": "grunt uglify",
+    "concat": "grunt concat",
+    "release": "grunt release",
+    "example":"start http://localhost:7777/index.html & http-server ./examples -p 7777"
   },
   "repository": {
     "type": "git",
@@ -30,6 +31,7 @@
     "grunt-contrib-copy": "^1.0.0",
     "grunt-contrib-uglify": "^1.0.1",
     "grunt-contrib-watch": "^1.0.0",
-    "grunt-jsdoc": "^2.1.1"
+    "grunt-jsdoc": "^2.1.1",
+    "http-server": "^0.11.1"
   }
 }
