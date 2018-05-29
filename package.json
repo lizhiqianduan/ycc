@@ -11,7 +11,7 @@
     "min": "grunt uglify",
     "concat": "grunt concat",
     "release": "grunt release",
-    "example":"start http://localhost:7777/index.html & http-server ./examples -p 7777"
+    "example":"start http://localhost:7777/examples/index.html & http-server -p 7777"
   },
   "repository": {
     "type": "git",
