@@ -84,6 +84,22 @@
 		 * @type {function}
 		 */
 		this.onmouseout = null;
+		/**
+		 * 触摸开始 的监听。默认为null
+		 * @type {function}
+		 */
+		this.ontouchstart = null;
+		
+		/**
+		 * 触摸移动 的监听。默认为null
+		 * @type {function}
+		 */
+		this.ontouchmove = null;
+		/**
+		 * 触摸结束 的监听。默认为null
+		 * @type {function}
+		 */
+		this.ontouchend = null;
 	};
 	
 	

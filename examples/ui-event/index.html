@@ -18,7 +18,6 @@
 </body>
 </html>
 
-<script src="http://localhost:9000/livereload.js"></script>
 
 <script src="../../build/ycc.js"></script>
 
@@ -42,13 +41,18 @@
 	};
 	// 新建多行文本的UI
 	var ui = new Ycc.UI.MultiLineText(config);
+	// 添加至图层
+	layer.addUI(ui);
+
+	//	全部绘制
+	ycc.layerManager.reRenderAllLayerToStage();
 
 	// 点击
 	ui.addListener("click",function (e) {
 		console.log("我是",this.yccClass.name,"我",e.type,e);
 	});
 	ui.onmousemove = function (e) {
-		console.log("我是",this.yccClass.name,"我",e.type,e);
+//		console.log("我是",this.yccClass.name,"我",e.type,e);
 	};
 	// 另一种方式的监听
 	ui.onclick = function (e) {
@@ -63,44 +67,10 @@
 		this.rect.y = e.y-e./*mouseDownYccEvent.*/targetDeltaPosition.y;
 		ycc.layerManager.reRenderAllLayerToStage();
 	};
-	// 添加至图层
-	layer.addUI(ui);
 
-	/****************** 下面是使用普通的mousemove模拟拖拽 *****************************/
-	/*config = {
-		rect:new Ycc.Math.Rect(100,100,30,50)
+
+	ui.ontouchstart = function (e) {
+		console.log("我是",this.yccClass.name,"我",e.type,e);
 	};
-	ui = new Ycc.UI.Rect(config);
-	var down = null;
-	var draggingListener = null;
-	ui.onmousedown = function (e) {
-		down = {x:this.rect.x,y:this.rect.y};
-		console.log("我是",this.constructor.name,"我",e.type,e);
-		ui.onmousemove = function (e) {
-			console.log("我是",ui.yccClass.constructor,"我",e.type,e);
-			var self = this;
-			if(down){
-				draggingListener = function (e2) {
-					console.log(e2);
-					self.rect.x = e2.x - down.x;
-					self.rect.y = e2.y - down.y;
-					ycc.layerManager.reRenderAllLayerToStage();
-				};
-				this.belongTo.addListener("mousemove",draggingListener);
-			}
-		};
-		ui.onmouseup = function (e) {
-			console.log("我是",ui.yccClass.constructor,"我",e.type,e);
-			down = null;
-			this.belongTo.removeListener("mousemove",draggingListener);
-			draggingListener = null;
-		};
-	};
-	layer.addUI(ui);
-*/
-//	全部绘制
-	ycc.layerManager.reRenderAllLayerToStage();
-
-
 
 </script>

@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0;" name="viewport" />
+	<title>触摸事件的测试</title>
+	<style>
+		*{
+			margin:0;padding:0;box-sizing: border-box;
+		}
+		body{
+			background-color: #ccc;
+		}
+		.area{
+			text-align: center;
+			margin-top: 20px;
+		}
+		.area div{
+			width:48%;
+			display: inline-block;
+			height:200px;
+			text-align: center;
+			background-color: #fff;
+			line-height: 200px;
+		}
+		#log{
+			height:200px;
+			overflow-y: scroll;
+		}
+	</style>
+</head>
+<body>
+<div class="area">
+	<div id="a1">
+		点击区1
+	</div>
+
+	<div id="a2">
+		点击区2
+	</div>
+</div>
+<br>
+<h3>日志 <button onclick="log.innerHTML=''">清空</button></h3>
+<hr>
+<div id="log">
+
+</div>
+
+
+<script>
+	var a1 = document.getElementById('a1');
+	var a2 = document.getElementById('a2');
+	var log = document.getElementById('log');
+
+	a1.ontouchstart = listener;
+	a1.ontouchmove = listener;
+	a1.ontouchend = listener;
+
+	a2.ontouchstart = listener;
+	a2.ontouchmove = listener;
+	a2.ontouchend = listener;
+
+	function listener(e) {
+		console.log(e);
+		addLog("-->",this.id,e.type);
+		addLog("e.touches.length-->",e.touches.length);
+		addLog("e.changedTouches.length-->",e.changedTouches.length);
+		addLog("e.targetTouches.length-->",e.targetTouches.length);
+		addLog("");
+	}
+
+
+
+
+
+
+
+	function addLog(txt) {
+		log.innerHTML+=Array.prototype.join.call(arguments,' ');
+		log.innerHTML+='<br>';
+	}
+</script>
+
+
+</body>
+</html>

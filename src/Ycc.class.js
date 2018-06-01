@@ -74,6 +74,12 @@
 				drawContainer:false
 			}
 		};
+		
+		/**
+		 * 是否移动端
+		 * @type {boolean}
+		 */
+		this.isMobile = Ycc.utils.isMobile();
 	};
 	
 	/**
@@ -205,7 +211,7 @@
 							x:Ycc.Event.mouseDownEvent.x,
 							y:Ycc.Event.mouseDownEvent.y
 						});
-						// TODO 触发顶层UI dragstart
+						// 触发顶层UI dragstart
 						// 将事件传递给UI，需判断是否有顶层UI
 						Ycc.Event.mouseDownEvent&&Ycc.Event.mouseDownEvent.target&&Ycc.Event.mouseDownEvent.target.triggerListener("dragstart",new Ycc.Event({
 							type:"dragstart",
@@ -224,7 +230,7 @@
 						x:x,
 						y:y
 					});
-					// TODO 触发顶层UI dragging
+					// 触发顶层UI dragging
 					// 将事件传递给UI，需判断是否有顶层UI
 					Ycc.Event.mouseDownEvent&&Ycc.Event.mouseDownEvent.target&&Ycc.Event.mouseDownEvent.target.triggerListener("dragging",new Ycc.Event({
 						type:"dragging",
@@ -321,6 +327,19 @@
 		}
 		
 		
+		/**
+		 * 初始化舞台移动端的事件监听器
+		 * 所有鼠标事件均由舞台转发，转发的坐标均为绝对坐标。
+		 * @todo 移动端事件系统
+		 * @private
+		 */
+		function _initMobileEvent() {
+			if(self.isMobile){
+				proxyEventTypes = [
+					"touch","touchstart","touchmove","touchend"
+				];
+			}
+		}
 		
 		
 	};
