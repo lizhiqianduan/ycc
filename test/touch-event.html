@@ -19,16 +19,13 @@
 			-ms-user-select:none;
 			user-select:none;
 		}
-		.area{
-			text-align: center;
-			margin-top: 20px;
-		}
-		.area div{
-			display: inline-block;
-			height:200px;
-			text-align: center;
+
+		#a1{
 			background-color: #fff;
-			line-height: 200px;
+		}
+		.area .tip{
+			background: none;
+			text-align: right;
 		}
 		#log{
 			height:200px;
@@ -38,8 +35,11 @@
 </head>
 <body>
 <div class="area">
-	<div id="a1" style="width:98%">
-		点击区
+	<div id="a1">
+
+	</div>
+	<div class="tip">
+		多点触控区域
 	</div>
 </div>
 <br>
@@ -49,6 +49,7 @@
 
 </div>
 
+<script src="../build/ycc.js"></script>
 
 <script>
 
@@ -217,10 +218,19 @@
 	// 获取元素
 	var a1 = document.getElementById('a1');
 	var log = document.getElementById('log');
+	var canvas = document.createElement('canvas');
+	var ycc = new Ycc();
+	var layer = null;
+	canvas.width = document.documentElement.clientWidth;
+	canvas.height = 400;
+	a1.appendChild(canvas);
+	ycc.bindCanvas(canvas);
+	layer = ycc.layerManager.newLayer();
+
 
 	// 初始化
 	var tracer = new TouchLifeTracer({target:a1});
-	tracer.onlifeend = function (life) {
+	tracer.onlifechange = function (life) {
 		renderLife();
 	};
 
@@ -236,17 +246,18 @@
 	// 渲染
 	function renderLife() {
 		var count = 0;
-		a1.innerHTML="";
+		layer.uiList=[];
 		tracer._lifeList.forEach(function (life) {
 			count+=life.moveTouchEventList.length;
-			for(var i =0;i<life.moveTouchEventList.length;i++){
-				var touch = life.moveTouchEventList[i];
-				a1.innerHTML+="<div style='position:absolute;left:"+ touch.clientX +"px;top:"+ touch.clientY +"px;background:red;width:1px;height:1px;'></div>";
-			}
+			var pointList = life.moveTouchEventList.map(function(touch){
+				return new Ycc.Math.Dot(touch.clientX,touch.clientY);
+			});
+			layer.addUI(new Ycc.UI.BrokenLine({pointList:pointList}));
 		});
+		ycc.layerManager.reRenderAllLayerToStage();
 		addLog("render -->");
 		addLog("_lifeList.length-->",tracer._lifeList.length);
-		addLog("count-->",count);
+		addLog("dot count-->",count);
 	}
 
 
