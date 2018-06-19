@@ -23,6 +23,7 @@ module.exports = function(grunt){
 						'src/Ycc.Event.class.js',
 						'src/Ycc.Listener.class.js',
 						'src/Ycc.TouchLifeTracer.class.js',
+						'src/Ycc.Gesture.class.js',
 						'src/Ycc.Layer.class.js',
 						'src/Ycc.LayerManager.class.js',
 						'src/Ycc.PhotoManager.class.js',

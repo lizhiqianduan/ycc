@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+	<meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport" />
 	<meta charset="UTF-8">
 	<title>多点触控</title>
 	<style>
@@ -11,25 +12,41 @@
 		canvas{
 			background-color: #ccc;
 		}
+		#l{
+			height:200px;
+			overflow-y: scroll;
+		}
 	</style>
 </head>
 <body>
 <canvas id="a" width="300" height="300"></canvas>
 
+<p>log:</p>
+<div id="l"></div>
+
+
+
 <script src="../../build/ycc.js"></script>
 <script>
-	var tracer = new Ycc.TouchLifeTracer({target:document.getElementById('a')});
+	var gesture = new Ycc.Gesture({target:document.getElementById('a')});
 
-	tracer.onlifestart=function (life) {
-		console.log(life,tracer.changedTouches.length);
+
+	gesture.ontap = function (touch) {
+		addLog("ontap--> ",touch.clientX,touch.clientY);
 	};
-	tracer.onlifechange=function (life) {
-		console.log(life,tracer.changedTouches.length);
-	};
-	tracer.onlifeend=function (life) {
-		console.log(life,tracer.changedTouches.length);
+	gesture.onlongtap = function (touch) {
+		addLog("onlongtap--> ",touch.clientX,touch.clientY);
 	};
 
+	gesture.onlog = function (log) {
+		addLog(log);
+	};
+
+	function addLog() {
+		console.log(arguments);
+		document.getElementById('l').innerHTML+=Array.prototype.join.call(arguments,',')+'<br>';
+		document.getElementById('l').scrollTop=9999;
+	}
 
 
 </script>
