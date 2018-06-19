@@ -43,6 +43,18 @@
 			 * @type {Touch[]}
 			 * */
 			this.moveTouchEventList = [];
+			
+			/**
+			 * 开始时间
+			 * @type {number}
+			 */
+			this.startTime = Date.now();
+			
+			/**
+			 * 结束时间
+			 * @type {number}
+			 */
+			this.endTime = 0;
 		};
 	})();
 	
@@ -71,6 +83,24 @@
 		 * 当前存活的生命周期，正在与target接触的触摸点生命周期
 		 * */
 		this.currentLifeList = [];
+		
+		/**
+		 * 当前对象的touch
+		 * @type {Array}
+		 */
+		this.targetTouches = [];
+		
+		/**
+		 * 当前target所有的touch
+		 * @type {Array}
+		 */
+		this.touches = [];
+		
+		/**
+		 * 当前改变的所有touch
+		 * @type {Array}
+		 */
+		this.changedTouches = [];
 		
 		/**
 		 * 某个生命周期开始
@@ -139,16 +169,18 @@
 			var self = this;
 			this.target.addEventListener("touchstart",function (e) {
 				e.preventDefault();
-				var touchLife = new TouchLife();
-				touchLife.startTouchEvent = e.changedTouches[0];
-				self.addLife(touchLife);
-				self.currentLifeList.push(touchLife);
+				self.syncTouches(e);
+				var life = new TouchLife();
+				life.startTouchEvent = e.changedTouches[0];
+				self.addLife(life);
+				self.currentLifeList.push(life);
 				// self.onlifestart && self.onlifestart(life);
 				self.triggerListener('lifestart',life);
 			});
 			
 			this.target.addEventListener('touchmove',function (e) {
 				e.preventDefault();
+				self.syncTouches(e);
 				var touches = e.changedTouches;
 				for(var i=0;i<touches.length;i++){
 					var touch = touches[i];
@@ -160,9 +192,11 @@
 			});
 			this.target.addEventListener('touchend',function (e) {
 				e.preventDefault();
+				self.syncTouches(e);
 				var touch = e.changedTouches[0];
 				var life = self.findCurrentLifeByTouchID(touch.identifier);
 				life.endTouchEvent = touch;
+				life.endTime = Date.now();
 				self.deleteCurrentLifeByTouchID(touch.identifier);
 				// self.onlifeend && self.onlifeend(life);
 				self.triggerListener('lifeend',life);
@@ -174,6 +208,28 @@
 	
 	Ycc.TouchLifeTracer.prototype = new Ycc.Listener();
 	
-	
+	/**
+	 * 同步当前HTML元素的touches
+	 * @param e 原生的touch事件。touchstart、end、move ...
+	 */
+	Ycc.TouchLifeTracer.prototype.syncTouches = function (e) {
+		this.touches = [];
+		this.changedTouches = [];
+		this.targetTouches = [];
+		var i=0;
+		var touches=[];
+		touches = e.touches;
+		for(i=0;i<touches.length;i++){
+			this.touches.push(touches[i]);
+		}
+		touches = e.changedTouches;
+		for(i=0;i<e.changedTouches.length;i++){
+			this.changedTouches.push(touches[i]);
+		}
+		touches = e.targetTouches;
+		for(i=0;i<e.targetTouches.length;i++){
+			this.targetTouches.push(touches[i]);
+		}
+	};
 	
 })(window.Ycc);

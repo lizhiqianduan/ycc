@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>多点触控</title>
+	<style>
+		*{
+			margin: 0;
+			padding:0;
+		}
+		canvas{
+			background-color: #ccc;
+		}
+	</style>
+</head>
+<body>
+<canvas id="a" width="300" height="300"></canvas>
+
+<script src="../../build/ycc.js"></script>
+<script>
+	var tracer = new Ycc.TouchLifeTracer({target:document.getElementById('a')});
+
+	tracer.onlifestart=function (life) {
+		console.log(life,tracer.changedTouches.length);
+	};
+	tracer.onlifechange=function (life) {
+		console.log(life,tracer.changedTouches.length);
+	};
+	tracer.onlifeend=function (life) {
+		console.log(life,tracer.changedTouches.length);
+	};
+
+
+
+</script>
+</body>
+</html>
