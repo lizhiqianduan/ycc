@@ -126,7 +126,10 @@
 	 * 类初始化
 	 */
 	win.Ycc.prototype.init = function () {
-		this._initStageEvent();
+		if(this.isMobile)
+			this._initMobileStageEvent();
+		else
+			this._initStageEvent();
 	};
 	
 	/**
@@ -326,23 +329,20 @@
 			}
 		}
 		
-		
-		/**
-		 * 初始化舞台移动端的事件监听器
-		 * 所有鼠标事件均由舞台转发，转发的坐标均为绝对坐标。
-		 * @todo 移动端事件系统
-		 * @private
-		 */
-		function _initMobileEvent() {
-			if(self.isMobile){
-				proxyEventTypes = [
-					"touch","touchstart","touchmove","touchend"
-				];
-			}
-		}
-		
-		
 	};
+	
+	/**
+	 * 初始化舞台移动端的事件监听器
+	 * 所有事件均由舞台转发，转发的坐标均为绝对坐标。
+	 * @todo 移动端事件系统
+	 * @private
+	 */
+	win.Ycc.prototype._initMobileStageEvent = function () {
+		var self = this;
+		var tracer = new win.Ycc.TouchLifeTracer({target:self.ctx.canvas});
+		win.tracer = tracer;
+	};
+	
 	
 	/**
 	 * 清除

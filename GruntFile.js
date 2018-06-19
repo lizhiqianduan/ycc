@@ -19,6 +19,7 @@ module.exports = function(grunt){
 						'src/Ycc.utils.js',
 						'src/Ycc.Math.js',
 						'src/Ycc.Ticker.class.js',
+						'src/Ycc.TouchLifeTracer.class.js',
 						'src/Ycc.Loader.class.js',
 						'src/Ycc.Event.class.js',
 						'src/Ycc.Listener.class.js',
