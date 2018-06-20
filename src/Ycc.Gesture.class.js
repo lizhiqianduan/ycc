@@ -61,7 +61,6 @@
 			// 只有一个触摸点的情况
 			prevent.tap = false;
 			prevent.swipe = false;
-			curLife = life;
 			
 			//长按事件
 			this._longTapTimeout = setTimeout(function () {
@@ -100,6 +99,8 @@
 					// 两次点击在300ms内，并且两次点击的范围在10px内，则认为是doubletap事件
 					if(preLife && life.endTime-preLife.endTime<300 && Math.abs(preLife.endTouchEvent.pageX-life.endTouchEvent.pageX)<10&& Math.abs(preLife.endTouchEvent.pageY-life.endTouchEvent.pageY)<10){
 						self.triggerListener('doubletap',life.endTouchEvent);
+						preLife = null;
+						return this;
 					}
 					preLife=life;
 					return this;
