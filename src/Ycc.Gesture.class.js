@@ -52,7 +52,11 @@
 		tracer.onlifestart = function (life) {
 			// 多个触摸点的情况
 			if(tracer.currentLifeList.length>1){
-				prevent.tap=false;
+				prevent.tap = false;
+				prevent.swipe = false;
+				clearTimeout(this._longTapTimeout);
+				self.triggerListener('log','multi touch start ...');
+				// 缩放、旋转只取最先接触的两个点即可
 				preLife = tracer.currentLifeList[0];
 				curLife = tracer.currentLifeList[1];
 				return this;

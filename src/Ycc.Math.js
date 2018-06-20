@@ -147,6 +147,64 @@
 		this.width = Math.abs(this.width);
 		this.height = Math.abs(this.height);
 	};
-
+	
+	
+	
+	
+	/**
+	 * 向量构造函数
+	 * @constructor
+	 */
+	Ycc.Math.Vector = function () {
+		this.x = 0;
+		this.y = 0;
+		this.z = 0;
+		
+		if(arguments.length===3 || arguments.length===2){
+			this.x=arguments[0]||0;
+			this.y=arguments[1]||0;
+			this.z=arguments[2]||0;
+		}
+		
+		if(arguments.length===1){
+			if(!Ycc.utils.isObj(arguments[0])) console.error('constructor need a objec as param!');
+			this.x=arguments[0].x||0;
+			this.y=arguments[0].y||0;
+			this.z=arguments[0].z||0;
+		}
+	};
+	
+	/**
+	 * 向量的点乘法
+	 * @param v2 {Ycc.Math.Vector} 点乘向量
+	 * @return {number}
+	 */
+	Ycc.Math.Vector.prototype.dot = function (v2) {
+		return this.x*v2.x+this.y*v2.y+this.z*v2.z;
+	};
+	
+	
+	/**
+	 * 向量的叉乘法
+	 * @param v2 {Ycc.Math.Vector} 叉乘向量
+	 * @return {number}
+	 */
+	Ycc.Math.Vector.prototype.cross = function (v2) {
+		var res = new Ycc.Math.Vector();
+		res.x = this.y*v2.z-v2.y*this.z;
+		res.y = v2.x*this.z-this.x*v2.z;
+		res.z = this.x*v2.y-v2.x*this.y;
+		return res;
+	};
+	
+	
+	/**
+	 * 获取向量的模长
+	 * @return {number}
+	 */
+	Ycc.Math.Vector.prototype.getLength = function () {
+		return Math.sqrt(this.x*this.x+this.y*this.y+this.z*this.z,2);
+	};
+	
 	
 })(window.Ycc);
