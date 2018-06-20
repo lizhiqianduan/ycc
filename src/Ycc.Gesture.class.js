@@ -23,6 +23,13 @@
 		
 		this.option = option;
 		
+		/**
+		 * 长按事件的定时器id
+		 * @type {null}
+		 * @private
+		 */
+		this._longTapTimeout = null;
+		
 		this._init();
 	};
 	Ycc.Gesture.prototype = new Ycc.Listener();
@@ -40,7 +47,7 @@
 		// 是否阻止事件
 		var prevent = {
 			tap:false,
-			longTap:false
+			swipe:false
 		};
 		tracer.onlifestart = function (life) {
 			// 多个触摸点的情况
@@ -51,21 +58,20 @@
 				return this;
 			}
 			
-			// 一个触摸点的情况
+			// 只有一个触摸点的情况
 			prevent.tap = false;
-			prevent.longTap = false;
+			prevent.swipe = false;
 			curLife = life;
 			
 			//长按事件
-			setTimeout(function () {
-				if(!prevent.longTap)
-					self.triggerListener('longtap',life.startTouchEvent);
+			this._longTapTimeout = setTimeout(function () {
+				self.triggerListener('longtap',life.startTouchEvent);
 			},750);
 		};
 		tracer.onlifechange = function (life) {
 			if(tracer.currentLifeList.length>1){
 				prevent.tap=true;
-				prevent.longTap=true;
+				prevent.swipe=true;
 				return this;
 			}
 			
@@ -73,19 +79,60 @@
 			if(life.moveTouchEventList.length>0){
 				var firstMove = life.startTouchEvent;
 				var lastMove = Array.prototype.slice.call(life.moveTouchEventList,-1)[0];
-				self.triggerListener('log',Math.abs(lastMove.pageX-firstMove.pageX));
+				// 如果触摸点按下期间存在移动行为，且移动距离大于10，则认为该操作不是tap、longtap
 				if(Math.abs(lastMove.pageX-firstMove.pageX)>10 || Math.abs(lastMove.pageY-firstMove.pageY)>10){
 					prevent.tap=true;
-					prevent.longTap=true;
+					clearTimeout(this._longTapTimeout);
 				}
 			}
 			
 		};
 		tracer.onlifeend = function (life) {
-			if(!prevent.tap && life.endTime-life.startTime<300)
-				self.triggerListener('tap',life.endTouchEvent);
+			
+			if(tracer.currentLifeList.length===0){
+				
+				// 开始和结束时间在300ms内，认为是tap事件
+				if(!prevent.tap && life.endTime-life.startTime<300){
+					self.triggerListener('tap',life.endTouchEvent);
+					// 取消长按事件
+					clearTimeout(this._longTapTimeout);
+					
+					// 两次点击在300ms内，并且两次点击的范围在10px内，则认为是doubletap事件
+					if(preLife && life.endTime-preLife.endTime<300 && Math.abs(preLife.endTouchEvent.pageX-life.endTouchEvent.pageX)<10&& Math.abs(preLife.endTouchEvent.pageY-life.endTouchEvent.pageY)<10){
+						self.triggerListener('doubletap',life.endTouchEvent);
+					}
+					preLife=life;
+					return this;
+				}
+				
+				console.log('swipe');
+				// 如果触摸点按下期间存在移动行为，且移动范围大于30px，触摸时间在200ms内，则认为该操作是swipe
+				if(!prevent.swipe && life.endTime-life.startTime<300 ){
+					var firstMove = life.startTouchEvent;
+					var lastMove = Array.prototype.slice.call(life.moveTouchEventList,-1)[0];
+					if(Math.abs(lastMove.pageX-firstMove.pageX)>30 || Math.abs(lastMove.pageY-firstMove.pageY)>30){
+						
+						self.triggerListener('log','swipe'+self._getSwipeDirection(life));
+						self.triggerListener('swipe'+self._getSwipeDirection(life),life.endTouchEvent);
+					}
+					return this;
+				}
+			}
 		};
 		
+	};
+	
+	/**
+	 * 获取某个触摸点的swipe方向
+	 * @param life
+	 * @private
+	 */
+	Ycc.Gesture.prototype._getSwipeDirection = function (life) {
+		var x1=life.startTouchEvent.pageX,
+			x2=life.endTouchEvent.pageX,
+			y1=life.startTouchEvent.pageY,
+			y2=life.endTouchEvent.pageY;
+		return Math.abs(x1 - x2) >= Math.abs(y1 - y2) ? (x1 - x2 > 0 ? 'left' : 'right') : (y1 - y2 > 0 ? 'up' : 'down');
 	};
 
 
