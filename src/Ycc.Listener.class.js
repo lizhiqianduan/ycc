@@ -134,13 +134,13 @@
 		if(this.disableType[type]) return;
 		
 		if(!this.stopType[type])
-			Ycc.utils.isFn(this["on"+type]) && this["on"+type].call(this,data);
+			Ycc.utils.isFn(this["on"+type]) && this["on"+type].apply(this,Array.prototype.slice.call(arguments,1));
 
 		var ls = this.listeners[type];
 		if(!ls || !Ycc.utils.isArray(ls)) return;
 		for(var i=0;i<ls.length;i++){
 			if(!this.stopType[type])
-				ls[i].call(this,data);
+				ls[i].apply(this,Array.prototype.slice.call(arguments,1));
 		}
 	};
 	

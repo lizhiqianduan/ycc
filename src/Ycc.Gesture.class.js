@@ -52,10 +52,12 @@
 		tracer.onlifestart = function (life) {
 			// 多个触摸点的情况
 			if(tracer.currentLifeList.length>1){
+				self.triggerListener('log','multi touch start ...');
+				self.triggerListener('multistart',tracer.currentLifeList);
+				
 				prevent.tap = false;
 				prevent.swipe = false;
 				clearTimeout(this._longTapTimeout);
-				self.triggerListener('log','multi touch start ...');
 				// 缩放、旋转只取最先接触的两个点即可
 				preLife = tracer.currentLifeList[0];
 				curLife = tracer.currentLifeList[1];
@@ -75,6 +77,19 @@
 			if(tracer.currentLifeList.length>1){
 				prevent.tap=true;
 				prevent.swipe=true;
+				self.triggerListener('log','multi touch move ...');
+				self.triggerListener('multichange',preLife,curLife);
+				
+				var rateAndAngle = self.getZoomRateAndRotateAngle(preLife,curLife);
+
+				if(Ycc.utils.isNum(rateAndAngle.rate)){
+					self.triggerListener('zoom',rateAndAngle.rate);
+					self.triggerListener('log','zoom triggered',rateAndAngle.rate);
+				}
+				if(Ycc.utils.isNum(rateAndAngle.angle)){
+					self.triggerListener('rotate',rateAndAngle.angle);
+					self.triggerListener('log','rotate triggered',rateAndAngle.angle);
+				}
 				return this;
 			}
 			
@@ -91,18 +106,24 @@
 			
 		};
 		tracer.onlifeend = function (life) {
+			// 若某个触摸结束，当前触摸点个数为1，说明之前的操作为多点触控。这里发送多点触控结束事件
+			if(tracer.currentLifeList.length===1){
+				return self.triggerListener('multiend',preLife,curLife);
+			}
 			
 			if(tracer.currentLifeList.length===0){
 				
 				// 开始和结束时间在300ms内，认为是tap事件
 				if(!prevent.tap && life.endTime-life.startTime<300){
 					self.triggerListener('tap',life.endTouchEvent);
+					self.triggerListener('log','tap triggered');
 					// 取消长按事件
 					clearTimeout(this._longTapTimeout);
 					
 					// 两次点击在300ms内，并且两次点击的范围在10px内，则认为是doubletap事件
 					if(preLife && life.endTime-preLife.endTime<300 && Math.abs(preLife.endTouchEvent.pageX-life.endTouchEvent.pageX)<10&& Math.abs(preLife.endTouchEvent.pageY-life.endTouchEvent.pageY)<10){
 						self.triggerListener('doubletap',life.endTouchEvent);
+						self.triggerListener('log','doubletap triggered');
 						preLife = null;
 						return this;
 					}
@@ -110,9 +131,9 @@
 					return this;
 				}
 				
-				console.log('swipe');
 				// 如果触摸点按下期间存在移动行为，且移动范围大于30px，触摸时间在200ms内，则认为该操作是swipe
 				if(!prevent.swipe && life.endTime-life.startTime<300 ){
+					console.log('swipe');
 					var firstMove = life.startTouchEvent;
 					var lastMove = Array.prototype.slice.call(life.moveTouchEventList,-1)[0];
 					if(Math.abs(lastMove.pageX-firstMove.pageX)>30 || Math.abs(lastMove.pageY-firstMove.pageY)>30){
@@ -138,6 +159,41 @@
 			y1=life.startTouchEvent.pageY,
 			y2=life.endTouchEvent.pageY;
 		return Math.abs(x1 - x2) >= Math.abs(y1 - y2) ? (x1 - x2 > 0 ? 'left' : 'right') : (y1 - y2 > 0 ? 'up' : 'down');
+	};
+	
+	/**
+	 * 获取缩放比例
+	 * @param preLife
+	 * @param curLife
+	 * @return {number}
+	 * @private
+	 */
+	Ycc.Gesture.prototype.getZoomRateAndRotateAngle = function (preLife, curLife) {
+		this.triggerListener('log','preLife');
+		this.triggerListener('log',preLife);
+		this.triggerListener('log','curLife');
+		this.triggerListener('log',curLife);
+		
+		var x0=preLife.startTouchEvent.pageX,
+			y0=preLife.startTouchEvent.pageY,
+			x1=curLife.startTouchEvent.pageX,
+			y1=curLife.startTouchEvent.pageY;
+		
+		var preMoveTouch = preLife.moveTouchEventList.length>0?preLife.moveTouchEventList[preLife.moveTouchEventList.length-1]:preLife.startTouchEvent;
+		var curMoveTouch = curLife.moveTouchEventList.length>0?curLife.moveTouchEventList[curLife.moveTouchEventList.length-1]:curLife.startTouchEvent;
+		var x0move=preMoveTouch.pageX,
+			y0move=preMoveTouch.pageY,
+			x1move=curMoveTouch.pageX,
+			y1move=curMoveTouch.pageY;
+		
+		var vector0 = new Ycc.Math.Vector(x1-x0,y1-y0),
+			vector1 = new Ycc.Math.Vector(x1move-x0move,y1move-y0move);
+		
+		var angle = Math.acos(vector1.dot(vector0)/(vector1.getLength()*vector0.getLength()))/Math.PI*180;
+		return {
+			rate:vector1.getLength()/vector0.getLength(),
+			angle:angle*(vector1.cross(vector0).z>0?-1:1)
+		};//(new Ycc.Math.Vector(x1move-x0move,y1move-y0move).getLength())/(new Ycc.Math.Vector(x1-x0,y1-y0).getLength());
 	};
 
 
