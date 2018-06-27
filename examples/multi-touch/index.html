@@ -16,11 +16,92 @@
 			height:200px;
 			overflow-y: scroll;
 		}
+
+		.normal{
+			position: relative;
+			left:50%;
+			width: 200px;
+			height:200px;
+			margin-left: -100px;
+			background-color: #ccc;
+			overflow: hidden;
+		}
+		.normal.checked{
+			background-color: #888;
+		}
+
+		.normal .list-a{
+			background-color: #cccccc;
+		}
+		.normal .list-b{
+			background-color: #999999;
+		}
+		.normal .list-c{
+			background-color: #333333;
+		}
+
+		.normal .con{
+			position: absolute;
+			left:0;
+			top:0;
+			-webkit-transition: left .5s;
+			-moz-transition: left .5s;
+			-ms-transition: left .5s;
+			-o-transition: left .5s;
+			transition: left .5s;
+
+			width:600px;
+			height:100%;
+		}
+		.normal .con>div{
+			float: left;
+			width:200px;
+			height:100%;
+		}
+
+
 	</style>
 </head>
 <body>
-<canvas id="a" width="300" height="300"></canvas>
 
+
+<h3>tap</h3>
+<div class="normal" id="demo1"></div>
+
+<h3>doubletap</h3>
+<div class="normal" id="demo2"></div>
+
+<h3>longtap</h3>
+<div class="normal" id="demo3"></div>
+
+<h3>swipe</h3>
+<div class="normal" id="demo4">
+	<div class="con" id="demo4-con">
+		<div class="list-a"></div>
+		<div class="list-b"></div>
+		<div class="list-c"></div>
+	</div>
+</div>
+
+<h3>rotate</h3>
+<div class="normal" id="demo5"></div>
+
+<h3>zoom</h3>
+<div class="normal" id="demo6"></div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!--<canvas id="a" width="300" height="300"></canvas>-->
 <p>log:</p>
 <div id="l"></div>
 
@@ -28,7 +109,77 @@
 
 <script src="../../build/ycc.js"></script>
 <script>
-	var gesture = new Ycc.Gesture({target:document.getElementById('a')});
+
+
+	var demo1 = new Ycc.Gesture({target:document.getElementById('demo1')});
+	demo1.ontap = function (touch) {
+		if(touch.target.className==='normal')
+			touch.target.className='normal checked';
+		else
+			touch.target.className='normal';
+	};
+
+
+	var demo2 = new Ycc.Gesture({target:document.getElementById('demo2')});
+	demo2.ondoubletap = function (touch) {
+		if(touch.target.className==='normal')
+			touch.target.className='normal checked';
+		else
+			touch.target.className='normal';
+	};
+
+
+	var demo3 = new Ycc.Gesture({target:document.getElementById('demo3')});
+	demo3.onlongtap = function (touch) {
+		if(touch.target.className==='normal')
+			touch.target.className='normal checked';
+		else
+			touch.target.className='normal';
+	};
+
+	var demo4 = new Ycc.Gesture({target:document.getElementById('demo4')});
+	demo4.onswipeleft = function (touch) {
+		var left = parseInt(document.getElementById('demo4-con').style.left||0);
+		if(left===-400)
+			return null;
+		left-=200;
+		document.getElementById('demo4-con').style.left=left+'px';
+	};
+	demo4.onswiperight = function (touch) {
+		var left = parseInt(document.getElementById('demo4-con').style.left||0);
+		if(left===0)
+			return null;
+		left+=200;
+		document.getElementById('demo4-con').style.left=left+'px';
+	};
+
+
+	var demo5 = new Ycc.Gesture({target:document.getElementById('demo5')});
+	demo5._angle = 0;
+	demo5.onrotate = function (angle) {
+		angle=parseInt(angle)+demo5._angle;
+		var style = '-webkit-transform: rotate('+angle+'deg);'+'transform: rotate('+angle+'deg);';
+		demo5.option.target.style=style;
+	};
+	demo5.onmultiend=function (preLife,curLife) {
+		demo5._angle = demo5.getZoomRateAndRotateAngle(preLife,curLife).angle;
+		demo5._rate = demo5.getZoomRateAndRotateAngle(preLife,curLife).rate;
+	};
+
+
+	var demo6 = new Ycc.Gesture({target:document.getElementById('demo6')});
+	demo6.onzoom = function (rate) {
+		var style = '-webkit-transform: scale('+rate+');'+'transform: scale('+rate+');';
+		demo6.option.target.style=style;
+	};
+	demo6.onmultiend=function (preLife,curLife) {
+		var style = '-webkit-transform: scale(1);'+'transform: scale(1);';
+		demo6.option.target.style=style;
+	};
+
+
+
+	/*var gesture = new Ycc.Gesture({target:document.getElementById('a')});
 
 
 	gesture.ontap = function (touch) {
@@ -45,9 +196,14 @@
 		addLog("onswipe--> ",touch.clientX,touch.clientY);
 	};
 
-	gesture.onlog = function (log) {
-		addLog(log);
+	gesture.onzoom = function (rate) {
+		addLog('onzoom--> ',rate);
 	};
+
+
+	gesture.onlog = function () {
+		addLog("SystemLog:"+Array.prototype.join.call(arguments,''));
+	};*/
 
 	function addLog() {
 		console.log(arguments);
