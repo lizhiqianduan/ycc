@@ -61,10 +61,16 @@
 
 
 	// 拖拽
+	var startPos = null,
+		startRect = null;
+	ui.ondragstart = function (e) {
+		startPos=new Ycc.Math.Dot(e);
+		startRect=new Ycc.Math.Rect(ui.rect);
+	};
 	ui.ondragging = function (e) {
 		console.log("我是",this.yccClass.name,"我",e.type,e);
-		this.rect.x = e.x-e./*mouseDownYccEvent.*/targetDeltaPosition.x;
-		this.rect.y = e.y-e./*mouseDownYccEvent.*/targetDeltaPosition.y;
+		this.rect.x = startRect.x+e.x-startPos.x;
+		this.rect.y = startRect.y+e.y-startPos.y;
 		ycc.layerManager.reRenderAllLayerToStage();
 	};
 
