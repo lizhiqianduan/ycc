@@ -3,7 +3,7 @@
 <head>
 	<meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport" />
 	<meta charset="UTF-8">
-	<title>多点触控</title>
+	<title>手势库示例</title>
 	<style>
 		*{
 			margin: 0;
@@ -60,11 +60,21 @@
 		}
 
 
+		.tip{
+			color: red;
+			text-align: center;
+			font-weight: bold;
+			line-height: 50px;
+		}
 	</style>
 </head>
 <body>
 
+<div class="tip">
+	此页面只能在移动端才能生效
+</div>
 
+<div>点击下面的小方块查看手势效果 <br><br></div>
 <h3>tap</h3>
 <div class="normal" id="demo1"></div>
 
@@ -98,12 +108,8 @@
 
 
 
-
-
-
-<!--<canvas id="a" width="300" height="300"></canvas>-->
-<p>log:</p>
-<div id="l"></div>
+<!--<p>log:</p>
+<div id="l"></div>-->
 
 
 
@@ -176,34 +182,6 @@
 		var style = '-webkit-transform: scale(1);'+'transform: scale(1);';
 		demo6.option.target.style=style;
 	};
-
-
-
-	/*var gesture = new Ycc.Gesture({target:document.getElementById('a')});
-
-
-	gesture.ontap = function (touch) {
-		addLog("ontap--> ",touch.clientX,touch.clientY);
-	};
-	gesture.ondoubletap = function (touch) {
-		addLog("ondoubletap--> ",touch.clientX,touch.clientY);
-	};
-
-	gesture.onlongtap = function (touch) {
-		addLog("onlongtap--> ",touch.clientX,touch.clientY);
-	};
-	gesture.onswipeleft = gesture.onswiperight = gesture.onswipeup = gesture.onswipedown = function (touch) {
-		addLog("onswipe--> ",touch.clientX,touch.clientY);
-	};
-
-	gesture.onzoom = function (rate) {
-		addLog('onzoom--> ',rate);
-	};
-
-
-	gesture.onlog = function () {
-		addLog("SystemLog:"+Array.prototype.join.call(arguments,''));
-	};*/
 
 	function addLog() {
 		console.log(arguments);
