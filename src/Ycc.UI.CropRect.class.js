@@ -202,6 +202,11 @@
 	 */
 	Ycc.UI.CropRect.prototype._initUI = function () {
 		var self = this;
+		//拖拽开始时的坐标信息
+		var startPos = null;
+		//拖拽开始时的位置信息
+		var startRect = null;
+		
 		this.userData = this.userData?this.userData:{};
 		this.addListener("dragstart",function (e) {
 			// self.showBtns(false);
@@ -212,6 +217,8 @@
 			// 拖拽开始时鼠标的位置
 			this.userData.dragStartMousePosition = new Ycc.Math.Dot(e);
 			var dot = new Ycc.Math.Dot(e);
+			startPos = dot;
+			startRect = new Ycc.Math.Rect(self.rect);
 			for(var i=1;i<=4;i++){
 				if(dot.isInRect(this["ctrlRect"+i])){
 					this.userData.ctrlStart = i;
@@ -277,8 +284,8 @@
 				
 			}else{
 				// 选框的拖拽事件
-				this.rect.x = e.x-Ycc.Event.mouseDownEvent.targetDeltaPosition.x;
-				this.rect.y = e.y-Ycc.Event.mouseDownEvent.targetDeltaPosition.y;
+				this.rect.x = startRect.x+e.x-startPos.x;
+				this.rect.y = startRect.y+e.y-startPos.y;
 			}
 			
 			// 处理选择器的最小宽度
