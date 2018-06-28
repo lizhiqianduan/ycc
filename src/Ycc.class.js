@@ -402,7 +402,7 @@
 				y:y
 			});
 			
-			ui&&ui.triggerListener('dragstart',new Ycc.Event({
+			startUI&&startUI.triggerListener('dragstart',new Ycc.Event({
 				x:x,
 				y:y,
 				target:startUI
