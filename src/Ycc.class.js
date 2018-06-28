@@ -141,7 +141,7 @@
 	win.Ycc.prototype._initStageEvent = function () {
 		var self = this;
 		// 代理的原生鼠标事件
-		var proxyEventTypes = ["mousemove","mousedown","mouseup","click","mouseenter","mouseout"];
+		/*var proxyEventTypes = ["mousemove","mousedown","mouseup","click","mouseenter","mouseout"];
 		for(var i = 0;i<proxyEventTypes.length;i++){
 			this.ctx.canvas.addEventListener(proxyEventTypes[i],function (e) {
 				
@@ -312,7 +312,248 @@
 				if(!layer.enableEventManager) continue;
 				layer.triggerListener(yccEvent.type,yccEvent);
 			}
+		});*/
+		
+		
+		
+		
+		
+		
+		///// 重构事件系统 /////////////////////////////////////////////////////////////////
+		// 鼠标按下的yccEvent
+		var mouseDownEvent = null;
+		// 鼠标抬起的yccEvent
+		var mouseUpEvent = null;
+		// 拖动是否触发的标志
+		var dragStartFlag = false;
+		
+		/**
+		 * 需求实现：
+		 * 1、事件传递给所有图层
+		 * 2、事件传递给最上层UI
+		 * 3、记录按下时鼠标的位置，及按下时鼠标所指的UI
+		 * */
+		this.ctx.canvas.addEventListener('mousedown',function (e) {
+			console.log(e.type,'...');
+			// 当前鼠标在canvas中的绝对位置
+			var x = parseInt(e.clientX - self.ctx.canvas.getBoundingClientRect().left),
+				y=parseInt(e.clientY - self.ctx.canvas.getBoundingClientRect().top);
+			
+			
+			// 将事件传递给图层，只传递给开启了事件系统的图层
+			triggerLayerEvent(e.type,{
+				type:e.type,
+				x:x,
+				y:y
+			});
+			
+			// 将事件传递给UI
+			// 鼠标所指的顶层UI
+			var ui = self.getUIFromPointer(new Ycc.Math.Dot(x,y));
+			if(ui){
+				ui.triggerListener(e.type,new Ycc.Event({
+					type:e.type,
+					x:x,
+					y:y,
+					target:ui
+				}));
+			}
+			mouseDownEvent = new Ycc.Event({x:x,y:y,type:e.type,target:ui});
+			
+			/*Ycc.Event.mouseDownEvent = new Ycc.Event({x:x,y:y,type:e.type,target:ui});
+			if(ui) Ycc.Event.mouseDownEvent.targetDeltaPosition = new Ycc.Math.Dot(x-ui.getAbsolutePosition().x,y-ui.getAbsolutePosition().y);
+			Ycc.Event.mouseUpEvent = null;
+			Ycc.Event.dragStartFlag = false;*/
 		});
+		
+		/**
+		 * 需求实现：
+		 * 1、事件传递给所有图层
+		 * 2、事件传递给最上层UI
+		 * 3、如果move时，鼠标为按下状态，触发一次所有图层的dragstart事件
+		 * 4、如果move时，鼠标为按下状态，触发一次 鼠标按下时UI 的dragstart事件
+		 * 5、如果move时，鼠标为按下状态，触发所有图层的dragging事件
+		 * 6、如果move时，鼠标为按下状态，触发 鼠标按下时UI 的dragging事件
+		 * */
+		this.ctx.canvas.addEventListener('mousemove',function (e) {
+			console.log(e.type,'...');
+			// 坐标
+			var x = parseInt(e.clientX - self.ctx.canvas.getBoundingClientRect().left);
+			var y = parseInt(e.clientY - self.ctx.canvas.getBoundingClientRect().top);
+			
+			// 将事件传递给图层，只传递给开启了事件系统的图层
+			triggerLayerEvent(e.type,{
+				type:e.type,
+				x:x,
+				y:y
+			});
+			
+			// 将事件传递给最上层的UI
+			var ui= self.getUIFromPointer(new Ycc.Math.Dot(x,y));
+			// 触发最上层ui的mousemove事件
+			ui&&ui.triggerListener("mousemove",new Ycc.Event({
+				type:"mousemove",
+				x:x,
+				y:y,
+				target:ui
+			}));
+			
+			// 如果鼠标正处于按下状态，则模拟触发dragging事件
+			if(mouseDownEvent){
+				// 判断是否真的移动
+				if(mouseDownEvent && e.x===mouseDownEvent.x&&e.y===mouseDownEvent.y) return;
+				// 解决webkit内核mouseup自动触发mousemove的BUG
+				if(mouseUpEvent && e.x===mouseDownEvent.x&&e.y===mouseDownEvent.y) return;
+				
+				// dragging之前，触发一次dragstart事件
+				if(!dragStartFlag){
+					// 触发图层dragstart
+					triggerLayerEvent('dragstart',{
+						type:"dragstart",
+						x:mouseDownEvent.x,
+						y:mouseDownEvent.y
+					});
+					// 触发顶层UI dragstart
+					// 将事件传递给UI，需判断是否有顶层UI
+					mouseDownEvent.target&&mouseDownEvent.target.triggerListener("dragstart",new Ycc.Event({
+						type:"dragstart",
+						x:mouseDownEvent.x,
+						y:mouseDownEvent.y,
+						target:mouseDownEvent.target
+					}));
+					// 设置标志位
+					dragStartFlag = true;
+				}
+				
+				// 触发图层的dragging事件，只传递给开启了事件系统的图层
+				triggerLayerEvent("dragging",{
+					type:"dragging",
+					x:x,
+					y:y
+				});
+				// 触发顶层UI dragging
+				// 将事件传递给UI，需判断是否有顶层UI
+				mouseDownEvent.target&&mouseDownEvent.target.triggerListener("dragging",new Ycc.Event({
+					type:"dragging",
+					x:x,
+					y:y,
+					target:mouseDownEvent.target
+				}));
+			}
+			
+		});
+		
+		/**
+		 * 需求实现：
+		 * 1、事件传递给所有图层
+		 * 2、事件传递给 鼠标按下时所指的UI
+		 * 3、清除按下时鼠标的位置，及按下时鼠标所指的UI
+		 * */
+		this.ctx.canvas.addEventListener('mouseup',function (e) {
+			console.log(e.type,'...');
+			// 当前鼠标在canvas中的绝对位置
+			var x = parseInt(e.clientX - self.ctx.canvas.getBoundingClientRect().left),
+				y=parseInt(e.clientY - self.ctx.canvas.getBoundingClientRect().top);
+			
+			// 此处的UI为鼠标按下时的UI
+			var ui = mouseDownEvent.target;
+			
+			// 将事件传递给图层，只传递给开启了事件系统的图层
+			triggerLayerEvent(e.type,{
+				type:e.type,
+				x:x,
+				y:y
+			});
+			
+			// 将事件传递给UI
+			ui&&ui.triggerListener(e.type,new Ycc.Event({
+				type:e.type,
+				x:x,
+				y:y,
+				target:ui
+			}));
+			
+			mouseDownEvent = null;
+			mouseUpEvent = new Ycc.Event({x:x,y:y,type:e.type});
+			
+			// 如果存在拖拽标志位，抬起鼠标时需要发送dragend事件
+			if(dragStartFlag){
+				dragStartFlag = false;
+				triggerLayerEvent('dragend',{
+					type:"dragend",
+					x:e.x,
+					y:e.y
+				});
+				// 触发UI的dragend
+				// 将事件传递给UI，需判断是否有顶层UI
+				ui&&ui.triggerListener("dragend",new Ycc.Event({
+					type:"dragend",
+					x:e.x,
+					y:e.y,
+					target:ui
+				}));
+			}
+		});
+
+		this.ctx.canvas.addEventListener('click',function (e) {
+			console.log(e.type,'...');
+			// 当前鼠标在canvas中的绝对位置
+			var x = parseInt(e.clientX - self.ctx.canvas.getBoundingClientRect().left),
+				y=parseInt(e.clientY - self.ctx.canvas.getBoundingClientRect().top);
+			
+			// 鼠标所指的顶层UI
+			var ui = self.getUIFromPointer(new Ycc.Math.Dot(x,y));
+			
+			// 将事件传递给图层，只传递给开启了事件系统的图层
+			triggerLayerEvent(e.type,{
+				type:e.type,
+				x:x,
+				y:y
+			});
+			
+			// 将事件传递给UI
+			ui&&ui.triggerListener(e.type,new Ycc.Event({
+				type:e.type,
+				x:x,
+				y:y,
+				target:ui
+			}));
+		});
+		// 若鼠标超出舞台，给所有图层广播一个mouseup事件，解决拖拽超出舞台的问题。
+		this.ctx.canvas.addEventListener("mouseout",function (e) {
+			var yccEvent = new Ycc.Event({
+				type:"mouseup",
+				x:parseInt(e.clientX - self.ctx.canvas.getBoundingClientRect().left),
+				y:parseInt(e.clientY - self.ctx.canvas.getBoundingClientRect().top)
+			});
+			if(yccEvent.x>parseInt(this.width)) yccEvent.x = parseInt(this.width);
+			if(yccEvent.x<0) yccEvent.x=0;
+			if(yccEvent.y>parseInt(this.height)) yccEvent.y = parseInt(this.height);
+			if(yccEvent.y<0) yccEvent.y=0;
+			
+			for(var i=self.layerList.length-1;i>=0;i--){
+				var layer = self.layerList[i];
+				if(!layer.enableEventManager) continue;
+				layer.triggerListener(yccEvent.type,yccEvent);
+			}
+		});
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		////重构结束////////////////////////////////////////////////////
 		
 		
 		/**

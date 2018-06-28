@@ -41,13 +41,13 @@
 		 * 鼠标按下的ycc事件
 		 * @type {Ycc.Event}
 		 */
-		this.mouseDownYccEvent = null;
+		// this.mouseDownYccEvent = null;
 
 		/**
 		 * 鼠标抬起的ycc事件
 		 * @type {Ycc.Event}
 		 */
-		this.mouseUpYccEvent = null;
+		// this.mouseUpYccEvent = null;
 
 		/**
 		 * 是否阻止向下传递。默认为false，不阻止
@@ -67,7 +67,7 @@
 		 * 该属性只在事件类型为mousedown、dragstart、dragging时有效
 		 * @type {Ycc.Math.Dot|null}
 		 */
-		this.targetDeltaPosition = null;
+		// this.targetDeltaPosition = null;
 		
 		if(Ycc.utils.isObj(type)){
 			Ycc.utils.mergeObject(this,type);
@@ -78,19 +78,19 @@
 	 * 鼠标按下事件，全局保存，若存在，则表明鼠标处于按下状态
 	 * @type {Ycc.Event}
 	 */
-	Ycc.Event.mouseDownEvent = null;
+	// Ycc.Event.mouseDownEvent = null;
 
 	/**
 	 * 鼠标抬起事件，全局保存，若存在，则表明鼠标处于抬起状态
 	 * @type {Ycc.Event}
 	 */
-	Ycc.Event.mouseUpEvent = null;
+	// Ycc.Event.mouseUpEvent = null;
 	
 	/**
 	 * 拖拽开始的标志位
 	 * @type {null}
 	 */
-	Ycc.Event.dragStartFlag = false;
+	// Ycc.Event.dragStartFlag = false;
 	
 	
 	
