@@ -382,7 +382,101 @@
 	win.Ycc.prototype._initMobileStageEvent = function () {
 		var self = this;
 		var tracer = new win.Ycc.TouchLifeTracer({target:self.ctx.canvas});
-		win.tracer = tracer;
+		var startUI = null;
+		
+		tracer.onlifestart = function (life) {
+			// 多个触摸点的情况
+			if(tracer.currentLifeList.length>1){
+				return this;
+			}
+			
+			// 坐标
+			var x = parseInt(life.startTouchEvent.clientX - self.ctx.canvas.getBoundingClientRect().left);
+			var y = parseInt(life.startTouchEvent.clientY - self.ctx.canvas.getBoundingClientRect().top);
+			startUI = self.getUIFromPointer(new Ycc.Math.Dot(x,y));
+
+			// 将事件传递给图层，只传递给开启了事件系统的图层
+			triggerLayerEvent("dragstart",{
+				type:"dragstart",
+				x:x,
+				y:y
+			});
+			
+			ui&&ui.triggerListener('dragstart',new Ycc.Event({
+				x:x,
+				y:y,
+				target:startUI
+			}))
+			
+		};
+		tracer.onlifechange = function (life) {
+			if(tracer.currentLifeList.length>1){
+				return this;
+			}
+			
+			if(life.moveTouchEventList.length>0){
+				// 坐标
+				var x = parseInt(life.moveTouchEventList.slice(-1)[0].clientX - self.ctx.canvas.getBoundingClientRect().left);
+				var y = parseInt(life.moveTouchEventList.slice(-1)[0].clientY - self.ctx.canvas.getBoundingClientRect().top);
+				// 将事件传递给图层，只传递给开启了事件系统的图层
+				triggerLayerEvent("dragging",{
+					type:"dragging",
+					x:x,
+					y:y
+				});
+				// 将事件转发给start时的UI
+				startUI&&startUI.triggerListener("dragging",new Ycc.Event({
+					type:"dragging",
+					x:x,
+					y:y,
+					target:startUI
+				}));
+			}
+			
+			
+		};
+		tracer.onlifeend = function (life) {
+			// 若某个触摸结束，当前触摸点个数为1，说明之前的操作为多点触控
+			if(tracer.currentLifeList.length>=1){
+				return this;
+			}
+			
+			if(life.moveTouchEventList.length>0){
+				// 坐标
+				var x = parseInt(life.moveTouchEventList.slice(-1)[0].clientX - self.ctx.canvas.getBoundingClientRect().left);
+				var y = parseInt(life.moveTouchEventList.slice(-1)[0].clientY - self.ctx.canvas.getBoundingClientRect().top);
+				// 将事件传递给图层，只传递给开启了事件系统的图层
+				triggerLayerEvent("dragging",{
+					type:"dragging",
+					x:x,
+					y:y
+				});
+				// 将事件转发给start时的UI
+				startUI&&startUI.triggerListener("dragging",new Ycc.Event({
+					type:"dragging",
+					x:x,
+					y:y,
+					target:startUI
+				}));
+				startUI = null;
+			}
+			
+		};
+		
+		
+		/**
+		 * 触发图层事件
+		 * @param type	事件类型字符串
+		 * @param eventOpt	事件初始构造对象
+		 */
+		function triggerLayerEvent(type,eventOpt){
+			eventOpt=eventOpt||{};
+			for(var i=self.layerList.length-1;i>=0;i--){
+				var layer = self.layerList[i];
+				if(!layer.enableEventManager) continue;
+				layer.enableEventManager&&layer.triggerListener(type,new Ycc.Event(eventOpt));
+			}
+		}
 	};
 	
 	
