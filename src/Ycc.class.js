@@ -230,6 +230,7 @@
 						x:mouseDownEvent.x,
 						y:mouseDownEvent.y
 					});
+					console.log('顶层UI start ...',mouseDownEvent.target);
 					// 触发顶层UI dragstart
 					// 将事件传递给UI，需判断是否有顶层UI
 					mouseDownEvent.target&&mouseDownEvent.target.triggerListener("dragstart",new Ycc.Event({
@@ -376,7 +377,7 @@
 	/**
 	 * 初始化舞台移动端的事件监听器
 	 * 所有事件均由舞台转发，转发的坐标均为绝对坐标。
-	 * @todo 移动端事件系统
+	 * @todo 移动端事件系统  bug need fix  选框dragging
 	 * @private
 	 */
 	win.Ycc.prototype._initMobileStageEvent = function () {
@@ -446,14 +447,14 @@
 				var x = parseInt(life.moveTouchEventList.slice(-1)[0].clientX - self.ctx.canvas.getBoundingClientRect().left);
 				var y = parseInt(life.moveTouchEventList.slice(-1)[0].clientY - self.ctx.canvas.getBoundingClientRect().top);
 				// 将事件传递给图层，只传递给开启了事件系统的图层
-				triggerLayerEvent("dragging",{
-					type:"dragging",
+				triggerLayerEvent("dragend",{
+					type:"dragend",
 					x:x,
 					y:y
 				});
 				// 将事件转发给start时的UI
-				startUI&&startUI.triggerListener("dragging",new Ycc.Event({
-					type:"dragging",
+				startUI&&startUI.triggerListener("dragend",new Ycc.Event({
+					type:"dragend",
 					x:x,
 					y:y,
 					target:startUI
