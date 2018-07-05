@@ -176,14 +176,12 @@
 
 		var hasDragged = false;
 		layer.onclick = function (e) { };
-		layer.onmousedown = function (e) {
-			ui = new Ycc.UI.Line();
-			layer.addUI(ui);
-		};
 
 		var startPos = null;
 		layer.ondragstart = function (e) {
 			startPos=new Ycc.Math.Dot(e);
+			ui = new Ycc.UI.Line();
+			layer.addUI(ui);
 		};
 
 		layer.ondragging = function (e) {
@@ -193,7 +191,7 @@
 			ycc.layerManager.reRenderAllLayerToStage();
 
 		};
-		layer.onmouseup = function (e) {
+		layer.ondragend = function (e) {
 			ui = null;
 			if(!hasDragged) return null;
 			ycc.photoManager.takePhoto();
@@ -211,7 +209,7 @@
 		var hasMoved = false;
 		var ui = null;
 		layer.onclick = function (e) {};
-		layer.onmousedown = function (e) {
+		layer.ondragstart = function (e) {
 			startDot = translateDotByScale(new Ycc.Math.Dot(e.x,e.y));
 			ui = new Ycc.UI.BrokenLine({color:"red",width:3});
 			ui.pointList.push(startDot);
@@ -225,7 +223,7 @@
 			ycc.layerManager.reRenderAllLayerToStage();
 //			startDot = moveDot;
 		};
-		layer.onmouseup = function (e) {
+		layer.ondragend = function (e) {
 			if(!hasMoved) return null;
 			ycc.photoManager.takePhoto();
 			showPhotoToHtml();
@@ -241,17 +239,16 @@
 		var hasDragged = false;
 		var rect;
 		layer.onclick = function (e) {};
-		layer.onmousedown = function () {
+
+		var startPos = null,
+			startRect = null;
+		layer.ondragstart = function (e) {
 			rect = new Ycc.UI.Rect({
 				fill:false,
 				color:"red"
 			});
 			layer.addUI(rect);
-		};
 
-		var startPos = null,
-			startRect = null;
-		layer.ondragstart = function (e) {
 			startPos=new Ycc.Math.Dot(e);
 			startRect=new Ycc.Math.Rect(rect.rect);
 		};
@@ -263,7 +260,7 @@
 			rect.rect = new Ycc.Math.Rect(startDot.x,startDot.y,endDot.x-startDot.x,endDot.y-startDot.y);
 			ycc.layerManager.reRenderAllLayerToStage();
 		};
-		layer.onmouseup = function (e) {
+		layer.ondragend = function (e) {
 			if(!hasDragged) return null;
 			ycc.photoManager.takePhoto();
 			showPhotoToHtml();
@@ -281,17 +278,13 @@
 
 		var ui;
 		layer.onclick = function (e) {};
-		layer.onmousedown = function () {
-			ui = new Ycc.UI.Ellipse();
-			layer.addUI(ui);
-		};
-
-
-		layer.onclick = function (e) {};
 
 		var startPos = null,
 			startRect = null;
 		layer.ondragstart = function (e) {
+			ui = new Ycc.UI.Ellipse();
+			layer.addUI(ui);
+
 			startPos=new Ycc.Math.Dot(e);
 			startRect=new Ycc.Math.Rect(ui.rect);
 		};
@@ -308,7 +301,7 @@
 			ycc.layerManager.reRenderAllLayerToStage();
 
 		};
-		layer.onmouseup = function (e) {
+		layer.ondragend = function (e) {
 			if(!hasDragged) return null;
 			ycc.photoManager.takePhoto();
 			showPhotoToHtml();
@@ -321,8 +314,8 @@
 	 */
 	function gou() {
 		layer.ondragging = function (e) {};
-		layer.onmouseup = function (e) {};
-		layer.onclick = function (e) {
+		layer.ondragend = function (e) {};
+		layer.onclick = layer.ondragstart = function (e) {
 			var endDot = translateDotByScale(new Ycc.Math.Dot(e.x-22,e.y-56));
 			layer.addUI(new Ycc.UI.Image({res:imageRes.tick,rect:new Ycc.Math.Rect(endDot.x,endDot.y,64,64),fillMode:"scale"}));
 			ycc.layerManager.reRenderAllLayerToStage();
@@ -336,8 +329,8 @@
 	 */
 	function cross(){
 		layer.ondragging = function (e) {};
-		layer.onmouseup = function (e) {};
-		layer.onclick = function (e) {
+		layer.ondragend = function (e) {};
+		layer.onclick = layer.ondragstart = function (e) {
 			var endDot = translateDotByScale(new Ycc.Math.Dot(e.x-30,e.y-38));
 			layer.addUI(new Ycc.UI.Image({res:imageRes.cross,rect:new Ycc.Math.Rect(endDot.x,endDot.y,64,64),fillMode:"scale"}));
 			ycc.layerManager.reRenderAllLayerToStage();
@@ -349,8 +342,8 @@
 
 	function text() {
 		layer.ondragging = function (e) {};
-		layer.onmouseup = function (e) {};
-		layer.onclick = function (e) {
+		layer.ondragend = function (e) {};
+		layer.onclick = layer.ondragstart = function (e) {
 			var endDot = translateDotByScale([e.x,e.y]);
 			layer.addUI(new Ycc.UI.MultiLineText({content:"1111111111111111111\n222222222222222222222",rect:new Ycc.Math.Rect(e.x,e.y,500,0)}));
 			ycc.layerManager.reRenderAllLayerToStage();
