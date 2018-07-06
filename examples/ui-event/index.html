@@ -9,6 +9,15 @@
 </head>
 <body>
 
+<div class="tip">
+	<h3>示例说明：</h3>
+	<div>
+		1、这个示例是一个可以拖拽的文本UI，用于展示UI的事件。<br>
+		2、PC端可以在拖动鼠标改变文本的位置，移动端可以拖拽改变文本的位置。<br>
+	</div>
+	<br><br>
+</div>
+
 
 <div id="canvas">
 
@@ -47,18 +56,6 @@
 	//	全部绘制
 	ycc.layerManager.reRenderAllLayerToStage();
 
-	// 点击
-	ui.addListener("click",function (e) {
-		console.log("我是",this.yccClass.name,"我",e.type,e);
-	});
-	ui.onmousemove = function (e) {
-//		console.log("我是",this.yccClass.name,"我",e.type,e);
-	};
-	// 另一种方式的监听
-	ui.onclick = function (e) {
-		console.log("我是",this.yccClass.name,"我方式二监听",e.type,e);
-	};
-
 
 	// 拖拽
 	var startPos = null,
@@ -72,11 +69,6 @@
 		this.rect.x = startRect.x+e.x-startPos.x;
 		this.rect.y = startRect.y+e.y-startPos.y;
 		ycc.layerManager.reRenderAllLayerToStage();
-	};
-
-
-	ui.ontouchstart = function (e) {
-		console.log("我是",this.yccClass.name,"我",e.type,e);
 	};
 
 </script>

@@ -7,18 +7,12 @@
 		*{margin: 0;padding: 0;}
 		body{
 			position: relative;
-			background-color: #ccc;
 		}
 		#canvas{
 			position: relative;
-			left: 50%;
-			margin-left: -400px;
 		}
 		.ctrl{
 			position: relative;
-			width:800px;
-			left: 50%;
-			margin-left: -400px;
 		}
 
 		#photos canvas{
@@ -31,13 +25,19 @@
 
 </head>
 <body>
+
+
+<div class="tip">
+	<h3>示例说明：</h3>
+	<div>
+		1、这个示例是一个简单的画板，类似QQ等截图软件截图后的编辑操作。<br>
+		2、点击不同的功能按钮后，PC端可以在绘图区拖动鼠标，移动端可以拖拽来查看不同的操作。<br>
+		3、每次操作完成之后，下方会生成当前的历史记录，以图片的形式显示。<br>
+	</div>
+	<br><br>
+</div>
+
 <div>
-	<br>
-	<br>
-	<h3>基于ycc简单的编辑器，项目地址：<a href="https://github.com/lizhiqianduan/ycc" target="_blank">ycc github</a></h3>
-	<br>
-	<br>
-	<br>
 	<div class="ctrl">
 		<button onclick="goBack()">回退</button>
 		&nbsp;&nbsp;
