@@ -126,10 +126,87 @@
 	 * 类初始化
 	 */
 	win.Ycc.prototype.init = function () {
-		if(this.isMobile)
-			this._initMobileStageEvent();
-		else
-			this._initStageEvent();
+		// if(this.isMobile)
+		// 	this._initMobileStageEvent();
+		// else
+		// 	this._initStageEvent();
+		
+		
+		var self = this;
+		// 鼠标/触摸点开始拖拽时，所指向的UI对象
+		var dragstartUI = null;
+		var gesture = new Ycc.Gesture({target:this.ctx.canvas});
+		gesture.addListener('tap',gestureListener);
+		gesture.addListener('longtap',gestureListener);
+		gesture.addListener('doubletap',gestureListener);
+		gesture.addListener('swipeleft',gestureListener);
+		gesture.addListener('swiperight',gestureListener);
+		gesture.addListener('swipeup',gestureListener);
+		gesture.addListener('swipedown',gestureListener);
+		gesture.addListener('dragstart',dragstartListener);
+		gesture.addListener('dragging',draggingListener);
+		gesture.addListener('dragend',dragendListener);
+		
+		
+		function dragstartListener(e) {
+			// 在canvas中的绝对位置
+			var x = parseInt(e.clientX - self.ctx.canvas.getBoundingClientRect().left),
+				y = parseInt(e.clientY - self.ctx.canvas.getBoundingClientRect().top);
+			
+			dragstartUI = self.getUIFromPointer(new Ycc.Math.Dot(x,y));
+			triggerLayerEvent(e.type,x,y);
+			dragstartUI&&triggerUIEvent(e.type,x,y,dragstartUI);
+		}
+		function draggingListener(e) {
+			// 在canvas中的绝对位置
+			var x = parseInt(e.clientX - self.ctx.canvas.getBoundingClientRect().left),
+				y = parseInt(e.clientY - self.ctx.canvas.getBoundingClientRect().top);
+			
+			triggerLayerEvent(e.type,x,y);
+			dragstartUI&&triggerUIEvent(e.type,x,y,dragstartUI);
+		}
+		function dragendListener(e) {
+			// 在canvas中的绝对位置
+			var x = parseInt(e.clientX - self.ctx.canvas.getBoundingClientRect().left),
+				y = parseInt(e.clientY - self.ctx.canvas.getBoundingClientRect().top);
+			
+			triggerLayerEvent(e.type,x,y);
+			dragstartUI&&triggerUIEvent(e.type,x,y,dragstartUI);
+		}
+		
+		// 通用监听
+		function gestureListener(e) {
+			// console.log(e);
+			// 在canvas中的绝对位置
+			var x = parseInt(e.clientX - self.ctx.canvas.getBoundingClientRect().left),
+				y = parseInt(e.clientY - self.ctx.canvas.getBoundingClientRect().top);
+			
+			var ui = self.getUIFromPointer(new Ycc.Math.Dot(x,y));
+			triggerLayerEvent(e.type,x,y);
+			ui&&triggerUIEvent(e.type,x,y,ui);
+		}
+		
+		function triggerLayerEvent(type,x,y){
+			for(var i=self.layerList.length-1;i>=0;i--){
+				var layer = self.layerList[i];
+				if(!layer.enableEventManager) continue;
+				layer.enableEventManager&&layer.triggerListener(type,new Ycc.Event({
+					type:type,
+					x:x,
+					y:y
+				}));
+			}
+		}
+		
+		function triggerUIEvent(type,x,y,ui){
+			ui.triggerListener(type,new Ycc.Event({
+				x:x,
+				y:y,
+				type:type,
+				target:ui
+			}));
+		}
+		
 	};
 	
 	/**
