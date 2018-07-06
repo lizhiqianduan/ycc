@@ -188,7 +188,7 @@
 		 * 3、记录按下时鼠标的位置，及按下时鼠标所指的UI
 		 * */
 		this.option.target.addEventListener('mousedown',function (e) {
-			console.log(e.type,'...');
+			// console.log(e.type,'...');
 			mouseDownEvent = self._createEventData(e);
 			longTapTimeoutID = setTimeout(function () {
 				console.log('longtap',Date.now(),'...');
@@ -207,7 +207,7 @@
 		 * 6、如果move时，鼠标为按下状态，触发 鼠标按下时UI 的dragging事件
 		 * */
 		this.option.target.addEventListener('mousemove',function (e) {
-			console.log(e.type,'...');
+			// console.log(e.type,'...');
 			
 			// 如果鼠标正处于按下状态，则模拟触发dragging事件
 			if(mouseDownEvent){
@@ -240,7 +240,7 @@
 		 * 3、清除按下时鼠标的位置，及按下时鼠标所指的UI
 		 * */
 		this.option.target.addEventListener('mouseup',function (e) {
-			console.log(e.type,'...');
+			// console.log(e.type,'...');
 			
 			mouseUpEvent = self._createEventData(e);
 			
