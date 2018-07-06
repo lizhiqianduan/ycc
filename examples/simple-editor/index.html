@@ -11,12 +11,21 @@
 		#canvas{
 			position: relative;
 		}
+		#canvas canvas{
+			border:1px solid #ccc;
+		}
+
 		.ctrl{
 			position: relative;
 		}
 
+		#photos{
+			border-top:1px solid #ccc;
+			margin-top: 10px;
+			padding-top:10px;
+		}
 		#photos canvas{
-			width:200px;
+			width:80px;
 		}
 		h3{
 			text-align: center;
@@ -57,6 +66,7 @@
 	<div id="canvas">
 	</div>
 	<br>
+	历史操作：
 	<div id="photos"></div>
 </div>
 
@@ -97,8 +107,8 @@
 
 		// 新建渲染舞台
 		var canvas = document.createElement("canvas");
-		canvas.width = imageRes.paper.width;
-		canvas.height = imageRes.paper.height;
+		canvas.width = 300;//imageRes.paper.width;
+		canvas.height = 200;//imageRes.paper.height;
 		originWidth = canvas.width;
 		document.getElementById("canvas").appendChild(canvas);
 
@@ -131,8 +141,8 @@
 		dom.innerHTML = "";
 		for(var i = 0;i<ycc.photoManager._photos.length;i++){
 			var canvas = document.createElement("canvas");
-			canvas.width = 800;
-			canvas.height = 600;
+			canvas.width = 300;
+			canvas.height = 200;
 			canvas.create_time = ycc.photoManager._photos[i].createTime;
 			var ctx = canvas.getContext('2d');
 			ctx.putImageData(ycc.photoManager._photos[i].imageData,0,0);

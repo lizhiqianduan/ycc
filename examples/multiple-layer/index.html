@@ -6,7 +6,6 @@
 	<link href="https://cdn.bootcss.com/pure/1.0.0/pure.css" rel="stylesheet">
 	<style>
 		#stage{
-			width:620px;
 			float:left;
 		}
 		canvas{
@@ -41,7 +40,7 @@
 <div id="stage">
 	<div>绘图区（拖动鼠标绘制） <button onclick="newLayer()">新建图层</button></div>
 	<br>
-	<canvas width="600" height="400"></canvas>
+	<canvas width="300" height="150"></canvas>
 	<br>
 	<span>注：图层原本为透明色，灰色仅仅是为了显示效果</span>
 </div>
@@ -61,12 +60,8 @@
 <!-- 新增图层的模板 -->
 <div  id="layer-box-tpl" style="display: none;">
 	<div class="layer-box" id="__tplID__"
-		 style="margin-top: 10px;border-bottom:1px solid #000;padding:10px 0;width:400px;">
-		<canvas width="600" height="400"></canvas>
-		<div style="float: right;width: 200px;">
-			<button class="pure-button" onclick="deleteLayer('__id__')">删除图层</button><br><br>
-			<button class="pure-button" onclick="showLayer('__id__')">图层显隐</button><br><br>
-		</div>
+		 style="margin-top: 10px;border-bottom:1px solid #000;padding:10px 0;width:300px;">
+		<canvas width="300" height="150"></canvas>
 		<div class="props">
 			<div class="title" style="font-weight: bold;">图层属性</div>
 			<form class="pure-form pure-g">
@@ -88,6 +83,11 @@
 				</div>
 			</form>
 		</div>
+		<div>
+			<button class="pure-button" onclick="deleteLayer('__id__')">删除图层</button>
+			<button class="pure-button" onclick="showLayer('__id__')">图层显隐</button>
+		</div>
+
 	</div>
 </div>
 

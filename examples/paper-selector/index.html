@@ -14,7 +14,7 @@
 		1、这个示例展示框选操作，实质是一个框选的UI。<br>
 		2、每次点击框选按钮后，PC端可以在绘图区拖动鼠标框选，移动端可以拖拽框选。<br>
 		3、框选结束后，可以拖动红色区域改变选区位置，也可以拖动边角更改选框大小。<br>
-		4、选区下方的按钮没有监听事件，点击无效。<br>
+		4、选区下方可以添加按钮，这里的代码被注释了。<br>
 	</div>
 
 
@@ -35,7 +35,7 @@
 
 
 	var ycc = new Ycc();
-	var maxWidth = 1024;
+	var maxWidth = 300;
 	var scale = 1;
 
 	ycc.loader.loadImageList({paper:"./paper.gif"},onLoad);
@@ -85,7 +85,7 @@
 					rectBgAlpha:0.2
 				});
 				this.addUI(cropRect);
-				cropRect.setCtrlBtns([
+				/*cropRect.setCtrlBtns([
 					{
 						content:"保存",
 						onclick:function () {
@@ -97,7 +97,7 @@
 					{content:"查看当前框图"},
 					{content:"查看所有框图"},
 					{content:"删除"}
-				]);
+				]);*/
 
 
 			},
