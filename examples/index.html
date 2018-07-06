@@ -27,12 +27,32 @@
 		.content iframe{
 			height:100%;
 		}
+
+
+
+		@media screen and (max-width: 640px) {
+			.sidebar{
+				position: relative;
+				width:100%;
+			}
+			.content{
+				position: relative;
+				width:100%;
+				margin-left: 0;
+				border-top:1px solid #ccc;
+				margin-top: 10px;
+			}
+
+			.content iframe{
+				height:auto;
+			}
+		}
 	</style>
 </head>
 <body>
 
 <div class="pure-g ">
-	<div class="pure-menu pure-menu-scrollable custom-restricted-width pure-u-1-5 sidebar">
+	<div class="pure-menu pure-menu-scrollable custom-restricted-width pure-u-1-5 sidebar" id="nav-bar">
 		<span class="pure-menu-heading">示例入口页</span>
 		<hr>
 		<ul class="pure-menu-list">
@@ -56,7 +76,7 @@
 		</div>
 	</div>
 	<div class="pure-u-4-5 content">
-		<iframe src="./multiple-layer/" frameborder="0" id="demo" name="demo" class="pure-u-1"></iframe>
+		<iframe src="./multiple-layer/" frameborder="0" id="demo" name="demo" class="pure-u-1" onload="javascript:iframeOnload()"></iframe>
 	</div>
 </div>
 
@@ -65,7 +85,18 @@
 	function goToDemo(url,dom){
 		console.log(url,dom);
 		document.demo.location.href = url;
+	}
 
+
+	function iframeOnload(e) {
+		document.demo.frameElement.style.height=0;
+		setTimeout(function () {
+			console.log(document.demo.document.documentElement.scrollHeight,document.demo.document.documentElement.clientHeight);
+			// 嵌套子窗口的高度
+			document.demo.frameElement.style.height = document.demo.document.documentElement.scrollHeight+'px';
+			// 跳转到子窗口位置
+			document.documentElement.scrollTop=document.getElementById('nav-bar').offsetHeight-50;
+		},0);
 	}
 </script>
 
