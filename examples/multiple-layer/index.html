@@ -148,7 +148,7 @@
 				ui.computeUIProps();
 				ycc.layerManager.reRenderAllLayerToStage();
 			};
-			layer.onmouseup = function (e) {
+			layer.ondragend = function (e) {
 				if(!hasMoved) return null;
 				renderLayerToHtml();
 				ycc.photoManager.takePhoto();
