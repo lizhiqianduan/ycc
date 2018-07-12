@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
 	<meta charset="UTF-8">
+	<meta name=viewport content="width=device-width,initial-scale=1,user-scalable=0,viewport-fit=cover">
 	<title>多图层示例</title>
 	<link href="https://cdn.bootcss.com/pure/1.0.0/pure.css" rel="stylesheet">
 	<style>
@@ -15,13 +16,25 @@
 			float:left;
 		}
 		#layer canvas{
-			width:190px;
+			width:80px;
+			margin-top: 5px;
+		}
+
+		.layer-box table input{
+			width:30px;
+		}
+		.layer-box table{
+			text-align: center;
 		}
 
 	</style>
 </head>
 <body>
-
+<div style="clear: both; padding: 10px 0;">
+	<a href="../" style="text-align: center;width: 80%; height: 30px; display: block;margin-left: 10%; background-color: #ccc; line-height: 30px;">
+		返回首页
+	</a>
+</div>
 <div class="tip">
 
 	<h3>示例说明：</h3>
@@ -61,8 +74,8 @@
 <div  id="layer-box-tpl" style="display: none;">
 	<div class="layer-box" id="__tplID__"
 		 style="margin-top: 10px;border-bottom:1px solid #000;padding:10px 0;width:300px;">
-		<canvas width="300" height="150"></canvas>
-		<div class="props">
+		<!--<canvas width="300" height="150"></canvas>-->
+		<!--<div class="props">
 			<div class="title" style="font-weight: bold;">图层属性</div>
 			<form class="pure-form pure-g">
 				<div class="pure-control-group pure-u-1-2 pure-g">
@@ -86,10 +99,43 @@
 		<div>
 			<button class="pure-button" onclick="deleteLayer('__id__')">删除图层</button>
 			<button class="pure-button" onclick="showLayer('__id__')">图层显隐</button>
-		</div>
+		</div>-->
+
+
+
+
+		<table border="1" width="100%">
+
+			<tr>
+				<td>缩略图</td>
+				<td>id</td>
+				<!--<td>name</td>-->
+				<td >x</td>
+				<td>y</td>
+				<td>操作</td>
+			</tr>
+
+			<tr>
+				<td><canvas width="300" height="150"></canvas></td>
+				<td>__id__</td>
+				<!--<td>__name__</td>-->
+				<td>
+					<input type="number" value=__x__ onchange="propsOnChange(__id__,'x',parseInt(this.value))">
+				</td>
+				<td>
+					<input type="number" value=__y__ onchange="propsOnChange(__id__,'y',parseInt(this.value))">
+				</td>
+				<td>
+					<a href="javascript:void(0);" class="" onclick="deleteLayer('__id__')">删除</a>
+					<a href="javascript:void(0);" class="" onclick="showLayer('__id__')">显隐</a>
+				</td>
+			</tr>
+
+		</table>
 
 	</div>
 </div>
+
 
 
 
