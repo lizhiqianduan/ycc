@@ -125,5 +125,36 @@
 	};
 	
 	
+	/**
+	 * 根据json数组绘制所有图层
+	 * @param jsonArray {[{option,ui[]}]}
+	 * @return {*}
+	 */
+	Ycc.LayerManager.prototype.renderAllLayerByJsonArray = function (jsonArray) {
+		if(!Ycc.utils.isArray(jsonArray)){
+			return console.error('jsonArray is not an Array!',jsonArray);
+		}
+		
+		var self = this;
+		for(var i=0;i<jsonArray.length;i++){
+			var layerConfig = jsonArray[i];
+			if(!Ycc.utils.isObj(layerConfig)){
+				return console.error('item in jsonArray should be an Object!',layerConfig);
+			}
+			
+			var layer = self.newLayer(layerConfig.option);
+			
+			for(var j=0;j<layerConfig.ui.length;j++){
+				var uiConfig = layerConfig.ui[j];
+				layer.addUI(new Ycc.UI[uiConfig.type](uiConfig.option));
+			}
+			
+			layer.render();
+			
+		}
+		
+	};
+	
+	
 	
 })(window.Ycc);

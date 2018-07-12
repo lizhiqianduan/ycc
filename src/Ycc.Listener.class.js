@@ -100,6 +100,12 @@
 		 * @type {function}
 		 */
 		this.ontouchend = null;
+
+		/**
+		 * 点击事件 的监听。默认为null
+		 * @type {function}
+		 */
+		this.ontap = null;
 	};
 	
 	

@@ -26,7 +26,12 @@
 	 	Ycc.Listener.call(this);
 
 	 	option = option || {};
-
+		
+		/**
+		 * 类型
+		 */
+	 	this.yccClass = Ycc.Layer;
+	 	
 		/**
 		 * 存储图层中的所有UI。UI的顺序，即为图层中的渲染顺序。
 		 * @type {Ycc.UI[]}

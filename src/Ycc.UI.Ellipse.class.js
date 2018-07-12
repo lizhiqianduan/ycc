@@ -13,10 +13,11 @@
 	 * 椭圆
 	 * @param option	{object}		所有可配置的配置项
 	 * @param option.rect	{Ycc.Math.Rect}	容纳区。会根据属性设置动态修改。
-	 * @param option.fill=true {boolean}	填充or描边
+	 * @param option.fill=false {boolean}	填充or描边
 	 * @param option.color=black {string} 圆的颜色
 	 * @param option.point {Ycc.Math.Dot} 圆心位置
-	 * @param option.r=black {number} 圆的半径
+	 * @param option.width=20 {number} 长轴
+	 * @param option.height=10 {number} 短轴
 	 * @constructor
 	 * @extends Ycc.UI.Base
 	 */

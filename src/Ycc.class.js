@@ -166,7 +166,7 @@
 			
 			dragstartUI = self.getUIFromPointer(new Ycc.Math.Dot(x,y));
 			triggerLayerEvent(e.type,x,y);
-			dragstartUI&&triggerUIEvent(e.type,x,y,dragstartUI);
+			dragstartUI&&dragstartUI.belongTo.enableEventManager&&triggerUIEvent(e.type,x,y,dragstartUI);
 		}
 		function draggingListener(e) {
 			// 在canvas中的绝对位置
@@ -174,7 +174,7 @@
 				y = parseInt(e.clientY - self.ctx.canvas.getBoundingClientRect().top);
 			
 			triggerLayerEvent(e.type,x,y);
-			dragstartUI&&triggerUIEvent(e.type,x,y,dragstartUI);
+			dragstartUI&&dragstartUI.belongTo.enableEventManager&&triggerUIEvent(e.type,x,y,dragstartUI);
 		}
 		function dragendListener(e) {
 			// 在canvas中的绝对位置
@@ -182,7 +182,7 @@
 				y = parseInt(e.clientY - self.ctx.canvas.getBoundingClientRect().top);
 			
 			triggerLayerEvent(e.type,x,y);
-			dragstartUI&&triggerUIEvent(e.type,x,y,dragstartUI);
+			dragstartUI&&dragstartUI.belongTo.enableEventManager&&triggerUIEvent(e.type,x,y,dragstartUI);
 			dragstartUI = null;
 		}
 		
@@ -195,7 +195,7 @@
 			
 			var ui = self.getUIFromPointer(new Ycc.Math.Dot(x,y));
 			triggerLayerEvent(e.type,x,y);
-			ui&&triggerUIEvent(e.type,x,y,ui);
+			ui&&ui.belongTo.enableEventManager&&triggerUIEvent(e.type,x,y,ui);
 		}
 		
 		function triggerLayerEvent(type,x,y){

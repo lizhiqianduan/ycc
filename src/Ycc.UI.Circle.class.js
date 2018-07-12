@@ -16,7 +16,7 @@
 	 * @param option.fill=true {boolean}	填充or描边
 	 * @param option.color=black {string} 圆的颜色
 	 * @param option.point {Ycc.Math.Dot} 圆心位置
-	 * @param option.r=black {number} 圆的半径
+	 * @param option.r=10 {number} 圆的半径
 	 * @constructor
 	 * @extends Ycc.UI.Base
 	 */
