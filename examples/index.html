@@ -58,6 +58,11 @@
 			console.log(url,dom);
 			document.demo.location.href = url;
 		}
+		window.onload = function () {
+			if(document.documentElement.clientWidth>=640){
+				goToDemo('./multiple-layer/');
+			}
+		}
 	</script>
 
 </head>
