@@ -1,0 +1,22 @@
+
+
+canvas{
+    background-color: #ccc;
+}
+.tip{
+
+}
+
+.return-btn{
+    display: none;
+    clear: both; padding: 10px 0;
+}
+.return-btn a{
+    text-align: center;width: 80%; height: 30px; display: block;margin-left: 10%; background-color: #ccc; line-height: 30px;
+}
+
+@media screen and (max-width: 640px) {
+    .return-btn{
+        display: block;
+    }
+}
