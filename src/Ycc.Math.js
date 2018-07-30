@@ -207,4 +207,65 @@
 	};
 	
 	
+	/**
+	 * 矩阵的构造方法。
+	 * @param data	{array}		矩阵所有行拼接的数组
+	 * @param m		{number}	行数
+	 * @param n		{number}	列数
+	 * @constructor
+	 */
+	Ycc.Math.Matrix = function (data,m,n) {
+		this.data 	= data;
+		this.m 		= m;
+		this.n		= n;
+	};
+	
+	/**
+	 * 矩阵点乘法
+	 * @param M	{Ycc.Math.Matrix}	另一个矩阵
+	 */
+	Ycc.Math.Matrix.prototype.dot = function (M) {
+		if(M.m!==this.n || M.n!==this.m)
+			return console.error('两个矩阵的行数和列数不对应，不能相乘！');
+		
+		var N = new Ycc.Math.Matrix([],this.m,this.m);
+		// 循环行
+		for(var i=1;i<=this.m;i++){
+			// 循环矩阵赋值
+			for(var k=1;k<=this.m;k++){
+				var temp =0;
+				// 循环列
+				for(var j=1;j<=this.n;j++){
+					temp += this.get(i,j)*M.get(j,k);
+				}
+				N.set(i,k,temp);
+			}
+			
+		}
+		return N;
+	};
+	
+	/**
+	 * 获取矩阵i行j列的元素。
+	 * 注：i，i下标从1开始
+	 * @param i
+	 * @param j
+	 * @return {number}
+	 */
+	Ycc.Math.Matrix.prototype.get = function (i, j) {
+		return this.data[(i-1)*this.n+j-1];
+	};
+	
+	/**
+	 * 设置矩阵i行j列的元素为val
+	 * 注：i，i下标从1开始
+	 * @param i
+	 * @param j
+	 * @param val
+	 */
+	Ycc.Math.Matrix.prototype.set = function (i, j, val) {
+		this.data[(i-1)*this.n+j-1] = val;
+	};
+	
+	
 })(window.Ycc);
