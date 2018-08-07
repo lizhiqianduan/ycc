@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name=viewport content="width=device-width,initial-scale=1,user-scalable=0,viewport-fit=cover">
+	<title>树结构示例文件</title>
+	<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<div class="return-btn">
+	<a href="../">
+		返回首页
+	</a>
+</div>
+<div class="tip">
+	<h3>示例说明：</h3>
+	<div>
+		这个示例用于测试类Ycc.Tree<br>
+	</div>
+	<br><br>
+</div>
+
+</body>
+</html>
+
+<script src="../../build/ycc.js"></script>
+
+<script>
+
+	var tree = new Ycc.Tree();
+
+	var subTrees = [];
+	for(var i=0;i<10;i++){
+		subTrees[i] = new Ycc.Tree();
+		subTrees[i].data = i;
+	}
+
+
+	subTrees[0].addChildTree(subTrees[3]);
+	subTrees[0].addChildTree(subTrees[2]);
+	subTrees[0].addChildTree(subTrees[1]);
+	subTrees[2].addChildTree(subTrees[5]);
+	subTrees[2].addChildTree(subTrees[7]);
+	subTrees[8].addChildTree(subTrees[9]);
+	subTrees[8].addChildTree(subTrees[6]);
+
+
+	tree.addChildTree(subTrees[0]);
+	tree.addChildTree(subTrees[4]);
+	tree.addChildTree(subTrees[8]);
+
+
+
+
+	console.log('======== 普通遍历');
+	tree.itor().each(function (node) {
+		console.log(node);
+	});
+
+	console.log('======== 左子树优先遍历');
+	tree.itor().leftChildFirst(function (node) {
+		console.log(node);
+	});
+
+	console.log('======== 右子树优先遍历');
+	tree.itor().rightChildFirst(function (node) {
+		console.log(node);
+	});
+
+	console.log('======== 按层级向下遍历');
+	tree.itor().depthDown(function (node,layer) {
+		console.log(node,layer);
+	});
+
+	console.log('======== 根据json创建一棵树');
+	var res1 = Ycc.Tree.createByJSON({"$id":0,"$parentID":null,"children":[{"$id":1,"$parentID":0,"children":[{"$id":4,"$parentID":1,"children":[],"data":null},{"$id":3,"$parentID":1,"children":[{"$id":6,"$parentID":3,"children":[],"data":null},{"$id":8,"$parentID":3,"children":[],"data":null}],"data":null},{"$id":2,"$parentID":1,"children":[],"data":null}],"data":null},{"$id":5,"$parentID":0,"children":[],"data":null},{"$id":9,"$parentID":0,"children":[{"$id":10,"$parentID":9,"children":[],"data":null},{"$id":7,"$parentID":9,"children":[],"data":null}],"data":null}],"data":null})
+	console.log(res1);
+
+
+	var list = [];
+	tree.itor().depthDown(function (node) {
+		var obj = {
+			id:node.$id,
+			parentID:node.$parentID,
+			data:node.data
+		};
+		list.push(obj);
+	});
+	console.log(list);
+
+	console.log('======== 根据array创建一棵树');
+	var res2 = Ycc.Tree.createByNodes(list);
+	console.log(res2);
+
+
+</script>
