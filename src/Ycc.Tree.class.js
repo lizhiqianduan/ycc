@@ -238,7 +238,7 @@
 			var treeNode = new Ycc.Tree();
 			treeNode.data = node;
 			treeNodes.push(treeNode);
-			if(!node.parentID)
+			if(!Ycc.utils.isNum(node.parentID) && !node.parentID)
 				root = treeNode;
 		});
 		

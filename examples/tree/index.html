@@ -29,10 +29,12 @@
 
 	var tree = new Ycc.Tree();
 
+	tree.data = 'this is root of tree';
+
 	var subTrees = [];
 	for(var i=0;i<10;i++){
 		subTrees[i] = new Ycc.Tree();
-		subTrees[i].data = i;
+		subTrees[i].data = i+1;
 	}
 
 
