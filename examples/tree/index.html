@@ -5,6 +5,45 @@
 	<meta name=viewport content="width=device-width,initial-scale=1,user-scalable=0,viewport-fit=cover">
 	<title>树结构示例文件</title>
 	<link rel="stylesheet" href="../style.css">
+	<style>
+		#dir-con:after{
+			content: "";
+			display: block;
+			clear: both;
+			height: 0;
+			visibility: hidden;
+		}
+		#dir-con .layer{
+			float: left;
+			width:18%;
+			border-left:1px solid #ccc;
+		}
+
+		#dir-con .layer p{
+			height:30px;
+			line-height: 30px;
+			margin: 0;
+			padding: 0;
+			background: url("./dir-logo.png") 2px 7px no-repeat;
+			padding-left: 18px;
+			border-radius: 3px;
+		}
+
+		#dir-con .layer p:hover{
+			height:28px;
+			line-height: 28px;
+			border:1px solid rgb(184,214,251);
+			background-color: rgb(238,245,251);
+
+		}
+		#dir-con .layer p.active{
+			height:28px;
+			line-height: 28px;
+			border:1px solid rgb(125,162,206);
+			background-color: rgb(196,221,252);
+		}
+
+	</style>
 </head>
 <body>
 <div class="return-btn">
@@ -18,6 +57,25 @@
 		这个示例用于测试类Ycc.Tree<br>
 	</div>
 	<br><br>
+
+	<div id="dir-con">
+		<div class="layer">
+			<p>a</p>
+			<p>a</p>
+		</div>
+	</div>
+
+
+	<h4>树的遍历</h4>
+	<div>
+		<button onclick="itor(1)">普通遍历</button>
+		<button onclick="itor(2)">左子树优先遍历</button>
+		<button onclick="itor(3)">右子树优先遍历</button>
+		<button onclick="itor(4)">按层级向下遍历</button>
+	</div>
+	<div>遍历结果: <span id="itor-res"></span></div>
+
+
 </div>
 
 </body>
@@ -27,72 +85,171 @@
 
 <script>
 
-	var tree = new Ycc.Tree();
 
-	tree.data = 'this is root of tree';
 
-	var subTrees = [];
-	for(var i=0;i<10;i++){
-		subTrees[i] = new Ycc.Tree();
-		subTrees[i].data = i+1;
+	var dir = Ycc.Tree.createByJSON({
+		data:'/',
+		children:[
+			{
+				data:"a",
+				children:[
+					{
+						data:"d",
+						children:[
+							{
+								data:"g"
+							},
+							{
+								data:"h"
+							},
+							{
+								data:"i"
+							},
+						]
+					},
+					{
+						data:"e",
+						children:[
+							{
+								data:"j"
+							},
+							{
+								data:"k"
+							},
+							{
+								data:"l"
+							},
+						]
+					},
+					{
+						data:"f"
+					},
+				]
+			},
+			{
+				data:"b",
+				children:[
+					{
+						data:"m"
+					},
+					{
+						data:"n"
+					},
+				]
+			},
+			{
+				data:"c",
+				children:[
+					{
+						data:"o"
+					},
+					{
+						data:"p"
+					},
+					{
+						data:"q"
+					},
+				]
+			}
+		]
+	});
+
+
+
+
+	// 初始化
+	nodeOnClick(dir.$id,1);
+
+
+	/**
+	 * 树的遍历
+	 * */
+	function itor(type) {
+		document.getElementById('itor-res').innerHTML='';
+		var tree = dir;
+		if(type===1){
+			console.log('======== 普通遍历');
+			tree.itor().each(function (node) {
+				document.getElementById('itor-res').innerHTML+=node.data+' ';
+			});
+		}
+		if(type===2){
+			console.log('======== 左子树优先遍历');
+			tree.itor().leftChildFirst(function (node) {
+				document.getElementById('itor-res').innerHTML+=node.data+' ';
+			});
+		}
+		if(type===3){
+			console.log('======== 右子树优先遍历');
+			tree.itor().rightChildFirst(function (node) {
+				document.getElementById('itor-res').innerHTML+=node.data+' ';
+			});
+		}
+		if(type===4){
+			console.log('======== 按层级向下遍历');
+			tree.itor().depthDown(function (node,layer) {
+				document.getElementById('itor-res').innerHTML+=node.data+' ';
+			});
+		}
+
 	}
 
 
-	subTrees[0].addChildTree(subTrees[3]);
-	subTrees[0].addChildTree(subTrees[2]);
-	subTrees[0].addChildTree(subTrees[1]);
-	subTrees[2].addChildTree(subTrees[5]);
-	subTrees[2].addChildTree(subTrees[7]);
-	subTrees[8].addChildTree(subTrees[9]);
-	subTrees[8].addChildTree(subTrees[6]);
+
+	/**
+	 * 每个节点的点击事件
+	 * */
+	function nodeOnClick(id) {
+		document.getElementById('dir-con').innerHTML = "";
+		// 当前选中的最深的节点
+		var maxDepthNode = dir.nodeMap[id];
+
+		console.log(maxDepthNode);
+
+		// 当前节点的所有父节点
+		var parentList = maxDepthNode.getParentList();
+		// 当前节点的第一层子节点
+		var children = maxDepthNode.children;
+		// 当前节点的所有兄弟节点，包括自己在内
+		var brothers = parentList.length>0?parentList[parentList.length-1].children:[maxDepthNode];
 
 
-	tree.addChildTree(subTrees[0]);
-	tree.addChildTree(subTrees[4]);
-	tree.addChildTree(subTrees[8]);
+		// 渲染所有父级的兄弟节点
+		for(var i=0;i<parentList.length;i++){
+			var pa = parentList[i];
+			var paBrothers = i>0?parentList[i-1].children:[pa];
+			renderLayer(paBrothers);
+		}
+		// 渲染当前节点的兄弟节点
+		renderLayer(brothers);
+		// 渲染当前节点的子节点
+		if(children.length===0){
+			document.getElementById('dir-con').innerHTML+='<div class="layer">空</div>';
+		}else
+			renderLayer(children);
 
 
+		/**
+		 * 将一个节点列表渲染为一栏dom
+		 */
+		function renderLayer(nodeList) {
+			var layerDom = ['<div class="layer">','<p>a</p><p>a</p>','</div>'];
+			var nodeDoms = [];
+			if(nodeList && nodeList.length>0){
+				for(var m=0;m<nodeList.length;m++){
+					var tempNode = nodeList[m];
+					if(parentList.indexOf(tempNode)!==-1 || tempNode===maxDepthNode)
+						nodeDoms.push('<p class="active" onclick="nodeOnClick('+nodeList[m].$id+')">'+nodeList[m].data+'</p>')
+					else
+						nodeDoms.push('<p onclick="nodeOnClick('+nodeList[m].$id+')">'+nodeList[m].data+'</p>')
+				}
+			}
+			layerDom[1]=nodeDoms.join('');
+			document.getElementById('dir-con').innerHTML+=layerDom.join('');
+		}
+	}
 
 
-	console.log('======== 普通遍历');
-	tree.itor().each(function (node) {
-		console.log(node);
-	});
-
-	console.log('======== 左子树优先遍历');
-	tree.itor().leftChildFirst(function (node) {
-		console.log(node);
-	});
-
-	console.log('======== 右子树优先遍历');
-	tree.itor().rightChildFirst(function (node) {
-		console.log(node);
-	});
-
-	console.log('======== 按层级向下遍历');
-	tree.itor().depthDown(function (node,layer) {
-		console.log(node,layer);
-	});
-
-	console.log('======== 根据json创建一棵树');
-	var res1 = Ycc.Tree.createByJSON({"$id":0,"$parentID":null,"children":[{"$id":1,"$parentID":0,"children":[{"$id":4,"$parentID":1,"children":[],"data":null},{"$id":3,"$parentID":1,"children":[{"$id":6,"$parentID":3,"children":[],"data":null},{"$id":8,"$parentID":3,"children":[],"data":null}],"data":null},{"$id":2,"$parentID":1,"children":[],"data":null}],"data":null},{"$id":5,"$parentID":0,"children":[],"data":null},{"$id":9,"$parentID":0,"children":[{"$id":10,"$parentID":9,"children":[],"data":null},{"$id":7,"$parentID":9,"children":[],"data":null}],"data":null}],"data":null})
-	console.log(res1);
-
-
-	var list = [];
-	tree.itor().depthDown(function (node) {
-		var obj = {
-			id:node.$id,
-			parentID:node.$parentID,
-			data:node.data
-		};
-		list.push(obj);
-	});
-	console.log(list);
-
-	console.log('======== 根据array创建一棵树');
-	var res2 = Ycc.Tree.createByNodes(list);
-	console.log(res2);
 
 
 </script>

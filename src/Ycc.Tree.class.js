@@ -13,7 +13,7 @@
 	
 	
 	// 节点的自增id
-	var nodeID = 0;
+	var nodeID = 1;
 
 	/**
 	 * 树的构造函数
@@ -83,7 +83,7 @@
 		if(self.children.length>0){
 			for(var i=0;i<self.children.length;i++){
 				var subDep = self.children[i].getDepth();
-				dep = subDep+1>2?subDep+1:2;
+				dep = subDep+1>dep?subDep+1:dep;
 			}
 		}
 		
@@ -180,13 +180,56 @@
 	
 	/**
 	 * 转化为节点列表
-	 * @return {Array}
+	 * @return {Ycc.Tree[]}
 	 */
 	Ycc.Tree.prototype.toNodeList = function () {
 		var list = [];
 		this.itor().depthDown(function (node) {
 			list.push(node);
 		});
+		return list;
+	};
+	
+	/**
+	 * 获取节点列表按照层级的分类
+	 * key为层级，val为Ycc.Tree列表
+	 * @return {{}}
+	 */
+	Ycc.Tree.prototype.getNodeListGroupByLayer = function () {
+		var list = {};
+		this.itor().depthDown(function (node,layer) {
+			if(!list[layer])
+				list[layer] = [];
+			list[layer].push(node);
+		});
+		return list;
+	};
+	
+	/**
+	 * 获取节点的所有父级，靠近节点的父级排序在后
+	 * @return {Ycc.Tree[]}
+	 */
+	Ycc.Tree.prototype.getParentList = function () {
+		var node = this;
+		var list = [];
+		while(node.$parentID){
+			var parent = this.nodeMap[node.$parentID];
+			list.unshift(parent);
+			node = parent;
+		}
+		return list;
+	};
+	
+	/**
+	 * 获取节点的所有兄弟节点，包括自身
+	 * @return {Ycc.Tree[]}
+	 */
+	Ycc.Tree.prototype.getBrotherList = function () {
+		var list = [];
+		if(!this.$parentID)
+			list = [this];
+		else
+			list = this.nodeMap[this.$parentID].children;
 		return list;
 	};
 
