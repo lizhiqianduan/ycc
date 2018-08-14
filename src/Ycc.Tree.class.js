@@ -102,49 +102,61 @@
 		/**
 		 * 父代优先遍历
 		 * 先遍历父代，再依次遍历子代
+		 * 若cb返回true，则停止遍历
 		 * @param cb
+		 * @return {boolean}
 		 */
 		function each(cb) {
-			cb(self);
+			if(cb.call(self,self)) return true;
 			if(self.children.length>0){
 				for(var i=0;i<self.children.length;i++){
-					self.children[i].itor().each(cb);
+					if(self.children[i].itor().each(cb)) return true;
 				}
 			}
+			return false;
 		}
 		
 		/**
 		 * 左树优先遍历
 		 * 只要最左边的树不为空就继续遍历其子树，最后遍历根节点
+		 * 若cb返回true，则停止遍历
+		 *
 		 * @param cb
+		 * @return {boolean}
 		 */
 		function leftChildFirst(cb) {
 			if(self.children.length>0){
 				for(var i=0;i<self.children.length;i++){
-					self.children[i].itor().leftChildFirst(cb);
+					if(self.children[i].itor().leftChildFirst(cb)) return true;
 				}
 			}
-			cb(self);
+			if(cb.call(self,self)) return true;
 		}
 		
 		/**
 		 * 右树优先遍历
 		 * 只要最右边的树不为空就继续遍历其子树，最后遍历根节点
+		 * 若cb返回true，则停止遍历
+		 *
 		 * @param cb
+		 * @return {boolean}
 		 */
 		function rightChildFirst(cb) {
 			if(self.children.length>0){
 				for(var i=self.children.length-1;i>=0;i--){
-					self.children[i].itor().rightChildFirst(cb);
+					if(self.children[i].itor().rightChildFirst(cb)) return true;
 				}
 			}
-			cb(self);
+			if(cb.call(self,self)) return true;
 		}
 		
 		/**
 		 * 根据当前节点，按层级依次向下遍历
 		 * 这只是depthDownByNodes的特殊情况
-		 * @param cb(node,layer)
+		 * 若cb返回true，则停止遍历
+		 *
+		 * @param cb(node)
+		 * @return {boolean}
 		 */
 		function depthDown(cb) {
 			depthDownByNodes([self],cb);
@@ -152,21 +164,33 @@
 		
 		/**
 		 * 根据所给的节点列表，按层级依次向下遍历
+		 * 若cb返回true，则停止遍历
+		 *
 		 * @param nodes {Ycc.Tree[]}
 		 * @param cb(node,layer)
 		 * @param [layer]	{number} 当前nodes列表所在的层级，可选参数
+		 * @return {boolean}
 		 */
 		function depthDownByNodes(nodes,cb,layer){
 			if(nodes.length===0)
-				return;
+				return true;
 			layer=layer||0;
 			layer++;
 			var nextNodes = [];
-			for(var i=0;i<nodes.length;i++){
-				cb(nodes[i],layer);
+			// 是否停止遍历下一层的标志位
+			var breakFlag = false;
+			for(var i=0;i<nodes.length;i++) {
+				// 如果返回为true，则表示停止遍历下一层
+				if (cb.call(self, nodes[i], layer)) {
+					breakFlag = true;
+					break;
+				}
 				nextNodes = nextNodes.concat(nodes[i].children);
 			}
-			depthDownByNodes(nextNodes,cb,layer);
+			if(breakFlag){
+				nextNodes = [];
+			}
+			return depthDownByNodes(nextNodes,cb,layer);
 		}
 		
 		return {
