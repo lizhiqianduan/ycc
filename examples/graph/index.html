@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>图的示例</title>
+	<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<div class="return-btn">
+	<a href="../">
+		返回首页
+	</a>
+</div>
+<div class="tip">
+	<h3>示例说明：</h3>
+	<div>
+		1、这个示例用于展示树结构Ycc.Tree，模拟了windows文件管理器。<br>
+		2、这棵文档树可以无限层级，这里只展示4层。 <br>
+		3、下面提供了几种遍历方法，点击按钮即可查看遍历结果。 <br>
+		4、支持两种形式来生成树结构，这里只用了createByJSON。
+	</div>
+	<br><br>
+</div>
+
+
+
+<canvas id="canvas" width="300" height="300">
+
+</canvas>
+
+</body>
+</html>
+
+<script src="../../build/ycc.js"></script>
+<script>
+
+
+	var vArr = [
+		{
+			id:1,
+			data:1
+		},
+		{
+			id:2,
+			data:2
+		},
+		{
+			id:3,
+			data:3
+		},
+		{
+			id:4,
+			data:4
+		},
+		{
+			id:5,
+			data:5
+		},
+		{
+			id:6,
+			data:6
+		},
+	];
+
+	var eArr = [
+		{
+			fromId:1,
+			toId:2,
+		},
+		{
+			fromId:1,
+			toId:3,
+		},
+		{
+			fromId:1,
+			toId:4,
+		},
+		{
+			fromId:2,
+			toId:3,
+		},
+		{
+			fromId:4,
+			toId:6,
+		},
+	];
+
+
+	var g = Ycc.Graph.createDirectedGraph(vArr,eArr);
+
+	g.bfs([1],function(n){  console.log(n); if(n.$id===6) return true; });
+
+
+//	var ycc = new Ycc().bindCanvas(document.getElementById('canvas'));
+//
+//	var layer = ycc.layerManager.newLayer();
+//
+//	var r = 100;
+//	layer.addUI(new Ycc.UI.Circle({
+//		fill:false,
+//		point:new Ycc.Math.Dot(150,150),
+//		r:r
+//	}));
+//	ycc.layerManager.reRenderAllLayerToStage();
+//
+//	for(var i=0;i<vArr.length;i++){
+//		var dot = new Ycc.UI.Circle({
+//			point:new Ycc.Math.Dot(150+Math.cos(2*i*Math.PI/vArr.length)*r,150+Math.sin(2*i*Math.PI/vArr.length)*r),
+//			r:10
+//		});
+//
+//		layer.addUI(dot);
+//		ycc.layerManager.reRenderAllLayerToStage();
+//	}
+
+
+
+
+</script>

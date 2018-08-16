@@ -15,6 +15,12 @@ canvas{
     text-align: center;width: 80%; height: 30px; display: block;margin-left: 10%; background-color: #ccc; line-height: 30px;
 }
 
+pre{
+    background-color: #ccc;
+    max-width: 300px;
+    overflow-x: auto;
+}
+
 @media screen and (max-width: 640px) {
     .return-btn{
         display: block;
