@@ -72,6 +72,27 @@
 	
 	/**
 	 * 广度优先搜索
+	 * @param vArrId {array} 顶点$id数组，代表从哪些顶点开始遍历
+	 * @param cb {function} 回调函数
+	 *   若回调函数返回true，则遍历结束
+	 * @param [vSearchedId] 已遍历的$id数组
+	 *
+	 * @return {boolean}
+	 */
+	Ycc.Graph.prototype.bfs = function (vArrId,cb,vSearchedId) {
+		if(this.type===1)
+			return this.bfsDirectedGraph(vArrId,cb,vSearchedId);
+		else if(this.type===2)
+			return this.bfsDirectedGraph(vArrId,cb,vSearchedId);
+		
+	};
+	
+	
+	
+	
+	
+	/**
+	 * 有向图的广度优先搜索
 	 * @param vArrId 顶点$id数组，代表从哪些顶点开始遍历
 	 * @param cb 回调函数
 	 *   若回调函数返回true，则遍历结束
@@ -79,10 +100,10 @@
 	 *
 	 * @return {boolean}
 	 */
-	Ycc.Graph.prototype.bfs = function (vArrId,cb,vSearchedId) {
+	Ycc.Graph.prototype.bfsDirectedGraph = function (vArrId,cb,vSearchedId) {
 		vArrId = vArrId||[];
 		vSearchedId = vSearchedId || [];
-
+		
 		// 递归结束条件
 		if(vArrId.length===0){
 			if(vSearchedId.length===this.vList.length)
@@ -158,6 +179,44 @@
 		return graph;
 	};
 	
+	
+	/**
+	 * @todo
+	 * 创建一个无向图
+	 * @static
+	 * @param vArr {[{id,data,...}]} 顶点列表
+	 * @param eArr {[{fromId,toId,data,...}]}	边列表
+	 */
+	Ycc.Graph.createDirectedGraph  = function (vArr,eArr) {
+		var graph = new Ycc.Graph(1);
+		var vList = graph.vList;
+		var eList = graph.eList;
+		
+		vArr.forEach(function (v) {
+			vList.push(new Ycc.Graph.DirectedV(v));
+		});
+		
+		eArr.forEach(function (e) {
+			var from = null,to=null;
+			var edge = new Ycc.Graph.DirectedE();
+			for(var i =0;i<vList.length;i++){
+				// 两个都找到了就跳出去
+				if(from && to) break;
+				var v = vList[i];
+				if(v.data.id === e.fromId){
+					from = v;
+					v.outIDs.push(edge.$id);
+				}
+				if(v.data.id === e.toId){
+					to = v;
+					v.inIDs.push(edge.$id);
+				}
+			}
+			edge.init(from.$id,to.$id,e);
+			eList.push(edge);
+		});
+		return graph;
+	};
 	
 	
 	
