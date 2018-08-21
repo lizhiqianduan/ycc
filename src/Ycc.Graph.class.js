@@ -121,6 +121,45 @@
 	};
 	
 	
+	/**
+	 * 图的深度优先遍历
+	 * @param vStartID 从哪个顶点开始遍历
+	 * @param cb
+	 * @param vSearchedId 已遍历的$id数组
+	 */
+	Ycc.Graph.prototype.dfs = function (vStartID,cb,vSearchedId) {
+		vSearchedId = vSearchedId || [];
+		
+		// 修改已遍历的顶点
+		var v = vMap[vStartID];
+		vSearchedId.push(v.$id);
+		if(cb.call(this,v)) return true;
+		
+		// 遍历可达的节点
+		var accessibleIds = v.getAccessibleIds();
+		for(var k=0;k<accessibleIds.length;k++){
+			var next = accessibleIds[k];
+			if(vSearchedId.indexOf(next)===-1){
+				if(this.dfs(next,cb,vSearchedId))
+					return true;
+			}
+		}
+		
+		// 递归结束条件
+		if(vSearchedId.length===this.vList.length)
+			return true;
+		
+		// 若递归未结束，说明图中存在孤立部分，任取一个孤立部分的顶点，继续遍历
+		var tempID = null;
+		for(var j=0;j<this.vList.length;j++){
+			if(vSearchedId.indexOf(this.vList[j].$id)===-1){
+				tempID=this.vList[j].$id;
+				break;
+			}
+		}
+		
+		return this.dfs(tempID,cb,vSearchedId);
+	};
 	
 	
 	/**
