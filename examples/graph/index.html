@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
 	<meta charset="UTF-8">
+	<meta name=viewport content="width=device-width,initial-scale=1,user-scalable=0,viewport-fit=cover">
 	<title>图的示例</title>
 	<link rel="stylesheet" href="../style.css">
 </head>
@@ -14,10 +15,10 @@
 <div class="tip">
 	<h3>示例说明：</h3>
 	<div>
-		1、这个示例用于展示树结构Ycc.Tree，模拟了windows文件管理器。<br>
-		2、这棵文档树可以无限层级，这里只展示4层。 <br>
-		3、下面提供了几种遍历方法，点击按钮即可查看遍历结果。 <br>
-		4、支持两种形式来生成树结构，这里只用了createByJSON。
+		1、这个示例用于展示Ycc的图结构Ycc.Graph。<br>
+		2、示例是一个无向图，图的遍历都是从节点1开始的。 <br>
+		3、下面提供了图的深度遍历和广度遍历，点击按钮即可查看遍历结果。 <br>
+		4、使用了方法createUnDirectedGraph创建无向图。
 	</div>
 	<br><br>
 </div>
@@ -27,6 +28,13 @@
 <canvas id="canvas" width="300" height="300">
 
 </canvas>
+
+<br>
+<button onclick="dfs()">深度优先</button>
+<button onclick="bfs()">广度优先</button>
+
+<br>
+遍历结果：<span id="res"></span>
 
 </body>
 </html>
@@ -86,34 +94,83 @@
 	];
 
 
-	var g = Ycc.Graph.createDirectedGraph(vArr,eArr);
-
-	g.bfs([1],function(n){  console.log(n); if(n.$id===6) return true; });
-
-
-//	var ycc = new Ycc().bindCanvas(document.getElementById('canvas'));
+//	var g = Ycc.Graph.createDirectedGraph(vArr,eArr);
 //
-//	var layer = ycc.layerManager.newLayer();
-//
-//	var r = 100;
-//	layer.addUI(new Ycc.UI.Circle({
-//		fill:false,
-//		point:new Ycc.Math.Dot(150,150),
-//		r:r
-//	}));
-//	ycc.layerManager.reRenderAllLayerToStage();
-//
-//	for(var i=0;i<vArr.length;i++){
-//		var dot = new Ycc.UI.Circle({
-//			point:new Ycc.Math.Dot(150+Math.cos(2*i*Math.PI/vArr.length)*r,150+Math.sin(2*i*Math.PI/vArr.length)*r),
-//			r:10
-//		});
-//
-//		layer.addUI(dot);
-//		ycc.layerManager.reRenderAllLayerToStage();
-//	}
+//	console.log('有向图广度优先遍历-->');
+//	g.bfs([1],function(n){  console.log(n.data.data); });
+//	console.log('有向图深度优先遍历-->');
+//	g.dfs(1,function(n){  console.log(n.data.data); });
 
 
+
+	eArr = [
+		{ids:[1,2]},
+		{ids:[2,3]},
+		{ids:[3,4]},
+		{ids:[2,5]},
+	];
+
+	g = Ycc.Graph.createUnDirectedGraph(vArr,eArr);
+
+
+
+
+	/////////// 绘制无向图至canvas
+	var ycc = new Ycc().bindCanvas(document.getElementById('canvas'));
+	var layer = ycc.layerManager.newLayer();
+	var r = 100;
+
+	// 画点
+	for(var i=0;i<g.vList.length;i++){
+		var point = new Ycc.Math.Dot(parseInt(150+Math.cos(2*i*Math.PI/vArr.length)*r),parseInt(150+Math.sin(2*i*Math.PI/vArr.length)*r));
+		var dot = new Ycc.UI.Circle({
+			point:point,
+			r:10
+		});
+		g.vList[i]._dot = dot;
+		layer.addUI(dot);
+		ycc.layerManager.reRenderAllLayerToStage();
+	}
+	// 画文字
+	for(var i=0;i<g.vList.length;i++){
+		r=120;
+		var point = new Ycc.Math.Dot(parseInt(150+Math.cos(2*i*Math.PI/vArr.length)*r),parseInt(150+Math.sin(2*i*Math.PI/vArr.length)*r));
+		layer.addUI(new Ycc.UI.SingleLineText({content:g.vList[i].data.data+"",rect:new Ycc.Math.Rect(point.x-5,point.y-5,0,0),color:"red"}));
+		ycc.layerManager.reRenderAllLayerToStage();
+	}
+
+	// 画边
+	for(var j=0;j<g.eList.length;j++){
+		var edge = g.eList[j];
+		var vMap = g.getMapV();
+		var start = vMap[edge.vIDs[0]]._dot.point;
+		var end = vMap[edge.vIDs[1]]._dot.point;
+		var line = new Ycc.UI.Line({
+			start:new Ycc.Math.Dot(start.x,start.y),
+			end:new Ycc.Math.Dot(end.x,end.y)
+		});
+		layer.addUI(line);
+		ycc.layerManager.reRenderAllLayerToStage();
+	}
+
+
+
+
+	function bfs() {
+		console.log('无向图广度优先遍历-->');
+		document.getElementById('res').innerHTML="";
+		g.bfs([g.vList[0].$id],function(n){
+			document.getElementById('res').innerHTML+=n.data.data;
+		});
+	}
+
+	function dfs() {
+		console.log('无向图深度优先遍历-->');
+		document.getElementById('res').innerHTML="";
+		g.dfs(g.vList[0].$id,function(n){
+			document.getElementById('res').innerHTML+=n.data.data;
+		});
+	}
 
 
 </script>
