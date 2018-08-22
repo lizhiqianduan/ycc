@@ -126,8 +126,8 @@
 		
 		
 		
-		// 合并参数
-		Ycc.utils.mergeObject(this,option);
+		// 覆盖参数
+		Ycc.utils.extend(this,option);
 		// 初始化
 		this.init();
 	};

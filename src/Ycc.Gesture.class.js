@@ -345,7 +345,7 @@
 			createTime:Date.now()
 		};
 
-		data = Ycc.utils.mergeObject(data,event);
+		data = Ycc.utils.extend(data,event);
 		data.type=type;
 		return data;
 	};

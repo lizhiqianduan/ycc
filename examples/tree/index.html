@@ -205,7 +205,7 @@
 	function nodeOnClick(id) {
 		document.getElementById('dir-con').innerHTML = "";
 		// 当前选中的最深的节点
-		var maxDepthNode = dir.nodeMap[id];
+		var maxDepthNode = dir.getNodeMap()[id];
 
 		console.log(maxDepthNode);
 

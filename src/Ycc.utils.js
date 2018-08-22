@@ -16,30 +16,32 @@
 	 * @param targetObj    目标对象
 	 * @param obj2  待合入的对象
 	 * @param isDeepClone   是否进行深拷贝
-	 * @return {{}} 新的对象
+	 * @return {{}} targetObj对象
 	 */
     Ycc.utils.extend = function(targetObj, obj2,isDeepClone) {
-        var newobj = {};
         if(isDeepClone)
             obj2 = Ycc.utils.deepClone(obj2);
         for (var i in targetObj) {
 			if(!targetObj.hasOwnProperty(i)) continue;
-            newobj[i] = targetObj[i];
-            if (obj2 && obj2[i] != null) {
-                newobj[i] = obj2[i];
+            if (obj2 && typeof obj2[i] !=="undefined") {
+				targetObj[i] = obj2[i];
             }
         }
-        return newobj;
+        return targetObj;
     };
 	
 	/**
-	 * 合并对象：覆盖target对象的字段。浅拷贝。prototype内的属性也会被覆盖。
+	 * 合并对象
+	 * 将src所有的字段全部合并至target，若存在公有字段，则src会覆盖target对象的字段。
+	 * 这个操作是浅拷贝。prototype内的属性不会被覆盖。
 	 * @param target	{object}	待覆盖的目标对象
 	 * @param src	{object}	源对象
+	 * @return 返回target对象
 	 */
 	Ycc.utils.mergeObject = function(target,src){
 		src = src || {};
-		for(var key in target){
+		for(var key in src){
+			if(!src.hasOwnProperty(key)) continue;
 			if(typeof src[key]!=="undefined"){
 				target[key] = src[key];
 			}

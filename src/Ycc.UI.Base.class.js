@@ -15,10 +15,12 @@
 	 * 所有UI类的基类。
 	 * <br> 所有UI都必须遵循先计算、后绘制的流程
 	 * @constructor
-	 * @extends Ycc.Listener
+	 * @extends Ycc.Listener Ycc.Tree
 	 */
 	Ycc.UI.Base = function (option) {
 		Ycc.Listener.call(this);
+		
+		Ycc.Tree.call(this);
 		
 		/**
 		 * 构造器的引用，Ycc中的每个类都有此属性
@@ -175,8 +177,9 @@
 		this.extend(option);
 	};
 	
-	Ycc.UI.Base.prototype = new Ycc.Listener();
-	//Ycc.UI.Base.prototype.constructor = Ycc.UI.Base;
+	// 继承prototype
+	Ycc.utils.mergeObject(Ycc.UI.Base.prototype,Ycc.Listener.prototype);
+	Ycc.utils.mergeObject(Ycc.UI.Base.prototype,Ycc.Tree.prototype);
 	
 	
 	/**

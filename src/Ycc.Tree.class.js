@@ -16,6 +16,16 @@
 	var nodeID = 1;
 
 	/**
+	 * 存储所有树节点的引用，不允许重载
+	 * 使用prototype好处：
+	 * 	1、所有Tree对象公用
+	 * 	2、JSON.stringify不会将此序列化，避免抛循环引用的错误
+	 * key为$id val为Tree对象
+	 * @type {{}}
+	 */
+	var nodeMap = {};
+
+	/**
 	 * 树的构造函数
 	 * 若参数为空，默认创建只有一个根节点的树
 	 * @constructor
@@ -47,19 +57,17 @@
 		this.data = null;
 		
 		// 存入map中，方便通过id寻找
-		this.nodeMap[this.$id] = this;
+		nodeMap[this.$id] = this;
 	};
 	
 	
 	/**
-	 * 存储所有树节点的引用，不允许重载
-	 * 使用prototype好处：
-	 * 	1、所有Tree对象公用
-	 * 	2、JSON.stringify不会将此序列化，避免抛循环引用的错误
-	 * key为$id val为Tree对象
-	 * @type {{}}
+	 * 获取nodeMap表
+	 * @return {{}}
 	 */
-	Ycc.Tree.prototype.nodeMap = {};
+	Ycc.Tree.prototype.getNodeMap = function () {
+		return nodeMap;
+	};
 	
 	
 	/**
@@ -237,7 +245,7 @@
 		var node = this;
 		var list = [];
 		while(node.$parentID){
-			var parent = this.nodeMap[node.$parentID];
+			var parent = nodeMap[node.$parentID];
 			list.unshift(parent);
 			node = parent;
 		}
@@ -253,7 +261,7 @@
 		if(!this.$parentID)
 			list = [this];
 		else
-			list = this.nodeMap[this.$parentID].children;
+			list = nodeMap[this.$parentID].children;
 		return list;
 	};
 
