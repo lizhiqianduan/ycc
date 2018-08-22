@@ -17,7 +17,7 @@ canvas{
 
 pre{
     background-color: #ccc;
-    max-width: 300px;
+    max-width: 100%;
     overflow-x: auto;
 }
 
