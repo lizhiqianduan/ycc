@@ -43,7 +43,7 @@
 	 */
 	Ycc.UI.Rect.prototype.render = function () {
 		
-		var rect = this.rect;
+		var rect = this.getAbsolutePosition();
 
 		this.ctx.save();
 		this.ctx.beginPath();

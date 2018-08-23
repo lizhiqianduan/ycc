@@ -145,22 +145,23 @@
 		var fontSize = parseInt(self.fontSize);
 		// 配置项
 		var option = this;
-		
-		x = option.rect.x;
+		// 绝对坐标
+		var rect = this.getAbsolutePosition();
+		x = rect.x;
 		
 		if(this.xAlign==="center"){
 			var textWidth = this.ctx.measureText(this.displayContent).width;
-			x+=(this.rect.width-textWidth)/2;
+			x+=(rect.width-textWidth)/2;
 		}
 		
-		y = option.rect.y;
+		y = rect.y;
 		
-		if(fontSize>option.rect.height){
+		if(fontSize>rect.height){
 			return console.warn("[Ycc warning] : ","行高不够，或者文字太大！",option);
 		}
 		// 上下居中
 		if(option.yAlign==="center"){
-			y = y+option.rect.height/2-fontSize/2;
+			y = y+rect.height/2-fontSize/2;
 		}
 		
 		this.ctx.save();

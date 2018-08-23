@@ -75,20 +75,24 @@
 		var width = this.width,
 			rotateAngle=this.angle,
 			height=this.height;
+		
+		var pa = this.getParent();
+		var point = pa?pa.transformToAbsolute(this.point):this.point;
+		
 		this.ctx.save();
 		var r = (width > height) ? width : height;
 		// 计算压缩比例
 		var ratioX = width / r;
 		var ratioY = height / r;
 		// 默认旋转中心位于画布左上角，需要改变旋转中心点
-		this.ctx.translate(this.point.x,this.point.y);
+		this.ctx.translate(point.x,point.y);
 		this.ctx.rotate(parseInt(rotateAngle)*Math.PI/180);
 		// 再变换回原来的旋转中心点
-		this.ctx.translate(-this.point.x,-this.point.y);
+		this.ctx.translate(-point.x,-point.y);
 		// this.ctx.scale(1, 1);
 		this.ctx.scale(ratioX, ratioY);
 		this.ctx.beginPath();
-		this.ctx.arc(this.point.x / ratioX,  this.point.y/ ratioY, r/2, 0, 2 * Math.PI, false);
+		this.ctx.arc(point.x / ratioX,  point.y/ ratioY, r/2, 0, 2 * Math.PI, false);
 		this.ctx.closePath();
 		
 		this.ctx.fillStyle = this.ctx.strokeStyle = this.color;

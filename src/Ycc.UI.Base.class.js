@@ -213,11 +213,12 @@
 	 * 渲染rect的背景
 	 */
 	Ycc.UI.Base.prototype.renderRectBgColor = function () {
+		var rect = this.getAbsolutePosition();
 		this.ctx.save();
 		this.ctx.globalAlpha = this.rectBgAlpha;
 		this.ctx.fillStyle = this.rectBgColor;
 		this.ctx.beginPath();
-		this.ctx.rect(this.rect.x,this.rect.y,this.rect.width,this.rect.height);
+		this.ctx.rect(rect.x,rect.y,rect.width,rect.height);
 		this.ctx.closePath();
 		this.ctx.fill();
 		this.ctx.restore();

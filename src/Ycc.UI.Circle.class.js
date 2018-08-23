@@ -52,14 +52,17 @@
 	 */
 	Ycc.UI.Circle.prototype.render = function () {
 		
+		var pa = this.getParent();
+		var point = pa?pa.transformToAbsolute(this.point):this.point;
+		
 		this.ctx.save();
 		this.ctx.beginPath();
 		this.ctx.fillStyle = this.color;
 		this.ctx.strokeStyle = this.color;
 		
 		this.ctx.arc(
-			this.point.x,
-			this.point.y,
+			point.x,
+			point.y,
 			this.r,
 			0,
 			2*Math.PI

@@ -11,7 +11,6 @@
 	/**
 	 * 线段。可设置属性如下
 	 * @param option	{object}		所有可配置的配置项
-	 * @param option.rect	{Ycc.Math.Rect}	容纳区。会根据属性设置动态修改。
 	 * @param option.start	{Ycc.Math.Dot}	起点
 	 * @param option.end	{Ycc.Math.Dot}	终点
 	 * @param option.width=1	{number}	线条宽度
@@ -48,13 +47,16 @@
 	 * 绘制
 	 */
 	Ycc.UI.Line.prototype.render = function () {
+		
+		var rect = this.getAbsolutePosition();
+		
 		this.ctx.save();
 		this.ctx.strokeStyle = this.color;
 		this.ctx.strokeWidth = this.width;
 		
 		this.ctx.beginPath();
-		this.ctx.moveTo(this.start.x, this.start.y);
-		this.ctx.lineTo(this.end.x, this.end.y);
+		this.ctx.moveTo(rect.x, rect.y);
+		this.ctx.lineTo(rect.x+rect.width, rect.y+rect.height);
 		this.ctx.stroke();
 		this.ctx.closePath();
 		this.ctx.restore();

@@ -79,7 +79,7 @@
 		this.ctx.save();
 		this.scaleAndRotate();
 		
-		var rect = this.rect;
+		var rect = this.getAbsolutePosition();//this.rect;
 		var img = this.res;
 		// this.ctx.save();
 		// this.ctx.beginPath();

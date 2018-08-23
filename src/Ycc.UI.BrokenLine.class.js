@@ -70,12 +70,15 @@
 	Ycc.UI.BrokenLine.prototype.render = function () {
 		if(this.pointList.length<2) return null;
 		
+		// 父级
+		var pa = this.getParent();
+		
 		this.ctx.save();
 		this.ctx.strokeStyle = this.color;
 		this.ctx.strokeWidth = this.width;
 		this.ctx.beginPath();
 		// 因为直接操作舞台，所以绘制之前需要转换成舞台绝对坐标
-		var pointList = this.belongTo.transformToAbsolute(this.pointList);
+		var pointList = pa?pa.transformToAbsolute(this.pointList):this.pointList;
 		this.ctx.moveTo(pointList[0].x, pointList[0].y);
 		for(var i =1;i<pointList.length;i++){
 			this.ctx.lineTo(pointList[i].x, pointList[i].y);

@@ -219,6 +219,8 @@
 		
 		// 引用
 		var config = this;
+		// 绝对坐标的rect
+		var rect = this.getAbsolutePosition();
 		
 		this.ctx.save();
 		this.ctx.fillStyle = config.color;
@@ -226,9 +228,9 @@
 		
 		// 绘制
 		for(var i = 0;i<self.displayLines.length;i++){
-			var x = config.rect.x;
-			var y = config.rect.y + i*config.lineHeight;
-			if(y+config.lineHeight>config.rect.y+config.rect.height){
+			var x = rect.x;
+			var y = rect.y + i*config.lineHeight;
+			if(y+config.lineHeight>rect.y+rect.height){
 				break;
 			}
 			this.baseUI.text([x,y],self.displayLines[i],config.fill);
