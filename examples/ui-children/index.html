@@ -15,8 +15,9 @@
 <div class="tip">
 	<h3>示例说明：</h3>
 	<div>
-		1、这个示例展示UI嵌套。<br>
-		2、椭圆旋转过程中，UI的包裹区域会实时的计算，UI的点击事件或者其他事件会直接作用于这个包裹区域。<br>
+		1、这个示例展示UI的嵌套能力。<br>
+		2、示例的所有UI都是红色方框的子UI，它们的坐标都是相对于方框的相对坐标。<br>
+		3、注意：红色方框并不会因为子UI的范围超出而改变大小。
 	</div>
 	<br><br>
 </div>
@@ -31,7 +32,7 @@
 <script>
 	var canvas = document.createElement("canvas");
 	canvas.width = 300;
-	canvas.height = 800;
+	canvas.height = 500;
 	document.body.appendChild(canvas);
 
 
@@ -54,12 +55,18 @@
 
 		var config = {
 			rect:new Ycc.Math.Rect(10,10,200,100),
-			fill:false
+			fill:false,
+			color:'red'
 		};
 		var rect = new Ycc.UI.Rect(config);
-		rect.addChild(new Ycc.UI.SingleLineText({content:"11111"}));
+		rect.addChild(new Ycc.UI.SingleLineText({
+			content:"11111"
+		}));
 
-		rect.addChild(new Ycc.UI.Line({start:new Ycc.Math.Dot(20,20),end:new Ycc.Math.Dot(100,20)}));
+		rect.addChild(new Ycc.UI.Line({
+			start:new Ycc.Math.Dot(20,20),
+			end:new Ycc.Math.Dot(100,20)
+		}));
 
 
 		// 新建多行文本的UI

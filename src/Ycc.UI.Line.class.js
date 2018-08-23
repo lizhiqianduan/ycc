@@ -48,15 +48,16 @@
 	 */
 	Ycc.UI.Line.prototype.render = function () {
 		
-		var rect = this.getAbsolutePosition();
-		
+		var pa = this.getParent();
+		var start = pa?pa.transformToAbsolute(this.start):this.start;
+		var end = pa?pa.transformToAbsolute(this.end):this.end;
 		this.ctx.save();
 		this.ctx.strokeStyle = this.color;
 		this.ctx.strokeWidth = this.width;
 		
 		this.ctx.beginPath();
-		this.ctx.moveTo(rect.x, rect.y);
-		this.ctx.lineTo(rect.x+rect.width, rect.y+rect.height);
+		this.ctx.moveTo(start.x, start.y);
+		this.ctx.lineTo(end.x, end.y);
 		this.ctx.stroke();
 		this.ctx.closePath();
 		this.ctx.restore();

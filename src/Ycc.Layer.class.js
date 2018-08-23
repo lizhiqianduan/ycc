@@ -412,7 +412,7 @@
 
 			// 按树的层次向下渲染
 			this.uiList[i].itor().depthDown(function (ui, level) {
-				console.log(level,ui);
+				//console.log(level,ui);
 				ui.__render();
 			});
 		}

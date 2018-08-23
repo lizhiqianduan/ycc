@@ -15,7 +15,7 @@
 	 * 所有UI类的基类。
 	 * <br> 所有UI都必须遵循先计算、后绘制的流程
 	 * 所有UI的rect坐标均为相对坐标，且相对于父级，若没有父级，则相对于图层
-	 *
+	 * UI只有在被添加至图层时，即layer.addUI(ui)，UI的绘图环境ctx才会被初始化
 	 *
 	 * @constructor
 	 * @extends Ycc.Listener Ycc.Tree
@@ -240,6 +240,8 @@
 	 * @return {Ycc.UI.Base}
 	 */
 	Ycc.UI.Base.prototype.addChild = function (ui) {
+		if(this.belongTo)
+			ui.init(this.belongTo);
 		this.addChildTree(ui);
 		return this;
 	};
