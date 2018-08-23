@@ -365,7 +365,11 @@
 	 * @param beforeUI {Ycc.UI|null}	UI图形
 	 */
 	Ycc.Layer.prototype.addUI = function (ui,beforeUI) {
-		ui.init(this);
+		var self = this;
+		// 遍历所有节点，初始化
+		ui.itor().each(function (child) {
+			child.init(self);
+		});
 		if(!beforeUI)
 			return this.uiList.push(ui);
 		var index = this.uiList.indexOf(beforeUI);
@@ -404,7 +408,13 @@
 		// this.clear();
 		for(var i=0;i<this.uiList.length;i++){
 			if(!this.uiList[i].show) continue;
-			this.uiList[i].__render();
+			//this.uiList[i].__render();
+
+			// 按树的层次向下渲染
+			this.uiList[i].itor().depthDown(function (ui, level) {
+				console.log(level,ui);
+				ui.__render();
+			});
 		}
 	};
 	

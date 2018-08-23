@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name=viewport content="width=device-width,initial-scale=1,user-scalable=0,viewport-fit=cover">
+	<title>UI嵌套</title>
+	<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<div class="return-btn">
+	<a href="../">
+		返回首页
+	</a>
+</div>
+<div class="tip">
+	<h3>示例说明：</h3>
+	<div>
+		1、这个示例展示UI嵌套。<br>
+		2、椭圆旋转过程中，UI的包裹区域会实时的计算，UI的点击事件或者其他事件会直接作用于这个包裹区域。<br>
+	</div>
+	<br><br>
+</div>
+
+</body>
+</html>
+<script src="../common.js"></script>
+
+<script src="http://localhost:9000/livereload.js"></script>
+
+<script src="../../build/ycc.js"></script>
+<script>
+	var canvas = document.createElement("canvas");
+	canvas.width = 300;
+	canvas.height = 400;
+	document.body.appendChild(canvas);
+
+
+
+	var ycc = new Ycc();
+	ycc.bindCanvas(canvas);
+	// 新建图层
+	var layer = ycc.layerManager.newLayer({enableFrameEvent:true});
+
+	var config = {
+		rect:new Ycc.Math.Rect(10,10,30,50)
+	};
+	var rect = new Ycc.UI.Rect(config);
+	rect.addChild(new Ycc.UI.SingleLineText({content:"11111"}));
+
+	layer.addUI(rect);
+
+	ycc.layerManager.reRenderAllLayerToStage();
+
+
+</script>

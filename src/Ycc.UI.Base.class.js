@@ -14,6 +14,9 @@
 	/**
 	 * 所有UI类的基类。
 	 * <br> 所有UI都必须遵循先计算、后绘制的流程
+	 * 所有UI的rect坐标均为相对坐标，且相对于父级，若没有父级，则相对于图层
+	 *
+	 *
 	 * @constructor
 	 * @extends Ycc.Listener Ycc.Tree
 	 */
@@ -228,6 +231,18 @@
 		this.belongTo.removeUI(this);
 	};
 	
+	
+	
+	/**
+	 * 添加子ui
+	 * @param ui
+	 * @return {Ycc.UI.Base}
+	 */
+	Ycc.UI.Base.prototype.addChild = function (ui) {
+		this.addChildTree(ui);
+		return this;
+	};
+	
 	/**
 	 * 坐标系的缩放和旋转。
 	 * 先缩放、再旋转。
@@ -351,10 +366,19 @@
 	 */
 	Ycc.UI.Base.prototype.getAbsolutePosition = function(){
 		var pos = new Ycc.Math.Rect();
-		pos.x = this.rect.x+this.belongTo.x;
-		pos.y = this.rect.y+this.belongTo.y;
+		var pa = this.getParent();
+
 		pos.width = this.rect.width;
 		pos.height = this.rect.height;
+
+		if(!pa){
+			pos.x = this.rect.x+this.belongTo.x;
+			pos.y = this.rect.y+this.belongTo.y;
+		}else{
+			var paRect = pa.getAbsolutePosition();
+			pos.x = this.rect.x+paRect.x;
+			pos.y = this.rect.y+paRect.y;
+		}
 		return pos;
 	};
 	
@@ -367,20 +391,22 @@
 	 */
 	Ycc.UI.Base.prototype.transformToAbsolute = function (dotOrArr) {
 		var res = null;
+		var absoluteRect = this.getAbsolutePosition();
+		
 		if(Ycc.utils.isArray(dotOrArr)){
 			res = [];
 			for(var i=0;i<dotOrArr.length;i++){
 				var resDot = new Ycc.Math.Dot(0,0);
 				var dot = dotOrArr[i];
-				resDot.x=this.belongTo.x+this.rect.x+dot.x;
-				resDot.y=this.belongTo.y+this.rect.y+dot.y;
+				resDot.x=absoluteRect.x+dot.x;
+				resDot.y=absoluteRect.y+dot.y;
 				res.push(resDot);
 			}
 			return res;
 		}
 		res = new Ycc.Math.Dot(0,0);
-		res.x = this.belongTo.x+this.rect.x+dotOrArr.x;
-		res.y = this.belongTo.y+this.rect.y+dotOrArr.y;
+		res.x = absoluteRect.x+dotOrArr.x;
+		res.y = absoluteRect.y+dotOrArr.y;
 		return res;
 	};
 	
@@ -391,20 +417,21 @@
 	 */
 	Ycc.UI.Base.prototype.transformToLocal = function (dotOrArr) {
 		var res = null;
+		var absoluteRect = this.getAbsolutePosition();
 		if(Ycc.utils.isArray(dotOrArr)){
 			res = [];
 			for(var i=0;i<dotOrArr.length;i++){
 				var resDot = new Ycc.Math.Dot(0,0);
 				var dot = dotOrArr[i];
-				resDot.x=dot.x-(this.belongTo.x+this.rect.x);
-				resDot.y=dot.y-(this.belongTo.y+this.rect.y);
+				resDot.x=dot.x-(absoluteRect.x);
+				resDot.y=dot.y-(absoluteRect.y);
 				res.push(resDot);
 			}
 			return res;
 		}
 		res = new Ycc.Math.Dot(0,0);
-		res.x = dotOrArr.x-(this.belongTo.x+this.rect.x);
-		res.y = dotOrArr.y-(this.belongTo.y+this.rect.y);
+		res.x = dotOrArr.x-(absoluteRect.x);
+		res.y = dotOrArr.y-(absoluteRect.y);
 		return res;
 	};
 

@@ -69,6 +69,16 @@
 		return nodeMap;
 	};
 	
+	/**
+	 * 获取父级
+	 * @return {Ycc.Tree}
+	 */
+	Ycc.Tree.prototype.getParent = function () {
+		if(!this.$parentID) return null;
+		
+		return nodeMap[this.$parentID];
+	};
+	
 	
 	/**
 	 * 添加一颗子树
