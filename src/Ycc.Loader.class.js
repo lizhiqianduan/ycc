@@ -93,25 +93,27 @@
 	 * @param imageArr.url
 	 * @param imageArr.img
 	 * @param endCb
-	 * @param progressCb
+	 * @param [progressCb]
+	 * @param [endImages] 用于存储加载已结束的图片，一般不用传值
 	 */
-	Ycc.Loader.prototype.loadImgOneByOne = function (imageArr, endCb, progressCb) {
-		
+	Ycc.Loader.prototype.loadImgOneByOne = function (imageArr, endCb, progressCb,endImages) {
+		endImages = endImages || [];
 		if(imageArr.length===0){
-			endCb();
+			endCb(endImages);
 			return;
 		}
 		var self = this;
 		var img = new Image();
 		imageArr[0].img = img;
+		endImages[imageArr[0].name] = img;
 		img.src = imageArr[0].url;
 		img.onload = function () {
 			Ycc.utils.isFn(progressCb) && progressCb(imageArr[0],true);
-			self.loadImgOneByOne(imageArr.slice(1),endCb,progressCb);
+			self.loadImgOneByOne(imageArr.slice(1),endCb,progressCb,endImages);
 		};
 		img.onerror = function () {
 			Ycc.utils.isFn(progressCb) && progressCb(imageArr[0],false);
-			self.loadImgOneByOne(imageArr.slice(1),endCb,progressCb);
+			self.loadImgOneByOne(imageArr.slice(1),endCb,progressCb,endImages);
 		};
 		
 	};

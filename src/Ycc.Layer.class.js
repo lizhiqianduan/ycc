@@ -19,6 +19,8 @@
 	 * 每个图层都跟这个canvas元素绑定。
 	 * @param yccInstance	{Ycc} ycc实例
 	 * @param option		{object} 配置项
+	 * @param option.enableEventManager		{boolean} 是否监听舞台事件
+	 *
 	 * @constructor
 	 * @extends Ycc.Listener
 	 */
@@ -348,6 +350,19 @@
 	 */
 	Ycc.Layer.prototype.clear = function () {
 		this.ctx.clearRect(0,0,this.width,this.height);
+	};
+	
+	
+	/**
+	 * 清空图层内的所有UI
+	 */
+	Ycc.Layer.prototype.removeAllUI = function () {
+		this.uiList.forEach(function (ui) {
+			ui.itor().each(function (child) {
+				child = null;
+			});
+		});
+		this.uiList=[];
 	};
 	
 	

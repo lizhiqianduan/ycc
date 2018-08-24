@@ -62,6 +62,10 @@
 			swipe:false
 		};
 		tracer.onlifestart = function (life) {
+
+			self.triggerListener('tap',self._createEventData(life.startTouchEvent,'tap'));
+			self.triggerListener('log','tap triggered');
+
 			// 多个触摸点的情况
 			if(tracer.currentLifeList.length>1){
 				self.triggerListener('log','multi touch start ...');
@@ -130,8 +134,6 @@
 				
 				// 开始和结束时间在300ms内，认为是tap事件
 				if(!prevent.tap && life.endTime-life.startTime<300){
-					self.triggerListener('tap',self._createEventData(life.endTouchEvent,'tap'));
-					self.triggerListener('log','tap triggered');
 					// 取消长按事件
 					clearTimeout(this._longTapTimeout);
 					
