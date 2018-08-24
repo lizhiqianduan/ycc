@@ -7,11 +7,13 @@
 	<style>
 		body{
 			font-size: 0;
+			position: relative;
 		}
+
 	</style>
 </head>
 <body>
-
+<div class="score">分数： <span id="score-number">0</span></div>
 </body>
 </html>
 
@@ -101,7 +103,7 @@
 		this.offsetY = 0;
 
 		// 每帧Y轴的步长
-		this.spaceY = 20;
+		this.spaceY = 50;
 
 		// 方框宽度
 		this.rectW = parseInt(stageW/this.col);
