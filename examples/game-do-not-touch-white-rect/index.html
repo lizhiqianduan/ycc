@@ -22,6 +22,9 @@
 
 
 <script>
+	if(!Ycc.utils.isMobile())
+		alert("此示例在移动端查看效果更佳！");
+
 	var canvas = document.createElement('canvas');
 	console.log(document.documentElement.clientWidth,document.documentElement.clientHeight);
 	canvas.width=document.documentElement.clientWidth;
