@@ -92,7 +92,12 @@
 
 
 	function GameScene(){
+	
+		// 游戏进行中的图层
 		this.layer = ycc.layerManager.newLayer({enableEventManager:true});
+		
+		// 游戏结束后的弹出层
+		this.overLayer = ycc.layerManager.newLayer({enableEventManager:true,show:false});
 
 		// 四列
 		this.col = 4;
@@ -103,7 +108,10 @@
 		this.offsetY = 0;
 
 		// 每帧Y轴的步长
-		this.spaceY = 50;
+		this.spaceY = 15;
+		
+		// 最大速度
+		this.maxSpaceY = 50;
 
 		// 方框宽度
 		this.rectW = parseInt(stageW/this.col);
@@ -126,17 +134,35 @@
 
 		this.rects = [];
 
+        // 当前得分
+        this.score = 0;
+
+        this.scoreText=null;
+		
+		// 最终得分的文本UI
+		this.finalScoreText=null;
+		
+		// 根据最终得分显示对应的提示文本
+		this.finalTipText = null;
+
+        // 游戏是否结束
+        this.end = false;
+
 		// 初始值
-		this.M.set(1,2,1);
-		this.M.set(2,3,1);
-		this.M.set(3,1,1);
-		this.M.set(4,4,1);
-		this.M.set(5,2,1);
+//		this.M.set(1,2,1);
+//		this.M.set(2,3,1);
+//		this.M.set(3,1,1);
+//		this.M.set(4,4,1);
+//		this.M.set(5,2,1);
 
 
 		this.createRect();
 		this.createColLine();
 		this.createRowLine();
+
+        this.createTextScore();
+		
+		this.createGameOverLayer();
 
 	}
 
@@ -190,23 +216,91 @@
 		}
 	};
 
+    // 创建计分文本
+    GameScene.prototype.createTextScore = function(){
+        this.scoreText = new Ycc.UI.SingleLineText({
+            rect:new Ycc.Math.Rect(0,10,stageW,50),
+			xAlign:"center",
+            content:"SCORE:   "+this.score +"  "+"SPEED:"+this.spaceY,
+            fontSize:"30px",
+            color:"green"
+        });
+        this.layer.addUI(this.scoreText);
+    };
+	
+	// 创建游戏结束的图层页
+	GameScene.prototype.createGameOverLayer = function(){
+
+		// 半透明背景
+		this.overLayer.addUI(new Ycc.UI.Rect({
+			rect:new Ycc.Math.Rect(0,0,stageW,stageH),
+			color:"rgba(0,0,0,0.7)"
+		}));
+		
+		var fontSize = "50px";
+		this.overLayer.addUI(new Ycc.UI.SingleLineText({
+			content:"游戏结束",
+			xAlign:"center",
+			rect:new Ycc.Math.Rect(0,stageH/2-160,stageW,50),
+			color:"red",
+			fontSize:fontSize
+		}));
+		this.finalScoreText = new Ycc.UI.SingleLineText({
+			content:"您最终得了"+this.score+"分",
+			xAlign:"center",
+			rect:new Ycc.Math.Rect(0,stageH/2-80,stageW,50),
+			color:"red",
+			fontSize:fontSize
+		})
+		this.overLayer.addUI(this.finalScoreText);
+		this.finalTipText = new Ycc.UI.SingleLineText({
+			content:"手速超过了99%的单身狗！",
+			xAlign:"center",
+			rect:new Ycc.Math.Rect(0,stageH/2,stageW,50),
+			color:"red",
+			fontSize:fontSize
+		});
+		this.overLayer.addUI(this.finalTipText);
+		
+		var imgW = images.restart.naturalWidth,
+			imgH = images.restart.naturalHeight;
+		this.overLayer.addUI(new Ycc.UI.Image({
+			rect:new Ycc.Math.Rect(stageW/2-imgW/2,stageH/2+80,imgW,imgH),
+			res:images.restart,
+			ontap:function (e) {
+				//self.delSelf();
+				currentScene = new GameScene();
+			}
+		}));
+	};
+
 	// 每个方块的点击事件
 	GameScene.prototype.rectOnTap = function (e) {
-		console.log(this,e);
+		//console.log(this,e);
 
 		if(e.target.color==="white"){
+            this.score++;
 			e.target.color="red";
+			// 修改分数的文字
+            this.scoreText.content = "SCORE:"+("    ".slice(0,4-(this.score+'').length))+this.score+"  "+"SPEED:"+this.spaceY
 		}
 	};
 
 
 	GameScene.prototype.update = function () {
+		
+		if(this.end) return;
+
 		var i=0,j=0;
 		this.offsetY+=this.spaceY;
 		if(this.offsetNumber!==parseInt(this.offsetY/this.rectH)){
 			this.offsetNumber=parseInt(this.offsetY/(this.rectH));
 			console.log('偏移个数-->',this.offsetNumber);
 
+			// 每10行速度就增加10个像素
+			if(this.offsetNumber%5===4 && this.spaceY<this.rectH-20 && this.spaceY<this.maxSpaceY)
+				this.spaceY+=1;
+				
 			// 所有横线减去一个方块的偏移量
 			for(j=0;j<this.rowLines.length;j++){
 				this.rowLines[j].start.y-=this.rectH;
@@ -215,13 +309,31 @@
 
 			// 方块的总行数
 			var rectRow = this.rects.length/this.col;
-			console.log();
 
 			var rowIndex=rectRow-(this.offsetNumber)%rectRow-1;
 
 			// 将最末一行方块的坐标更改至最上方，并随机修改其颜色
 			for(i=0;i<this.col;i++){
 				var rect = this.rects[(rowIndex)*this.col+i];
+
+				// 存在未点击的白块，游戏结束
+				if(rect.color==="white") {
+					this.overLayer.show = true;
+					this.finalScoreText.content = "您最终得了"+this.score+"分";
+					if(this.score<50)
+						this.finalTipText.content = "太菜了，还需努力哦！";
+					else if(this.score<100)
+						this.finalTipText.content = "哎哟，不错哟！";
+					else if(this.score<200)
+						this.finalTipText.content = "手速超过了99%的单身狗！";
+					else 
+						this.finalTipText.content = "您的手速已超神！";
+					
+						
+						
+					this.end=true;
+					break;
+				}
 				var before = rect.rect.y;
 				rect.rect.y = before-(rectRow)*this.rectH;
 				rect.color=Math.random()>0.2?"black":"white";
