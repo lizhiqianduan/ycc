@@ -97,7 +97,7 @@
 	 * @param [endImages] 用于存储加载已结束的图片，一般不用传值
 	 */
 	Ycc.Loader.prototype.loadImgOneByOne = function (imageArr, endCb, progressCb,endImages) {
-		endImages = endImages || [];
+		endImages = endImages || {};
 		if(imageArr.length===0){
 			endCb(endImages);
 			return;
@@ -119,6 +119,51 @@
 	};
 	
 	/**
+	 * 依次加载图片
+	 * @param resArr
+	 * @param resArr.name 资源名称，方便查找
+	 * @param resArr.url  资源的url
+	 * @param resArr.res 资源加载完成后，附加给该字段
+	 * @param endCb
+	 * @param [progressCb]
+	 * @param [endResArr] 用于存储加载已结束的音频，一般不用传值
+	 */
+	Ycc.Loader.prototype.loadAudioOneByOne = function (resArr, endCb, progressCb,endResArr) {
+		endResArr = endResArr || [];
+		if(resArr.length===endResArr.length){
+			endCb(endResArr);
+			return;
+		}
+		var self = this;
+		// 当前加载的下标
+		var index = endResArr.length;
+		var curRes = resArr[index];
+		// 附加给res字段
+		curRes.res = new Audio();
+		
+		curRes.res.src = curRes.url;
+		
+		endResArr.push(curRes);
+		
+		self.loadAudioOneByOne(resArr,endCb,progressCb,endResArr);
+
+		// curRes.res.onload = function () {
+		// 	console.log('load');
+		// 	Ycc.utils.isFn(progressCb) && progressCb(curRes,true);
+		// 	self.loadAudioOneByOne(resArr,endCb,progressCb,endResArr);
+		// };
+		// curRes.res.onerror = function () {
+		// 	console.log('err');
+		// 	Ycc.utils.isFn(progressCb) && progressCb(curRes,false);
+		// 	self.loadAudioOneByOne(resArr,endCb,progressCb,endResArr);
+		// };
+		
+	};
+	
+	
+	
+	
+	/**
 	 * 是否使用缓存
 	 * @param b {boolean}
 	 */
@@ -126,6 +171,18 @@
 		this.cache = b;
 	};
 	
+	/**
+	 * 获取资源
+	 * @param resArr
+	 * @param name
+	 */
+	Ycc.Loader.prototype.getResByName = function (name,resArr) {
+		for(var i=0;i<resArr.length;i++){
+			if(resArr[i].name===name)
+				return resArr[i];
+		}
+		return null;
+	};
 	
 	
 })(window.Ycc);

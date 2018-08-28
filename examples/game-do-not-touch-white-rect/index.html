@@ -36,8 +36,10 @@
 	var ycc = new Ycc().bindCanvas(canvas);
 	var stageW = ycc.getStageWidth();
 	var stageH = ycc.getStageHeight();
-	// 所有的资源
+	// 所有的图片资源
 	var images = null;
+	// 所有音频资源
+	var audio = null;
 	// 当前场景
 	var currentScene = null;
 
@@ -49,8 +51,17 @@
 	],function (imgs) {
 		console.log(imgs,222);
 		images = imgs;
-		currentScene = new StartScene();
-		ycc.layerManager.reRenderAllLayerToStage();
+
+		ycc.loader.loadAudioOneByOne([
+			{name:'bg',url:"./audio/bg.mp3"},
+			{name:'over',url:"./audio/over.wav"},
+			{name:'tap',url:"./audio/tap.mp3"},
+		],function (audios) {
+			audio=audios;
+			currentScene = new StartScene();
+			ycc.layerManager.reRenderAllLayerToStage();
+		});
+
 	});
 
 
@@ -148,6 +159,12 @@
         // 游戏是否结束
         this.end = false;
 
+        this.bgm = ycc.loader.getResByName('bg',audio);
+
+		this.gameOverBgm = ycc.loader.getResByName('over',audio);
+
+		this.bgmTap = ycc.loader.getResByName('tap',audio);
+
 
 		this.createRect();
 		this.createColLine();
@@ -156,6 +173,9 @@
         this.createTextScore();
 		
 		this.createGameOverLayer();
+
+		console.log('play');
+		if(this.bgm) this.bgm.res.play();
 
 	}
 
@@ -294,6 +314,10 @@
 		//console.log(this,e);
 
 		if(e.target.color==="white"){
+			if(this.bgmTap) {
+				this.bgmTap.res.currentTime=0;
+				this.bgmTap.res.play();
+			}
             this.score++;
 			e.target.color="red";
 			// 修改分数的文字
@@ -344,8 +368,13 @@
 					else 
 						this.finalTipText.content = "您的手速已超神！";
 					
-						
-						
+
+					if(this.bgm) {
+						this.bgm.res.currentTime = 0;
+						this.bgm.res.pause();
+					}
+					if(this.gameOverBgm) this.gameOverBgm.res.play();
+
 					this.end=true;
 					break;
 				}
