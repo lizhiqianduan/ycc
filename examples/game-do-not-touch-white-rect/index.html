@@ -111,7 +111,7 @@
 		this.offsetY = 0;
 
 		// 每帧Y轴的步长
-		this.spaceY = 15;
+		this.spaceY = 20;
 		
 		// 最大速度
 		this.maxSpaceY = 50;
@@ -127,9 +127,6 @@
 
 		// 已偏移的方块个数
 		this.offsetNumber=-1;
-
-		// 矩阵
-		this.M = new Ycc.Math.Matrix([],this.row,this.col);
 
 		this.colLines = [];
 
@@ -150,13 +147,6 @@
 
         // 游戏是否结束
         this.end = false;
-
-		// 初始值
-//		this.M.set(1,2,1);
-//		this.M.set(2,3,1);
-//		this.M.set(3,1,1);
-//		this.M.set(4,4,1);
-//		this.M.set(5,2,1);
 
 
 		this.createRect();
@@ -207,7 +197,7 @@
 					this.rectYList.push(y);
 				var rect = new Ycc.UI.Rect({
 					rect:new Ycc.Math.Rect(x,y,this.rectW,this.rectH),
-					color:(this.M.get(i+1,j+1)===1)?'white':'black',
+					color:'black',
 					ontap:function (e) {
 						self.rectOnTap(e);
 					}
@@ -275,6 +265,28 @@
 				currentScene = new GameScene();
 			}
 		}));
+
+		this.overLayer.addUI(new Ycc.UI.SingleLineText({
+			content:"项目地址",
+			rect:new Ycc.Math.Rect((stageW-300)/2-20,stageH/2+130+imgH,160,80),
+			color:"#308eef",
+			fontSize:"36px",
+			ontap:function (e) {
+				window.location.href="https://github.com/lizhiqianduan/ycc/tree/develop";
+			}
+		}));
+
+		this.overLayer.addUI(new Ycc.UI.SingleLineText({
+			content:"作者博客",
+			rect:new Ycc.Math.Rect((stageW-300)/2+150+20,stageH/2+130+imgH,160,80),
+			color:"#308eef",
+			fontSize:"36px",
+			ontap:function (e) {
+				window.location.href="http://www.lizhiqianduan.com/blog";
+			}
+		}));
+
+
 	};
 
 	// 每个方块的点击事件

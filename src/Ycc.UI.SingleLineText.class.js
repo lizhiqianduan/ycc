@@ -149,9 +149,12 @@
 		var rect = this.getAbsolutePosition();
 		x = rect.x;
 		
+		var textWidth = this.ctx.measureText(this.displayContent).width;
 		if(this.xAlign==="center"){
-			var textWidth = this.ctx.measureText(this.displayContent).width;
 			x+=(rect.width-textWidth)/2;
+		}
+		if(this.xAlign==="right"){
+			x+=(rect.width-textWidth);
 		}
 		
 		y = rect.y;
