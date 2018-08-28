@@ -175,7 +175,10 @@
 		this.createGameOverLayer();
 
 		console.log('play');
-		if(this.bgm) this.bgm.res.play();
+		if(this.bgm) {
+			this.bgm.res.loop = true;
+			this.bgm.res.play();
+		}
 
 	}
 
