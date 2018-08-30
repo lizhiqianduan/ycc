@@ -85,80 +85,117 @@
 			}
 		}
 	};
-
-	/**
-	 * 依次加载图片
-	 * @param imageArr
-	 * @param imageArr.name
-	 * @param imageArr.url
-	 * @param imageArr.img
-	 * @param endCb
-	 * @param [progressCb]
-	 * @param [endImages] 用于存储加载已结束的图片，一般不用传值
-	 */
-	Ycc.Loader.prototype.loadImgOneByOne = function (imageArr, endCb, progressCb,endImages) {
-		endImages = endImages || {};
-		if(imageArr.length===0){
-			endCb(endImages);
-			return;
-		}
-		var self = this;
-		var img = new Image();
-		imageArr[0].img = img;
-		endImages[imageArr[0].name] = img;
-		img.src = imageArr[0].url;
-		img.onload = function () {
-			Ycc.utils.isFn(progressCb) && progressCb(imageArr[0],true);
-			self.loadImgOneByOne(imageArr.slice(1),endCb,progressCb,endImages);
-		};
-		img.onerror = function () {
-			Ycc.utils.isFn(progressCb) && progressCb(imageArr[0],false);
-			self.loadImgOneByOne(imageArr.slice(1),endCb,progressCb,endImages);
-		};
-		
-	};
 	
 	/**
-	 * 依次加载图片
+	 * 并发加载资源
 	 * @param resArr
-	 * @param resArr.name 资源名称，方便查找
-	 * @param resArr.url  资源的url
-	 * @param resArr.res 资源加载完成后，附加给该字段
-	 * @param endCb
-	 * @param [progressCb]
-	 * @param [endResArr] 用于存储加载已结束的音频，一般不用传值
+	 * @param [resArr.name] 	资源名称，方便查找
+	 * @param resArr.url  		资源的url
+	 * @param [resArr.type]  	资源类型 image,audio，默认为image
+	 * @param [resArr.res]  	资源加载完成后，附加给该字段
+	 * @param endCb				资源加载结束的回调
+	 * @param [progressCb]		资源加载进度的回调
+	 * @param [endResArr] 		用于存储加载已结束的音频，一般不用传值
+	 * @param [endResMap] 		用于存储加载已结束的音频map，一般不用传值。注：map的key是根据name字段生成的
 	 */
-	Ycc.Loader.prototype.loadAudioOneByOne = function (resArr, endCb, progressCb,endResArr) {
+	Ycc.Loader.prototype.loadResParallel = function (resArr, endCb, progressCb,endResArr,endResMap) {
 		endResArr = endResArr || [];
+		endResMap = endResMap || {};
 		if(resArr.length===endResArr.length){
-			endCb(endResArr);
+			endCb(endResArr,endResMap);
+			return;
+		}
+		for(var i=0;i<resArr.length;i++){
+			var curRes = resArr[i];
+			var successEvent = "load";
+			var errorEvent = "error";
+			curRes.type = curRes.type || 'image';
+			
+			if(curRes.type==='image'){
+				curRes.res = new Image();
+				curRes.res.src = curRes.url;
+			}
+			if(curRes.type==='audio'){
+				successEvent = 'loadedmetadata';
+				curRes.res = new Audio();
+				curRes.res.src = curRes.url;
+				curRes.res.preload = "load";
+			}
+			curRes.res.addEventListener(successEvent,(function (curRes,index) {
+				return function () {
+					endResArr.push(curRes);
+					if(typeof curRes.name!=='undefined') endResMap[curRes.name] = curRes.res;
+					Ycc.utils.isFn(progressCb) && progressCb(curRes,true,index);
+				};
+			})(curRes,i));
+			curRes.res.addEventListener(errorEvent,(function (curRes,index) {
+				return function () {
+					endResArr.push(curRes);
+					if(typeof curRes.name!=='undefined') endResMap[curRes.name] = curRes.res;
+					Ycc.utils.isFn(progressCb) && progressCb(curRes,false,index);
+				};
+			})(curRes,i));
+			
+		}
+	};
+	
+
+	/**
+	 * 依次加载资源
+	 * @param resArr
+	 * @param [resArr.name] 	资源名称，方便查找
+	 * @param resArr.url  		资源的url
+	 * @param [resArr.type]  	资源类型 image,audio
+	 * @param [resArr.res]  	资源加载完成后，附加给该字段
+	 * @param endCb				资源加载结束的回调
+	 * @param [progressCb]		资源加载进度的回调
+	 * @param [endResArr] 		用于存储加载已结束的音频，一般不用传值
+	 * @param [endResMap] 		用于存储加载已结束的音频map，一般不用传值。注：map的key是根据name字段生成的
+	 */
+	Ycc.Loader.prototype.loadResOneByOne = function (resArr, endCb, progressCb,endResArr,endResMap) {
+		endResArr = endResArr || [];
+		endResMap = endResMap || {};
+		if(resArr.length===endResArr.length){
+			endCb(endResArr,endResMap);
 			return;
 		}
 		var self = this;
 		// 当前加载的下标
 		var index = endResArr.length;
 		var curRes = resArr[index];
-		// 附加给res字段
-		curRes.res = new Audio();
+		var successEvent = "load";
+		var errorEvent = "error";
+		curRes.type = curRes.type || 'image';
 		
-		curRes.res.src = curRes.url;
+		if(curRes.type==='image'){
+			curRes.res = new Image();
+			curRes.res.src = curRes.url;
+		}
+		if(curRes.type==='audio'){
+			successEvent = 'loadedmetadata';
+			curRes.res = new Audio();
+			curRes.res.src = curRes.url;
+			curRes.res.preload = "load";
+		}
 		
-		endResArr.push(curRes);
 		
-		self.loadAudioOneByOne(resArr,endCb,progressCb,endResArr);
+		curRes.res.addEventListener(successEvent,function () {
+			endResArr.push(curRes);
+			if(typeof curRes.name!=='undefined') endResMap[curRes.name] = curRes.res;
 
-		// curRes.res.onload = function () {
-		// 	console.log('load');
-		// 	Ycc.utils.isFn(progressCb) && progressCb(curRes,true);
-		// 	self.loadAudioOneByOne(resArr,endCb,progressCb,endResArr);
-		// };
-		// curRes.res.onerror = function () {
-		// 	console.log('err');
-		// 	Ycc.utils.isFn(progressCb) && progressCb(curRes,false);
-		// 	self.loadAudioOneByOne(resArr,endCb,progressCb,endResArr);
-		// };
+			Ycc.utils.isFn(progressCb) && progressCb(curRes,true,index);
+			self.loadResOneByOne(resArr,endCb,progressCb,endResArr,endResMap);
+		});
+		curRes.res.addEventListener(errorEvent,function () {
+			endResArr.push(curRes);
+			if(typeof curRes.name!=='undefined') endResMap[curRes.name] = curRes.res;
+			Ycc.utils.isFn(progressCb) && progressCb(curRes,true,index);
+			self.loadResOneByOne(resArr,endCb,progressCb,endResArr,endResMap);
+		});
+
 		
 	};
+	
 	
 	
 	
