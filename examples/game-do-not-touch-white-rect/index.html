@@ -44,18 +44,18 @@
 	var currentScene = null;
 
 
-	// 加载图片资源
-	ycc.loader.loadImgOneByOne([
+	// 加载资源
+	ycc.loader.loadResOneByOne([
 		{name:"start",url:"./images/start.png"},
 		{name:"restart",url:"./images/restart.png"},
-	],function (imgs) {
+	],function (lise,imgs) {
 		console.log(imgs,222);
 		images = imgs;
 
-		ycc.loader.loadAudioOneByOne([
-			{name:'bg',url:"./audio/bg.mp3"},
-			{name:'over',url:"./audio/over.wav"},
-			{name:'tap',url:"./audio/tap.mp3"},
+		ycc.loader.loadResOneByOne([
+			{name:'bg',url:"./audio/bg.mp3",type:"audio"},
+			{name:'over',url:"./audio/over.wav",type:'audio'},
+			{name:'tap',url:"./audio/tap.mp3",type:'audio'},
 		],function (audios) {
 			audio=audios;
 			currentScene = new StartScene();
@@ -63,7 +63,6 @@
 		});
 
 	});
-
 
 
 
