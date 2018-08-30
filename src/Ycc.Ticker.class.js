@@ -13,6 +13,13 @@
 	/**
 	 * 系统心跳管理类。
 	 * 管理系统的心跳；自定义帧事件的广播；帧更新图层的更新等。
+	 *
+	 * 注：
+	 * 心跳间隔时间为1e3/60；
+	 * 无论帧率为多少，心跳间隔时间不变；
+	 * 总帧数<=总心跳次数；
+	 * 只有当总帧数*每帧的理论时间小于总心跳时间，帧的监听函数才会触发，以此来控制帧率；
+	 *
 	 * @param yccInstance
 	 * @constructor
 	 */
@@ -132,7 +139,7 @@
 			// 所有帧刷新总时间，理论值
 			var frameTime = self.frameAllCount * frameDeltaTime;
 
-			// 判断是否刷新帧
+			// 当总帧数*每帧的理论时间小于总心跳时间，触发帧的回调
 			if(tickTime > frameTime){
 				// 总帧数加1
 				self.frameAllCount++;
