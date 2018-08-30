@@ -43,12 +43,12 @@
 	var layer = ycc.layerManager.newLayer({enableFrameEvent:true});
 
 
-	new Ycc.Loader().loadImageList({
-		icon:"./logo.jpg",
-		scale9Grid:"./bg.png"
-	},imageOnLoad);
+	new Ycc.Loader().loadResParallel([
+		{name:"icon",url:"./logo.jpg"},
+		{name:"scale9Grid",url:"./bg.png"},
+	],imageOnLoad);
 
-	function imageOnLoad(imgs){
+	function imageOnLoad(arr,imgs){
 
 
 

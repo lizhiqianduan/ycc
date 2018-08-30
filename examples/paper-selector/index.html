@@ -45,10 +45,10 @@
 	var maxWidth = 300;
 	var scale = 1;
 
-	ycc.loader.loadImageList({paper:"./paper.gif"},onLoad);
+	ycc.loader.loadResParallel([{name:"paper",url:"./paper.gif"}],onLoad);
 
 
-	function onLoad(res) {
+	function onLoad(arr,res) {
 		var canvas = document.createElement("canvas");
 		scale = maxWidth/res.paper.width;
 		canvas.width = maxWidth;

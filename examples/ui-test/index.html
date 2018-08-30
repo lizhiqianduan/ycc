@@ -108,10 +108,10 @@
 	ui = new Ycc.UI.Ellipse(config);
 	layer.addUI(ui);
 
-	new Ycc.Loader().loadImageList({
-		icon:"./logo.jpg",
-		scale9Grid:"./bg.png"
-	},function (imgs) {
+	new Ycc.Loader().loadResParallel([
+		{name:"icon",url:"./logo.jpg"},
+		{name:"scale9Grid",url:"./bg.png"},
+	],function (arr,imgs) {
 		var config2 = {
 			res:imgs.icon,
 			rect:new Ycc.Math.Rect(20,220,240,100),

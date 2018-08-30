@@ -84,7 +84,8 @@
 
 	var loader = new Ycc.Loader();
 
-//	loader.loadResParallel
+	//	loader.loadResParallel
+	//	loader.loadResOneByOne
 	loader.loadResOneByOne(imageArr,function () {
 		console.log("loaded!",this);
 	},function (image,err,index) {

@@ -86,11 +86,11 @@
 
 
 	// 需要加载的图片资源路径和名称
-	var imageResources = {
-		tick:"./tick.png",
-		cross:"./cross.png",
-		paper:"./paper.jpg"
-	};
+	var imageResources = [
+		{name:'tick',url:"./tick.png"},
+		{name:'cross',url:"./cross.png"},
+		{name:'paper',url:"./paper.jpg"},
+	];
 	// 资源加载完成后，所有资源的引用
 	var imageRes = null;
 
@@ -107,7 +107,7 @@
 	var originWidth = 0;
 
 	// 加载器实例
-	new Ycc.Loader().loadImageList(imageResources,function (imgs) {
+	new Ycc.Loader().loadResParallel(imageResources,function (arr,imgs) {
 		imageRes = imgs;
 
 		// 新建渲染舞台
