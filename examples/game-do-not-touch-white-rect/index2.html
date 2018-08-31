@@ -335,14 +335,22 @@
 		if(this.end) return;
 
 		var i=0,j=0;
-		this.offsetY+=this.spaceY*((Date.now()-ycc.ticker.lastFrameTime)/(1000/frameRate));
+
+		// 根据时间差计算而得的实际Y轴速度
+		var spaceY = parseInt(this.spaceY*((Date.now()-ycc.ticker.lastFrameTime)/(1000/frameRate)));
+		// 如果spaceY超出了最大值的2倍，视为程序被置后台，此帧不更新视图
+		if(spaceY>=this.maxSpaceY*2){
+			console.log('丢弃帧 spaceY::',spaceY);
+			return;
+		}
+		this.offsetY+=spaceY;
 		if(this.offsetNumber!==parseInt(this.offsetY/this.rectH)){
 			this.offsetNumber=parseInt(this.offsetY/(this.rectH));
 			console.log('偏移个数-->',this.offsetNumber);
 
-			// 每10行速度就增加10个像素
-			if(this.offsetNumber%5===4 && this.spaceY<this.rectH-20 && this.spaceY<this.maxSpaceY)
-				this.spaceY+=1;
+			// 每3行速度就增加2个像素
+			if(this.offsetNumber%3===2 && this.spaceY<this.rectH-20 && this.spaceY<this.maxSpaceY)
+				this.spaceY+=2;
 
 			// 所有横线减去一个方块的偏移量
 			for(j=0;j<this.rowLines.length;j++){
@@ -391,13 +399,16 @@
 
 
 		for(i=0;i<this.rects.length;i++){
-			this.rects[i].rect.y+=this.spaceY;
+			this.rects[i].rect.y+=spaceY;
 		}
 
 		for(j=0;j<this.rowLines.length;j++){
-			this.rowLines[j].start.y+=this.spaceY;
-			this.rowLines[j].end.y+=this.spaceY;
+			this.rowLines[j].start.y+=spaceY;
+			this.rowLines[j].end.y+=spaceY;
 		}
+
+		// 修改分数的文字
+		this.scoreText.content = "SCORE:"+("    ".slice(0,4-(this.score+'').length))+this.score+"  "+"SPEED:"+this.spaceY
 
 	};
 

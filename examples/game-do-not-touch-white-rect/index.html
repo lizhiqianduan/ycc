@@ -338,9 +338,9 @@
 			this.offsetNumber=parseInt(this.offsetY/(this.rectH));
 			console.log('偏移个数-->',this.offsetNumber);
 
-			// 每10行速度就增加10个像素
-			if(this.offsetNumber%5===4 && this.spaceY<this.rectH-20 && this.spaceY<this.maxSpaceY)
-				this.spaceY+=1;
+			// 每3行速度就增加2个像素
+			if(this.offsetNumber%3===2 && this.spaceY<this.rectH-20 && this.spaceY<this.maxSpaceY)
+				this.spaceY+=2;
 				
 			// 所有横线减去一个方块的偏移量
 			for(j=0;j<this.rowLines.length;j++){
@@ -396,6 +396,9 @@
 			this.rowLines[j].start.y+=this.spaceY;
 			this.rowLines[j].end.y+=this.spaceY;
 		}
+
+		// 修改分数的文字
+		this.scoreText.content = "SCORE:"+("    ".slice(0,4-(this.score+'').length))+this.score+"  "+"SPEED:"+this.spaceY
 
 	};
 
