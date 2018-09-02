@@ -1,3 +1,6 @@
 /node_modules
 .idea
-build/*.map
+/build
+/docs
+package-lock.json
+/examples/**/lib/**

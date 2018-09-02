@@ -1,0 +1,31 @@
+
+*{
+    margin: 0;
+    padding:0;
+}
+canvas{
+    background-color: #ccc;
+}
+.tip{
+
+}
+
+.return-btn{
+    display: none;
+    clear: both; padding: 10px 0;
+}
+.return-btn a{
+    text-align: center;width: 80%; height: 30px; display: block;margin-left: 10%; background-color: #ccc; line-height: 30px;
+}
+
+pre{
+    background-color: #ccc;
+    max-width: 100%;
+    overflow-x: auto;
+}
+
+@media screen and (max-width: 640px) {
+    .return-btn{
+        display: block;
+    }
+}

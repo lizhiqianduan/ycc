@@ -36,6 +36,7 @@
 	 * @constructor
 	 */
 	Ycc.UI = function(canvasDom){
+		this.yccClass = Ycc.UI;
 
 		/**
 		 * 保存的快照，每个元素都是`getImageData`的返回值

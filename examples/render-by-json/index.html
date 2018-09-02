@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name=viewport content="width=device-width,initial-scale=1,user-scalable=0,viewport-fit=cover">
+	<title>根据json数组绘制界面</title>
+	<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<div class="return-btn">
+	<a href="../">
+		返回首页
+	</a>
+</div>
+<div class="tip">
+	<h3>示例说明：</h3>
+	<div>
+		这个示例仅仅调用系统的renderAllLayerByJsonArray渲染舞台。<br>
+	</div>
+
+	<br><br>
+</div>
+
+<canvas width="300" height="200" id="canvas"></canvas>
+
+<br>
+<br>
+<div>这个示例的大致意思是: <br> 两个图层，每个图层三个UI。</div>
+<br>
+<div>示例json数组如下：</div>
+<pre style="margin-top: 10px; background-color: #ccc;width:100%;overflow-x: scroll;">
+[{
+	option:{
+		enableEventManager:true,
+		show:true
+	},
+	ui:[{
+		type:Ycc.UI.SingleLineText.name,
+		option:{content:"这两个UI添加了事件监听",rect:new Ycc.Math.Rect(10,10,0,0)}
+	},{
+		type:Ycc.UI.Circle.name,
+		option:{
+			point:new Ycc.Math.Dot(30,50),
+			r:20,
+			ontap:function (e) {
+				alert('点我干啥！我是圆 Circle！');
+			}
+		}
+	},{
+		type:Ycc.UI.Ellipse.name,
+		option:{
+			point:new Ycc.Math.Dot(120,50),
+			width:60,
+			height:30,
+			ontap:function (e) {
+				alert('点我干啥！我是椭圆 Ellipse！');
+			}
+		}
+	}]
+},{
+	option:{
+		enableEventManager:false,
+		show:true
+	},
+	ui:[{
+		type:Ycc.UI.SingleLineText.name,
+		option:{content:"这两个UI添加了事件也没用",rect:new Ycc.Math.Rect(10,100,0,0)}
+	},{
+		type:Ycc.UI.Circle.name,
+		option:{
+			point:new Ycc.Math.Dot(30,140),
+			r:20,
+			ontap:function (e) {
+				alert('点我也没用！');
+			}
+		}
+	},{
+		type:Ycc.UI.Ellipse.name,
+		option:{
+			point:new Ycc.Math.Dot(100,140),
+			width:60,
+			height:30,
+			ontap:function (e) {
+				alert('点我也没用！');
+			}
+		}
+	}]
+}]
+</pre>
+
+
+
+</body>
+</html>
+<script src="../common.js"></script>
+
+<script src="../../build/ycc.js"></script>
+<script>
+
+	var stage = document.getElementById("canvas");
+	var ycc = new window.Ycc();
+	ycc.bindCanvas(stage);
+
+	var arr = [{
+		option:{
+			enableEventManager:true,
+			show:true
+		},
+		ui:[{
+			type:Ycc.UI.SingleLineText.name,
+			option:{content:"这两个UI添加了事件监听",rect:new Ycc.Math.Rect(10,10,0,0)}
+		},{
+			type:Ycc.UI.Circle.name,
+			option:{
+				point:new Ycc.Math.Dot(30,50),
+				r:20,
+				ontap:function (e) {
+					alert('点我干啥！我是圆 Circle！');
+				}
+			}
+		},{
+			type:Ycc.UI.Ellipse.name,
+			option:{
+				point:new Ycc.Math.Dot(120,50),
+				width:60,
+				height:30,
+				ontap:function (e) {
+					alert('点我干啥！我是椭圆 Ellipse！');
+				}
+			}
+		}]
+	},{
+		option:{
+			enableEventManager:false,
+			show:true
+		},
+		ui:[{
+			type:Ycc.UI.SingleLineText.name,
+			option:{content:"这两个UI添加了事件也没用",rect:new Ycc.Math.Rect(10,100,0,0)}
+		},{
+			type:Ycc.UI.Circle.name,
+			option:{
+				point:new Ycc.Math.Dot(30,140),
+				r:20,
+				ontap:function (e) {
+					alert('点我也没用！');
+				}
+			}
+		},{
+			type:Ycc.UI.Ellipse.name,
+			option:{
+				point:new Ycc.Math.Dot(100,140),
+				width:60,
+				height:30,
+				ontap:function (e) {
+					alert('点我也没用！');
+				}
+			}
+		}]
+	}];
+	ycc.layerManager.renderAllLayerByJsonArray(arr);
+
+</script>

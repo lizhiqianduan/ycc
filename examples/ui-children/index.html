@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name=viewport content="width=device-width,initial-scale=1,user-scalable=0,viewport-fit=cover">
+	<title>UI嵌套</title>
+	<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<div class="return-btn">
+	<a href="../">
+		返回首页
+	</a>
+</div>
+<div class="tip">
+	<h3>示例说明：</h3>
+	<div>
+		1、这个示例展示UI的嵌套能力。<br>
+		2、示例的所有UI都是红色方框的子UI，它们的坐标都是相对于方框的相对坐标。<br>
+		3、注意：红色方框并不会因为子UI的范围超出而改变大小。
+	</div>
+	<br><br>
+</div>
+
+</body>
+</html>
+<script src="../common.js"></script>
+
+<script src="http://localhost:9000/livereload.js"></script>
+
+<script src="../../build/ycc.js"></script>
+<script>
+	var canvas = document.createElement("canvas");
+	canvas.width = 300;
+	canvas.height = 500;
+	document.body.appendChild(canvas);
+
+
+
+	var ycc = new Ycc();
+	ycc.bindCanvas(canvas);
+	// 新建图层
+	var layer = ycc.layerManager.newLayer({enableFrameEvent:true});
+
+
+	new Ycc.Loader().loadResParallel([
+		{name:"icon",url:"./logo.jpg"},
+		{name:"scale9Grid",url:"./bg.png"},
+	],imageOnLoad);
+
+	function imageOnLoad(arr,imgs){
+
+
+
+
+		var config = {
+			rect:new Ycc.Math.Rect(10,10,200,100),
+			fill:false,
+			color:'red'
+		};
+		var rect = new Ycc.UI.Rect(config);
+		rect.addChild(new Ycc.UI.SingleLineText({
+			content:"11111"
+		}));
+
+		rect.addChild(new Ycc.UI.Line({
+			start:new Ycc.Math.Dot(20,20),
+			end:new Ycc.Math.Dot(100,20)
+		}));
+
+
+		// 新建多行文本的UI
+		rect.addChild(new Ycc.UI.MultiLineText({
+			content:"我是多行文本的UI  超出的文字会被忽略  测试文字 测试文字 测试文字  01234567  89012  34567\n1234567890123456789012345678901234\n12345678901234567890",
+			rect:new Ycc.Math.Rect(20,40,150,50),
+			rectBgColor:"green",
+			wordBreak:"break-word",
+			overflow:"hidden"
+		}));
+
+		rect.addChild(new Ycc.UI.BrokenLine({
+			pointList:[new Ycc.Math.Dot(20,110),new Ycc.Math.Dot(50,120),new Ycc.Math.Dot(200,110),]
+		}));
+
+
+		rect.addChild(new Ycc.UI.Circle({
+			point:{x:150,y:150},
+			r:20
+		}));
+
+		rect.addChild(new Ycc.UI.Image({
+			res:imgs.icon,
+			rect:new Ycc.Math.Rect(20,200,240,100),
+			fillMode:"repeat",
+			rectBgColor:"blue"
+		}));
+
+		rect.addChild(new Ycc.UI.Image({
+			res:imgs.scale9Grid,
+			rect:new Ycc.Math.Rect(20,320,200,100),
+			fillMode:"scale9Grid",
+			scale9GridRect:new Ycc.Math.Rect(15,15,20,20)
+		}));
+
+
+		rect.addChild(new Ycc.UI.Ellipse({
+			point:{x:180,y:400},
+			r:20,
+			width:100,
+			height:50,
+			angle:45,
+			rectBgColor:"green"
+		}));
+
+
+		layer.addUI(rect);
+
+		ycc.layerManager.reRenderAllLayerToStage();
+
+
+
+
+
+
+
+
+
+	}
+
+
+
+
+
+
+</script>

@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name=viewport content="width=device-width,initial-scale=1,user-scalable=0,viewport-fit=cover">
+	<title>UI事件的示例</title>
+	<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<div class="return-btn">
+	<a href="../">
+		返回首页
+	</a>
+</div>
+<div class="tip">
+	<h3>示例说明：</h3>
+	<div>
+		1、这个示例是一个可以拖拽的文本UI，用于展示UI的事件。<br>
+		2、PC端可以在拖动鼠标改变文本的位置，移动端可以拖拽改变文本的位置。<br>
+	</div>
+	<br><br>
+</div>
+
+
+<div id="canvas">
+
+</div>
+
+
+</body>
+</html>
+
+<script src="../common.js"></script>
+
+<script src="../../build/ycc.js"></script>
+
+
+<script>
+	var canvas = document.createElement("canvas");
+	canvas.width = 300;
+	canvas.height = 300;
+	document.getElementById("canvas").appendChild(canvas);
+
+	var ycc = new Ycc();
+	ycc.bindCanvas(canvas);
+	// 新建图层
+	var layer = ycc.layerManager.newLayer({enableEventManager:true});
+	// 设置UI属性
+	var config = {
+		content:"我是  可以拖拽的  多行文本框  测试文字  测试文字 测试文字 测试文字  01234567",
+		rect:new Ycc.Math.Rect(100,100,100,100),
+		wordBreak:"break-word",
+		overflow:"auto"
+	};
+	// 新建多行文本的UI
+	var ui = new Ycc.UI.MultiLineText(config);
+	// 添加至图层
+	layer.addUI(ui);
+
+	//	全部绘制
+	ycc.layerManager.reRenderAllLayerToStage();
+
+
+	// 拖拽
+	var startPos = null,
+		startRect = null;
+	ui.ondragstart = function (e) {
+		startPos=new Ycc.Math.Dot(e);
+		startRect=new Ycc.Math.Rect(ui.rect);
+	};
+	ui.ondragging = function (e) {
+		console.log("我是",this.yccClass.name,"我",e.type,e);
+		this.rect.x = startRect.x+e.x-startPos.x;
+		this.rect.y = startRect.y+e.y-startPos.y;
+		ycc.layerManager.reRenderAllLayerToStage();
+	};
+
+</script>

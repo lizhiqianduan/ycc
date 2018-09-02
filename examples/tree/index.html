@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name=viewport content="width=device-width,initial-scale=1,user-scalable=0,viewport-fit=cover">
+	<title>树结构示例文件</title>
+	<link rel="stylesheet" href="../style.css">
+	<style>
+		#dir-con:after{
+			content: "";
+			display: block;
+			clear: both;
+			height: 0;
+			visibility: hidden;
+		}
+		#dir-con .layer{
+			float: left;
+			width:18%;
+			border-left:1px solid #ccc;
+		}
+
+		#dir-con .layer p{
+			height:30px;
+			line-height: 30px;
+			margin: 0;
+			padding: 0;
+			background: url("./dir-logo.png") 2px 7px no-repeat;
+			padding-left: 18px;
+			border-radius: 3px;
+		}
+
+		#dir-con .layer p:hover{
+			height:28px;
+			line-height: 28px;
+			border:1px solid rgb(184,214,251);
+			background-color: rgb(238,245,251);
+
+		}
+		#dir-con .layer p.active{
+			height:28px;
+			line-height: 28px;
+			border:1px solid rgb(125,162,206);
+			background-color: rgb(196,221,252);
+		}
+
+	</style>
+</head>
+<body>
+<div class="return-btn">
+	<a href="../">
+		返回首页
+	</a>
+</div>
+<div class="tip">
+	<h3>示例说明：</h3>
+	<div>
+		1、这个示例用于展示树结构Ycc.Tree，模拟了windows文件管理器。<br>
+		2、这棵文档树可以无限层级，这里只展示4层。 <br>
+		3、下面提供了几种遍历方法，点击按钮即可查看遍历结果。 <br>
+		4、支持两种形式来生成树结构，这里只用了createByJSON。
+	</div>
+	<br><br>
+
+	<div id="dir-con">
+		<div class="layer">
+			<p>a</p>
+			<p>a</p>
+		</div>
+	</div>
+
+
+	<h4>遍历树的所有节点</h4>
+	<div>
+		<button onclick="itor(1)">普通遍历</button>
+		<button onclick="itor(2)">左子树优先遍历</button>
+		<button onclick="itor(3)">右子树优先遍历</button>
+		<button onclick="itor(4)">按层级向下遍历</button>
+	</div>
+	<div>遍历结果: <span id="itor-res"></span></div>
+
+
+</div>
+
+</body>
+</html>
+<script src="../common.js"></script>
+
+<script src="../../build/ycc.js"></script>
+
+<script>
+
+
+
+	var dir = Ycc.Tree.createByJSON({
+		data:'/',
+		children:[
+			{
+				data:"a",
+				children:[
+					{
+						data:"d",
+						children:[
+							{
+								data:"g"
+							},
+							{
+								data:"h"
+							},
+							{
+								data:"i"
+							},
+						]
+					},
+					{
+						data:"e",
+						children:[
+							{
+								data:"j"
+							},
+							{
+								data:"k"
+							},
+							{
+								data:"l"
+							},
+						]
+					},
+					{
+						data:"f"
+					},
+				]
+			},
+			{
+				data:"b",
+				children:[
+					{
+						data:"m"
+					},
+					{
+						data:"n"
+					},
+				]
+			},
+			{
+				data:"c",
+				children:[
+					{
+						data:"o"
+					},
+					{
+						data:"p"
+					},
+					{
+						data:"q"
+					},
+				]
+			}
+		]
+	});
+
+
+
+
+	// 初始化
+	nodeOnClick(dir.$id,1);
+
+
+	/**
+	 * 树的遍历
+	 * */
+	function itor(type) {
+		document.getElementById('itor-res').innerHTML='';
+		var tree = dir;
+		if(type===1){
+			console.log('======== 普通遍历');
+			tree.itor().each(function (node) {
+				document.getElementById('itor-res').innerHTML+=node.data+' ';
+			});
+		}
+		if(type===2){
+			console.log('======== 左子树优先遍历');
+			tree.itor().leftChildFirst(function (node) {
+				document.getElementById('itor-res').innerHTML+=node.data+' ';
+			});
+		}
+		if(type===3){
+			console.log('======== 右子树优先遍历');
+			tree.itor().rightChildFirst(function (node) {
+				document.getElementById('itor-res').innerHTML+=node.data+' ';
+			});
+		}
+		if(type===4){
+			console.log('======== 按层级向下遍历');
+			tree.itor().depthDown(function (node,layer) {
+				document.getElementById('itor-res').innerHTML+=node.data+' ';
+			});
+		}
+
+	}
+
+
+
+	/**
+	 * 每个节点的点击事件
+	 * */
+	function nodeOnClick(id) {
+		document.getElementById('dir-con').innerHTML = "";
+		// 当前选中的最深的节点
+		var maxDepthNode = dir.getNodeMap()[id];
+
+		console.log(maxDepthNode);
+
+		// 当前节点的所有父节点
+		var parentList = maxDepthNode.getParentList();
+		// 当前节点的第一层子节点
+		var children = maxDepthNode.children;
+		// 当前节点的所有兄弟节点，包括自己在内
+		var brothers = parentList.length>0?parentList[parentList.length-1].children:[maxDepthNode];
+
+
+		// 渲染所有父级的兄弟节点
+		for(var i=0;i<parentList.length;i++){
+			var pa = parentList[i];
+			var paBrothers = i>0?parentList[i-1].children:[pa];
+			renderLayer(paBrothers);
+		}
+		// 渲染当前节点的兄弟节点
+		renderLayer(brothers);
+		// 渲染当前节点的子节点
+		if(children.length===0){
+			document.getElementById('dir-con').innerHTML+='<div class="layer">空</div>';
+		}else
+			renderLayer(children);
+
+
+		/**
+		 * 将一个节点列表渲染为一栏dom
+		 */
+		function renderLayer(nodeList) {
+			var layerDom = ['<div class="layer">','<p>a</p><p>a</p>','</div>'];
+			var nodeDoms = [];
+			if(nodeList && nodeList.length>0){
+				for(var m=0;m<nodeList.length;m++){
+					var tempNode = nodeList[m];
+					if(parentList.indexOf(tempNode)!==-1 || tempNode===maxDepthNode)
+						nodeDoms.push('<p class="active" onclick="nodeOnClick('+nodeList[m].$id+')">'+nodeList[m].data+'</p>')
+					else
+						nodeDoms.push('<p onclick="nodeOnClick('+nodeList[m].$id+')">'+nodeList[m].data+'</p>')
+				}
+			}
+			layerDom[1]=nodeDoms.join('');
+			document.getElementById('dir-con').innerHTML+=layerDom.join('');
+		}
+	}
+
+
+
+
+</script>

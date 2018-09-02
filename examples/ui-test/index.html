@@ -2,83 +2,137 @@
 <html lang="en">
 <head>
 	<meta charset="UTF-8">
+	<meta name=viewport content="width=device-width,initial-scale=1,user-scalable=0,viewport-fit=cover">
 	<title>UI图形测试</title>
+	<link rel="stylesheet" href="../style.css">
 </head>
 <body>
-
-	<div id="canvas">
-
+<div class="return-btn">
+	<a href="../">
+		返回首页
+	</a>
+</div>
+<div class="tip">
+	<h3>示例说明：</h3>
+	<div>
+		1、这个示例展示系统的UI，每个UI都绘制了红色的容纳区。<br>
+		2、这些UI包括：单行文本、多行文本、图片、矩形、椭圆、线条、九宫格等。<br>
 	</div>
+	<br><br>
+</div>
+
+
+<div id="canvas">
+
+</div>
 
 
 </body>
 </html>
 
 <script src="http://localhost:9000/livereload.js"></script>
-
-<script src="./lib/Ycc.class.js"></script>
-<script src="./lib/Ycc.utils.js"></script>
-<script src="./lib/Ycc.Math.js"></script>
-<script src="./lib/Ycc.Loader.class.js"></script>
-<script src="./lib/Ycc.Listener.class.js"></script>
-<script src="./lib/Ycc.UI.class.js"></script>
-<script src="./lib/Ycc.UI.Base.class.js"></script>
-<script src="./lib/Ycc.UI.SingleLineText.class.js"></script>
-<script src="./lib/Ycc.UI.MultiLineText.class.js"></script>
-<script src="./lib/Ycc.UI.Rect.class.js"></script>
-<script src="./lib/Ycc.PhotoManager.class.js"></script>
-<script src="./lib/Ycc.EventManager.class.js"></script>
-<script src="./lib/Ycc.Layer.class.js"></script>
-<script src="./lib/Ycc.LayerManager.class.js"></script>
+<script src="../common.js"></script>
+<script src="../../build/ycc.js"></script>
 
 <script>
 
 	var canvas = document.createElement("canvas");
-	canvas.width = 800;
-	canvas.height = 600;
-	var ycc = new Ycc(canvas,{
-		canvasBgColor:"transparent"
-	});
-
+	canvas.width = 300;
+	canvas.height = 800;
+	canvas.height = 800;
 	document.getElementById("canvas").appendChild(canvas);
 
+
+	var ycc = new Ycc({debug:{drawContainer:true}});
+	ycc.bindCanvas(canvas);
 	// 新建图层
 	var layer = ycc.layerManager.newLayer({enableEventManager:true});
 	// 设置UI属性
-	var config = {
-		content:"  123  45678  9012  345  6789  01234567  89012  34567\n1234567890123456789012345678901234\n12345678901234567890",
-		rect:new Ycc.Math.Rect(100,100,100,100),
+	var config,ui;
+	config ={
+		content:"我是多行文本的UI  超出的文字会被忽略  测试文字 测试文字 测试文字  01234567  89012  34567\n1234567890123456789012345678901234\n12345678901234567890",
+		rect:new Ycc.Math.Rect(20,100,150,100),
+		rectBgColor:"green",
 		wordBreak:"break-word",
 		overflow:"hidden"
 	};
 	// 新建多行文本的UI
-	var ui = new Ycc.UI.MultiLineText(config);
-	// 监听事件
-	ui.addListener("click",function () {
-		console.log("我是",this.constructor.name);
-		console.log("我被点击了！")
-	});
+	ui = new Ycc.UI.MultiLineText(config);
 	// 添加至图层
 	layer.addUI(ui);
-
 	// 画一个辅助的小框来标识范围
 	ycc.baseUI.rect([config.rect.x,config.rect.y],[config.rect.x+config.rect.width,config.rect.y+config.rect.height]);
 
 
 	config = {
-		content:"sfsddfsdfsaf11111111111111111111111111111111111111111safsaf",
-		rect:new Ycc.Math.Rect(10,10,100,50),
+		content:"我是一个单行文本 超出文字会被忽略123 456",
+		rect:new Ycc.Math.Rect(10,10,280,50),
+		rectBgColor:"green",
 		yAlign:"center",
 		overflow:"hidden"
 	};
-	layer.addUI(new Ycc.UI.SingleLineText(config));
+	ui = new Ycc.UI.SingleLineText(config);
+	layer.addUI(ui);
 	ycc.baseUI.rect([config.rect.x,config.rect.y],[config.rect.x+config.rect.width,config.rect.y+config.rect.height]);
 
 	config = {
-		rect:new Ycc.Math.Rect(300,300,30,50)
+		rect:new Ycc.Math.Rect(320,100,30,50)
 	};
-	layer.addUI(new Ycc.UI.Rect(config));
-	ycc.baseUI.rect([config.rect.x,config.rect.y],[config.rect.x+config.rect.width,config.rect.y+config.rect.height]);
+	ui = new Ycc.UI.Rect(config);
+	layer.addUI(ui);
+
+
+	config = {
+		start:new Ycc.Math.Dot(0,80),
+		end:new Ycc.Math.Dot(800,80),
+		width:3
+	};
+	layer.addUI(new Ycc.UI.Line(config));
+
+
+	config = {
+		point:{x:40,y:400},
+		r:20
+	};
+	ui = new Ycc.UI.Circle(config);
+	layer.addUI(ui);
+
+	config = {
+		point:{x:180,y:400},
+		r:20,
+		width:100,
+		height:50,
+		angle:45,
+		rectBgColor:"green"
+	};
+	ui = new Ycc.UI.Ellipse(config);
+	layer.addUI(ui);
+
+	new Ycc.Loader().loadResParallel([
+		{name:"icon",url:"./logo.jpg"},
+		{name:"scale9Grid",url:"./bg.png"},
+	],function (arr,imgs) {
+		var config2 = {
+			res:imgs.icon,
+			rect:new Ycc.Math.Rect(20,220,240,100),
+			fillMode:"repeat",
+			rectBgColor:"blue"
+		};
+		layer.addUI(new Ycc.UI.Image(config2));
+
+
+		config2 = {
+			res:imgs.scale9Grid,
+			rect:new Ycc.Math.Rect(20,520,200,100),
+			fillMode:"scale9Grid",
+			scale9GridRect:new Ycc.Math.Rect(15,15,20,20)
+		};
+
+		layer.addUI(new Ycc.UI.Image(config2));
+
+		ycc.layerManager.reRenderAllLayerToStage();
+	});
+
 
 
 

@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="wap-font-scale" content="no">
+	<meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport" />
+	<title>触摸事件的测试</title>
+	<style>
+		*{
+			margin:0;padding:0;box-sizing: border-box;
+
+		}
+		body{
+			background-color: #ccc;
+			-webkit-touch-callout:none;
+			-webkit-user-select:none;
+			-khtml-user-select:none;
+			-moz-user-select:none;
+			-ms-user-select:none;
+			user-select:none;
+		}
+
+		#a1{
+			background-color: #fff;
+		}
+		.area .tip{
+			background: none;
+			text-align: right;
+		}
+		#log{
+			height:200px;
+			overflow-y: scroll;
+		}
+	</style>
+</head>
+<body>
+<div class="area">
+	<div id="a1">
+
+	</div>
+	<div class="tip">
+		多点触控区域
+	</div>
+</div>
+<br>
+<h3>日志 <button onclick="log.innerHTML=''">清空</button></h3>
+<hr>
+<div id="log">
+
+</div>
+
+<script src="../build/ycc.js"></script>
+
+<script>
+
+
+	/**
+	 * touch事件的生命周期类
+	 * @constructor
+	 * */
+	var TouchLife = (function () {
+		var id = 0;
+		return function () {
+			/**
+			 * 生命周期的id
+			 * @type {number}
+			 * */
+			this.id=id++;
+
+			/**
+			 * 开始的touch事件
+			 * @type {Touch}
+			 * */
+			this.startTouchEvent = null;
+
+			/**
+			 * 结束的touch事件
+			 * @type {Touch}
+			 * */
+			this.endTouchEvent = null;
+
+			/**
+			 * 结束的touch事件
+			 * @type {Touch[]}
+			 * */
+			this.moveTouchEventList = [];
+		};
+	})();
+	
+
+	/**
+	 * touch事件追踪器
+	 * @param opt
+	 * @param opt.target	被追踪的dom对象
+	 * @constructor
+	 */
+	function TouchLifeTracer(opt) {
+		/**
+		 * 追踪的对象
+		 * */
+		this.target = opt.target;
+
+		/**
+		 * 作用于target的所有生命周期，包含存活和死亡的周期
+		 * */
+		this._lifeList = [];
+
+		/**
+		 * 当前存活的生命周期，正在与target接触的触摸点生命周期
+		 * */
+		this.currentLifeList = [];
+
+		/**
+		 * 某个生命周期开始
+		 * @type {function}
+		 * @param callback(life)
+		 * */
+		this.onlifestart = null;
+
+		/**
+		 * 某个生命周期状态变更
+		 * @type {function}
+		 * @param callback(life)
+		 * */
+		this.onlifechange = null;
+
+		/**
+		 * 某个生命周期开始
+		 * @type {function}
+		 * @param callback(life)
+		 * */
+		this.onlifeend = null;
+
+		/**
+		 * 添加生命周期
+		 * @param life {TouchLife}	生命周期
+		 * @return {*}
+		 */
+		this.addLife = function (life) {
+			this._lifeList.push(life);
+		};
+
+		/**
+		 * 根据identifier查找生命周期，此方法只能在生命周期内使用
+		 * @param identifier
+		 * @return {*}
+		 */
+		this.findCurrentLifeByTouchID = function (identifier) {
+			for(var i=0;i<this.currentLifeList.length;i++){
+				var life = this.currentLifeList[i];
+				if(life.startTouchEvent.identifier===identifier)
+					return life;
+			}
+		};
+
+		/**
+		 * 根据touchID删除当前触摸的生命周期
+		 * @param identifier
+		 * @return {boolean}
+		 */
+		this.deleteCurrentLifeByTouchID = function (identifier) {
+			for(var i=0;i<this.currentLifeList.length;i++){
+				var life = this.currentLifeList[i];
+				if(life.startTouchEvent.identifier===identifier){
+					this.currentLifeList.splice(i,1);
+					return true;
+				}
+			}
+			return false;
+		};
+
+
+		/**
+		 * 初始化
+		 */
+		this.init = function () {
+			var self = this;
+			this.target.addEventListener("touchstart",function (e) {
+				e.preventDefault();
+				var touchLife = new TouchLife();
+				touchLife.startTouchEvent = e.changedTouches[0];
+				self.addLife(touchLife);
+				self.currentLifeList.push(touchLife);
+				self.onlifestart && self.onlifestart(life);
+			});
+
+			this.target.addEventListener('touchmove',function (e) {
+				e.preventDefault();
+				var touches = e.changedTouches;
+				for(var i=0;i<touches.length;i++){
+					var touch = touches[i];
+					var life = self.findCurrentLifeByTouchID(touch.identifier);
+					life.moveTouchEventList.push(touch);
+					self.onlifechange && self.onlifechange(life);
+				}
+			});
+			this.target.addEventListener('touchend',function (e) {
+				e.preventDefault();
+				var touch = e.changedTouches[0];
+				var life = self.findCurrentLifeByTouchID(touch.identifier);
+				life.endTouchEvent = touch;
+				self.deleteCurrentLifeByTouchID(touch.identifier);
+				self.onlifeend && self.onlifeend(life);
+			});
+		};
+
+		this.init();
+	}
+	
+	
+	
+	
+	
+	
+
+	////////////////////////////////// 开始使用 ////////////////////////////////////
+
+	// 获取元素
+	var a1 = document.getElementById('a1');
+	var log = document.getElementById('log');
+	var canvas = document.createElement('canvas');
+	var ycc = new Ycc();
+	var layer = null;
+	canvas.width = document.documentElement.clientWidth;
+	canvas.height = 400;
+	a1.appendChild(canvas);
+	ycc.bindCanvas(canvas);
+	layer = ycc.layerManager.newLayer();
+
+
+	// 初始化
+	var tracer = new TouchLifeTracer({target:a1});
+	tracer.onlifechange = function (life) {
+		renderLife();
+	};
+
+	// 添加日志
+	function addLog(txt) {
+		var logTxt = Array.prototype.join.call(arguments,' ');
+		console.log(logTxt);
+		log.innerHTML+= logTxt;
+		log.innerHTML+='<br>';
+		log.scrollTop=99999;
+	}
+
+	// 渲染
+	function renderLife() {
+		var count = 0;
+		layer.uiList=[];
+		tracer._lifeList.forEach(function (life) {
+			count+=life.moveTouchEventList.length;
+			var pointList = life.moveTouchEventList.map(function(touch){
+				return new Ycc.Math.Dot(touch.clientX,touch.clientY);
+			});
+			layer.addUI(new Ycc.UI.BrokenLine({pointList:pointList}));
+		});
+		ycc.layerManager.reRenderAllLayerToStage();
+		addLog("render -->");
+		addLog("_lifeList.length-->",tracer._lifeList.length);
+		addLog("dot count-->",count);
+	}
+
+
+</script>
+
+
+</body>
+</html>

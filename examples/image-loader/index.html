@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name=viewport content="width=device-width,initial-scale=1,user-scalable=0,viewport-fit=cover">
+	<title>image loader</title>
+	<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<div class="return-btn">
+	<a href="../">
+		返回首页
+	</a>
+</div>
+
+<div class="tip">
+
+	<h3>示例说明：</h3>
+	<div>
+		这个示例只是简单的调用了加载器 loadImgOneByOne 方法。
+	</div>
+
+
+	<h3>功能说明：</h3>
+	<div>
+		无论你怎么刷新页面，图片的加载顺序都是一样的。
+	</div>
+
+
+	<br><br>
+</div>
+
+
+
+</body>
+</html>
+
+
+<script src="../common.js"></script>
+
+<script src="http://localhost:9000/livereload.js"></script>
+
+<script src="../../build/ycc.js"></script>
+
+
+
+
+
+<script>
+
+
+	var imageArr = [
+		{
+			url:"https://ss2.baidu.com/6ONYsjip0QIZ8tyhnq/it/u=4122922613,1597972748&fm=173&s=8700DC4F1C825153D80F493D0300104A&w=218&h=146&img.JPEG"
+		},
+		{
+			url:"https://ss1.baidu.com/6ONXsjip0QIZ8tyhnq/it/u=3487794280,1578631380&fm=173&s=019F837D42E0F3555FAC846F03006071&w=218&h=146&img.JPEG"
+		},
+		{
+			url:"https://ss1.baidu.com/6ONXsjip0QIZ8tyhnq/it/u=4026573301,2319016532&fm=173&s=0383994D5C030E5B1E94DC3603007043&w=218&h=146&img.JPEG"
+		},
+		{
+			url:"https://ss1.baidu.com/6ONXsjip0QIZ8tyhnq/it/u=1210080667,1825016129&fm=173&s=E5C29D446D81057C04C030860300E080&w=218&h=146&img.JPG"
+		},
+		{
+			url:"https://ss1.baidu.com/6ONXsjip0QIZ8tyhnq/it/u=1210080667,1825016129&fm=173&s=E5C29D446D81057C04C030860300E080&w=218&h=146&img.JPG"
+		},
+		{
+			url:"https://ss1.baidu.com/6ONXsjip0QIZ8tyhnq/it/u=1210080667,1825016129&fm=173&s=E5C29D446D81057C04C030860300E080&w=218&h=146&img.JPG"
+		},
+		{
+			url:"https://ss2.baidu.com/6ONYsjip0QIZ8tyhnq/it/u=380112908,2432324565&fm=173&s=E0F211C554B305946F28719A0300C016&w=218&h=146&img.JPG"
+		},
+		{
+			url:"https://ss2.baidu.com/6ONYsjip0QIZ8tyhnq/it/u=1710903914,2545378295&fm=173&s=512028BA4F0878CC2B5901C20300E0B2&w=218&h=146&img.JPEG"
+		},
+		{
+			url:"https://ss1.baidu.com/6ONXsjip0QIZ8tyhnq/it/u=2855309122,3117484086&fm=173&s=BFBC6F8740A10AACB80005B60300D069&w=218&h=146&img.JPEG"
+		},
+		{
+			url:"https://ss2.baidu.com/6ONYsjip0QIZ8tyhnq/it/u=3442635287,1742004921&fm=173&s=D7183CC60809265D425B342C03007048&w=218&h=146&img.JPEG"
+		}
+	];
+
+	var loader = new Ycc.Loader();
+
+	//	loader.loadResParallel
+	//	loader.loadResOneByOne
+	loader.loadResOneByOne(imageArr,function () {
+		console.log("loaded!",this);
+	},function (image,err,index) {
+		console.log(index);
+		document.body.appendChild(image.res);
+	});
+
+//	loader.loadResOneByOne([
+//		{url:"../game-do-not-touch-white-rect/audio/bg.mp3",type:"audio"},
+//		{url:"../game-do-not-touch-white-rect/audio/tap.mp3",type:"audio"},
+//		{url:"../game-do-not-touch-white-rect/audio/over.wav",type:"audio"},
+//	],function (audios) {
+//
+//	},function (audio, err, index) {
+//		console.log(index,'audio');
+//		audio.res.play();
+//	});
+
+
+
+</script>

@@ -66,6 +66,21 @@
 	};
 	
 	/**
+	 * 重新将所有图层绘制至舞台。不显示的图层也会更新。
+	 */
+	Ycc.LayerManager.prototype.reRenderAllLayerToStage = function () {
+		this.yccInstance.clearStage();
+		for(var i=0;i<this.yccInstance.layerList.length;i++){
+			var layer = this.yccInstance.layerList[i];
+			// 该图层是否可见
+			if(layer.show)
+				layer.reRender();
+		}
+	};
+	
+	
+	
+	/**
 	 * 依次合并图层。队列后面的图层将被绘制在前面图层之上。
 	 * @param layerArray {Layer[]}	图层队列
 	 * @return {*}
@@ -94,6 +109,50 @@
 			this.yccInstance.layerList[i].enableEventManager = false;
 		}
 		layer.enableEventManager = true;
+		return this;
+	};
+	
+	/**
+	 * 允许所有图层接收舞台事件
+	 * @param enable
+	 * @return {Ycc.LayerManager}
+	 */
+	Ycc.LayerManager.prototype.enableEventManagerAll = function (enable) {
+		for(var i=0;i<this.yccInstance.layerList.length;i++) {
+			this.yccInstance.layerList[i].enableEventManager = enable;
+		}
+		return this;
+	};
+	
+	
+	/**
+	 * 根据json数组绘制所有图层
+	 * @param jsonArray {[{option,ui[]}]}
+	 * @return {*}
+	 */
+	Ycc.LayerManager.prototype.renderAllLayerByJsonArray = function (jsonArray) {
+		if(!Ycc.utils.isArray(jsonArray)){
+			return console.error('jsonArray is not an Array!',jsonArray);
+		}
+		
+		var self = this;
+		for(var i=0;i<jsonArray.length;i++){
+			var layerConfig = jsonArray[i];
+			if(!Ycc.utils.isObj(layerConfig)){
+				return console.error('item in jsonArray should be an Object!',layerConfig);
+			}
+			
+			var layer = self.newLayer(layerConfig.option);
+			
+			for(var j=0;j<layerConfig.ui.length;j++){
+				var uiConfig = layerConfig.ui[j];
+				layer.addUI(new Ycc.UI[uiConfig.type](uiConfig.option));
+			}
+			
+			layer.render();
+			
+		}
+		
 	};
 	
 	

@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name=viewport content="width=device-width,initial-scale=1,user-scalable=0,viewport-fit=cover">
+	<title>椭圆测试</title>
+	<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<div class="return-btn">
+	<a href="../">
+		返回首页
+	</a>
+</div>
+<div class="tip">
+	<h3>示例说明：</h3>
+	<div>
+		1、这个示例是一个椭圆的旋转动画，用于展示UI的矩形包裹区域。<br>
+		2、椭圆旋转过程中，UI的包裹区域会实时的计算，UI的点击事件或者其他事件会直接作用于这个包裹区域。<br>
+	</div>
+	<br><br>
+</div>
+
+</body>
+</html>
+<script src="../common.js"></script>
+
+<script src="http://localhost:9000/livereload.js"></script>
+
+<script src="../../build/ycc.js"></script>
+<script>
+	var canvas = document.createElement("canvas");
+	canvas.width = 320;
+	canvas.height = 400;
+	document.body.appendChild(canvas);
+
+
+
+	var ycc = new Ycc();
+	ycc.bindCanvas(canvas);
+	ycc.ticker.start();
+	// 新建图层
+	var layer = ycc.layerManager.newLayer({enableFrameEvent:true});
+
+	var ui = new Ycc.UI.Ellipse({
+		point:{x:160,y:200},
+		r:20,
+		width:200,
+		height:100,
+		angle:0,
+		rectBgColor:"green"
+	});
+	layer.addUI(ui);
+	ycc.layerManager.renderAllLayerToStage();
+	layer.onFrameComing = function () {
+		ui.angle++;
+		ui.computeUIProps();
+		ycc.layerManager.reRenderAllLayerToStage();
+	};
+
+
+</script>
