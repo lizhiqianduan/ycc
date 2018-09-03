@@ -53,17 +53,6 @@
 	};
 	
 	
-	/**
-	 * 将可显示的所有图层渲染至舞台。
-	 */
-	Ycc.LayerManager.prototype.renderAllLayerToStage = function () {
-		for(var i=0;i<this.yccInstance.layerList.length;i++){
-			var layer = this.yccInstance.layerList[i];
-			// 该图层是否可见
-			if(layer.show)
-				this.yccInstance.ctx.drawImage(layer.canvasDom,layer.x,layer.y,layer.width,layer.height);
-		}
-	};
 	
 	/**
 	 * 重新将所有图层绘制至舞台。不显示的图层也会更新。
@@ -80,24 +69,6 @@
 	
 	
 	
-	/**
-	 * 依次合并图层。队列后面的图层将被绘制在前面图层之上。
-	 * @param layerArray {Layer[]}	图层队列
-	 * @return {*}
-	 */
-	Ycc.LayerManager.prototype.mergeLayers = function (layerArray) {
-		var len = layerArray.length;
-		if(len===0) return null;
-		var resLayer = new Ycc.Layer(this.yccInstance,{name:"合并图层"});
-		for(var i = 0;i<len;i++){
-			var layer = layerArray[i];
-			resLayer.ctx.drawImage(layer.canvasDom,0,0,layer.width,layer.height);
-			layer = null;
-		}
-		this.yccInstance.layerList = [];
-		this.yccInstance.layerList.push(resLayer);
-		return resLayer;
-	};
 	
 	/**
 	 * 只允许某一个图层接收舞台事件

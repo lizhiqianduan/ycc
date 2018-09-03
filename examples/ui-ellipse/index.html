@@ -51,7 +51,7 @@
 		rectBgColor:"green"
 	});
 	layer.addUI(ui);
-	ycc.layerManager.renderAllLayerToStage();
+	ycc.layerManager.reRenderAllLayerToStage();
 	layer.onFrameComing = function () {
 		ui.angle++;
 		ui.computeUIProps();
