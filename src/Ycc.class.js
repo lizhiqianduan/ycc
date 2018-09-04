@@ -16,16 +16,9 @@
 	 * 该canvas元素会被添加至HTML结构中，作为应用的显示舞台。
 	 * @param config {Object} 整个ycc的配置项
 	 * @param config.debug.drawContainer {Boolean} 是否显示所有UI的容纳区域
-	 * @param config.doubleBuffer {Boolean} 是否使用双缓冲机制
 	 * @constructor
 	 */
 	win.Ycc = function Ycc(config){
-		
-		/**
-		 * 虚拟canvas Dom对象
-		 * @type {null}
-		 */
-		this.virtualCanvasDom = document.createElement('canvas');
 		
 		/**
 		 * canvas的Dom对象
