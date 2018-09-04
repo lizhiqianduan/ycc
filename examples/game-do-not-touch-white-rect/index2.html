@@ -93,6 +93,7 @@
 			res:images.start,
 			ontap:function (e) {
 				self.delSelf();
+				ycc.layerManager.deleteAllLayer();
 				currentScene = new GameScene();
 			}
 		}));
@@ -286,6 +287,7 @@
 			res:images.restart,
 			ontap:function (e) {
 				//self.delSelf();
+				ycc.layerManager.deleteAllLayer();
 				currentScene = new GameScene();
 			}
 		}));
