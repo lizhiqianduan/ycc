@@ -20,6 +20,13 @@
 		 */
 		this.yccInstance = yccInstance;
 		
+		/**
+		 * 保存渲染时间，主要是reReader方法的耗时，开发者可以在每次reRender调用后获取该值
+		 * @type {number}
+		 * @readonly
+		 */
+		this.renderTime = 0;
+		
 	};
 	
 	Ycc.LayerManager.prototype.init = function () {
@@ -52,12 +59,23 @@
 		return layer;
 	};
 	
+	/**
+	 * 删除所有图层
+	 */
+	Ycc.LayerManager.prototype.deleteAllLayer = function () {
+		for(var i=0;i<this.yccInstance.layerList.length;i++){
+			this.yccInstance.layerList[i]=null;
+		}
+		this.yccInstance.layerList=[];
+	};
+	
 	
 	
 	/**
 	 * 重新将所有图层绘制至舞台。不显示的图层也会更新。
 	 */
 	Ycc.LayerManager.prototype.reRenderAllLayerToStage = function () {
+		var t1 = Date.now();
 		this.yccInstance.clearStage();
 		for(var i=0;i<this.yccInstance.layerList.length;i++){
 			var layer = this.yccInstance.layerList[i];
@@ -65,6 +83,8 @@
 			if(layer.show)
 				layer.reRender();
 		}
+
+		this.renderTime = Date.now()-t1;
 	};
 	
 	
