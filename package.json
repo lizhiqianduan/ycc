@@ -11,7 +11,7 @@
     "min": "grunt uglify",
     "concat": "grunt concat",
     "release": "grunt release",
-    "example":"start http://localhost:7777/examples/index.html & http-server -p 7777"
+    "example": "start http://localhost:7777/examples/index.html & http-server -p 7777"
   },
   "repository": {
     "type": "git",
@@ -33,5 +33,8 @@
     "grunt-contrib-watch": "^1.0.0",
     "grunt-jsdoc": "^2.1.1",
     "http-server": "^0.11.1"
+  },
+  "dependencies": {
+    "matter-js": "^0.14.2"
   }
 }

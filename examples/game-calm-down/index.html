@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name=viewport content="width=device-width,initial-scale=1,user-scalable=0,viewport-fit=cover">
+	<title>游戏-保持冷静</title>
+	<link rel="stylesheet" href="../style.css">
+	<style>
+		body{
+			font-size: 0;
+			position: relative;
+		}
+		#log{
+			position: fixed;
+			left: 0;
+			top:0;
+			z-index:999;
+			width:100%;
+			height:100px;
+			overflow-y: scroll;
+			font-size:12px;
+		}
+
+	</style>
+</head>
+<body>
+
+<div id="log">
+	111
+</div>
+
+</body>
+</html>
+
+<script src="../common.js"></script>
+<script src="../../build/ycc.js"></script>
+
+
+<script>
+	if(!Ycc.utils.isMobile())
+		alert("此示例在移动端查看效果更佳！");
+
+	var canvas = document.createElement('canvas');
+	console.log(document.documentElement.clientWidth,document.documentElement.clientHeight);
+	canvas.width=document.documentElement.clientWidth;
+	canvas.height=document.documentElement.clientHeight;
+	document.body.appendChild(canvas);
+
+
+
+	var ycc = new Ycc().bindCanvas(canvas);
+	var stageW = ycc.getStageWidth();
+	var stageH = ycc.getStageHeight();
+	// 所有的图片资源
+	var images = null;
+	// 所有音频资源
+	var audio = null;
+	// 当前场景
+	var currentScene = null;
+
+
+	// 加载资源
+	ycc.loader.loadResOneByOne([
+		{name:"start",url:"./images/start.png"},
+		{name:"restart",url:"./images/restart.png"},
+	],function (lise,imgs) {
+		console.log(imgs,222);
+		images = imgs;
+
+		ycc.loader.loadResOneByOne([
+			{name:'bg',url:"./audio/bg.mp3",type:"audio"},
+			{name:'over',url:"./audio/over.wav",type:'audio'},
+			{name:'tap',url:"./audio/tap.mp3",type:'audio'},
+		],function (audios) {
+			audio=audios;
+			currentScene = new StartScene();
+			ycc.layerManager.reRenderAllLayerToStage();
+		});
+
+	});
+
+
+
+	// 开启动画，每帧都更新场景
+	ycc.ticker.start(60);
+	ycc.ticker.addFrameListener(function () {
+		currentScene && currentScene.update && currentScene.update();
+		ycc.layerManager.reRenderAllLayerToStage();
+	});
+
+
+
+
+
+
+
+
+
+	function StartScene(){
+		var self = this;
+
+		this.layer = ycc.layerManager.newLayer({enableEventManager:true});
+
+		this.layer.addUI(new Ycc.UI.Image({
+			rect:new Ycc.Math.Rect(stageW/2-200/2,stageH/2-60/2,200,60),
+			fillMode:"scale",
+			res:images.start,
+			ontap:function (e) {
+				self.delSelf();
+				ycc.layerManager.deleteAllLayer();
+				currentScene = new GameScene();
+			}
+		}));
+	}
+
+	/**
+	 * 删除自身
+	 */
+	StartScene.prototype.delSelf = function () {
+		ycc.layerManager.deleteLayer(this.layer);
+	};
+
+
+	function GameScene(){
+
+		// 游戏进行中的图层
+		this.layer = ycc.layerManager.newLayer({enableEventManager:true});
+
+		// 游戏结束后的弹出层
+		this.overLayer = ycc.layerManager.newLayer({enableEventManager:true,show:false});
+
+		// 游戏是否结束
+		this.end = false;
+
+		this.bgm = ycc.loader.getResByName('bg',audio);
+
+		this.gameOverBgm = ycc.loader.getResByName('over',audio);
+
+		this.bgmTap = ycc.loader.getResByName('tap',audio);
+
+		// y轴旋转夹角
+		this.beta=0;
+
+		// x轴旋转夹角
+		this.gamma=0;
+
+
+		this.ball = new Ycc.UI.Circle({fill:true,color:"red",point:new Ycc.Math.Dot(stageW/2,stageH/2),r:20});
+
+
+
+		this.init();
+
+	}
+
+	// 初始化
+	GameScene.prototype.init = function () {
+		var self = this;
+		if(this.bgm) {
+			this.bgm.res.loop = true;
+			this.bgm.res.play();
+		}
+
+		// 添加一个小球
+		this.layer.addUI(this.ball);
+
+		// 监听屏幕的事件
+		/*window.ondevicemotion = function (e) {
+			document.querySelector('#log').innerHTML+='<br>'+JSON.stringify(e);
+		};*/
+
+		window.ondeviceorientation= function (e) {
+			self.beta = e.beta;
+			self.gamma = e.gamma;
+			console.log(e);
+			document.querySelector('#log').innerHTML='a=' +e.alpha +';b='+e.beta + ';y=' +e.gamma;
+		};
+
+	};
+
+
+	// 每帧的更新函数
+	GameScene.prototype.update = function () {
+
+		if(this.end) {
+			this.overLayer=true;
+		}
+
+
+	};
+
+
+
+</script>
+
+
