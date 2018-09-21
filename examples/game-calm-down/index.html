@@ -19,6 +19,7 @@
 			height:100px;
 			overflow-y: scroll;
 			font-size:12px;
+            color:red;
 		}
 
 	</style>
@@ -26,7 +27,7 @@
 <body>
 
 <div id="log">
-	111
+
 </div>
 
 </body>
@@ -38,7 +39,9 @@
 
 <script>
 	if(!Ycc.utils.isMobile())
-		alert("此示例在移动端查看效果更佳！");
+        throw new Error(alert('此示例只能在移动端查看！'));
+    if(!DeviceOrientationEvent)
+        throw new Error(alert('您这个手机不支持陀螺仪哦！'));
 
 	var canvas = document.createElement('canvas');
 	console.log(document.documentElement.clientWidth,document.documentElement.clientHeight);
@@ -57,7 +60,8 @@
 	var audio = null;
 	// 当前场景
 	var currentScene = null;
-
+    // loading窗
+    var loading = new Loading();
 
 	// 加载资源
 	ycc.loader.loadResOneByOne([
@@ -72,6 +76,7 @@
 			{name:'over',url:"./audio/over.wav",type:'audio'},
 			{name:'tap',url:"./audio/tap.mp3",type:'audio'},
 		],function (audios) {
+            loading.hidden();
 			audio=audios;
 			currentScene = new StartScene();
 			ycc.layerManager.reRenderAllLayerToStage();
@@ -92,6 +97,27 @@
 
 
 
+    function Loading(){
+        this.layer = ycc.layerManager.newLayer();
+
+        this.layer.addUI(new Ycc.UI.Rect({
+            rect:new Ycc.Math.Rect(0,0,stageW,stageH),
+            color:"rgba(0,0,0,0.1)"
+        }));
+        this.layer.addUI(new Ycc.UI.SingleLineText({
+            content:"正在加载...",
+            rect:new Ycc.Math.Rect(0,stageH/2,stageW,20),
+            xAlign:"center"
+        }));
+
+        this.hidden = function(){
+            this.layer.show = false;
+        };
+
+        this.show = function(){
+            this.layer.show = true;
+        };
+    }
 
 
 
@@ -144,8 +170,26 @@
 		// x轴旋转夹角
 		this.gamma=0;
 
+        // 难度等级
+        this.level=2;
 
-		this.ball = new Ycc.UI.Circle({fill:true,color:"red",point:new Ycc.Math.Dot(stageW/2,stageH/2),r:20});
+        // 开始时间
+        this.startTime = Date.now();
+
+        // 得分
+        this.score=0;
+
+        // 游戏结束得分文案UI
+        this.finalScoreText = null;
+
+
+
+		this.ball = new Ycc.UI.Circle({
+            fill:true,
+            color:"rgb(47,123,1)",
+            point:new Ycc.Math.Dot(stageW/2,stageH/2),
+            r:stageW/2-50
+        });
 
 
 
@@ -156,36 +200,115 @@
 	// 初始化
 	GameScene.prototype.init = function () {
 		var self = this;
-		if(this.bgm) {
+		/*if(this.bgm) {
 			this.bgm.res.loop = true;
 			this.bgm.res.play();
-		}
+		}*/
 
 		// 添加一个小球
 		this.layer.addUI(this.ball);
 
-		// 监听屏幕的事件
-		/*window.ondevicemotion = function (e) {
-			document.querySelector('#log').innerHTML+='<br>'+JSON.stringify(e);
-		};*/
+        this.createGameOverLayer();
 
+        // 事件触发时，把角度存起来即可
 		window.ondeviceorientation= function (e) {
 			self.beta = e.beta;
 			self.gamma = e.gamma;
-			console.log(e);
-			document.querySelector('#log').innerHTML='a=' +e.alpha +';b='+e.beta + ';y=' +e.gamma;
+			document.querySelector('#log').innerHTML='x轴倾斜度：'+(e.beta) +'<br>' + 'y轴倾斜度：' +(e.gamma);
 		};
 
 	};
+    // 创建游戏结束的图层页
+    GameScene.prototype.createGameOverLayer = function(){
+
+        // 半透明背景
+        this.overLayer.addUI(new Ycc.UI.Rect({
+            rect:new Ycc.Math.Rect(0,0,stageW,stageH),
+            color:"rgba(0,0,0,0.7)"
+        }));
+
+        var fontSize = "18px";
+        var lineHeight = 30;
+        var color = "rgb(47,123,1)";
+        this.overLayer.addUI(new Ycc.UI.SingleLineText({
+            content:"游戏结束",
+            xAlign:"center",
+            rect:new Ycc.Math.Rect(0,stageH/2+lineHeight*-2,stageW,lineHeight),
+            color:color,
+            fontSize:fontSize
+        }));
+
+        this.finalScoreText=new Ycc.UI.SingleLineText({
+            content:"您坚持了"+this.score+"秒，心情是否平静了点呢？",
+            xAlign:"center",
+            rect:new Ycc.Math.Rect(0,stageH/2+lineHeight*-1,stageW,30),
+            color:color,
+            fontSize:fontSize
+        });
+        this.overLayer.addUI(this.finalScoreText);
+
+
+        var imgW = 200,
+                imgH = 60;
+        this.overLayer.addUI(new Ycc.UI.Image({
+            rect:new Ycc.Math.Rect(stageW/2-imgW/2,stageH/2+lineHeight,imgW,imgH),
+            fillMode:"scale",
+            res:images.restart,
+            ontap:function (e) {
+                //self.delSelf();
+                ycc.layerManager.deleteAllLayer();
+                currentScene = new GameScene();
+            }
+        }));
+
+        this.overLayer.addUI(new Ycc.UI.SingleLineText({
+            content:"项目地址",
+            rect:new Ycc.Math.Rect(stageW/2-10,stageH/2+lineHeight+10+imgH,-14*4,20),
+            color:"#308eef",
+            fontSize:"14px",
+            ontap:function (e) {
+                window.location.href="https://github.com/lizhiqianduan/ycc/tree/develop";
+            }
+        }));
+
+        this.overLayer.addUI(new Ycc.UI.SingleLineText({
+            content:"作者博客",
+            rect:new Ycc.Math.Rect((stageW)/2+10,stageH/2+lineHeight+10+imgH,14*4,20),
+            color:"#308eef",
+            fontSize:"14px",
+            ontap:function (e) {
+                window.location.href="http://www.lizhiqianduan.com/blog";
+            }
+        }));
+
+
+    };
 
 
 	// 每帧的更新函数
 	GameScene.prototype.update = function () {
 
 		if(this.end) {
-			this.overLayer=true;
-		}
+            if(this.score>30)
+                this.finalScoreText.content="您坚持了"+this.score+"秒，心情是否平静了点呢？";
+            else if(this.score>1)
+                this.finalScoreText.content="才坚持"+this.score+"秒，朋友，静下心来吧！";
+            else
+                this.finalScoreText.content="是不是还不会玩啊？保持手机平衡哦！";
 
+			this.overLayer.show=true;
+            return;
+		}
+        this.score = parseInt((Date.now()-this.startTime)/1000);
+
+        this.ball.point.x+=this.gamma*this.level;
+        this.ball.point.y+=this.beta*this.level;
+
+        var x=this.ball.point.x,
+                y=this.ball.point.y,
+                r=this.ball.r;
+        if(x-r<=0||x+r>=stageW  || y-r<=0 || y+r>=stageH)
+            this.end = true;
 
 	};
 
