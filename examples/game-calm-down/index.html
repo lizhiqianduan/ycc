@@ -176,6 +176,13 @@
             r:stageW/2-50
         });
 
+		this.ballTextUI = new Ycc.UI.SingleLineText({
+			content:this.score,
+			xAlign:'center',
+			yAlign:'center'
+		});
+
+
 
 
 		this.init();
@@ -187,6 +194,7 @@
 		var self = this;
 
 		// 添加一个小球
+		this.ball.addChild(this.ballTextUI);
 		this.layer.addUI(this.ball);
 
         this.createGameOverLayer();
@@ -284,6 +292,11 @@
 
         this.ball.point.x+=this.gamma*this.level;
         this.ball.point.y+=this.beta*this.level;
+
+		this.ballTextUI.content=this.score+'';
+		this.ballTextUI.rect.width=this.ball.rect.width;
+		this.ballTextUI.rect.height=this.ball.rect.height;
+
 
         var x=this.ball.point.x,
                 y=this.ball.point.y,
