@@ -70,18 +70,9 @@
 	],function (lise,imgs) {
 		console.log(imgs,222);
 		images = imgs;
-
-		ycc.loader.loadResOneByOne([
-			{name:'bg',url:"./audio/bg.mp3",type:"audio"},
-			{name:'over',url:"./audio/over.wav",type:'audio'},
-			{name:'tap',url:"./audio/tap.mp3",type:'audio'},
-		],function (audios) {
-            loading.hidden();
-			audio=audios;
-			currentScene = new StartScene();
-			ycc.layerManager.reRenderAllLayerToStage();
-		});
-
+		loading.hidden();
+		currentScene = new StartScene();
+		ycc.layerManager.reRenderAllLayerToStage();
 	});
 
 
@@ -158,12 +149,6 @@
 		// 游戏是否结束
 		this.end = false;
 
-		this.bgm = ycc.loader.getResByName('bg',audio);
-
-		this.gameOverBgm = ycc.loader.getResByName('over',audio);
-
-		this.bgmTap = ycc.loader.getResByName('tap',audio);
-
 		// y轴旋转夹角
 		this.beta=0;
 
@@ -200,10 +185,6 @@
 	// 初始化
 	GameScene.prototype.init = function () {
 		var self = this;
-		/*if(this.bgm) {
-			this.bgm.res.loop = true;
-			this.bgm.res.play();
-		}*/
 
 		// 添加一个小球
 		this.layer.addUI(this.ball);
