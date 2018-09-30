@@ -16,6 +16,11 @@
 	 * @param option.firstFrameRect	{Number}		首帧的显示区。该区域相对于原始图片，且之后帧显示区将按照这个区域的width递推
 	 * @param option.frameRectCount	{Number}		帧显示区的递推个数。该个数相对于原始图片，表示之后帧显示区的递推个数
 	 * @param option.autoplay		{Boolean}		自动播放
+	 * @param option.mirror			{Number}		将图片镜像绘制方式
+	 * 		<br> 0		--		无
+	 * 		<br> 1		--		上下颠倒
+	 * 		<br> 2		--		左右翻转
+	 * 		<br> 3		--		上下左右颠倒
 	 * @constructor
 	 * @extends Ycc.UI.Base
 	 */
@@ -66,6 +71,16 @@
 		 */
 		this.isRunning = false;
 		
+		/**
+		 * 图片颠倒方式
+		 * 		<br> 0		--		无
+		 * 		<br> 1		--		左右颠倒
+		 * 		<br> 2		--		上下翻转
+		 * 		<br> 3		--		上下左右颠倒
+		 * @type {number}
+		 */
+		this.mirror = 0;
+		
 		
 		
 		this.extend(option);
@@ -86,6 +101,26 @@
 	
 	};
 	
+	/**
+	 * 处理镜像
+	 * @param rect {Ycc.Math.Rect} 计算之后的图片容纳区
+	 * @private
+	 */
+	Ycc.UI.ImageFrameAnimation.prototype._processMirror = function (rect) {
+		if(this.mirror===1){
+			this.ctx.scale(-1, 1);
+			this.ctx.translate(-rect.x*2-rect.width,0);
+		}
+		if(this.mirror===2){
+			this.ctx.scale(1, -1);
+			this.ctx.translate(0,-rect.y*2-rect.height);
+		}
+		if(this.mirror===3){
+			this.ctx.scale(-1, -1);
+			this.ctx.translate(-rect.x*2-rect.width,-rect.y*2-rect.height);
+		}
+		
+	};
 	
 	/**
 	 * 绘制
@@ -102,6 +137,10 @@
 		// 绘制
 		this.ctx.save();
 		this.scaleAndRotate();
+
+		// 处理镜像属性
+		this._processMirror(rect);
+
 		this.ctx.drawImage(this.res,
 			this.firstFrameRect.x+this.firstFrameRect.width*index,this.firstFrameRect.y,this.firstFrameRect.width,this.firstFrameRect.height,
 			rect.x,rect.y,rect.width,rect.height);

@@ -51,6 +51,7 @@ GameScene.prototype.createDirectionBtn = function () {
 		res:images.btn,
 		rotation:180,
 		ondragstart:function (e) {
+			self.mario.mirror=1;
 			self.mario.start();
 			self.direction = 'left';
 		},
@@ -87,6 +88,7 @@ GameScene.prototype.createDirectionBtn = function () {
 		res:images.btn,
 		rotation:0,
 		ondragstart:function (e) {
+			self.mario.mirror=0;
 			self.mario.start();
 			self.direction = 'right';
 		},
