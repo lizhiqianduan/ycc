@@ -51,9 +51,11 @@ GameScene.prototype.createDirectionBtn = function () {
 		res:images.btn,
 		rotation:180,
 		ondragstart:function (e) {
+			self.mario.start();
 			self.direction = 'left';
 		},
 		ondragend:function (e) {
+			self.mario.stop();
 			self.direction = '';
 		}
 	}));
@@ -67,9 +69,11 @@ GameScene.prototype.createDirectionBtn = function () {
 		res:images.btn,
 		rotation:90,
 		ondragstart:function (e) {
+			self.mario.start();
 			self.direction = 'down';
 		},
 		ondragend:function (e) {
+			self.mario.stop();
 			self.direction = '';
 		}
 	}));
@@ -83,9 +87,11 @@ GameScene.prototype.createDirectionBtn = function () {
 		res:images.btn,
 		rotation:0,
 		ondragstart:function (e) {
+			self.mario.start();
 			self.direction = 'right';
 		},
 		ondragend:function (e) {
+			self.mario.stop();
 			self.direction = '';
 		}
 		
@@ -101,9 +107,11 @@ GameScene.prototype.createDirectionBtn = function () {
 		res:images.btn,
 		rotation:-90,
 		ondragstart:function (e) {
+			self.mario.start();
 			self.direction = 'up';
 		},
 		ondragend:function (e) {
+			self.mario.stop();
 			self.direction = '';
 		}
 		
@@ -159,12 +167,14 @@ GameScene.prototype.createSkillBtn = function () {
  * 生成马里奥
  */
 GameScene.prototype.createMario = function () {
-	this.mario = new Ycc.UI.Image({
-		rect:new Ycc.Math.Rect(0,0,50,50/images.mario.naturalWidth*images.mario.naturalHeight),
-		fillMode:'scale',
-		res:images.mario
+	this.mario = new Ycc.UI.ImageFrameAnimation({
+		rect:new Ycc.Math.Rect(stageW/2-18,stageH/2-33,18*2,33*2),
+		res:images.mario,
+		firstFrameRect:new Ycc.Math.Rect(0,0,18,33),
+		frameRectCount:3,
+		//autoplay:true,
+		frameSpace:8
 	});
-	
 	this.layer.addUI(this.mario);
 };
 

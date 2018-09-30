@@ -4854,10 +4854,10 @@
 		
 		// 绝对坐标
 		var rect = this.getAbsolutePosition();
-		// 获取当前显示第几个序列图
-		var index = parseInt((this.belongTo.yccInstance.ticker.frameAllCount-this.startFrameCount)/this.frameSpace)%this.frameRectCount;
+		// 获取当前显示第几个序列图，由于默认播放第一帧图片，这里直接渲染第二帧图片
+		var index = parseInt((this.belongTo.yccInstance.ticker.frameAllCount-this.startFrameCount)/this.frameSpace)%this.frameRectCount+1;
 		// 若没开始播放，默认只绘制第一个序列帧
-		if(!this.isRunning)
+		if(!this.isRunning || index>=this.frameRectCount)
 			index=0;
 		// 绘制
 		this.ctx.save();
