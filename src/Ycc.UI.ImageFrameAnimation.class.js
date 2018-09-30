@@ -15,6 +15,7 @@
 	 * @param option.frameSpace		{Number}		序列帧播放的帧间隔。默认为1，即每帧都更换图片
 	 * @param option.firstFrameRect	{Number}		首帧的显示区。该区域相对于原始图片，且之后帧显示区将按照这个区域的width递推
 	 * @param option.frameRectCount	{Number}		帧显示区的递推个数。该个数相对于原始图片，表示之后帧显示区的递推个数
+	 * @param option.autoplay		{Boolean}		自动播放
 	 * @constructor
 	 * @extends Ycc.UI.Base
 	 */
@@ -54,12 +55,23 @@
 		this.frameRectCount = 1;
 		
 		/**
+		 * 是否自动播放
+		 * @type {boolean}
+		 */
+		this.autoplay = false;
+		
+		/**
 		 * 是否真正播放
 		 * @type {boolean}
 		 */
 		this.isRunning = false;
 		
+		
+		
 		this.extend(option);
+		
+		// 初始化
+		this.isRunning = this.autoplay;
 	};
 	Ycc.UI.ImageFrameAnimation.prototype = new Ycc.UI.Base();
 	Ycc.UI.ImageFrameAnimation.prototype.constructor = Ycc.UI.ImageFrameAnimation;
@@ -83,11 +95,10 @@
 		// 绝对坐标
 		var rect = this.getAbsolutePosition();
 		// 获取当前显示第几个序列图
-		var index = (this.belongTo.yccInstance.ticker.frameAllCount-this.startFrameCount)%this.frameRectCount;
+		var index = parseInt((this.belongTo.yccInstance.ticker.frameAllCount-this.startFrameCount)/this.frameSpace)%this.frameRectCount;
 		// 若没开始播放，默认只绘制第一个序列帧
 		if(!this.isRunning)
 			index=0;
-		
 		// 绘制
 		this.ctx.save();
 		this.scaleAndRotate();
@@ -105,6 +116,14 @@
 		this.startFrameCount = this.belongTo.yccInstance.ticker.frameAllCount;
 		this.isRunning = true;
 	};
+	
+	/**
+	 * 停止播放
+	 */
+	Ycc.UI.ImageFrameAnimation.prototype.stop = function () {
+		this.isRunning = false;
+	};
+	
 	
 	
 })(window.Ycc);

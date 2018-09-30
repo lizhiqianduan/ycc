@@ -271,17 +271,13 @@
 	win.Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 		var self = this;
 		uiIsShow = Ycc.utils.isBoolean(uiIsShow)?uiIsShow:true;
+		// 从最末一个图层开始寻找
 		for(var j=self.layerList.length-1;j>=0;j--){
 			var layer = self.layerList[j];
 			if(uiIsShow&&!layer.show) continue;
-			for(var i =layer.uiList.length-1;i>=0;i--){
-				var ui = layer.uiList[i];
-				if(uiIsShow&&!ui.show) continue;
-				// 如果位于rect内，此处应该根据绝对坐标比较
-				if(dot.isInRect(ui.getAbsolutePosition())){
-					return ui;
-				}
-			}
+			var ui = layer.getUIFromPointer(dot,uiIsShow);
+			if(ui)
+				return ui;
 		}
 		return null;
 	};

@@ -434,21 +434,28 @@
 	};
 	
 	/**
-	 * 获取图层中某个点所对应的最上层UI。
-	 *
+	 * 获取图层中某个点所对应的最上层UI，最上层UI根据右子树优先遍历。
 	 * @param dot {Ycc.Math.Dot}	点坐标，为舞台的绝对坐标
+	 * @param uiIsShow {Boolean}	是否只获取显示在舞台上的UI，默认为true
 	 * @return {UI}
 	 */
-	Ycc.Layer.prototype.getUIFromPointer = function (dot) {
+	Ycc.Layer.prototype.getUIFromPointer = function (dot,uiIsShow) {
+		uiIsShow = Ycc.utils.isBoolean(uiIsShow)?uiIsShow:true;
 		var self = this;
+		var temp = null;
 		for(var i =self.uiList.length-1;i>=0;i--){
 			var ui = self.uiList[i];
-			// 如果位于rect内，此处应该根据绝对坐标比较
-			if(dot.isInRect(ui.getAbsolutePosition())){
-				return ui;
-			}
+			if(uiIsShow&&!ui.show) continue;
+			// 右子树优先寻找
+			ui.itor().rightChildFirst(function (child) {
+				// 如果位于rect内，此处根据绝对坐标比较
+				if(dot.isInRect(child.getAbsolutePosition())){
+					temp = child;
+					return true;
+				}
+			});
 		}
-		return null;
+		return temp;
 	};
 	
 	
