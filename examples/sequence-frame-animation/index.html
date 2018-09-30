@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name=viewport content="width=device-width,initial-scale=1,user-scalable=0,viewport-fit=cover">
+	<title>序列帧动画</title>
+	<link rel="stylesheet" href="../style.css">
+	<style>
+		body{
+			font-size: 0;
+			position: relative;
+		}
+		#log{
+			position: fixed;
+			left: 0;
+			top:0;
+			z-index:999;
+			width:100%;
+			height:100px;
+			overflow-y: scroll;
+			font-size:12px;
+			color:red;
+		}
+
+	</style>
+</head>
+<body>
+
+<div id="log">
+
+</div>
+
+</body>
+</html>
+
+<script src="../common.js"></script>
+<script src="../../build/ycc.js"></script>
+
+
+<script>
+
+	var canvas = document.createElement('canvas');
+	console.log(document.documentElement.clientWidth,document.documentElement.clientHeight);
+	canvas.width=document.documentElement.clientWidth;
+	canvas.height=document.documentElement.clientHeight;
+	document.body.appendChild(canvas);
+
+
+	///////////////////////////// 全局变量
+	var ycc = new Ycc().bindCanvas(canvas);
+	var stageW = ycc.getStageWidth();
+	var stageH = ycc.getStageHeight();
+	// 所有的图片资源
+	var images = null;
+	// 马里奥UI
+	var mario = null;
+
+
+
+	// 加载资源
+	ycc.loader.loadResOneByOne([
+		{name:"mario",url:"./images/mario-walk.png"},
+	],function (lise,imgs) {
+		images = imgs;
+		// 开启动画，每帧都更新界面
+		ycc.ticker.start(60);
+		ycc.ticker.addFrameListener(function () {
+			ycc.layerManager.reRenderAllLayerToStage();
+		});
+
+		onReady();
+	});
+
+
+	function onReady(){
+		var layer = ycc.layerManager.newLayer({enableEventManager:true});
+		mario = new Ycc.UI.ImageFrameAnimation({
+			rect:new Ycc.Math.Rect(stageW/2-18,stageH/2-33,18*2,33*2),
+			res:images.mario,
+			firstFrameRect:new Ycc.Math.Rect(0,0,18,33),
+			frameRectCount:3,
+			//autoplay:true,
+			frameSpace:10,
+			ontap:function () {
+				console.log(111);
+			}
+		});
+
+		mario.addChild(new Ycc.UI.SingleLineText({
+			content:'开始',
+			rect:new Ycc.Math.Rect(0-10,33*2+20,18*2+20,24),
+			rectBgColor:'green',
+			xAlign:'center',
+			ontap:function () {
+				console.log(222);
+				if(this.content==='开始'){
+					this.content='停止';
+					mario.start();
+				}else{
+					this.content='开始';
+					mario.stop();
+				}
+			}
+		}));
+
+		layer.addUI(mario);
+	}
+
+</script>
