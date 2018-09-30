@@ -4586,7 +4586,12 @@
 	 * 		<br> scale -- 缩放。左上角对齐，缩放至整个rect区域，不修改rect大小。
 	 * 		<br> auto -- 自动。左上角对齐，rect大小自动适配图片。若图片超出rect，会动态修改rect大小。
 	 * 		<br> scale9Grid -- 9宫格模式填充。左上角对齐，中间区域将拉伸，不允许图片超出rect区域大小，不会修改rect大小。
-	 * @param option.res	{Image}	需要填充的图片资源。注：必须已加载完成。
+	 * @param option.res	{Image}		需要填充的图片资源。注：必须已加载完成。
+	 * @param option.mirror	{Number}	将图片镜像绘制方式
+	 * 		<br> 0		--		无
+	 * 		<br> 1		--		上下颠倒
+	 * 		<br> 2		--		左右翻转
+	 * 		<br> 3		--		上下左右颠倒
 	 * @param option.scale9GridRect	{Ycc.Math.Rect}	9宫格相对于res图片的中间区域，当且仅当fillMode为scale9Grid有效。
 	 * @constructor
 	 * @extends Ycc.UI.Base
@@ -4611,7 +4616,17 @@
 		 * @type {Image}
 		 */
 		this.res = null;
-
+		
+		/**
+		 * 图片颠倒方式
+		 * 		<br> 0		--		无
+		 * 		<br> 1		--		左右颠倒
+		 * 		<br> 2		--		上下翻转
+		 * 		<br> 3		--		上下左右颠倒
+		 * @type {number}
+		 */
+		this.mirror = 0;
+		
 		/**
 		 * 9宫格相对于res图片的中间区域，当且仅当fillMode为scale9Grid有效。
 		 * @type {Ycc.Math.Rect}
@@ -4637,6 +4652,26 @@
 		}
 	};
 	
+	/**
+	 * 处理镜像
+	 * @param rect {Ycc.Math.Rect} 计算之后的图片容纳区
+	 * @private
+	 */
+	Ycc.UI.Image.prototype._processMirror = function (rect) {
+		if(this.mirror===1){
+			this.ctx.scale(-1, 1);
+			this.ctx.translate(-rect.x*2-rect.width,0);
+		}
+		if(this.mirror===2){
+			this.ctx.scale(1, -1);
+			this.ctx.translate(0,-rect.y*2-rect.height);
+		}
+		if(this.mirror===3){
+			this.ctx.scale(-1, -1);
+			this.ctx.translate(-rect.x*2-rect.width,-rect.y*2-rect.height);
+		}
+		
+	};
 	
 	/**
 	 * 绘制
@@ -4647,16 +4682,8 @@
 		
 		var rect = this.getAbsolutePosition();//this.rect;
 		var img = this.res;
-		// this.ctx.save();
-		// this.ctx.beginPath();
-		// this.ctx.rect(rect.x,rect.y,rect.width,rect.height);
-		// this.ctx.closePath();
-		// this.ctx.fillStyle = this.rectBgColor;
-		// this.ctx.fill();
-		// this.ctx.restore();
-
 		
-
+		this._processMirror(rect);
 		if(this.fillMode === "none")
 			this.ctx.drawImage(this.res,0,0,rect.width,rect.height,rect.x,rect.y,rect.width,rect.height);
 		else if(this.fillMode === "scale")
