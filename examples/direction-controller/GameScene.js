@@ -137,7 +137,7 @@ GameScene.prototype.createSkillBtn = function () {
 	var marginBottom = 20;
 	
 	// 跳跃
-	self.layer.addUI(new Ycc.UI.Image({
+	/*self.layer.addUI(new Ycc.UI.Image({
 		rect:new Ycc.Math.Rect(stageW-btnSize-marginRight,stageH-(btnSize+marginBottom),btnSize,btnSize),
 		fillMode:'scale',
 		res:images.jump,
@@ -147,18 +147,19 @@ GameScene.prototype.createSkillBtn = function () {
 		ondragend:function (e) {
 			console.log(e);
 		}
-	}));
+	}));*/
 	
 	// 攻击
 	self.layer.addUI(new Ycc.UI.Image({
 		rect:new Ycc.Math.Rect(stageW-btnSize*2-btnSpace-marginRight,stageH-(btnSize+marginBottom),btnSize,btnSize),
 		fillMode:'scale',
 		res:images.fight,
-		ondragstart:function (e) {
-			console.log(e,this);
-		},
-		ondragend:function (e) {
-			console.log(e);
+		ontap:function (e) {
+			var temp = self.mario.res;
+			self.mario.res = images.marioFight;
+			setTimeout(function () {
+				self.mario.res = temp;
+			},100);
 		}
 	}));
 	
