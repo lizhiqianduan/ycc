@@ -155,9 +155,10 @@ GameScene.prototype.createSkillBtn = function () {
 		fillMode:'scale',
 		res:images.fight,
 		ontap:function (e) {
-			if(self.mario._isFighting)
+			if(self.mario._fightFrameCount>0)
 				return;
-			self.mario._isFighting = true;
+			// 记录点击时的帧数
+			self.mario._fightFrameCount=ycc.ticker.frameAllCount;
 		}
 	}));
 	
@@ -176,6 +177,7 @@ GameScene.prototype.createMario = function () {
 		//autoplay:true,
 		frameSpace:8
 	});
+	this.mario._fightFrameCount=0;
 	this.layer.addUI(this.mario);
 };
 
@@ -190,15 +192,16 @@ GameScene.prototype.update = function () {
 		this.mario.rect.y--;
 	if(this.direction==='down')
 		this.mario.rect.y++;
-
 	
-	if(this.mario._isFighting){
+	// 攻击后的6帧都显示攻击状态的图片
+	if(this.mario._fightFrameCount>0 && ycc.ticker.frameAllCount - this.mario._fightFrameCount<6){
 		this.mario.res = images.marioFight;
 		this.mario.frameRectCount = 1;
-		this.mario._isFighting = false;
 	}else{
 		this.mario.res = images.mario;
 		this.mario.frameRectCount = 3;
+
+		this.mario._fightFrameCount=0;
 	}
 	
 };
