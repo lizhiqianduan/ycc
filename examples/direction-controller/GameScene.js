@@ -155,11 +155,9 @@ GameScene.prototype.createSkillBtn = function () {
 		fillMode:'scale',
 		res:images.fight,
 		ontap:function (e) {
-			var temp = self.mario.res;
-			self.mario.res = images.marioFight;
-			setTimeout(function () {
-				self.mario.res = temp;
-			},100);
+			if(self.mario._isFighting)
+				return;
+			self.mario._isFighting = true;
 		}
 	}));
 	
@@ -192,4 +190,15 @@ GameScene.prototype.update = function () {
 		this.mario.rect.y--;
 	if(this.direction==='down')
 		this.mario.rect.y++;
+
+	
+	if(this.mario._isFighting){
+		this.mario.res = images.marioFight;
+		this.mario.frameRectCount = 1;
+		this.mario._isFighting = false;
+	}else{
+		this.mario.res = images.mario;
+		this.mario.frameRectCount = 3;
+	}
+	
 };
