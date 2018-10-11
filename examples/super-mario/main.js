@@ -6,7 +6,7 @@
  */
 
 if(!Ycc.utils.isMobile())
-	throw new Error(alert('此示例只能在移动端查看！'));
+	alert('此示例在移动端查看效果更好！');
 
 var canvas = document.createElement('canvas');
 console.log(document.documentElement.clientWidth,document.documentElement.clientHeight);
@@ -25,6 +25,8 @@ var images = null;
 var currentScene = null;
 // loading窗
 var loading = new Loading();
+// 物理引擎
+var engine = Matter.Engine.create();
 //////
 
 
@@ -36,7 +38,9 @@ ycc.loader.loadResOneByOne([
 	{name:"fight",url:"./images/fight.png"},
 	{name:"jump",url:"./images/jump.png"},
 	{name:"mario",url:"./images/mario-walk.png"},
+	{name:"wall",url:"./images/wall.png"},
 	{name:"marioFight",url:"./images/mario-fight.png"},
+	{name:"marioJump",url:"./images/mario-jump.png"},
 ],function (lise,imgs) {
 	console.log(imgs,222);
 	images = imgs;
@@ -48,6 +52,10 @@ ycc.loader.loadResOneByOne([
 // 开启动画，每帧都更新场景
 ycc.ticker.start(60);
 ycc.ticker.addFrameListener(function () {
-	currentScene && currentScene.update && currentScene.update();
 	ycc.layerManager.reRenderAllLayerToStage();
+	currentScene && currentScene.update && currentScene.update();
+	currentScene && currentScene.debug && currentScene.debug();
 });
+
+// 使用Matter引擎
+Matter.Engine.run(engine);

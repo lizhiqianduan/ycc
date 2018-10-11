@@ -10,11 +10,21 @@ function GameScene(){
 	// 游戏进行中的图层
 	this.layer = ycc.layerManager.newLayer({enableEventManager:true});
 	
+	// 放置按钮的图层
+	this.btnLayer = ycc.layerManager.newLayer({enableEventManager:true,name:"按钮图层"});
+	
 	// mario的UI
 	this.mario = null;
 	
-	// 方向
+	// matter引擎
+	this.engine = null;
+	
+	// 人脸方向
 	this.direction = '';
+	
+	// 物理引擎中的物体
+	this.bodies = null;
+	
 	
 	this.init();
 	
@@ -25,6 +35,7 @@ GameScene.prototype.init = function () {
 	this.createDirectionBtn();
 	this.createSkillBtn();
 	this.createMario();
+	this.createGround();
 };
 
 /**
@@ -43,7 +54,7 @@ GameScene.prototype.createDirectionBtn = function () {
 	var marginBottom = 20;
 	
 	// 左
-	self.layer.addUI(new Ycc.UI.Image({
+	self.btnLayer.addUI(new Ycc.UI.Image({
 		rect:new Ycc.Math.Rect(marginLeft,stageH-(btnSize+marginBottom),btnSize,btnSize),
 		fillMode:'scale',
 		anchorX:btnSize/2,
@@ -62,7 +73,7 @@ GameScene.prototype.createDirectionBtn = function () {
 	}));
 	
 	// 下
-	self.layer.addUI(new Ycc.UI.Image({
+	self.btnLayer.addUI(new Ycc.UI.Image({
 		rect:new Ycc.Math.Rect(marginLeft+btnSize+btnSpace,stageH-(btnSize+marginBottom),btnSize,btnSize),
 		fillMode:'scale',
 		anchorX:btnSize/2,
@@ -80,7 +91,7 @@ GameScene.prototype.createDirectionBtn = function () {
 	}));
 
 	// 右
-	self.layer.addUI(new Ycc.UI.Image({
+	self.btnLayer.addUI(new Ycc.UI.Image({
 		rect:new Ycc.Math.Rect(marginLeft+btnSize*2+btnSpace*2,stageH-(btnSize+marginBottom),btnSize,btnSize),
 		fillMode:'scale',
 		anchorX:btnSize/2,
@@ -101,7 +112,7 @@ GameScene.prototype.createDirectionBtn = function () {
 	
 	
 	// 上
-	self.layer.addUI(new Ycc.UI.Image({
+	self.btnLayer.addUI(new Ycc.UI.Image({
 		rect:new Ycc.Math.Rect(marginLeft+btnSize+btnSpace,stageH-(btnSize+marginBottom)-(btnSize+btnSpace),btnSize,btnSize),
 		fillMode:'scale',
 		anchorX:btnSize/2,
@@ -150,14 +161,14 @@ GameScene.prototype.createSkillBtn = function () {
 	}));*/
 	
 	// 攻击
-	self.layer.addUI(new Ycc.UI.Image({
+	self.btnLayer.addUI(new Ycc.UI.Image({
 		rect:new Ycc.Math.Rect(stageW-btnSize*2-btnSpace-marginRight,stageH-(btnSize+marginBottom),btnSize,btnSize),
 		fillMode:'scale',
 		res:images.fight,
 		ontap:function (e) {
 			if(self.mario._fightFrameCount>0)
 				return;
-			// 记录点击时的帧数
+			// 记录攻击时的帧数
 			self.mario._fightFrameCount=ycc.ticker.frameAllCount;
 		}
 	}));
@@ -179,19 +190,103 @@ GameScene.prototype.createMario = function () {
 	});
 	this.mario._fightFrameCount=0;
 	this.layer.addUI(this.mario);
+	
+	// 绑定至物理引擎
+	var rect = this.mario.rect,ui=this.mario;
+	this.bindMatterBodyWithUI(Matter.Bodies.rectangle(rect.x+rect.width/2,rect.y+rect.height/2,rect.width,rect.height),ui);
+	Matter.World.add(engine.world,this.getMatterBodyFromUI(ui));
+	rect = null;ui=null;
+};
+
+/**
+ * 创建路面
+ */
+GameScene.prototype.createGround = function () {
+	var ground = new Ycc.UI.Image({
+		rect:new Ycc.Math.Rect(0,stageH-60,stageW,60),
+		res:images.wall,
+		fillMode:'repeat',
+		name:'ground'
+	});
+	this.layer.addUI(ground);
+	
+	// 绑定至物理引擎
+	var rect = ground.rect,ui = ground;
+	this.bindMatterBodyWithUI(Matter.Bodies.rectangle(rect.x+rect.width/2,rect.y+rect.height/2,rect.width,rect.height,{isStatic:true}),ui);
+	Matter.World.add(engine.world,this.getMatterBodyFromUI(ui));
+	rect = null;ui=null;
+
+};
+
+
+/**
+ * 将matter的刚体绑定至UI
+ * @param body matter刚体
+ * @param ui
+ */
+GameScene.prototype.bindMatterBodyWithUI = function (body,ui) {
+	ui._matterBody = body;
+};
+
+/**
+ * 获取与ui绑定的matter刚体
+ * @param ui
+ */
+GameScene.prototype.getMatterBodyFromUI = function (ui) {
+	return ui._matterBody;
+};
+
+
+/**
+ * 绘制物理引擎的图样
+ * @private
+ */
+GameScene.prototype._matterUpdate = function () {
+	var body = this.getMatterBodyFromUI(this.mario);
+	this.mario.rect.x=body.vertices[0].x;
+	this.mario.rect.y=body.vertices[0].y;
+
+};
+
+/**
+ * 调试
+ */
+GameScene.prototype.debug = function () {
+	var bodies = Matter.Composite.allBodies(engine.world);
+	var context = ycc.ctx;
+	context.save();
+	context.beginPath();
+	for (var i = 0; i < bodies.length; i += 1) {
+		var vertices = bodies[i].vertices;
+		context.moveTo(vertices[0].x, vertices[0].y);
+		for (var j = 1; j < vertices.length; j += 1) {
+			context.lineTo(vertices[j].x, vertices[j].y);
+		}
+		context.lineTo(vertices[0].x, vertices[0].y);
+	}
+	context.lineWidth = 2;
+	context.strokeStyle = '#999';
+	context.stroke();
+	context.restore();
 };
 
 
 // 每帧的更新函数
 GameScene.prototype.update = function () {
+	var marioBody = this.getMatterBodyFromUI(this.mario);
+	var marioBodyPosition = marioBody.position;
 	if(this.direction==='left')
-		this.mario.rect.x--;
+		Matter.Body.setPosition(marioBody, {x:marioBodyPosition.x-1,y:marioBodyPosition.y});
 	if(this.direction==='right')
-		this.mario.rect.x++;
+		Matter.Body.setPosition(marioBody, {x:marioBodyPosition.x+1,y:marioBodyPosition.y});
 	if(this.direction==='up')
-		this.mario.rect.y--;
+		Matter.Body.setVelocity(marioBody, {x:0,y:-5});
 	if(this.direction==='down')
-		this.mario.rect.y++;
+		Matter.Body.setPosition(marioBody, {x:marioBodyPosition.x,y:marioBodyPosition.y+1});
+
+	
+	
+	this._matterUpdate();
 	
 	// 攻击后的6帧都显示攻击状态的图片
 	if(this.mario._fightFrameCount>0 && ycc.ticker.frameAllCount - this.mario._fightFrameCount<6){
@@ -203,5 +298,15 @@ GameScene.prototype.update = function () {
 
 		this.mario._fightFrameCount=0;
 	}
+	
+	// console.log(marioBody.velocity.y);
+	if(marioBody.velocity.y!==0){
+		this.mario.res = images.marioJump;
+		this.mario.frameRectCount = 1;
+	}else{
+		this.mario.res = images.mario;
+		this.mario.frameRectCount = 3;
+	}
+	
 	
 };

@@ -619,6 +619,33 @@
 		this.height = Math.abs(this.height);
 	};
 	
+	/**
+	 * 获取区域的顶点列表
+	 * @return {Ycc.Math.Dot[]}
+	 */
+	Ycc.Math.Rect.prototype.getVertices = function () {
+		return [
+			new Ycc.Math.Dot(this.x,this,y),
+			new Ycc.Math.Dot(this.x+this.width,this,y),
+			new Ycc.Math.Dot(this.x+this.width,this,y+this.height),
+			new Ycc.Math.Dot(this.x,this,y+this.height)
+		];
+	};
+	
+	/**
+	 * 根据顶点更新数值
+	 * @param vertices
+	 * @return {*}
+	 */
+	Ycc.Math.Rect.prototype.updateByVertices = function (vertices) {
+		if(!Ycc.utils.isArray(vertices))
+			return console.error('参数必须是数组！');
+		this.x = vertices[0].x;
+		this.y = vertices[0].y;
+		this.width = vertices[1].x-this.x;
+		this.height = vertices[2].y-this.y;
+	};
+	
 	
 	
 	
@@ -4187,11 +4214,11 @@
 	Ycc.UI.Base.prototype.scaleAndRotate = function () {
 		// 坐标系缩放
 		this.ctx.scale(this.scaleX,this.scaleY);
-		
+		var rect = this.getAbsolutePosition();
 		// 坐标系旋转
-		this.ctx.translate(this.anchorX+this.rect.x,this.anchorY+this.rect.y);
+		this.ctx.translate(this.anchorX+rect.x,this.anchorY+rect.y);
 		this.ctx.rotate(this.rotation*Math.PI/180);
-		this.ctx.translate(-this.anchorX-this.rect.x,-this.anchorY-this.rect.y);
+		this.ctx.translate(-this.anchorX-rect.x,-this.anchorY-rect.y);
 	};
 	
 
