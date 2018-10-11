@@ -150,6 +150,9 @@ GameScene.prototype.createDirectionBtn = function () {
             !self.mario.isRunning && self.mario.start();
             self.direction = 'right';
         }
+        if(e.keyCode===40){
+            self.downIsPressing = true;
+        }
 
         if(e.keyCode===88){
             if(self.isFighting())
@@ -174,6 +177,9 @@ GameScene.prototype.createDirectionBtn = function () {
         if(e.keyCode===39){
             self.mario.stop();
             self.direction = '';
+        }
+        if(e.keyCode===40){
+            self.downIsPressing = false;
         }
     };
 
@@ -360,8 +366,8 @@ GameScene.prototype.update = function () {
 	if(this.direction==='right')
 		Matter.Body.setPosition(marioBody, {x:marioBodyPosition.x+1,y:marioBodyPosition.y});
 
-	if(this.direction==='down')
-		Matter.Body.setPosition(marioBody, {x:marioBodyPosition.x,y:marioBodyPosition.y+1});
+	if(this.downIsPressing)
+        console.log('todo 下蹲图片');
 
     if(this.jumpIsPressing && this.contactGround()){
         Matter.Body.setVelocity(this.getMatterBodyFromUI(this.mario), {x:0,y:-6});
@@ -373,7 +379,8 @@ GameScene.prototype.update = function () {
     // 更新人物位置
     this.mario.rect.x=marioBody.vertices[0].x;
     this.mario.rect.y=marioBody.vertices[0].y;
-	
+//    Matter.Body.setVertices(marioBody,this.mario.rect.getVertices());
+
 	// 攻击后的6帧都显示攻击状态的图片
 	if(this.contactGround()){
         this.mario.res = images.mario;
