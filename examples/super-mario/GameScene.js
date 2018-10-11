@@ -45,6 +45,9 @@ GameScene.prototype.init = function () {
 	this.createDirectionBtn();
 	this.createSkillBtn();
 	this.createMario();
+
+    // 创建一堵墙
+    this.newWall(300,stageH-300);
 };
 
 /**
@@ -131,6 +134,48 @@ GameScene.prototype.createDirectionBtn = function () {
         }
 		
 	}));
+
+
+    window.onkeydown = function(e){
+        if(e.keyCode===38){
+            self.jumpIsPressing = true;
+        }
+        if(e.keyCode===37){
+            self.mario.mirror=1;
+            !self.mario.isRunning && self.mario.start();
+            self.direction = 'left';
+        }
+        if(e.keyCode===39){
+            self.mario.mirror=0;
+            !self.mario.isRunning && self.mario.start();
+            self.direction = 'right';
+        }
+
+        if(e.keyCode===88){
+            if(self.isFighting())
+                return;
+            // 记录攻击时的帧数
+            self.mario._fightFrameCount=ycc.ticker.frameAllCount;
+        }
+
+        if(e.keyCode===67)
+            self.jumpIsPressing = true;
+
+    };
+
+    window.onkeyup = function(e){
+        if(e.keyCode===38){
+            self.jumpIsPressing = false;
+        }
+        if(e.keyCode===37){
+            self.mario.stop();
+            self.direction = '';
+        }
+        if(e.keyCode===39){
+            self.mario.stop();
+            self.direction = '';
+        }
+    };
 
 };
 
@@ -221,6 +266,30 @@ GameScene.prototype.createGround = function () {
 
 
 /**
+ * 新建墙
+ * @param x
+ * @param y
+ */
+GameScene.prototype.newWall = function(x,y){
+    var w=20,
+        h=20;
+    var wall = new Ycc.UI.Image({
+        rect:new Ycc.Math.Rect(x,y,w,h),
+        res:images.wall,
+        fillMode:'scale',
+        name:'wall'
+    });
+    this.layer.addUI(wall);
+
+    // 绑定至物理引擎
+    var rect = wall.rect,ui = wall;
+    this.bindMatterBodyWithUI(Matter.Bodies.rectangle(rect.x+rect.width/2,rect.y+rect.height/2,rect.width,rect.height,{isStatic:true}),ui);
+    Matter.World.add(engine.world,this.getMatterBodyFromUI(ui));
+    rect = null;ui=null;
+};
+
+
+/**
  * 将matter的刚体绑定至UI
  * @param body matter刚体
  * @param ui
@@ -237,14 +306,6 @@ GameScene.prototype.getMatterBodyFromUI = function (ui) {
 	return ui._matterBody;
 };
 
-
-/**
- * 绘制物理引擎的图样
- * @private
- */
-GameScene.prototype._matterUpdate = function () {
-
-};
 
 /**
  * 调试
@@ -274,7 +335,7 @@ GameScene.prototype.debug = function () {
  * @returns {boolean}
  */
 GameScene.prototype.contactGround = function(){
-    return this.mario.rect.y+this.mario.rect.height-this.ground.rect.y>=0;
+    return parseInt(this.mario.rect.y+this.mario.rect.height-this.ground.rect.y)>=0;
 };
 
 
