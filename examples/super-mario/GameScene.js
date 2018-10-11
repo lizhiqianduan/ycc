@@ -243,7 +243,9 @@ GameScene.prototype.createMario = function () {
 	
 	// 绑定至物理引擎
 	var rect = this.mario.rect,ui=this.mario;
-	this.bindMatterBodyWithUI(Matter.Bodies.rectangle(rect.x+rect.width/2,rect.y+rect.height/2,rect.width,rect.height),ui);
+	this.bindMatterBodyWithUI(Matter.Bodies.rectangle(rect.x+rect.width/2,rect.y+rect.height/2,rect.width,rect.height,{
+        friction:0
+    }),ui);
 	Matter.World.add(engine.world,this.getMatterBodyFromUI(ui));
 	rect = null;ui=null;
 };
@@ -264,7 +266,10 @@ GameScene.prototype.createGround = function () {
 
 	// 绑定至物理引擎
 	var rect = ground.rect,ui = ground;
-	this.bindMatterBodyWithUI(Matter.Bodies.rectangle(rect.x+rect.width/2,rect.y+rect.height/2,rect.width,rect.height,{isStatic:true}),ui);
+	this.bindMatterBodyWithUI(Matter.Bodies.rectangle(rect.x+rect.width/2,rect.y+rect.height/2,rect.width,rect.height,{
+        isStatic:true,
+        friction:0
+    }),ui);
 	Matter.World.add(engine.world,this.getMatterBodyFromUI(ui));
 	rect = null;ui=null;
 
@@ -289,7 +294,10 @@ GameScene.prototype.newWall = function(x,y){
 
     // 绑定至物理引擎
     var rect = wall.rect,ui = wall;
-    this.bindMatterBodyWithUI(Matter.Bodies.rectangle(rect.x+rect.width/2,rect.y+rect.height/2,rect.width,rect.height,{isStatic:true}),ui);
+    this.bindMatterBodyWithUI(Matter.Bodies.rectangle(rect.x+rect.width/2,rect.y+rect.height/2,rect.width,rect.height,{
+        isStatic:true,
+        friction:0
+    }),ui);
     Matter.World.add(engine.world,this.getMatterBodyFromUI(ui));
     rect = null;ui=null;
 };
@@ -360,6 +368,8 @@ GameScene.prototype.isFighting = function(){
 // 每帧的更新函数
 GameScene.prototype.update = function () {
 	var marioBody = this.getMatterBodyFromUI(this.mario);
+    // 强制设置Mario的旋转角度为0，防止倾倒
+    Matter.Body.setAngle(marioBody,0);
 	var marioBodyPosition = marioBody.position;
 	if(this.direction==='left')
 		Matter.Body.setPosition(marioBody, {x:marioBodyPosition.x-1,y:marioBodyPosition.y});
@@ -379,7 +389,6 @@ GameScene.prototype.update = function () {
     // 更新人物位置
     this.mario.rect.x=marioBody.vertices[0].x;
     this.mario.rect.y=marioBody.vertices[0].y;
-//    Matter.Body.setVertices(marioBody,this.mario.rect.getVertices());
 
 	// 攻击后的6帧都显示攻击状态的图片
 	if(this.contactGround()){
