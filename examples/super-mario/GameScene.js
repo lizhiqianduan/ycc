@@ -24,7 +24,13 @@ function GameScene(){
 	
 	// 人脸方向
 	this.direction = '';
-	
+
+    // 方向键下 是否正在按住
+    this.downIsPressing = false;
+
+    // 跳跃键 是否正在按住
+    this.jumpIsPressing = false;
+
 	// 物理引擎中的物体
 	this.bodies = null;
 	
@@ -35,10 +41,10 @@ function GameScene(){
 
 // 初始化
 GameScene.prototype.init = function () {
+    this.createGround();
 	this.createDirectionBtn();
 	this.createSkillBtn();
 	this.createMario();
-	this.createGround();
 };
 
 /**
@@ -84,12 +90,10 @@ GameScene.prototype.createDirectionBtn = function () {
 		res:images.btn,
 		rotation:90,
 		ondragstart:function (e) {
-			self.mario.start();
-			self.direction = 'down';
+            self.downIsPressing = true;
 		},
 		ondragend:function (e) {
-			self.mario.stop();
-			self.direction = '';
+            self.downIsPressing = false;
 		}
 	}));
 
@@ -122,14 +126,9 @@ GameScene.prototype.createDirectionBtn = function () {
 		anchorY:btnSize/2,
 		res:images.btn,
 		rotation:-90,
-		ondragstart:function (e) {
-			self.mario.start();
-			self.direction = 'up';
-		},
-		ondragend:function (e) {
-			self.mario.stop();
-			self.direction = '';
-		}
+        ontap:function (e) {
+            self.jumpIsPressing = true;
+        }
 		
 	}));
 
@@ -151,17 +150,14 @@ GameScene.prototype.createSkillBtn = function () {
 	var marginBottom = 20;
 	
 	// 跳跃
-	/*self.layer.addUI(new Ycc.UI.Image({
+	self.btnLayer.addUI(new Ycc.UI.Image({
 		rect:new Ycc.Math.Rect(stageW-btnSize-marginRight,stageH-(btnSize+marginBottom),btnSize,btnSize),
 		fillMode:'scale',
 		res:images.jump,
-		ondragstart:function (e) {
-			console.log(e,this);
-		},
-		ondragend:function (e) {
-			console.log(e);
-		}
-	}));*/
+		ontap:function (e) {
+            self.jumpIsPressing = true;
+        }
+    }));
 	
 	// 攻击
 	self.btnLayer.addUI(new Ycc.UI.Image({
@@ -169,7 +165,7 @@ GameScene.prototype.createSkillBtn = function () {
 		fillMode:'scale',
 		res:images.fight,
 		ontap:function (e) {
-			if(self.mario._fightFrameCount>0)
+			if(self.isFighting())
 				return;
 			// 记录攻击时的帧数
 			self.mario._fightFrameCount=ycc.ticker.frameAllCount;
@@ -302,10 +298,15 @@ GameScene.prototype.update = function () {
 		Matter.Body.setPosition(marioBody, {x:marioBodyPosition.x-1,y:marioBodyPosition.y});
 	if(this.direction==='right')
 		Matter.Body.setPosition(marioBody, {x:marioBodyPosition.x+1,y:marioBodyPosition.y});
-	if(this.direction==='up' && this.contactGround())
-		Matter.Body.setVelocity(marioBody, {x:0,y:-5});
+
 	if(this.direction==='down')
 		Matter.Body.setPosition(marioBody, {x:marioBodyPosition.x,y:marioBodyPosition.y+1});
+
+    if(this.jumpIsPressing && this.contactGround()){
+        Matter.Body.setVelocity(this.getMatterBodyFromUI(this.mario), {x:0,y:-6});
+        this.jumpIsPressing = false;
+    }
+
 
 
     // 更新人物位置
