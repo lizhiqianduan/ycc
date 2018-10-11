@@ -244,10 +244,21 @@ GameScene.prototype.createMario = function () {
 	// 绑定至物理引擎
 	var rect = this.mario.rect,ui=this.mario;
 	this.bindMatterBodyWithUI(Matter.Bodies.rectangle(rect.x+rect.width/2,rect.y+rect.height/2,rect.width,rect.height,{
-        friction:0
+        friction:0,
+        label:"Mario"
     }),ui);
 	Matter.World.add(engine.world,this.getMatterBodyFromUI(ui));
 	rect = null;ui=null;
+
+
+    Matter.Events.on(engine,'collisionActive',function(e){
+        var pairs = e.pairs;
+        /*for (var i = 0; i < pairs.length; i++) {
+            var pair = pairs[i];
+            pair.bodyA.render.fillStyle = '#333';
+            pair.bodyB.render.fillStyle = '#333';
+        }*/
+    });
 };
 
 /**
@@ -268,6 +279,8 @@ GameScene.prototype.createGround = function () {
 	var rect = ground.rect,ui = ground;
 	this.bindMatterBodyWithUI(Matter.Bodies.rectangle(rect.x+rect.width/2,rect.y+rect.height/2,rect.width,rect.height,{
         isStatic:true,
+        label:"ground",
+        // 摩擦力0
         friction:0
     }),ui);
 	Matter.World.add(engine.world,this.getMatterBodyFromUI(ui));
@@ -296,7 +309,8 @@ GameScene.prototype.newWall = function(x,y){
     var rect = wall.rect,ui = wall;
     this.bindMatterBodyWithUI(Matter.Bodies.rectangle(rect.x+rect.width/2,rect.y+rect.height/2,rect.width,rect.height,{
         isStatic:true,
-        friction:0
+        friction:0,
+        label:"wall"
     }),ui);
     Matter.World.add(engine.world,this.getMatterBodyFromUI(ui));
     rect = null;ui=null;
@@ -370,6 +384,10 @@ GameScene.prototype.update = function () {
 	var marioBody = this.getMatterBodyFromUI(this.mario);
     // 强制设置Mario的旋转角度为0，防止倾倒
     Matter.Body.setAngle(marioBody,0);
+
+    // 强制设置Mario的旋转角速度为0，防止人物一只脚站立时旋转
+    Matter.Body.setAngularVelocity(marioBody,0);
+
 	var marioBodyPosition = marioBody.position;
 	if(this.direction==='left')
 		Matter.Body.setPosition(marioBody, {x:marioBodyPosition.x-1,y:marioBodyPosition.y});
@@ -380,7 +398,7 @@ GameScene.prototype.update = function () {
         console.log('todo 下蹲图片');
 
     if(this.jumpIsPressing && this.contactGround()){
-        Matter.Body.setVelocity(this.getMatterBodyFromUI(this.mario), {x:0,y:-6});
+        Matter.Body.setVelocity(this.getMatterBodyFromUI(this.mario), {x:0,y:-10});
         this.jumpIsPressing = false;
     }
 
