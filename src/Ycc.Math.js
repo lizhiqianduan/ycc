@@ -161,7 +161,12 @@
 		];
 	};
 	
-	Ycc.Math.Rect.prototype.createByVertices = function (vertices) {
+	/**
+	 * 根据顶点更新数值
+	 * @param vertices
+	 * @return {*}
+	 */
+	Ycc.Math.Rect.prototype.updateByVertices = function (vertices) {
 		if(!Ycc.utils.isArray(vertices))
 			return console.error('参数必须是数组！');
 		this.x = vertices[0].x;

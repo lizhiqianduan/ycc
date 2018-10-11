@@ -254,11 +254,11 @@
 	Ycc.UI.Base.prototype.scaleAndRotate = function () {
 		// 坐标系缩放
 		this.ctx.scale(this.scaleX,this.scaleY);
-		
+		var rect = this.getAbsolutePosition();
 		// 坐标系旋转
-		this.ctx.translate(this.anchorX+this.rect.x,this.anchorY+this.rect.y);
+		this.ctx.translate(this.anchorX+rect.x,this.anchorY+rect.y);
 		this.ctx.rotate(this.rotation*Math.PI/180);
-		this.ctx.translate(-this.anchorX-this.rect.x,-this.anchorY-this.rect.y);
+		this.ctx.translate(-this.anchorX-rect.x,-this.anchorY-rect.y);
 	};
 	
 
