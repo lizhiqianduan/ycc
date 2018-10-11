@@ -15,6 +15,9 @@ function GameScene(){
 	
 	// mario的UI
 	this.mario = null;
+
+    // 地面的UI
+    this.ground = null;
 	
 	// matter引擎
 	this.engine = null;
@@ -202,14 +205,16 @@ GameScene.prototype.createMario = function () {
  * 创建路面
  */
 GameScene.prototype.createGround = function () {
+    var wallHeight = 200;
 	var ground = new Ycc.UI.Image({
-		rect:new Ycc.Math.Rect(0,stageH-60,stageW,60),
+		rect:new Ycc.Math.Rect(0,stageH-wallHeight,stageW,wallHeight),
 		res:images.wall,
 		fillMode:'repeat',
 		name:'ground'
 	});
 	this.layer.addUI(ground);
-	
+	this.ground = ground;
+
 	// 绑定至物理引擎
 	var rect = ground.rect,ui = ground;
 	this.bindMatterBodyWithUI(Matter.Bodies.rectangle(rect.x+rect.width/2,rect.y+rect.height/2,rect.width,rect.height,{isStatic:true}),ui);
@@ -242,9 +247,6 @@ GameScene.prototype.getMatterBodyFromUI = function (ui) {
  * @private
  */
 GameScene.prototype._matterUpdate = function () {
-	var body = this.getMatterBodyFromUI(this.mario);
-	this.mario.rect.x=body.vertices[0].x;
-	this.mario.rect.y=body.vertices[0].y;
 
 };
 
@@ -271,6 +273,27 @@ GameScene.prototype.debug = function () {
 };
 
 
+/**
+ * 判断Mario是否接触到地面
+ * @returns {boolean}
+ */
+GameScene.prototype.contactGround = function(){
+    return this.mario.rect.y+this.mario.rect.height-this.ground.rect.y>=0;
+};
+
+
+/**
+ * 判断Mario是否真正攻击
+ * @returns {boolean}
+ */
+GameScene.prototype.isFighting = function(){
+    var res = this.mario._fightFrameCount>0 && ycc.ticker.frameAllCount - this.mario._fightFrameCount<6;
+    if(!res)
+        this.mario._fightFrameCount=0;
+    return res;
+};
+
+
 // 每帧的更新函数
 GameScene.prototype.update = function () {
 	var marioBody = this.getMatterBodyFromUI(this.mario);
@@ -279,33 +302,27 @@ GameScene.prototype.update = function () {
 		Matter.Body.setPosition(marioBody, {x:marioBodyPosition.x-1,y:marioBodyPosition.y});
 	if(this.direction==='right')
 		Matter.Body.setPosition(marioBody, {x:marioBodyPosition.x+1,y:marioBodyPosition.y});
-	if(this.direction==='up')
+	if(this.direction==='up' && this.contactGround())
 		Matter.Body.setVelocity(marioBody, {x:0,y:-5});
 	if(this.direction==='down')
 		Matter.Body.setPosition(marioBody, {x:marioBodyPosition.x,y:marioBodyPosition.y+1});
 
-	
-	
-	this._matterUpdate();
+
+    // 更新人物位置
+    this.mario.rect.x=marioBody.vertices[0].x;
+    this.mario.rect.y=marioBody.vertices[0].y;
 	
 	// 攻击后的6帧都显示攻击状态的图片
-	if(this.mario._fightFrameCount>0 && ycc.ticker.frameAllCount - this.mario._fightFrameCount<6){
-		this.mario.res = images.marioFight;
-		this.mario.frameRectCount = 1;
+	if(this.contactGround()){
+        this.mario.res = images.mario;
+        this.mario.frameRectCount = 3;
+        if(this.isFighting()){
+            this.mario.res = images.marioFight;
+            this.mario.frameRectCount = 1;
+        }
 	}else{
-		this.mario.res = images.mario;
-		this.mario.frameRectCount = 3;
-
-		this.mario._fightFrameCount=0;
-	}
-	
-	// console.log(marioBody.velocity.y);
-	if(marioBody.velocity.y!==0){
-		this.mario.res = images.marioJump;
-		this.mario.frameRectCount = 1;
-	}else{
-		this.mario.res = images.mario;
-		this.mario.frameRectCount = 3;
+        this.mario.res = images.marioJump;
+        this.mario.frameRectCount = 1;
 	}
 	
 	
