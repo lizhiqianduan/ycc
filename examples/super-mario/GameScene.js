@@ -549,10 +549,16 @@ GameScene.prototype.update = function () {
 	
 	
 	var marioBodyPosition = marioBody.position;
-	if(this.direction==='left')
-		Matter.Body.setPosition(marioBody, {x:marioBodyPosition.x-1,y:marioBodyPosition.y});
-	if(this.direction==='right')
-		Matter.Body.setPosition(marioBody, {x:marioBodyPosition.x+1,y:marioBodyPosition.y});
+	
+	
+	// 不在空中的下蹲不能控制人物左右移动
+	if(!(this.marioStayingOnWall&&this.downIsPressing)) {
+		if(this.direction==='left')
+			Matter.Body.setPosition(marioBody, {x:marioBodyPosition.x-1,y:marioBodyPosition.y});
+		if(this.direction==='right')
+			Matter.Body.setPosition(marioBody, {x:marioBodyPosition.x+1,y:marioBodyPosition.y});
+	}
+
 	
 
 	
