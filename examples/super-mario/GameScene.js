@@ -376,7 +376,6 @@ GameScene.prototype.collisionListenerInit = function () {
 	var self = this;
 	
 	Matter.Events.on(engine,'collisionStart',function (event) {
-		console.log(event);
 		var pair = event.pairs[0];
 		var mario = getMarioFromPair(pair);
 		var other = getAnotherBodyFromPair(pair,mario);
@@ -394,26 +393,11 @@ GameScene.prototype.collisionListenerInit = function () {
 		if(mario&&other){
 			self.marioContactWith = null;
 		}
-		console.log(mario,other,self.marioContactWith);
 	});
 	
 	
 	Matter.Events.on(engine,'collisionActive',function (event) {
-		var pairs = event.pairs;
-		for (var i = 0; i < pairs.length; i++) {
-			var pair = pairs[i];
-			var marioBody = self.getMatterBodyFromUI(self.mario);
-			var mario = null;
-			var other = null;
-			if(pair.bodyA.label=== marioBody.label){
-				mario = pair.bodyA;
-				other = pair.bodyB;
-			}
-			if(pair.bodyA.label=== marioBody.label){
-				mario = pair.bodyB;
-				other = pair.bodyA;
-			}
-		}
+		// todo
 	});
 	
 	// 碰撞时获取与Mario相碰撞的另一刚体
@@ -435,20 +419,6 @@ GameScene.prototype.collisionListenerInit = function () {
 		return null;
 	}
 	
-};
-
-
-/**
- * 判断Mario是否接触到地面或者墙面
- * @returns {boolean}
- */
-GameScene.prototype.contactGround = function(){
-    return parseInt(this.mario.rect.y+this.mario.rect.height-this.ground.rect.y)>=0;
-};
-
-
-GameScene.prototype.isStayOnWall = function (wallBody) {
-	return parseInt(this.mario.rect.y+this.mario.rect.height-(wallBody.y+wallBody.width/2))>=0;
 };
 
 /**
@@ -483,7 +453,7 @@ GameScene.prototype.marioStayingOnWallCompute = function () {
  * 并设置属性jumpIsPressing
  */
 GameScene.prototype.jumpIsPressingCompute = function () {
-	if(this.jumpIsPressing && this.marioStayingOnWall /*this.contactGround()*/){
+	if(this.jumpIsPressing && this.marioStayingOnWall){
 		Matter.Body.setVelocity(this.getMatterBodyFromUI(this.mario), {x:0,y:-10});
 		this.jumpIsPressing = false;
 	}else{
@@ -524,7 +494,7 @@ GameScene.prototype.update = function () {
     this.mario.rect.y=marioBody.vertices[0].y;
 
 	// 攻击后的6帧都显示攻击状态的图片
-	if(this.marioStayingOnWall /*this.contactGround()*/){
+	if(this.marioStayingOnWall){
         this.mario.res = images.mario;
         this.mario.frameRectCount = 3;
         if(this.isFighting()){
