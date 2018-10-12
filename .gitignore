@@ -2,4 +2,3 @@
 .idea
 /docs
 package-lock.json
-/examples/**/lib/**
