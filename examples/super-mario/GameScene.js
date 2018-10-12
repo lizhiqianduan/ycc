@@ -527,36 +527,6 @@ GameScene.prototype.marioImageResCompute = function () {
 		this.mario.frameRectCount = 1;
 	}
 	
-	// Matter.Body.setVertices(marioBody,this.mario.rect.getVertices());
-	
-	
-	/*if(this.downIsPressing){
-		this.mario.res = images.marioDown;
-		this.mario.frameRectCount = 1;
-
-		/!*this.mario.rect.height=this.mario.res.naturalHeight*2;
-		this.mario.firstFrameRect.height=images.mario.naturalHeight;
-		
-		Matter.Body.setVertices(marioBody,this.mario.rect.getVertices());*!/
-		console.log(this.mario.res.naturalHeight,this.mario.rect.height,222);
-	}
-	
-	
-	// 攻击后的6帧都显示攻击状态的图片
-	if(this.marioStayingOnWall){
-		this.mario.res = images.mario;
-		this.mario.frameRectCount = 3;
-		if(this.isFighting()){
-			this.mario.res = images.marioFight;
-			this.mario.frameRectCount = 1;
-		}
-	}else{
-		this.mario.res = images.marioJump;
-		this.mario.frameRectCount = 1;
-	}*/
-
-	
-	
 };
 
 // 每帧的更新函数
