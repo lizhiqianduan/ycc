@@ -100,6 +100,11 @@ GameScene.prototype.createDirectionBtn = function () {
 		res:images.btn,
 		rotation:90,
 		ondragstart:function (e) {
+			// 如果人物不处于站立或行走状态，按下键无效
+			if(!self.marioStayingOnWall) {
+				console.log('人物当前状态不能下蹲!');
+				return;
+			}
             self.downIsPressing = true;
 		},
 		ondragend:function (e) {
@@ -159,6 +164,11 @@ GameScene.prototype.createDirectionBtn = function () {
             self.direction = 'right';
         }
         if(e.keyCode===40){
+			// 如果人物不处于站立或行走状态，按下键无效
+			if(!self.marioStayingOnWall) {
+				console.log('人物当前状态不能下蹲!');
+				return;
+			}
             self.downIsPressing = true;
         }
 
@@ -240,9 +250,9 @@ GameScene.prototype.createSkillBtn = function () {
  */
 GameScene.prototype.createMario = function () {
 	this.mario = new Ycc.UI.ImageFrameAnimation({
-		rect:new Ycc.Math.Rect(stageW/2-18,stageH/2-33,18*2,33*2),
+		rect:new Ycc.Math.Rect(stageW/2-18,stageH/2-images.mario.naturalHeight,18*2,images.mario.naturalHeight*2),
 		res:images.mario,
-		firstFrameRect:new Ycc.Math.Rect(0,0,18,33),
+		firstFrameRect:new Ycc.Math.Rect(0,0,18,images.mario.naturalHeight),
 		frameRectCount:3,
 		//autoplay:true,
 		frameSpace:8
@@ -461,6 +471,94 @@ GameScene.prototype.jumpIsPressingCompute = function () {
 	}
 };
 
+/**
+ * 计算Mario需要显示的图片及Mario的高度等
+ */
+GameScene.prototype.marioImageResCompute = function () {
+	
+	var marioBody = this.getMatterBodyFromUI(this.mario);
+	
+	// console.log(this.marioStayingOnWall,this.isFighting(),this.downIsPressing);
+	
+	// 人物正在行走或站立，并且没有攻击，并且没有下蹲
+	if(this.marioStayingOnWall && !this.isFighting() && !this.downIsPressing){
+		this.mario.res = images.mario;
+		this.mario.frameRectCount = 3;
+		
+		// 此处重新赋值的原因在于，人物下蹲后刚体尺寸发生了变化，所以起身时需要重新计算刚体高度
+		// 重新赋值高度
+		this.mario.rect.height = this.mario.res.naturalHeight*2;
+		// 赋值刚体高度
+		Matter.Body.setVertices(marioBody,this.mario.rect.getVertices());
+		// 赋值序列帧动画第一帧的图片高度
+		this.mario.firstFrameRect.height = this.mario.res.naturalHeight;
+	}
+
+	// 人物处于空中
+	else if(!this.marioStayingOnWall){
+		this.mario.res = this.downIsPressing?images.marioDown:images.marioJump;
+		this.mario.frameRectCount = 1;
+	}
+	
+	// 人物处于下蹲状态
+	else if(this.downIsPressing){
+		console.log('下蹲');
+		// 刚体位置
+		var pos = marioBody.position;
+		
+		this.mario.res = images.marioDown;
+		this.mario.frameRectCount = 1;
+
+		// 计算刚体位置
+		pos.y+=this.mario.rect.height-this.mario.res.naturalHeight*2;
+		// 赋值人物高度
+		this.mario.rect.height=this.mario.res.naturalHeight*2;
+		// 赋值刚体高度
+		Matter.Body.setVertices(marioBody,this.mario.rect.getVertices());
+		// 赋值序列帧动画第一帧的图片高度
+		this.mario.firstFrameRect.height = this.mario.res.naturalHeight;
+		// 重新赋值刚体位置
+		Matter.Body.setPosition(marioBody,pos);
+	}
+
+	// 人物行走或者站立时，正在攻击
+	else if(this.marioStayingOnWall && this.isFighting()){
+		this.mario.res = images.marioFight;
+		this.mario.frameRectCount = 1;
+	}
+	
+	// Matter.Body.setVertices(marioBody,this.mario.rect.getVertices());
+	
+	
+	/*if(this.downIsPressing){
+		this.mario.res = images.marioDown;
+		this.mario.frameRectCount = 1;
+
+		/!*this.mario.rect.height=this.mario.res.naturalHeight*2;
+		this.mario.firstFrameRect.height=images.mario.naturalHeight;
+		
+		Matter.Body.setVertices(marioBody,this.mario.rect.getVertices());*!/
+		console.log(this.mario.res.naturalHeight,this.mario.rect.height,222);
+	}
+	
+	
+	// 攻击后的6帧都显示攻击状态的图片
+	if(this.marioStayingOnWall){
+		this.mario.res = images.mario;
+		this.mario.frameRectCount = 3;
+		if(this.isFighting()){
+			this.mario.res = images.marioFight;
+			this.mario.frameRectCount = 1;
+		}
+	}else{
+		this.mario.res = images.marioJump;
+		this.mario.frameRectCount = 1;
+	}*/
+
+	
+	
+};
+
 // 每帧的更新函数
 GameScene.prototype.update = function () {
 	var marioBody = this.getMatterBodyFromUI(this.mario);
@@ -476,35 +574,26 @@ GameScene.prototype.update = function () {
 	// 判断Mario是否处于悬空、跳跃状态，跳跃键处于按下状态
 	this.jumpIsPressingCompute();
 
+	// 判断当前帧应该显示的Mario图片
+	this.marioImageResCompute();
+	
+	
 	var marioBodyPosition = marioBody.position;
 	if(this.direction==='left')
 		Matter.Body.setPosition(marioBody, {x:marioBodyPosition.x-1,y:marioBodyPosition.y});
 	if(this.direction==='right')
 		Matter.Body.setPosition(marioBody, {x:marioBodyPosition.x+1,y:marioBodyPosition.y});
+	
 
-	if(this.downIsPressing)
-        console.log('todo 下蹲图片');
+	
+	// 更新人物位置
+	this.mario.rect.x=marioBody.vertices[0].x;
+	this.mario.rect.y=marioBody.vertices[0].y;
+ 
 
-    
 
 
 
-    // 更新人物位置
-    this.mario.rect.x=marioBody.vertices[0].x;
-    this.mario.rect.y=marioBody.vertices[0].y;
-
-	// 攻击后的6帧都显示攻击状态的图片
-	if(this.marioStayingOnWall){
-        this.mario.res = images.mario;
-        this.mario.frameRectCount = 3;
-        if(this.isFighting()){
-            this.mario.res = images.marioFight;
-            this.mario.frameRectCount = 1;
-        }
-	}else{
-        this.mario.res = images.marioJump;
-        this.mario.frameRectCount = 1;
-	}
 	
 	
 };

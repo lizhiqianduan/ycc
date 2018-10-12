@@ -41,6 +41,7 @@ ycc.loader.loadResOneByOne([
 	{name:"wall",url:"./images/wall.png"},
 	{name:"marioFight",url:"./images/mario-fight.png"},
 	{name:"marioJump",url:"./images/mario-jump.png"},
+	{name:"marioDown",url:"./images/mario-down.png"},
 ],function (lise,imgs) {
 	console.log(imgs,222);
 	images = imgs;
