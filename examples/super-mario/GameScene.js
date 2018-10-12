@@ -34,6 +34,11 @@ function GameScene(){
 	// 物理引擎中的物体
 	this.bodies = null;
 	
+	// 人物正在接触的物体
+	this.marioContactWith = null;
+	
+	// 人物是否正站立在墙体上
+	this.marioStayingOnWall = false;
 	
 	this.init();
 	
@@ -48,6 +53,8 @@ GameScene.prototype.init = function () {
 
     // 创建一堵墙
     this.newWall(300,stageH-300);
+	
+    this.collisionListenerInit();
 };
 
 /**
@@ -130,6 +137,7 @@ GameScene.prototype.createDirectionBtn = function () {
 		res:images.btn,
 		rotation:-90,
         ontap:function (e) {
+			if(self.jumpIsPressing) return;
             self.jumpIsPressing = true;
         }
 		
@@ -206,6 +214,7 @@ GameScene.prototype.createSkillBtn = function () {
 		fillMode:'scale',
 		res:images.jump,
 		ontap:function (e) {
+			if(self.jumpIsPressing) return;
             self.jumpIsPressing = true;
         }
     }));
@@ -249,16 +258,6 @@ GameScene.prototype.createMario = function () {
     }),ui);
 	Matter.World.add(engine.world,this.getMatterBodyFromUI(ui));
 	rect = null;ui=null;
-
-
-    Matter.Events.on(engine,'collisionActive',function(e){
-        var pairs = e.pairs;
-        /*for (var i = 0; i < pairs.length; i++) {
-            var pair = pairs[i];
-            pair.bodyA.render.fillStyle = '#333';
-            pair.bodyB.render.fillStyle = '#333';
-        }*/
-    });
 };
 
 /**
@@ -324,6 +323,7 @@ GameScene.prototype.newWall = function(x,y){
  */
 GameScene.prototype.bindMatterBodyWithUI = function (body,ui) {
 	ui._matterBody = body;
+	body._yccUI = ui;
 };
 
 /**
@@ -333,6 +333,17 @@ GameScene.prototype.bindMatterBodyWithUI = function (body,ui) {
 GameScene.prototype.getMatterBodyFromUI = function (ui) {
 	return ui._matterBody;
 };
+
+/**
+ * 获取与matter刚体绑定的ui
+ * @param body
+ * @return {*}
+ */
+GameScene.prototype.getUIFromMatterBody = function (body) {
+	return body._yccUI;
+};
+
+
 
 
 /**
@@ -359,13 +370,86 @@ GameScene.prototype.debug = function () {
 
 
 /**
- * 判断Mario是否接触到地面
+ * 碰撞检测
+ */
+GameScene.prototype.collisionListenerInit = function () {
+	var self = this;
+	
+	Matter.Events.on(engine,'collisionStart',function (event) {
+		console.log(event);
+		var pair = event.pairs[0];
+		var mario = getMarioFromPair(pair);
+		var other = getAnotherBodyFromPair(pair,mario);
+		
+		if(mario&&other){
+			self.marioContactWith = other;
+		}
+	});
+
+	Matter.Events.on(engine,'collisionEnd',function (event) {
+		var pair = event.pairs[0];
+		var mario = getMarioFromPair(pair);
+		var other = getAnotherBodyFromPair(pair,mario);
+		
+		if(mario&&other){
+			self.marioContactWith = null;
+		}
+		console.log(mario,other,self.marioContactWith);
+	});
+	
+	
+	Matter.Events.on(engine,'collisionActive',function (event) {
+		var pairs = event.pairs;
+		for (var i = 0; i < pairs.length; i++) {
+			var pair = pairs[i];
+			var marioBody = self.getMatterBodyFromUI(self.mario);
+			var mario = null;
+			var other = null;
+			if(pair.bodyA.label=== marioBody.label){
+				mario = pair.bodyA;
+				other = pair.bodyB;
+			}
+			if(pair.bodyA.label=== marioBody.label){
+				mario = pair.bodyB;
+				other = pair.bodyA;
+			}
+		}
+	});
+	
+	// 碰撞时获取与Mario相碰撞的另一刚体
+	function getAnotherBodyFromPair(pair,mario) {
+		if(!mario)
+			return null;
+		if(mario===pair.bodyA)
+			return pair.bodyB;
+		if(mario===pair.bodyB)
+			return pair.bodyA;
+	}
+	// 碰撞时获取Mario
+	function getMarioFromPair(pair) {
+		var marioBody = self.getMatterBodyFromUI(self.mario);
+		if(pair.bodyA.label=== marioBody.label)
+			return pair.bodyA;
+		if(pair.bodyB.label=== marioBody.label)
+			return pair.bodyB;
+		return null;
+	}
+	
+};
+
+
+/**
+ * 判断Mario是否接触到地面或者墙面
  * @returns {boolean}
  */
 GameScene.prototype.contactGround = function(){
     return parseInt(this.mario.rect.y+this.mario.rect.height-this.ground.rect.y)>=0;
 };
 
+
+GameScene.prototype.isStayOnWall = function (wallBody) {
+	return parseInt(this.mario.rect.y+this.mario.rect.height-(wallBody.y+wallBody.width/2))>=0;
+};
 
 /**
  * 判断Mario是否真正攻击
@@ -378,6 +462,34 @@ GameScene.prototype.isFighting = function(){
     return res;
 };
 
+/**
+ * 判断Mario是否处于正常站立状态
+ * 并设置属性marioStayingOnWall
+ */
+GameScene.prototype.marioStayingOnWallCompute = function () {
+	if(this.marioContactWith && ['wall','ground'].indexOf(this.marioContactWith.label)!==-1){
+		var marioRect = this.mario.rect;
+		var wallRect = this.getUIFromMatterBody(this.marioContactWith).rect;
+		this.marioStayingOnWall = parseInt(marioRect.y+marioRect.height)<=wallRect.y
+			&& marioRect.x+marioRect.width>wallRect.x
+			&& marioRect.x<wallRect.x+wallRect.width;
+	}else{
+		this.marioStayingOnWall = false;
+	}
+};
+
+/**
+ * 判断Mario是否处于悬空、跳跃状态
+ * 并设置属性jumpIsPressing
+ */
+GameScene.prototype.jumpIsPressingCompute = function () {
+	if(this.jumpIsPressing && this.marioStayingOnWall /*this.contactGround()*/){
+		Matter.Body.setVelocity(this.getMatterBodyFromUI(this.mario), {x:0,y:-10});
+		this.jumpIsPressing = false;
+	}else{
+		this.jumpIsPressing = false;
+	}
+};
 
 // 每帧的更新函数
 GameScene.prototype.update = function () {
@@ -387,6 +499,12 @@ GameScene.prototype.update = function () {
 
     // 强制设置Mario的旋转角速度为0，防止人物一只脚站立时旋转
     Matter.Body.setAngularVelocity(marioBody,0);
+	
+    // 判断Mario是否处于正常站立
+	this.marioStayingOnWallCompute();
+	
+	// 判断Mario是否处于悬空、跳跃状态，跳跃键处于按下状态
+	this.jumpIsPressingCompute();
 
 	var marioBodyPosition = marioBody.position;
 	if(this.direction==='left')
@@ -397,10 +515,7 @@ GameScene.prototype.update = function () {
 	if(this.downIsPressing)
         console.log('todo 下蹲图片');
 
-    if(this.jumpIsPressing && this.contactGround()){
-        Matter.Body.setVelocity(this.getMatterBodyFromUI(this.mario), {x:0,y:-10});
-        this.jumpIsPressing = false;
-    }
+    
 
 
 
@@ -409,7 +524,7 @@ GameScene.prototype.update = function () {
     this.mario.rect.y=marioBody.vertices[0].y;
 
 	// 攻击后的6帧都显示攻击状态的图片
-	if(this.contactGround()){
+	if(this.marioStayingOnWall /*this.contactGround()*/){
         this.mario.res = images.mario;
         this.mario.frameRectCount = 3;
         if(this.isFighting()){
