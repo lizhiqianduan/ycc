@@ -94,7 +94,7 @@
 	 */
 	GameScene.prototype.createMario = function () {
 		this.mario = new Ycc.UI.ImageFrameAnimation({
-			rect:new Ycc.Math.Rect(10,stageH/2-images.mario.naturalHeight,18*2,images.mario.naturalHeight*2),
+			rect:new Ycc.Math.Rect(10,0,18*2,images.mario.naturalHeight*2),
 			res:images.mario,
 			firstFrameRect:new Ycc.Math.Rect(0,0,18,images.mario.naturalHeight),
 			frameRectCount:3,

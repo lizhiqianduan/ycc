@@ -25,6 +25,9 @@ function GameScene(){
     // 方向键下 是否正在按住
     this.downIsPressing = false;
 
+    // 人物从下蹲起身的标志位
+    this.downTouchEndFlag = false;
+
     // 跳跃键 是否正在按住
     this.jumpIsPressing = false;
 
@@ -108,6 +111,7 @@ GameScene.prototype.createDirectionBtn = function () {
 		},
 		ondragend:function (e) {
             self.downIsPressing = false;
+            self.downTouchEndFlag = true;
 		}
 	}));
 
@@ -197,6 +201,7 @@ GameScene.prototype.createDirectionBtn = function () {
         }
         if(e.keyCode===40){
             self.downIsPressing = false;
+            self.downTouchEndFlag = true;
         }
     };
 
@@ -412,19 +417,23 @@ GameScene.prototype.marioImageResCompute = function () {
 	if(this.marioStayingOnWall && !this.isFighting() && !this.downIsPressing){
 		this.mario.res = images.mario;
 		this.mario.frameRectCount = 3;
-		
-		// 此处重新赋值的原因在于，人物下蹲后刚体尺寸发生了变化，所以起身时需要重新计算刚体高度
-		// 重新赋值高度
-		this.mario.rect.height = this.mario.res.naturalHeight*2;
-		// 赋值刚体高度
-		Matter.Body.setVertices(marioBody,this.mario.rect.getVertices());
+
+        // 起身的标志位
+        if(this.downTouchEndFlag){
+            // 此处重新赋值的原因在于，人物下蹲后刚体尺寸发生了变化，所以起身时需要重新计算刚体高度
+            // 重新赋值高度
+            this.mario.rect.height = this.mario.res.naturalHeight*2;
+            // 赋值刚体高度
+            Matter.Body.setVertices(marioBody,this.mario.rect.getVertices());
+
+            this.downTouchEndFlag=false;
+        }
 		// 赋值序列帧动画第一帧的图片高度
 		this.mario.firstFrameRect.height = this.mario.res.naturalHeight;
 	}
 
 	// 人物处于空中
 	else if(!this.marioStayingOnWall){
-		console.log('人物处于空中');
 		this.mario.res = this.downIsPressing?images.marioDown:images.marioJump;
 		this.mario.frameRectCount = 1;
 	}
@@ -476,12 +485,7 @@ GameScene.prototype.update = function () {
 	// 判断当前帧应该显示的Mario图片
 	this.marioImageResCompute();
 	
-	
-	if(marioBody.velocity.y<0){
-		marioBody.restitution=1;
-	}else{
-		marioBody.restitution=0;
-	}
+
 	
 	var marioBodyPosition = marioBody.position;
 	
@@ -492,11 +496,11 @@ GameScene.prototype.update = function () {
 		
 		if(this.direction==='left'){
 			// Matter.Body.applyForce(marioBody,{x:0,y:0},{x:-0.001,y:0});
-			Matter.Body.setPosition(marioBody, {x:marioBodyPosition.x-1,y:marioBody.velocity.y<0?Math.ceil(marioBodyPosition.y):marioBodyPosition.y});
+			Matter.Body.setPosition(marioBody, {x:marioBodyPosition.x-1,y:marioBodyPosition.y});
 		}
 		if(this.direction==='right'){
 			// Matter.Body.applyForce(marioBody,marioBodyPosition,{x:0.001,y:0});
-			Matter.Body.setPosition(marioBody, {x:marioBodyPosition.x+1,y:marioBody.velocity.y<0?Math.ceil(marioBodyPosition.y):marioBodyPosition.y});
+			Matter.Body.setPosition(marioBody, {x:marioBodyPosition.x+1,y:marioBodyPosition.y});
 		}
 
 		/*if(Math.abs(marioBody.velocity.x)<5){
