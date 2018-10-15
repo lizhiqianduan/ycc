@@ -43,7 +43,8 @@ ycc.loader.loadResOneByOne([
 	{name:"wall",url:"./images/wall.png"},
 	{name:"marioFight",url:"./images/mario-fight.png"},
 	{name:"marioJump",url:"./images/mario-jump.png"},
-	{name:"marioDown",url:"./images/mario-down.png"},
+    {name:"marioDown",url:"./images/mario-down.png"},
+    {name:"coin100",url:"./images/coin100.jpg"},
 ],function (lise,imgs) {
 
     ycc.loader.loadResOneByOne([

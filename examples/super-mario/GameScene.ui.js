@@ -83,6 +83,54 @@
 	};
 
 
+
+    /**
+     * 创建一堆金币
+     * @param x			起始x坐标
+     * @param height	最下一行距离屏幕最下方的高度
+     * @param row		行数
+     * @param col		列数
+     */
+    GameScene.prototype.newCoin = function (x, height,row, col) {
+        var w = 21;
+        var h = 34;
+        var wGap = 10;
+        var hGap = 10;
+
+        for(var i=0;i<row;i++){
+            for(var j=0;j<col;j++){
+                var coin = new Ycc.UI.Image({
+                    rect:new Ycc.Math.Rect(x+(w+wGap)*j,stageH-height-h*i,w,h),
+                    res:images.coin100,
+                    fillMode:'scale',
+                    name:'coin'
+                });
+
+                this.layer.addUI(coin);
+                // 绑定至物理引擎
+                var rect = coin.rect,ui = coin;
+                this.bindMatterBodyWithUI(Matter.Bodies.rectangle(rect.x+rect.width/2,rect.y+rect.height/2,rect.width,rect.height,{
+                    isStatic:true,
+                    friction:0,
+                    frictionStatic:0,
+                    frictionAir:0,
+                    restitution:0,
+                    label:"coin",
+                    collisionFilter:{
+                        group:-1
+                    }
+                }),ui);
+                Matter.World.add(engine.world,this.getMatterBodyFromUI(ui));
+                rect = null;ui=null;
+
+            }
+
+
+        }
+
+    };
+
+
     /**
      * 在横坐标x处创建一个限制
      * @param x
@@ -124,7 +172,10 @@
 			frictionStatic:0,
 			frictionAir:0,
 			restitution:0,
-			label:"Mario"
+			label:"Mario",
+            collisionFilter:{
+                group:-1
+            }
 		}),ui);
 		Matter.World.add(engine.world,this.getMatterBodyFromUI(ui));
 		rect = null;ui=null;
