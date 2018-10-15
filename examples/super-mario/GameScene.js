@@ -75,7 +75,7 @@ GameScene.prototype.init = function () {
  */
 GameScene.prototype.createCoinUI = function(){
     var coin = new Ycc.UI.Image({
-        rect:new Ycc.Math.Rect(stageW-50,10,10,15),
+        rect:new Ycc.Math.Rect(stageW-100,10,10,15),
         res:images.coin100,
         fillMode:'scale',
         name:'coinUI'
