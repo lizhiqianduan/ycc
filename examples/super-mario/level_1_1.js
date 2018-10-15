@@ -12,8 +12,9 @@
 		// 创建路面
 		this.newGround(0,stageW,200);
 		// 创建一堵墙
-		this.newWall(300,stageH-300);
+		// this.newWall(300,400);
 		
+		this.newWallSet(100,1,6,330);
 	};
 
 	

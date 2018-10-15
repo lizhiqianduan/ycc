@@ -4609,11 +4609,12 @@
 	 * @param option	{object}		所有可配置的配置项
 	 * @param option.rect	{Ycc.Math.Rect}	容纳区。会根据属性设置动态修改。
 	 * @param option.fillMode=none {string} 填充方式
-	 * 		<br> none -- 无填充方式。左上角对齐，超出隐藏，不修改rect大小。
-	 * 		<br> repeat -- 重复。左上角对齐，重复平铺图片，不修改rect大小，超出隐藏。
-	 * 		<br> scale -- 缩放。左上角对齐，缩放至整个rect区域，不修改rect大小。
-	 * 		<br> auto -- 自动。左上角对齐，rect大小自动适配图片。若图片超出rect，会动态修改rect大小。
-	 * 		<br> scale9Grid -- 9宫格模式填充。左上角对齐，中间区域将拉伸，不允许图片超出rect区域大小，不会修改rect大小。
+	 * 		<br> none 			-- 无填充方式。左上角对齐，超出隐藏，不修改rect大小。
+	 * 		<br> repeat 		-- 重复。左上角对齐，重复平铺图片，不修改rect大小，超出隐藏。
+	 * 		<br> scale 			-- 缩放。左上角对齐，缩放至整个rect区域，不修改rect大小。
+	 * 		<br> scaleRepeat 	-- 先缩放再重复。左上角对齐，缩放至某个rect区域，再重复填充整个rect区域，不修改rect大小。
+	 * 		<br> auto 			-- 自动。左上角对齐，rect大小自动适配图片。若图片超出rect，会动态修改rect大小。
+	 * 		<br> scale9Grid 	-- 9宫格模式填充。左上角对齐，中间区域将拉伸，不允许图片超出rect区域大小，不会修改rect大小。
 	 * @param option.res	{Image}		需要填充的图片资源。注：必须已加载完成。
 	 * @param option.mirror	{Number}	将图片镜像绘制方式
 	 * 		<br> 0		--		无
@@ -4660,6 +4661,12 @@
 		 * @type {Ycc.Math.Rect}
 		 */
 		this.scale9GridRect=null;
+		
+		/**
+		 * 缩放重复模式下，原始图片的缩放区域，当且仅当fillMode为scaleRepeat有效。
+		 * @type {null}
+		 */
+		this.scaleRepeatRect = null;
 		
 
 		this.extend(option);
@@ -4710,6 +4717,8 @@
 		
 		var rect = this.getAbsolutePosition();//this.rect;
 		var img = this.res;
+		// 局部变量
+		var i,j,wCount,hCount,xRest,yRest;
 		
 		this._processMirror(rect);
 		if(this.fillMode === "none")
@@ -4720,13 +4729,13 @@
 			this.ctx.drawImage(this.res,0,0,img.width,img.height,rect.x,rect.y,rect.width,rect.height);
 		}else if(this.fillMode === "repeat"){
 			// x,y方向能容纳的img个数
-			var wCount = parseInt(rect.width/img.width)+1;
-			var hCount = parseInt(rect.height/img.height)+1;
+			wCount = parseInt(rect.width/img.width)+1;
+			hCount = parseInt(rect.height/img.height)+1;
 
-			for(var i=0;i<wCount;i++){
-				for(var j=0;j<hCount;j++){
-					var xRest = img.width;
-					var yRest = img.height;
+			for(i=0;i<wCount;i++){
+				for(j=0;j<hCount;j++){
+					xRest = img.width;
+					yRest = img.height;
 					if(i===wCount-1)
 						xRest = rect.width-i*img.width;
 					if(j===hCount-1)
@@ -4735,6 +4744,26 @@
 						0,0,
 						xRest,yRest,
 						rect.x+img.width*i,rect.y+img.height*j,
+						xRest,yRest);
+				}
+			}
+		}else if(this.fillMode === "scaleRepeat"){
+			// x,y方向能容纳的img个数
+			wCount = parseInt(rect.width/this.scaleRepeatRect.width)+1;
+			hCount = parseInt(rect.height/this.scaleRepeatRect.height)+1;
+			
+			for(i=0;i<wCount;i++){
+				for(j=0;j<hCount;j++){
+					xRest = this.scaleRepeatRect.width;
+					yRest = this.scaleRepeatRect.height;
+					if(i===wCount-1)
+						xRest = rect.width-i*this.scaleRepeatRect.width;
+					if(j===hCount-1)
+						yRest = rect.height-j*this.scaleRepeatRect.height;
+					this.ctx.drawImage(this.res,
+						0,0,
+						img.width,img.height,
+						rect.x+this.scaleRepeatRect.width*i,rect.y+this.scaleRepeatRect.height*j,
 						xRest,yRest);
 				}
 			}
