@@ -57,6 +57,8 @@ GameScene.prototype.init = function () {
 	this['level_'+this.gameLevel] && this['level_'+this.gameLevel]();
 	
     this.collisionListenerInit();
+//    audios.bgm.currentTime=0;
+//    audios.bgm.play();
 };
 
 /**
@@ -424,6 +426,8 @@ GameScene.prototype.marioStayingOnWallCompute = function () {
 GameScene.prototype.jumpIsPressingCompute = function () {
 	if(this.jumpIsPressing && this.marioStayingOnWall){
 		Matter.Body.setVelocity(this.getMatterBodyFromUI(this.mario), {x:0,y:-10});
+        audios.jump.currentTime=0;
+        audios.jump.play();
 		this.jumpIsPressing = false;
 	}else{
 		this.jumpIsPressing = false;

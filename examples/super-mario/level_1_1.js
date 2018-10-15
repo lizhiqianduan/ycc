@@ -12,10 +12,10 @@
 
         this.newBounds(8);
 
-        this.newBounds(180);
+//        this.newBounds(180);
 
 		// 创建路面
-		this.newGround(0,stageW*20,200);
+		this.newGround(0,stageW*2,200);
 
 		// 创建一堵墙
 		this.newWall(100,330,2,6);

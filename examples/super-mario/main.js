@@ -21,6 +21,8 @@ var stageW = ycc.getStageWidth();
 var stageH = ycc.getStageHeight();
 // 所有的图片资源
 var images = null;
+// 所以音频资源
+var audios = null;
 // 当前场景
 var currentScene = null;
 // loading窗
@@ -43,11 +45,23 @@ ycc.loader.loadResOneByOne([
 	{name:"marioJump",url:"./images/mario-jump.png"},
 	{name:"marioDown",url:"./images/mario-down.png"},
 ],function (lise,imgs) {
-	console.log(imgs,222);
-	images = imgs;
-	loading.hidden();
-	currentScene = new GameScene();
-	ycc.layerManager.reRenderAllLayerToStage();
+
+    ycc.loader.loadResOneByOne([
+        {name:"bgm",type:"audio",url:"./audios/bgm.mp3"},
+        {name:"jump",type:"audio",url:"./audios/jump.mp3"},
+        {name:"touchWall",type:"audio",url:"./audios/touchWall.mp3"},
+        {name:"dead1",type:"audio",url:"./audios/dead1.mp3"},
+        {name:"dead2",type:"audio",url:"./audios/dead2.mp3"},
+    ],function (lise,musics) {
+        console.log(imgs,222);
+        console.log(musics,333);
+        images = imgs;
+        audios = musics;
+        loading.hidden();
+        currentScene = new GameScene();
+        ycc.layerManager.reRenderAllLayerToStage();
+    });
+
 });
 
 // 开启动画，每帧都更新场景
