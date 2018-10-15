@@ -552,11 +552,20 @@ GameScene.prototype.update = function () {
 	
 	
 	// 不在空中的下蹲不能控制人物左右移动
+	// @todo 控制力度、刹车图片替换
 	if(!(this.marioStayingOnWall&&this.downIsPressing)) {
-		if(this.direction==='left')
-			Matter.Body.setPosition(marioBody, {x:marioBodyPosition.x-1,y:marioBodyPosition.y});
-		if(this.direction==='right')
-			Matter.Body.setPosition(marioBody, {x:marioBodyPosition.x+1,y:marioBodyPosition.y});
+		if(Math.abs(marioBody.velocity.x)<5){
+			if(this.direction==='left'){
+				// Matter.Body.applyForce(marioBody,{x:0,y:0},{x:-0.001,y:0});
+				Matter.Body.setPosition(marioBody, {x:marioBodyPosition.x-1,y:marioBodyPosition.y});
+			}
+			if(this.direction==='right'){
+				// Matter.Body.applyForce(marioBody,marioBodyPosition,{x:0.001,y:0});
+				Matter.Body.setPosition(marioBody, {x:marioBodyPosition.x+1,y:marioBodyPosition.y});
+			}
+		}else{
+			Matter.Body.applyForce(marioBody,marioBodyPosition,{x:0,y:0});
+		}
 	}
 
 	
