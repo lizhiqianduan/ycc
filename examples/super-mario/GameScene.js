@@ -34,8 +34,8 @@ function GameScene(){
 	// 物理引擎中的物体
 	this.bodies = null;
 	
-	// 人物正在接触的物体
-	this.marioContactWith = null;
+	// 人物正在接触的物体数组
+	this.marioContactWith = [];
 	
 	// 人物是否正站立在墙体上
 	this.marioStayingOnWall = false;
@@ -323,7 +323,7 @@ GameScene.prototype.debug = function () {
 GameScene.prototype.collisionListenerInit = function () {
 	var self = this;
 	
-	Matter.Events.on(engine,'collisionStart',function (event) {
+	/*Matter.Events.on(engine,'collisionStart',function (event) {
 		var pair = event.pairs[0];
 		var mario = getMarioFromPair(pair);
 		var other = getAnotherBodyFromPair(pair,mario);
@@ -331,16 +331,21 @@ GameScene.prototype.collisionListenerInit = function () {
 		if(mario&&other){
 			self.marioContactWith = other;
 		}
-	});
+	});*/
 
 	Matter.Events.on(engine,'collisionEnd',function (event) {
-		var pair = event.pairs[0];
-		var mario = getMarioFromPair(pair);
-		var other = getAnotherBodyFromPair(pair,mario);
-		
-		if(mario&&other){
-			self.marioContactWith = null;
-		}
+
+        for(var i=0;i<event.pairs.length;i++){
+            var pair = event.pairs[i];
+            //console.log(i,pair.bodyA.label,pair.bodyB.label)
+            var mario = getMarioFromPair(pair);
+            var other = getAnotherBodyFromPair(pair,mario);
+
+            if(mario&&other){
+                var index=self.marioContactWith.indexOf(other);
+                index!==-1&&self.marioContactWith.splice(index,1);
+            }
+        }
 	});
 	
 	
@@ -351,7 +356,8 @@ GameScene.prototype.collisionListenerInit = function () {
 			var other = getAnotherBodyFromPair(pair,mario);
 			
 			if(mario&&other){
-				self.marioContactWith = other;
+                var index=self.marioContactWith.indexOf(other);
+                index===-1&&self.marioContactWith.push(other);
 			}
 		}
 	});
@@ -393,15 +399,22 @@ GameScene.prototype.isFighting = function(){
  * 并设置属性marioStayingOnWall
  */
 GameScene.prototype.marioStayingOnWallCompute = function () {
-	if(this.marioContactWith && ['wall','ground'].indexOf(this.marioContactWith.label)!==-1){
-		var marioRect = this.mario.rect;
-		var wallRect = this.getUIFromMatterBody(this.marioContactWith).rect;
-		this.marioStayingOnWall = parseInt(marioRect.y+marioRect.height)<=wallRect.y
-			&& marioRect.x+marioRect.width>=wallRect.x
-			&& marioRect.x<wallRect.x+wallRect.width;
-	}else{
-		this.marioStayingOnWall = false;
-	}
+    for(var i=0;i<this.marioContactWith.length;i++){
+        var body = this.marioContactWith[i];
+        if(['wall','ground'].indexOf(body.label)!==-1){
+            var marioRect = this.mario.rect;
+            var wallRect = this.getUIFromMatterBody(body).rect;
+            this.marioStayingOnWall = parseInt(marioRect.y+marioRect.height)<=wallRect.y
+                && marioRect.x+marioRect.width>=wallRect.x
+                && marioRect.x<wallRect.x+wallRect.width;
+
+            // 如果处于站立状态，立即中断循环
+            if(this.marioStayingOnWall) return;
+        }
+    }
+
+    this.marioStayingOnWall = false;
+
 };
 
 /**

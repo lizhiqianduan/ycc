@@ -10,7 +10,9 @@
 
 	GameScene.prototype.level_1_1 = function () {
 
-        this.newBounds(0);
+        this.newBounds(8);
+
+        this.newBounds(180);
 
 		// 创建路面
 		this.newGround(0,stageW*20,200);
