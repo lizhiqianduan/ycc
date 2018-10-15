@@ -15,9 +15,6 @@ function GameScene(){
 	
 	// mario的UI
 	this.mario = null;
-
-    // 地面的UI
-    this.ground = null;
 	
 	// matter引擎
 	this.engine = null;
@@ -40,19 +37,21 @@ function GameScene(){
 	// 人物是否正站立在墙体上
 	this.marioStayingOnWall = false;
 	
+	// 当前游戏关卡
+	this.gameLevel = '1_1';
+	
 	this.init();
 	
 }
 
 // 初始化
 GameScene.prototype.init = function () {
-    this.createGround();
 	this.createDirectionBtn();
 	this.createSkillBtn();
 	this.createMario();
-
-    // 创建一堵墙
-    this.newWall(300,stageH-300);
+	
+	// 通过关卡创建当前关卡的UI
+	this['level_'+this.gameLevel] && this['level_'+this.gameLevel]();
 	
     this.collisionListenerInit();
 };
@@ -270,60 +269,61 @@ GameScene.prototype.createMario = function () {
 	rect = null;ui=null;
 };
 
-/**
- * 创建路面
- */
-GameScene.prototype.createGround = function () {
-    var wallHeight = 200;
-	var ground = new Ycc.UI.Image({
-		rect:new Ycc.Math.Rect(0,stageH-wallHeight,stageW,wallHeight),
-		res:images.wall,
-		fillMode:'repeat',
-		name:'ground'
-	});
-	this.layer.addUI(ground);
-	this.ground = ground;
-
-	// 绑定至物理引擎
-	var rect = ground.rect,ui = ground;
-	this.bindMatterBodyWithUI(Matter.Bodies.rectangle(rect.x+rect.width/2,rect.y+rect.height/2,rect.width,rect.height,{
-        isStatic:true,
-        label:"ground",
-        // 摩擦力0
-        friction:0
-    }),ui);
-	Matter.World.add(engine.world,this.getMatterBodyFromUI(ui));
-	rect = null;ui=null;
-
-};
-
-
-/**
- * 新建墙
- * @param x
- * @param y
- */
-GameScene.prototype.newWall = function(x,y){
-    var w=20,
-        h=20;
-    var wall = new Ycc.UI.Image({
-        rect:new Ycc.Math.Rect(x,y,w,h),
-        res:images.wall,
-        fillMode:'scale',
-        name:'wall'
-    });
-    this.layer.addUI(wall);
-
-    // 绑定至物理引擎
-    var rect = wall.rect,ui = wall;
-    this.bindMatterBodyWithUI(Matter.Bodies.rectangle(rect.x+rect.width/2,rect.y+rect.height/2,rect.width,rect.height,{
-        isStatic:true,
-        friction:0,
-        label:"wall"
-    }),ui);
-    Matter.World.add(engine.world,this.getMatterBodyFromUI(ui));
-    rect = null;ui=null;
-};
+// /**
+//  * 创建路面
+//  * @param startX 	路面的起点
+//  * @param width		路面宽度（长）
+//  * @param height	路面高度
+//  */
+// GameScene.prototype.newGround = function (startX,width,height) {
+// 	var ground = new Ycc.UI.Image({
+// 		rect:new Ycc.Math.Rect(startX,stageH-height,width,height),
+// 		res:images.wall,
+// 		fillMode:'repeat',
+// 		name:'ground'
+// 	});
+// 	this.layer.addUI(ground);
+//
+// 	// 绑定至物理引擎
+// 	var rect = ground.rect,ui = ground;
+// 	this.bindMatterBodyWithUI(Matter.Bodies.rectangle(rect.x+rect.width/2,rect.y+rect.height/2,rect.width,rect.height,{
+//         isStatic:true,
+//         label:"ground",
+//         // 摩擦力0
+//         friction:0
+//     }),ui);
+// 	Matter.World.add(engine.world,this.getMatterBodyFromUI(ui));
+// 	rect = null;ui=null;
+//
+// };
+//
+//
+// /**
+//  * 新建墙
+//  * @param x
+//  * @param y
+//  */
+// GameScene.prototype.newWall = function(x,y){
+//     var w=20,
+//         h=20;
+//     var wall = new Ycc.UI.Image({
+//         rect:new Ycc.Math.Rect(x,y,w,h),
+//         res:images.wall,
+//         fillMode:'scale',
+//         name:'wall'
+//     });
+//     this.layer.addUI(wall);
+//
+//     // 绑定至物理引擎
+//     var rect = wall.rect,ui = wall;
+//     this.bindMatterBodyWithUI(Matter.Bodies.rectangle(rect.x+rect.width/2,rect.y+rect.height/2,rect.width,rect.height,{
+//         isStatic:true,
+//         friction:0,
+//         label:"wall"
+//     }),ui);
+//     Matter.World.add(engine.world,this.getMatterBodyFromUI(ui));
+//     rect = null;ui=null;
+// };
 
 
 /**
