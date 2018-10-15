@@ -111,14 +111,12 @@
                 var rect = coin.rect,ui = coin;
                 this.bindMatterBodyWithUI(Matter.Bodies.rectangle(rect.x+rect.width/2,rect.y+rect.height/2,rect.width,rect.height,{
                     isStatic:true,
+                    isSensor:true,
                     friction:0,
                     frictionStatic:0,
                     frictionAir:0,
                     restitution:0,
                     label:"coin",
-                    collisionFilter:{
-                        group:-1
-                    }
                 }),ui);
                 Matter.World.add(engine.world,this.getMatterBodyFromUI(ui));
                 rect = null;ui=null;
@@ -173,9 +171,6 @@
 			frictionAir:0,
 			restitution:0,
 			label:"Mario",
-            collisionFilter:{
-                group:-1
-            }
 		}),ui);
 		Matter.World.add(engine.world,this.getMatterBodyFromUI(ui));
 		rect = null;ui=null;

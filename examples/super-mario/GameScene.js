@@ -497,6 +497,24 @@ GameScene.prototype.marioImageResCompute = function () {
 	
 };
 
+/**
+ * 处理Mario穿透的金币等物品
+ */
+GameScene.prototype.marioContactWithCompute = function(){
+    var self = this;
+    var temp = [];
+    this.marioContactWith.forEach(function(body){
+        if(body.label==='coin'){
+            audios.touchCoin.currentTime=0;
+            audios.touchCoin.play();
+            self.layer.removeUI(self.getUIFromMatterBody(body));
+            Matter.World.remove(engine.world, body)
+        }else{
+            temp.push(body);
+        }
+    })
+};
+
 // 每帧的更新函数
 GameScene.prototype.update = function () {
 	var marioBody = this.getMatterBodyFromUI(this.mario);
@@ -514,6 +532,9 @@ GameScene.prototype.update = function () {
 
 	// 判断当前帧应该显示的Mario图片
 	this.marioImageResCompute();
+
+    // 处理Mario接触的金币等
+    this.marioContactWithCompute();
 	
 
 	

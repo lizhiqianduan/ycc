@@ -51,6 +51,7 @@ ycc.loader.loadResOneByOne([
         {name:"bgm",type:"audio",url:"./audios/bgm.mp3"},
         {name:"jump",type:"audio",url:"./audios/jump.mp3"},
         {name:"touchWall",type:"audio",url:"./audios/touchWall.mp3"},
+        {name:"touchCoin",type:"audio",url:"./audios/touchCoin.mp3"},
         {name:"dead1",type:"audio",url:"./audios/dead1.mp3"},
         {name:"dead2",type:"audio",url:"./audios/dead2.mp3"},
     ],function (lise,musics) {
