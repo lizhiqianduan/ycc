@@ -244,30 +244,6 @@ GameScene.prototype.createSkillBtn = function () {
 };
 
 
-/**
- * 生成马里奥
- */
-GameScene.prototype.createMario = function () {
-	this.mario = new Ycc.UI.ImageFrameAnimation({
-		rect:new Ycc.Math.Rect(stageW/2-18,stageH/2-images.mario.naturalHeight,18*2,images.mario.naturalHeight*2),
-		res:images.mario,
-		firstFrameRect:new Ycc.Math.Rect(0,0,18,images.mario.naturalHeight),
-		frameRectCount:3,
-		//autoplay:true,
-		frameSpace:8
-	});
-	this.mario._fightFrameCount=0;
-	this.layer.addUI(this.mario);
-	
-	// 绑定至物理引擎
-	var rect = this.mario.rect,ui=this.mario;
-	this.bindMatterBodyWithUI(Matter.Bodies.rectangle(rect.x+rect.width/2,rect.y+rect.height/2,rect.width,rect.height,{
-        friction:0,
-        label:"Mario"
-    }),ui);
-	Matter.World.add(engine.world,this.getMatterBodyFromUI(ui));
-	rect = null;ui=null;
-};
 
 
 /**
@@ -448,6 +424,7 @@ GameScene.prototype.marioImageResCompute = function () {
 
 	// 人物处于空中
 	else if(!this.marioStayingOnWall){
+		console.log('人物处于空中');
 		this.mario.res = this.downIsPressing?images.marioDown:images.marioJump;
 		this.mario.frameRectCount = 1;
 	}
@@ -500,24 +477,40 @@ GameScene.prototype.update = function () {
 	this.marioImageResCompute();
 	
 	
+	if(marioBody.velocity.y<0){
+		marioBody.restitution=1;
+	}else{
+		marioBody.restitution=0;
+	}
+	
 	var marioBodyPosition = marioBody.position;
 	
 	
 	// 不在空中的下蹲不能控制人物左右移动
 	// @todo 控制力度、刹车图片替换
 	if(!(this.marioStayingOnWall&&this.downIsPressing)) {
-		if(Math.abs(marioBody.velocity.x)<5){
+		
+		if(this.direction==='left'){
+			// Matter.Body.applyForce(marioBody,{x:0,y:0},{x:-0.001,y:0});
+			Matter.Body.setPosition(marioBody, {x:marioBodyPosition.x-1,y:marioBody.velocity.y<0?Math.ceil(marioBodyPosition.y):marioBodyPosition.y});
+		}
+		if(this.direction==='right'){
+			// Matter.Body.applyForce(marioBody,marioBodyPosition,{x:0.001,y:0});
+			Matter.Body.setPosition(marioBody, {x:marioBodyPosition.x+1,y:marioBody.velocity.y<0?Math.ceil(marioBodyPosition.y):marioBodyPosition.y});
+		}
+
+		/*if(Math.abs(marioBody.velocity.x)<5){
 			if(this.direction==='left'){
 				// Matter.Body.applyForce(marioBody,{x:0,y:0},{x:-0.001,y:0});
-				Matter.Body.setPosition(marioBody, {x:marioBodyPosition.x-1,y:Math.floor(marioBodyPosition.y)});
+				Matter.Body.setPosition(marioBody, {x:marioBodyPosition.x-1,y:(marioBodyPosition.y)});
 			}
 			if(this.direction==='right'){
 				// Matter.Body.applyForce(marioBody,marioBodyPosition,{x:0.001,y:0});
-				Matter.Body.setPosition(marioBody, {x:marioBodyPosition.x+1,y:Math.floor(marioBodyPosition.y)});
+				Matter.Body.setPosition(marioBody, {x:marioBodyPosition.x+1,y:(marioBodyPosition.y)});
 			}
 		}else{
 			Matter.Body.applyForce(marioBody,marioBodyPosition,{x:0,y:0});
-		}
+		}*/
 	}
 
 	

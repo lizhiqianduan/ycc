@@ -10,11 +10,10 @@
 
 	GameScene.prototype.level_1_1 = function () {
 		// 创建路面
-		this.newGround(0,stageW,200);
+		this.newGround(0,stageW*20,200);
+
 		// 创建一堵墙
-		// this.newWall(300,400);
-		
-		this.newWallSet(100,1,6,330);
+		this.newWall(100,330,2,6);
 	};
 
 	
