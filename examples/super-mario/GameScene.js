@@ -151,10 +151,14 @@ GameScene.prototype.createDirectionBtn = function () {
 		
 	}));
 
-
+    // 按键`上`是否是抬起状态
+    var upIsUp = true;
     window.onkeydown = function(e){
         if(e.keyCode===38){
-            self.jumpIsPressing = true;
+            if(upIsUp){
+                upIsUp=false;
+                self.jumpIsPressing = true;
+            }
         }
         if(e.keyCode===37){
             self.mario.mirror=1;
@@ -182,13 +186,18 @@ GameScene.prototype.createDirectionBtn = function () {
             self.mario._fightFrameCount=ycc.ticker.frameAllCount;
         }
 
-        if(e.keyCode===67)
-            self.jumpIsPressing = true;
+        if(e.keyCode===67){
+            if(upIsUp){
+                upIsUp=false;
+                self.jumpIsPressing = true;
+            }
+        }
 
     };
 
     window.onkeyup = function(e){
         if(e.keyCode===38){
+            upIsUp=true;
             self.jumpIsPressing = false;
         }
         if(e.keyCode===37){
@@ -202,6 +211,10 @@ GameScene.prototype.createDirectionBtn = function () {
         if(e.keyCode===40){
             self.downIsPressing = false;
             self.downTouchEndFlag = true;
+        }
+        if(e.keyCode===67){
+            upIsUp=true;
+            self.jumpIsPressing = false;
         }
     };
 
@@ -384,7 +397,7 @@ GameScene.prototype.marioStayingOnWallCompute = function () {
 		var marioRect = this.mario.rect;
 		var wallRect = this.getUIFromMatterBody(this.marioContactWith).rect;
 		this.marioStayingOnWall = parseInt(marioRect.y+marioRect.height)<=wallRect.y
-			&& marioRect.x+marioRect.width>wallRect.x
+			&& marioRect.x+marioRect.width>=wallRect.x
 			&& marioRect.x<wallRect.x+wallRect.width;
 	}else{
 		this.marioStayingOnWall = false;
