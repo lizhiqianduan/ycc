@@ -9,6 +9,9 @@
 (function (GameScene) {
 
 	GameScene.prototype.level_1_1 = function () {
+
+        this.newBounds(0);
+
 		// 创建路面
 		this.newGround(0,stageW*20,200);
 

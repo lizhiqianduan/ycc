@@ -81,9 +81,22 @@
 		}
 		
 	};
-	
-	
-	
+
+
+    /**
+     * 在横坐标x处创建一个限制
+     * @param x
+     */
+	GameScene.prototype.newBounds = function(x){
+        Matter.World.add(engine.world,Matter.Bodies.rectangle(x,0,1,2*stageH,{
+            isStatic:true,
+            friction:0,
+            frictionStatic:0,
+            frictionAir:0,
+            restitution:0,
+            label:"bound"
+        }));
+    };
 	
 	
 	
