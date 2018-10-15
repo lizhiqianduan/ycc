@@ -15,6 +15,12 @@ function GameScene(){
 	
 	// mario的UI
 	this.mario = null;
+
+    // 右上角金币UI
+    this.coinUI = null;
+
+    // 分数
+    this.score = 0;
 	
 	// matter引擎
 	this.engine = null;
@@ -52,13 +58,36 @@ GameScene.prototype.init = function () {
 	this.createDirectionBtn();
 	this.createSkillBtn();
 	this.createMario();
-	
+
+    this.createCoinUI();
+
 	// 通过关卡创建当前关卡的UI
 	this['level_'+this.gameLevel] && this['level_'+this.gameLevel]();
 	
     this.collisionListenerInit();
 //    audios.bgm.currentTime=0;
 //    audios.bgm.play();
+};
+
+
+/**
+ * 生成金币UI
+ */
+GameScene.prototype.createCoinUI = function(){
+    var coin = new Ycc.UI.Image({
+        rect:new Ycc.Math.Rect(stageW-50,10,10,15),
+        res:images.coin100,
+        fillMode:'scale',
+        name:'coinUI'
+    });
+    var coinText = new Ycc.UI.SingleLineText({
+        content:"× 0",
+        rect:new Ycc.Math.Rect(15,0,40,20),
+        color:'yellow'
+    });
+    coin.addChild(coinText);
+    this.btnLayer.addUI(coin);
+    this.coinUI = coinText;
 };
 
 /**
@@ -508,7 +537,11 @@ GameScene.prototype.marioContactWithCompute = function(){
             audios.touchCoin.currentTime=0;
             audios.touchCoin.play();
             self.layer.removeUI(self.getUIFromMatterBody(body));
-            Matter.World.remove(engine.world, body)
+            Matter.World.remove(engine.world, body);
+            // 金币+1
+            self.score++;
+            self.coinUI.content="× "+self.score;
+
         }else{
             temp.push(body);
         }
