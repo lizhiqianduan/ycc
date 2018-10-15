@@ -574,8 +574,12 @@ GameScene.prototype.update = function () {
 	// 更新人物位置
 	this.mario.rect.x=marioBody.vertices[0].x;
 	this.mario.rect.y=marioBody.vertices[0].y;
- 
-
+	
+	// 场景的移动
+	if(this.mario.rect.x-stageW/2>0){
+		// 初始layer的x为0
+		this.layer.x = -(this.mario.rect.x-stageW/2);
+	}
 
 
 
