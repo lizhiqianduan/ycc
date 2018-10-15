@@ -329,7 +329,7 @@ GameScene.prototype.getUIFromMatterBody = function (body) {
  * 调试
  */
 GameScene.prototype.debug = function () {
-	var bodies = Matter.Composite.allBodies(engine.world);
+	/*var bodies = Matter.Composite.allBodies(engine.world);
 	var context = ycc.ctx;
 	context.save();
 	context.beginPath();
@@ -344,7 +344,7 @@ GameScene.prototype.debug = function () {
 	context.lineWidth = 2;
 	context.strokeStyle = '#999';
 	context.stroke();
-	context.restore();
+	context.restore();*/
 };
 
 
@@ -548,8 +548,23 @@ GameScene.prototype.marioContactWithCompute = function(){
     })
 };
 
+/***
+ * 判断游戏结束
+ */
+GameScene.prototype.gameOverCompute = function(){
+
+    if(this.mario.rect.y>stageH+100){
+        audios.dead2.play();
+        currentScene=null;
+        return true;
+    }
+    return false;
+};
+
 // 每帧的更新函数
 GameScene.prototype.update = function () {
+    if(this.gameOverCompute()) return;
+
 	var marioBody = this.getMatterBodyFromUI(this.mario);
     // 强制设置Mario的旋转角度为0，防止倾倒
     Matter.Body.setAngle(marioBody,0);
@@ -577,15 +592,15 @@ GameScene.prototype.update = function () {
 	// 不在空中的下蹲不能控制人物左右移动
 	// @todo 控制力度、刹车图片替换
 	if(!(this.marioStayingOnWall&&this.downIsPressing)) {
-		
-		if(this.direction==='left'){
-			// Matter.Body.applyForce(marioBody,{x:0,y:0},{x:-0.001,y:0});
-			Matter.Body.setPosition(marioBody, {x:marioBodyPosition.x-1,y:marioBodyPosition.y});
-		}
-		if(this.direction==='right'){
-			// Matter.Body.applyForce(marioBody,marioBodyPosition,{x:0.001,y:0});
-			Matter.Body.setPosition(marioBody, {x:marioBodyPosition.x+1,y:marioBodyPosition.y});
-		}
+
+            if(this.direction==='left'){
+//                Matter.Body.applyForce(marioBody,{x:0,y:0},{x:-0.001,y:0});
+                Matter.Body.setPosition(marioBody, {x:marioBodyPosition.x-2,y:marioBodyPosition.y});
+            }
+            if(this.direction==='right'){
+//                Matter.Body.applyForce(marioBody,marioBodyPosition,{x:0.001,y:0});
+                Matter.Body.setPosition(marioBody, {x:marioBodyPosition.x+2,y:marioBodyPosition.y});
+            }
 
 		/*if(Math.abs(marioBody.velocity.x)<5){
 			if(this.direction==='left'){
