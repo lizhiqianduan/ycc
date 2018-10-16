@@ -18,9 +18,8 @@
 
 		// 创建路面
         this.newGround(0,150,330);
-		this.newFlag(100,150,100);
-		// this.newBucket(100,150);
-
+		// this.newFlag(100,150,100);
+		this.newBucket(100,150);
         this.newCoin(100,300,1,4);
 
 

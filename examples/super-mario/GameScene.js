@@ -116,11 +116,11 @@ GameScene.prototype.debug = function () {
 	context.beginPath();
 	for (var i = 0; i < bodies.length; i += 1) {
 		var vertices = bodies[i].vertices;
-		context.moveTo(vertices[0].x, vertices[0].y);
+		context.moveTo(vertices[0].x+this.layer.x, vertices[0].y);
 		for (var j = 1; j < vertices.length; j += 1) {
-			context.lineTo(vertices[j].x, vertices[j].y);
+			context.lineTo(vertices[j].x+this.layer.x, vertices[j].y);
 		}
-		context.lineTo(vertices[0].x, vertices[0].y);
+		context.lineTo(vertices[0].x+this.layer.x, vertices[0].y);
 	}
 	context.lineWidth = 2;
 	context.strokeStyle = '#999';
