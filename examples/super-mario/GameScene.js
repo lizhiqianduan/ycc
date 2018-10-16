@@ -61,14 +61,15 @@ GameScene.prototype.init = function () {
 	this.createGameOverLayer();
 	this.createDirectionBtn();
 	this.createSkillBtn();
-	this.createMario();
 
     this.createCoinUI();
 
 	// 通过关卡创建当前关卡的UI
 	this['level_'+this.gameLevel] && this['level_'+this.gameLevel]();
+	// 先创建场景，再创建Mario，防止场景覆盖Mario
+	this.createMario();
 	
-    this.collisionListenerInit();
+	this.collisionListenerInit();
 //    audios.bgm.currentTime=0;
 //    audios.bgm.play();
 };
@@ -281,12 +282,7 @@ GameScene.prototype.marioImageResCompute = function () {
 			this.updateMarioBodyVerticesByMarioRect();
             this.downTouchEndFlag=false;
         }
-		
-        // 如果人物站立在旗子上
-        /*if(this.marioContactWith && this.marioContactWith[0] && this.marioContactWith[0].label==='flag'){
-			// todo 此处需要替换图片
-		}*/
-  
+		  
 		// 赋值序列帧动画第一帧的图片高度
 		this.mario.firstFrameRect.height = this.mario.res.naturalHeight;
 	}
@@ -295,6 +291,13 @@ GameScene.prototype.marioImageResCompute = function () {
 	else if(!this.marioStayingOnWall){
 		this.mario.res = this.downIsPressing?images.marioDown:images.marioJump;
 		this.mario.frameRectCount = 1;
+		
+		// 人物碰到了旗子
+		// todo 人物碰到旗子后，表示游戏胜利，此时应禁止操作
+		if(this.marioContactWith && this.marioContactWith[0] && this.marioContactWith[0].label==='flag'){
+			this.mario.res = images.marioTouchFlag;
+		}
+		
 	}
 	
 	// 人物处于下蹲状态

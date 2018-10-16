@@ -12,6 +12,7 @@
 
 	GameScene.prototype.level_1_1 = function () {
 
+	    // 起点
         this.newBounds(8);
 
 //        this.newBounds(180);
@@ -46,9 +47,22 @@
 
         this.newWall(1050,50,1,3);
         this.newCoin(1050,250,1,5);
-
-
-
+		
+		
+		
+		this.newWall(1200,0,2,1);
+		this.newWall(1240,0,3,1);
+		this.newWall(1280,0,4,1);
+		this.newWall(1320,0,5,1);
+		this.newWall(1360,0,6,1);
+		this.newWall(1400,0,7,1);
+  
+		// 终点
+        this.newGround(1650,150,200);
+		this.newFlag(1650,150,400);
+		
+		
+		
 	};
 
 	
