@@ -9,9 +9,6 @@
 
 (function(GameScene){
 	
-	// 一朵墙高宽
-	var wallWidth 	= 60;
-	var wallHeight 	= 20;
 	
 	
 	
@@ -54,6 +51,10 @@
 	 * @param col		列数
 	 */
 	GameScene.prototype.newWall = function (x, height,row, col) {
+		// 一朵墙高宽
+		var wallWidth 	= 40;
+		var wallHeight 	= 40;
+		
 		for(var i=0;i<row;i++){
 			var wall = new Ycc.UI.Image({
 				rect:new Ycc.Math.Rect(x,stageH-height-wallHeight*i,wallWidth*col,wallHeight),
@@ -165,13 +166,14 @@
 		
 		// 绑定至物理引擎
 		var rect = this.mario.rect,ui=this.mario;
-		this.bindMatterBodyWithUI(Matter.Bodies.rectangle(rect.x+rect.width/2,rect.y+rect.height/2,rect.width,rect.height,{
+		this.bindMatterBodyWithUI(Matter.Bodies.rectangle(rect.x+rect.width/2+8,rect.y+rect.height/2,rect.width-16,rect.height,{
 			friction:0,
 			frictionStatic:0,
 			frictionAir:0,
 			restitution:0,
 			label:"Mario",
 		}),ui);
+		this.updateMarioBodyVerticesByMarioRect();
 		Matter.World.add(engine.world,this.getMatterBodyFromUI(ui));
 		rect = null;ui=null;
 	};

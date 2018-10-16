@@ -110,7 +110,7 @@ GameScene.prototype.getUIFromMatterBody = function (body) {
  * 调试
  */
 GameScene.prototype.debug = function () {
-	/*var bodies = Matter.Composite.allBodies(engine.world);
+	var bodies = Matter.Composite.allBodies(engine.world);
 	var context = ycc.ctx;
 	context.save();
 	context.beginPath();
@@ -125,7 +125,7 @@ GameScene.prototype.debug = function () {
 	context.lineWidth = 2;
 	context.strokeStyle = '#999';
 	context.stroke();
-	context.restore();*/
+	context.restore();
 };
 
 
@@ -245,6 +245,18 @@ GameScene.prototype.jumpIsPressingCompute = function () {
 };
 
 /**
+ * 根据Mario的rect属性设置刚体的高、宽
+ */
+GameScene.prototype.updateMarioBodyVerticesByMarioRect = function () {
+	var temp = new Ycc.Math.Rect(this.mario.rect);
+	temp.x+=6;
+	temp.width-=16;
+	// 赋值刚体高、宽
+	Matter.Body.setVertices(this.getMatterBodyFromUI(this.mario),temp.getVertices());
+	temp=null;
+};
+
+/**
  * 计算Mario需要显示的图片及Mario的高度等
  */
 GameScene.prototype.marioImageResCompute = function () {
@@ -263,9 +275,8 @@ GameScene.prototype.marioImageResCompute = function () {
             // 此处重新赋值的原因在于，人物下蹲后刚体尺寸发生了变化，所以起身时需要重新计算刚体高度
             // 重新赋值高度
             this.mario.rect.height = this.mario.res.naturalHeight*2;
-            // 赋值刚体高度
-            Matter.Body.setVertices(marioBody,this.mario.rect.getVertices());
-
+            // 更新刚体的高、宽
+			this.updateMarioBodyVerticesByMarioRect();
             this.downTouchEndFlag=false;
         }
 		// 赋值序列帧动画第一帧的图片高度
@@ -292,7 +303,7 @@ GameScene.prototype.marioImageResCompute = function () {
 		// 赋值人物高度
 		this.mario.rect.height=this.mario.res.naturalHeight*2;
 		// 赋值刚体高度
-		Matter.Body.setVertices(marioBody,this.mario.rect.getVertices());
+		this.updateMarioBodyVerticesByMarioRect();
 		// 赋值序列帧动画第一帧的图片高度
 		this.mario.firstFrameRect.height = this.mario.res.naturalHeight;
 		// 重新赋值刚体位置
@@ -401,7 +412,7 @@ GameScene.prototype.update = function () {
 
 	
 	// 更新人物位置
-	this.mario.rect.x=marioBody.vertices[0].x;
+	this.mario.rect.x=marioBody.vertices[0].x-8;
 	this.mario.rect.y=marioBody.vertices[0].y;
 	
 	// 场景的移动
