@@ -213,7 +213,7 @@ GameScene.prototype.isFighting = function(){
 GameScene.prototype.marioStayingOnWallCompute = function () {
     for(var i=0;i<this.marioContactWith.length;i++){
         var body = this.marioContactWith[i];
-        if(['wall','ground','bucket'].indexOf(body.label)!==-1){
+        if(['wall','ground','bucket','flag'].indexOf(body.label)!==-1){
             var marioRect = this.mario.rect;
             var wallRect = this.getUIFromMatterBody(body).rect;
             this.marioStayingOnWall = parseInt(marioRect.y+marioRect.height)<=body.vertices[0].y
@@ -262,6 +262,8 @@ GameScene.prototype.updateMarioBodyVerticesByMarioRect = function () {
 GameScene.prototype.marioImageResCompute = function () {
 	
 	var marioBody = this.getMatterBodyFromUI(this.mario);
+	// 刚体位置
+	var pos = marioBody.position;
 	
 	// console.log(this.marioStayingOnWall,this.isFighting(),this.downIsPressing);
 	
@@ -279,6 +281,12 @@ GameScene.prototype.marioImageResCompute = function () {
 			this.updateMarioBodyVerticesByMarioRect();
             this.downTouchEndFlag=false;
         }
+		
+        // 如果人物站立在旗子上
+        /*if(this.marioContactWith && this.marioContactWith[0] && this.marioContactWith[0].label==='flag'){
+			// todo 此处需要替换图片
+		}*/
+  
 		// 赋值序列帧动画第一帧的图片高度
 		this.mario.firstFrameRect.height = this.mario.res.naturalHeight;
 	}
@@ -292,8 +300,6 @@ GameScene.prototype.marioImageResCompute = function () {
 	// 人物处于下蹲状态
 	else if(this.downIsPressing){
 		console.log('下蹲');
-		// 刚体位置
-		var pos = marioBody.position;
 		
 		this.mario.res = images.marioDown;
 		this.mario.frameRectCount = 1;
@@ -409,9 +415,8 @@ GameScene.prototype.update = function () {
 	}
 
 	
-
-	
-	// 更新人物位置
+	// 默认情况、更新人物位置
+	// 减8是因为Mario图片比实际碰撞body偏大
 	this.mario.rect.x=marioBody.vertices[0].x-8;
 	this.mario.rect.y=marioBody.vertices[0].y;
 	

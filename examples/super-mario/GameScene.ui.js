@@ -197,7 +197,7 @@
 		
 		// 绑定至物理引擎
 		var rect = image.rect,ui = image;
-		this.bindMatterBodyWithUI(Matter.Bodies.rectangle(rect.x+16,rect.y+rect.height/2,1,rect.height,{
+		this.bindMatterBodyWithUI(Matter.Bodies.rectangle(rect.x+16,rect.y+rect.height/2,1,9999,{
 			isStatic:true,
 			label:"flag",
 			friction:0,
