@@ -79,6 +79,7 @@ function projectInit() {
 		{name:"marioDown",url:"./images/mario-down.png"},
 		{name:"coin100",url:"./images/coin100.jpg"},
 		{name:"bucket",url:"./images/bucket.png"},
+		{name:"flag",url:"./images/flag.png"},
 	],function (lise,imgs) {
 		
 		ycc.loader.loadResOneByOne([

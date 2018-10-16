@@ -174,7 +174,40 @@
 		Matter.World.add(engine.world,this.getMatterBodyFromUI(ui));
 		rect = null;ui=null;
 	};
-
+	
+	/**
+	 * 新建一个旗子
+	 * @param startX 				旗子的左侧起点
+	 * @param height				旗子下边缘距离屏幕最下方的高度
+	 * @param [flagHeight]			旗子的高度
+	 */
+	GameScene.prototype.newFlag = function (startX,height,flagHeight) {
+		
+		var objectHeight = flagHeight||images.flag.naturalHeight;
+		var objectWidth = images.flag.naturalWidth;
+		
+		var image = new Ycc.UI.Image({
+			rect:new Ycc.Math.Rect(startX,stageH-height-objectHeight,objectWidth,objectHeight),
+			res:images.flag,
+			fillMode:'scale9Grid',
+			scale9GridRect:new Ycc.Math.Rect(16,78,8,14),
+			name:'flag',
+		});
+		this.layer.addUI(image);
+		
+		// 绑定至物理引擎
+		var rect = image.rect,ui = image;
+		this.bindMatterBodyWithUI(Matter.Bodies.rectangle(rect.x+16,rect.y+rect.height/2,1,rect.height,{
+			isStatic:true,
+			label:"flag",
+			friction:0,
+			frictionStatic:0,
+			frictionAir:0,
+			restitution:0
+		}),ui);
+		Matter.World.add(engine.world,this.getMatterBodyFromUI(ui));
+		rect = null;ui=null;
+	};
 
     /**
      * 在横坐标x处创建一个限制
