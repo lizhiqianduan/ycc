@@ -8,10 +8,13 @@
 function GameScene(){
 	
 	// 游戏进行中的图层
-	this.layer = ycc.layerManager.newLayer({enableEventManager:true});
+	this.layer = ycc.layerManager.newLayer({enableEventManager:true,name:'场景图层'});
 	
 	// 放置按钮的图层
 	this.btnLayer = ycc.layerManager.newLayer({enableEventManager:true,name:"按钮图层"});
+
+	// 游戏结束图层
+	this.gameOverLayer = null;
 	
 	// mario的UI
 	this.mario = null;
@@ -55,6 +58,7 @@ function GameScene(){
 
 // 初始化
 GameScene.prototype.init = function () {
+	this.createGameOverLayer();
 	this.createDirectionBtn();
 	this.createSkillBtn();
 	this.createMario();
@@ -67,229 +71,6 @@ GameScene.prototype.init = function () {
     this.collisionListenerInit();
 //    audios.bgm.currentTime=0;
 //    audios.bgm.play();
-};
-
-
-/**
- * 生成金币UI
- */
-GameScene.prototype.createCoinUI = function(){
-    var coin = new Ycc.UI.Image({
-        rect:new Ycc.Math.Rect(stageW-100,10,10,15),
-        res:images.coin100,
-        fillMode:'scale',
-        name:'coinUI'
-    });
-    var coinText = new Ycc.UI.SingleLineText({
-        content:"× 0",
-        rect:new Ycc.Math.Rect(15,0,40,20),
-        color:'yellow'
-    });
-    coin.addChild(coinText);
-    this.btnLayer.addUI(coin);
-    this.coinUI = coinText;
-};
-
-/**
- * 生成方向键
- */
-GameScene.prototype.createDirectionBtn = function () {
-	var self = this;
-	// 按钮大小
-	var btnSize = 40;
-	// 按钮之间的间隙
-	var btnSpace = 5;
-	// 按钮组距屏幕左侧的宽度
-	var marginLeft = 20;
-
-	// 按钮组距屏幕下侧的宽度
-	var marginBottom = 20;
-	
-	// 左
-	self.btnLayer.addUI(new Ycc.UI.Image({
-		rect:new Ycc.Math.Rect(marginLeft,stageH-(btnSize+marginBottom),btnSize,btnSize),
-		fillMode:'scale',
-		anchorX:btnSize/2,
-		anchorY:btnSize/2,
-		res:images.btn,
-		rotation:180,
-		ondragstart:function (e) {
-			self.mario.mirror=1;
-			self.mario.start();
-			self.direction = 'left';
-		},
-		ondragend:function (e) {
-			self.mario.stop();
-			self.direction = '';
-		}
-	}));
-	
-	// 下
-	self.btnLayer.addUI(new Ycc.UI.Image({
-		rect:new Ycc.Math.Rect(marginLeft+btnSize+btnSpace,stageH-(btnSize+marginBottom),btnSize,btnSize),
-		fillMode:'scale',
-		anchorX:btnSize/2,
-		anchorY:btnSize/2,
-		res:images.btn,
-		rotation:90,
-		ondragstart:function (e) {
-			// 如果人物不处于站立或行走状态，按下键无效
-			if(!self.marioStayingOnWall) {
-				console.log('人物当前状态不能下蹲!');
-				return;
-			}
-            self.downIsPressing = true;
-		},
-		ondragend:function (e) {
-            self.downIsPressing = false;
-            self.downTouchEndFlag = true;
-		}
-	}));
-
-	// 右
-	self.btnLayer.addUI(new Ycc.UI.Image({
-		rect:new Ycc.Math.Rect(marginLeft+btnSize*2+btnSpace*2,stageH-(btnSize+marginBottom),btnSize,btnSize),
-		fillMode:'scale',
-		anchorX:btnSize/2,
-		anchorY:btnSize/2,
-		res:images.btn,
-		rotation:0,
-		ondragstart:function (e) {
-			self.mario.mirror=0;
-			self.mario.start();
-			self.direction = 'right';
-		},
-		ondragend:function (e) {
-			self.mario.stop();
-			self.direction = '';
-		}
-		
-	}));
-	
-	
-	// 上
-	self.btnLayer.addUI(new Ycc.UI.Image({
-		rect:new Ycc.Math.Rect(marginLeft+btnSize+btnSpace,stageH-(btnSize+marginBottom)-(btnSize+btnSpace),btnSize,btnSize),
-		fillMode:'scale',
-		anchorX:btnSize/2,
-		anchorY:btnSize/2,
-		res:images.btn,
-		rotation:-90,
-        ontap:function (e) {
-			if(self.jumpIsPressing) return;
-            self.jumpIsPressing = true;
-        }
-		
-	}));
-
-    // 按键`上`是否是抬起状态
-    var upIsUp = true;
-    window.onkeydown = function(e){
-        if(e.keyCode===38){
-            if(upIsUp){
-                upIsUp=false;
-                self.jumpIsPressing = true;
-            }
-        }
-        if(e.keyCode===37){
-            self.mario.mirror=1;
-            !self.mario.isRunning && self.mario.start();
-            self.direction = 'left';
-        }
-        if(e.keyCode===39){
-            self.mario.mirror=0;
-            !self.mario.isRunning && self.mario.start();
-            self.direction = 'right';
-        }
-        if(e.keyCode===40){
-			// 如果人物不处于站立或行走状态，按下键无效
-			if(!self.marioStayingOnWall) {
-				console.log('人物当前状态不能下蹲!');
-				return;
-			}
-            self.downIsPressing = true;
-        }
-
-        if(e.keyCode===88){
-            if(self.isFighting())
-                return;
-            // 记录攻击时的帧数
-            self.mario._fightFrameCount=ycc.ticker.frameAllCount;
-        }
-
-        if(e.keyCode===67){
-            if(upIsUp){
-                upIsUp=false;
-                self.jumpIsPressing = true;
-            }
-        }
-
-    };
-
-    window.onkeyup = function(e){
-        if(e.keyCode===38){
-            upIsUp=true;
-            self.jumpIsPressing = false;
-        }
-        if(e.keyCode===37){
-            self.mario.stop();
-            self.direction = '';
-        }
-        if(e.keyCode===39){
-            self.mario.stop();
-            self.direction = '';
-        }
-        if(e.keyCode===40){
-            self.downIsPressing = false;
-            self.downTouchEndFlag = true;
-        }
-        if(e.keyCode===67){
-            upIsUp=true;
-            self.jumpIsPressing = false;
-        }
-    };
-
-};
-
-
-/**
- * 生成功能键
- */
-GameScene.prototype.createSkillBtn = function () {
-	var self = this;
-	// 按钮大小
-	var btnSize = 40;
-	// 按钮之间的间隙
-	var btnSpace = 15;
-	// 按钮组距屏幕左侧的宽度
-	var marginRight = 20;
-	// 按钮组距屏幕下侧的宽度
-	var marginBottom = 20;
-	
-	// 跳跃
-	self.btnLayer.addUI(new Ycc.UI.Image({
-		rect:new Ycc.Math.Rect(stageW-btnSize-marginRight,stageH-(btnSize+marginBottom),btnSize,btnSize),
-		fillMode:'scale',
-		res:images.jump,
-		ontap:function (e) {
-			if(self.jumpIsPressing) return;
-            self.jumpIsPressing = true;
-        }
-    }));
-	
-	// 攻击
-	self.btnLayer.addUI(new Ycc.UI.Image({
-		rect:new Ycc.Math.Rect(stageW-btnSize*2-btnSpace-marginRight,stageH-(btnSize+marginBottom),btnSize,btnSize),
-		fillMode:'scale',
-		res:images.fight,
-		ontap:function (e) {
-			if(self.isFighting())
-				return;
-			// 记录攻击时的帧数
-			self.mario._fightFrameCount=ycc.ticker.frameAllCount;
-		}
-	}));
-	
 };
 
 
@@ -555,7 +336,7 @@ GameScene.prototype.gameOverCompute = function(){
 
     if(this.mario.rect.y>stageH+100){
         audios.dead2.play();
-        currentScene=null;
+        this.gameOverLayer.show = true;
         return true;
     }
     return false;
@@ -592,14 +373,14 @@ GameScene.prototype.update = function () {
 	// 不在空中的下蹲不能控制人物左右移动
 	// @todo 控制力度、刹车图片替换
 	if(!(this.marioStayingOnWall&&this.downIsPressing)) {
-
+			console.log(this.direction,3333);
             if(this.direction==='left'){
 //                Matter.Body.applyForce(marioBody,{x:0,y:0},{x:-0.001,y:0});
-                Matter.Body.setPosition(marioBody, {x:marioBodyPosition.x-2,y:marioBodyPosition.y});
+                Matter.Body.setPosition(marioBody, {x:marioBodyPosition.x-3,y:marioBodyPosition.y});
             }
             if(this.direction==='right'){
 //                Matter.Body.applyForce(marioBody,marioBodyPosition,{x:0.001,y:0});
-                Matter.Body.setPosition(marioBody, {x:marioBodyPosition.x+2,y:marioBodyPosition.y});
+                Matter.Body.setPosition(marioBody, {x:marioBodyPosition.x+3,y:marioBodyPosition.y});
             }
 
 		/*if(Math.abs(marioBody.velocity.x)<5){
