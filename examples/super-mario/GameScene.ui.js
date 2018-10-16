@@ -132,15 +132,14 @@
 	
 	/**
 	 * 新建一个桶
-	 * @param startX 			桶的左侧起点
-	 * @param height			桶下边缘距离屏幕最下方的高度
-	 * @param [bucketWidth]		桶的宽度
+	 * @param startX 				桶的左侧起点
+	 * @param height				桶下边缘距离屏幕最下方的高度
+	 * @param [bucketWidth]			桶的宽度
 	 * @param [bucketHeight]		桶的高度
 	 * @param [direction]			桶的朝向  1上 2右 3下 4左
 	 */
-	GameScene.prototype.newBucket = function (startX,height,bucketWidth,bucketHeight,direction) {
+	GameScene.prototype.newBucket = function (startX,height,direction,bucketWidth,bucketHeight) {
 		
-		var directionAngle = [0,0,90,180,270][direction];
 		bucketWidth=bucketWidth||80;
 		bucketHeight=bucketHeight||90;
 
@@ -157,14 +156,20 @@
 	
 		// 绑定至物理引擎
 		var rect = image.rect,ui = image;
-		this.bindMatterBodyWithUI(Matter.Bodies.rectangle(rect.x+rect.width/2,rect.y+rect.height/2,rect.width,rect.height,{
+		
+		var w = rect.width;
+		var h = rect.height;
+		if(image.rotation===90||image.rotation===270){
+			w=rect.height;
+			h=rect.width;
+		}
+		this.bindMatterBodyWithUI(Matter.Bodies.rectangle(rect.x+rect.width/2,rect.y+rect.height/2,w,h,{
 			isStatic:true,
 			label:"bucket",
 			friction:0,
 			frictionStatic:0,
 			frictionAir:0,
-			restitution:0,
-			angle:image.rotation*Math.PI/180
+			restitution:0
 		}),ui);
 		Matter.World.add(engine.world,this.getMatterBodyFromUI(ui));
 		rect = null;ui=null;

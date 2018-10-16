@@ -216,9 +216,9 @@ GameScene.prototype.marioStayingOnWallCompute = function () {
         if(['wall','ground','bucket'].indexOf(body.label)!==-1){
             var marioRect = this.mario.rect;
             var wallRect = this.getUIFromMatterBody(body).rect;
-            this.marioStayingOnWall = parseInt(marioRect.y+marioRect.height)<=wallRect.y
-                && marioRect.x+marioRect.width>=wallRect.x
-                && marioRect.x<wallRect.x+wallRect.width;
+            this.marioStayingOnWall = parseInt(marioRect.y+marioRect.height)<=body.vertices[0].y
+                && marioRect.x+marioRect.width>=body.vertices[0].x
+                && marioRect.x<body.vertices[0].x+wallRect.width;
 
             // 如果处于站立状态，立即中断循环
             if(this.marioStayingOnWall) return;
