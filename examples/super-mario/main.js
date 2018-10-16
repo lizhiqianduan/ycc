@@ -51,8 +51,7 @@ function createYcc() {
 	stageW = ycc.getStageWidth();
 	stageH = ycc.getStageHeight();
 
-// 开启动画，每帧都更新场景
-	ycc.ticker.start(60);
+// 监听每帧、更新场景
 	ycc.ticker.addFrameListener(function () {
 		ycc.layerManager.reRenderAllLayerToStage();
 		currentScene && currentScene.update && currentScene.update();
@@ -65,6 +64,7 @@ function createYcc() {
 function projectInit() {
 	
 	loading = new Loading();
+	ycc.ticker.start(60);
 	
 	
 	// 加载资源

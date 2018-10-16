@@ -337,7 +337,8 @@ GameScene.prototype.gameOverCompute = function(){
     if(this.mario.rect.y>stageH+100){
         audios.dead2.play();
         this.gameOverLayer.show = true;
-        return true;
+		ycc.ticker.stop(60);
+		return true;
     }
     return false;
 };
@@ -373,7 +374,6 @@ GameScene.prototype.update = function () {
 	// 不在空中的下蹲不能控制人物左右移动
 	// @todo 控制力度、刹车图片替换
 	if(!(this.marioStayingOnWall&&this.downIsPressing)) {
-			console.log(this.direction,3333);
             if(this.direction==='left'){
 //                Matter.Body.applyForce(marioBody,{x:0,y:0},{x:-0.001,y:0});
                 Matter.Body.setPosition(marioBody, {x:marioBodyPosition.x-3,y:marioBodyPosition.y});

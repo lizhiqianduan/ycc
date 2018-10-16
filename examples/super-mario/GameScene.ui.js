@@ -206,7 +206,7 @@
 	GameScene.prototype.createDirectionBtn = function () {
 		var self = this;
 		// 按钮大小
-		var btnSize = 40;
+		var btnSize = 50;
 		// 按钮之间的间隙
 		var btnSpace = 5;
 		// 按钮组距屏幕左侧的宽度
@@ -368,7 +368,7 @@
 	GameScene.prototype.createSkillBtn = function () {
 		var self = this;
 		// 按钮大小
-		var btnSize = 40;
+		var btnSize = 50;
 		// 按钮之间的间隙
 		var btnSpace = 15;
 		// 按钮组距屏幕左侧的宽度
