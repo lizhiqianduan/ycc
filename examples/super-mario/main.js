@@ -78,6 +78,7 @@ function projectInit() {
 		{name:"marioJump",url:"./images/mario-jump.png"},
 		{name:"marioDown",url:"./images/mario-down.png"},
 		{name:"coin100",url:"./images/coin100.jpg"},
+		{name:"bucket",url:"./images/bucket.png"},
 	],function (lise,imgs) {
 		
 		ycc.loader.loadResOneByOne([

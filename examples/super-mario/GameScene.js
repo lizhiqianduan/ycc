@@ -213,7 +213,7 @@ GameScene.prototype.isFighting = function(){
 GameScene.prototype.marioStayingOnWallCompute = function () {
     for(var i=0;i<this.marioContactWith.length;i++){
         var body = this.marioContactWith[i];
-        if(['wall','ground'].indexOf(body.label)!==-1){
+        if(['wall','ground','bucket'].indexOf(body.label)!==-1){
             var marioRect = this.mario.rect;
             var wallRect = this.getUIFromMatterBody(body).rect;
             this.marioStayingOnWall = parseInt(marioRect.y+marioRect.height)<=wallRect.y

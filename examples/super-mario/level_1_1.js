@@ -17,18 +17,19 @@
 //        this.newBounds(180);
 
 		// 创建路面
-        this.newGround(0,330,150);
+        this.newGround(0,150,330);
+        this.newBucket(100,150);
 
         this.newCoin(100,300,1,4);
 
 
-        this.newGround(380,20,150);
+        this.newGround(380,150,20);
         this.newCoin(380,300,1,1);
 
-        this.newGround(440,50,150);
+        this.newGround(440,150,50);
         this.newCoin(450,350,1,1);
 
-        this.newGround(550,100,150);
+        this.newGround(550,150,100);
         this.newCoin(550,350,1,2);
 
 

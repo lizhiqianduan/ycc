@@ -19,7 +19,7 @@
 	 * @param width		路面宽度（长）
 	 * @param height	路面距离屏幕最下方的高度
 	 */
-	GameScene.prototype.newGround = function (startX,width,height) {
+	GameScene.prototype.newGround = function (startX,height,width) {
 		var ground = new Ycc.UI.Image({
 			rect:new Ycc.Math.Rect(startX,stageH-height,width,height),
 			res:images.wall,
@@ -128,6 +128,47 @@
         }
 
     };
+	
+	
+	/**
+	 * 新建一个桶
+	 * @param startX 			桶的左侧起点
+	 * @param height			桶下边缘距离屏幕最下方的高度
+	 * @param [bucketWidth]		桶的宽度
+	 * @param [bucketHeight]		桶的高度
+	 * @param [direction]			桶的朝向  1上 2右 3下 4左
+	 */
+	GameScene.prototype.newBucket = function (startX,height,bucketWidth,bucketHeight,direction) {
+		
+		var directionAngle = [0,0,90,180,270][direction];
+		bucketWidth=bucketWidth||80;
+		bucketHeight=bucketHeight||90;
+
+		var image = new Ycc.UI.Image({
+			rect:new Ycc.Math.Rect(startX,stageH-height-bucketHeight,bucketWidth,bucketHeight),
+			res:images.bucket,
+			fillMode:'scale',
+			name:'bucket',
+			anchorX:bucketWidth/2,
+			anchorY:bucketHeight/2,
+			rotation:[0,0,90,180,270][direction||1]
+		});
+		this.layer.addUI(image);
+	
+		// 绑定至物理引擎
+		var rect = image.rect,ui = image;
+		this.bindMatterBodyWithUI(Matter.Bodies.rectangle(rect.x+rect.width/2,rect.y+rect.height/2,rect.width,rect.height,{
+			isStatic:true,
+			label:"bucket",
+			friction:0,
+			frictionStatic:0,
+			frictionAir:0,
+			restitution:0,
+			angle:image.rotation*Math.PI/180
+		}),ui);
+		Matter.World.add(engine.world,this.getMatterBodyFromUI(ui));
+		rect = null;ui=null;
+	};
 
 
     /**
