@@ -308,16 +308,16 @@
 		// 按钮大小
 		var btnSize = 50;
 		// 按钮之间的间隙
-		var btnSpace = 5;
+		var btnSpace = 20;
 		// 按钮组距屏幕左侧的宽度
 		var marginLeft = 20;
 		
 		// 按钮组距屏幕下侧的宽度
-		var marginBottom = 20;
+		var marginBottom = 10;
 		
 		// 左
 		self.btnLayer.addUI(new Ycc.UI.Image({
-			rect:new Ycc.Math.Rect(marginLeft,stageH-(btnSize+marginBottom),btnSize,btnSize),
+			rect:new Ycc.Math.Rect(marginLeft,stageH-(2*btnSize+btnSpace+marginBottom),btnSize,btnSize),
 			fillMode:'scale',
 			anchorX:btnSize/2,
 			anchorY:btnSize/2,
@@ -340,9 +340,34 @@
 			}
 		}));
 		
+		// 右
+		self.btnLayer.addUI(new Ycc.UI.Image({
+			rect:new Ycc.Math.Rect(marginLeft+btnSize+btnSpace,stageH-(2*btnSize+btnSpace+marginBottom),btnSize,btnSize),
+			fillMode:'scale',
+			anchorX:btnSize/2,
+			anchorY:btnSize/2,
+			res:images.btn,
+			rotation:0,
+			ondragstart:function (e) {
+				// 游戏胜利禁用按键
+				if(self.isGameVictory) return;
+				
+				self.mario.mirror=0;
+				self.mario.start();
+				self.direction = 'right';
+			},
+			ondragend:function (e) {
+				// 游戏胜利禁用按键
+				if(self.isGameVictory) return;
+				
+				self.mario.stop();
+				self.direction = '';
+			}
+			
+		}));
 		// 下
 		self.btnLayer.addUI(new Ycc.UI.Image({
-			rect:new Ycc.Math.Rect(marginLeft+btnSize+btnSpace,stageH-(btnSize+marginBottom),btnSize,btnSize),
+			rect:new Ycc.Math.Rect(marginLeft+btnSize/2+btnSpace/2,stageH-(btnSize+marginBottom),btnSize,btnSize),
 			fillMode:'scale',
 			anchorX:btnSize/2,
 			anchorY:btnSize/2,
@@ -368,35 +393,11 @@
 			}
 		}));
 		
-		// 右
-		self.btnLayer.addUI(new Ycc.UI.Image({
-			rect:new Ycc.Math.Rect(marginLeft+btnSize*2+btnSpace*2,stageH-(btnSize+marginBottom),btnSize,btnSize),
-			fillMode:'scale',
-			anchorX:btnSize/2,
-			anchorY:btnSize/2,
-			res:images.btn,
-			rotation:0,
-			ondragstart:function (e) {
-				// 游戏胜利禁用按键
-				if(self.isGameVictory) return;
-				
-				self.mario.mirror=0;
-				self.mario.start();
-				self.direction = 'right';
-			},
-			ondragend:function (e) {
-				// 游戏胜利禁用按键
-				if(self.isGameVictory) return;
-				
-				self.mario.stop();
-				self.direction = '';
-			}
-			
-		}));
+		
 		
 		
 		// 上
-		self.btnLayer.addUI(new Ycc.UI.Image({
+		/*self.btnLayer.addUI(new Ycc.UI.Image({
 			rect:new Ycc.Math.Rect(marginLeft+btnSize+btnSpace,stageH-(btnSize+marginBottom)-(btnSize+btnSpace),btnSize,btnSize),
 			fillMode:'scale',
 			anchorX:btnSize/2,
@@ -411,7 +412,7 @@
 				self.jumpIsPressing = true;
 			}
 			
-		}));
+		}));*/
 		
 		// 按键`上`是否是抬起状态。此属性用于阻止人物连跳
 		var upIsUp = true;
@@ -506,6 +507,9 @@
 			fillMode:'scale',
 			res:images.jump,
 			ontap:function (e) {
+				// 游戏胜利禁用按键
+				if(self.isGameVictory) return;
+
 				if(self.jumpIsPressing) return;
 				self.jumpIsPressing = true;
 			}
@@ -517,6 +521,9 @@
 			fillMode:'scale',
 			res:images.fight,
 			ontap:function (e) {
+				// 游戏胜利禁用按键
+				if(self.isGameVictory) return;
+				
 				if(self.isFighting())
 					return;
 				// 记录攻击时的帧数

@@ -25,10 +25,8 @@
         this.newCoin(100,300,1,4);
 
 
-        this.newGround(380,150,20);
         this.newCoin(380,300,1,1);
 
-        this.newGround(440,150,50);
         this.newCoin(450,350,1,1);
 
         this.newGround(550,150,100);
