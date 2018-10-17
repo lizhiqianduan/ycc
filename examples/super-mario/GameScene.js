@@ -49,6 +49,9 @@ function GameScene(){
 	// 人物是否正站立在墙体上
 	this.marioStayingOnWall = false;
 	
+	// 游戏是否胜利、接触旗子就表示游戏胜利
+	this.isGameVictory = false;
+	
 	// 当前游戏关卡
 	this.gameLevel = '1_1';
 	
@@ -293,9 +296,9 @@ GameScene.prototype.marioImageResCompute = function () {
 		this.mario.frameRectCount = 1;
 		
 		// 人物碰到了旗子
-		// todo 人物碰到旗子后，表示游戏胜利，此时应禁止操作
 		if(this.marioContactWith && this.marioContactWith[0] && this.marioContactWith[0].label==='flag'){
 			this.mario.res = images.marioTouchFlag;
+			this.isGameVictory = true;
 		}
 		
 	}
@@ -354,18 +357,61 @@ GameScene.prototype.marioContactWithCompute = function(){
  */
 GameScene.prototype.gameOverCompute = function(){
 
-    if(this.mario.rect.y>stageH+100){
-        audios.dead2.play();
-        this.gameOverLayer.show = true;
-		ycc.ticker.stop(60);
-		return true;
-    }
+	for(var i=0;i<this.marioContactWith.length;i++){
+		var body = this.marioContactWith[i];
+		if(body.label==='deadLine'){
+			audios.dead2.play();
+			this.gameOverLayer.show = true;
+			ycc.ticker.stop(60);
+			return true;
+		}
+	}
     return false;
+};
+
+/**
+ * 判断游戏胜利、执行游戏胜利的回调
+ */
+GameScene.prototype.gameVictoryCompute = function () {
+	if(this.isGameVictory){
+		
+		var marioBody = this.getMatterBodyFromUI(this.mario);
+		Matter.Body.setVelocity(marioBody,{x:0,y:marioBody.velocity.y});
+		this.direction='left';
+		
+		var key = 'level_'+this.gameLevel+'_onVictory';
+		this[key] && this[key]();
+	}
+};
+
+
+/**
+ * 人物方向的控制
+ */
+GameScene.prototype.directionCompute = function () {
+	var marioBody = this.getMatterBodyFromUI(this.mario);
+	var marioBodyPosition = marioBody.position;
+	
+	// 游戏胜利后不能控制人物移动
+	if(this.isGameVictory) return;
+	
+	// 不在空中的下蹲不能控制人物左右移动
+	if((this.marioStayingOnWall&&this.downIsPressing)) {
+		return;
+	}
+	
+	// 正常的左右移动
+	if(this.direction==='left'){
+		Matter.Body.setPosition(marioBody, {x:marioBodyPosition.x-3,y:marioBodyPosition.y});
+	}
+	if(this.direction==='right'){
+		Matter.Body.setPosition(marioBody, {x:marioBodyPosition.x+3,y:marioBodyPosition.y});
+	}
+
 };
 
 // 每帧的更新函数
 GameScene.prototype.update = function () {
-    if(this.gameOverCompute()) return;
 
 	var marioBody = this.getMatterBodyFromUI(this.mario);
     // 强制设置Mario的旋转角度为0，防止倾倒
@@ -387,41 +433,20 @@ GameScene.prototype.update = function () {
     this.marioContactWithCompute();
 	
 
-	
-	var marioBodyPosition = marioBody.position;
-	
-	
-	// 不在空中的下蹲不能控制人物左右移动
-	// @todo 控制力度、刹车图片替换
-	if(!(this.marioStayingOnWall&&this.downIsPressing)) {
-            if(this.direction==='left'){
-//                Matter.Body.applyForce(marioBody,{x:0,y:0},{x:-0.001,y:0});
-                Matter.Body.setPosition(marioBody, {x:marioBodyPosition.x-3,y:marioBodyPosition.y});
-            }
-            if(this.direction==='right'){
-//                Matter.Body.applyForce(marioBody,marioBodyPosition,{x:0.001,y:0});
-                Matter.Body.setPosition(marioBody, {x:marioBodyPosition.x+3,y:marioBodyPosition.y});
-            }
-
-		/*if(Math.abs(marioBody.velocity.x)<5){
-			if(this.direction==='left'){
-				// Matter.Body.applyForce(marioBody,{x:0,y:0},{x:-0.001,y:0});
-				Matter.Body.setPosition(marioBody, {x:marioBodyPosition.x-1,y:(marioBodyPosition.y)});
-			}
-			if(this.direction==='right'){
-				// Matter.Body.applyForce(marioBody,marioBodyPosition,{x:0.001,y:0});
-				Matter.Body.setPosition(marioBody, {x:marioBodyPosition.x+1,y:(marioBodyPosition.y)});
-			}
-		}else{
-			Matter.Body.applyForce(marioBody,marioBodyPosition,{x:0,y:0});
-		}*/
-	}
-
+	// 处理人物方向键的控制
+	this.directionCompute();
 	
 	// 默认情况、更新人物位置
 	// 减8是因为Mario图片比实际碰撞body偏大
 	this.mario.rect.x=marioBody.vertices[0].x-8;
 	this.mario.rect.y=marioBody.vertices[0].y;
+	
+	
+	
+	// 判断游戏胜利、执行游戏胜利的回调
+	this.gameVictoryCompute();
+	// 判断角色死亡
+	this.gameOverCompute();
 	
 	// 场景的移动
 	if(this.mario.rect.x-stageW/2>0){

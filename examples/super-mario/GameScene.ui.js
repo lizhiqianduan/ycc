@@ -211,7 +211,7 @@
 
     /**
      * 在横坐标x处创建一个限制
-     * @param x
+	 * @param x
      */
 	GameScene.prototype.newBounds = function(x){
         Matter.World.add(engine.world,Matter.Bodies.rectangle(x,0,1,2*stageH,{
@@ -223,6 +223,23 @@
             label:"bound"
         }));
     };
+
+	/**
+	 * 死亡线、看不见的虚拟线，只要人物触碰立即死亡，只能是横线
+	 * @param width		横线长度
+	 * @param height	横线距离屏幕最下方的高度
+	 */
+	GameScene.prototype.newDeadLine = function(width,height){
+		Matter.World.add(engine.world,Matter.Bodies.rectangle(width/2,stageH-height,width,1,{
+			isStatic:true,
+			isSensor:true,
+			friction:0,
+			frictionStatic:0,
+			frictionAir:0,
+			restitution:0,
+			label:"deadLine"
+		}));
+	};
 	
 	
 	

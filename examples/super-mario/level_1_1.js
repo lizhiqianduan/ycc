@@ -15,6 +15,8 @@
 	    // 起点
         this.newBounds(8);
 
+		this.newFlag(100,150,400);
+
 //        this.newBounds(180);
 
 		// 创建路面
@@ -57,14 +59,23 @@
 		this.newWall(1360,0,6,1);
 		this.newWall(1400,0,7,1);
   
-		// 终点
         this.newGround(1650,150,200);
+
+		// 终点始终是一个旗子
 		this.newFlag(1650,150,400);
+		this.newDeadLine(2000,-100);
 		
 		
 		
 	};
-
+	
+	
+	/**
+     * 当前关卡结束后的处理
+	 */
+	GameScene.prototype.level_1_1_onVictory = function () {
+ 
+	};
 	
 
 
