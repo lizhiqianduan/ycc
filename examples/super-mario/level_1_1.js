@@ -14,13 +14,12 @@
 
 	    // 起点
         this.newBounds(8);
-
-		this.newFlag(100,150,400);
-
-//        this.newBounds(180);
+		
+		this.newGround(0,150,450);
+		// this.newFlag(100,150,400);
 
 		// 创建路面
-        this.newGround(0,150,330);
+		// this.newGround(0,150,330);
 		// this.newFlag(100,150,100);
 		this.newBucket(100,150);
         this.newCoin(100,300,1,4);
@@ -58,11 +57,14 @@
 		this.newWall(1320,0,5,1);
 		this.newWall(1360,0,6,1);
 		this.newWall(1400,0,7,1);
+		this.newWall(1460,0,8,1);
+		
+		this.newWall(1560,0,10,1);
   
         this.newGround(1650,150,200);
-
-		// 终点始终是一个旗子
+		// 终点旗子
 		this.newFlag(1650,150,400);
+		// 最下方的死亡线，即Mario最低能降落到多少
 		this.newDeadLine(2000,-100);
 		
 		
@@ -74,7 +76,7 @@
      * 当前关卡结束后的处理
 	 */
 	GameScene.prototype.level_1_1_onVictory = function () {
- 
+        // var marioBody = self
 	};
 	
 

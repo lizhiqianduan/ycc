@@ -177,6 +177,7 @@
 	
 	/**
 	 * 新建一个旗子
+	 * 旗子必须插在地面上，即下方必须存在ground
 	 * @param startX 				旗子的左侧起点
 	 * @param height				旗子下边缘距离屏幕最下方的高度
 	 * @param [flagHeight]			旗子的高度
@@ -322,11 +323,17 @@
 			res:images.btn,
 			rotation:180,
 			ondragstart:function (e) {
+				// 游戏胜利禁用按键
+				if(self.isGameVictory) return;
+				
 				self.mario.mirror=1;
 				self.mario.start();
 				self.direction = 'left';
 			},
 			ondragend:function (e) {
+				// 游戏胜利禁用按键
+				if(self.isGameVictory) return;
+				
 				self.mario.stop();
 				self.direction = '';
 			}
@@ -341,6 +348,9 @@
 			res:images.btn,
 			rotation:90,
 			ondragstart:function (e) {
+				// 游戏胜利禁用按键
+				if(self.isGameVictory) return;
+				
 				// 如果人物不处于站立或行走状态，按下键无效
 				if(!self.marioStayingOnWall) {
 					console.log('人物当前状态不能下蹲!');
@@ -349,6 +359,9 @@
 				self.downIsPressing = true;
 			},
 			ondragend:function (e) {
+				// 游戏胜利禁用按键
+				if(self.isGameVictory) return;
+				
 				self.downIsPressing = false;
 				self.downTouchEndFlag = true;
 			}
@@ -363,11 +376,17 @@
 			res:images.btn,
 			rotation:0,
 			ondragstart:function (e) {
+				// 游戏胜利禁用按键
+				if(self.isGameVictory) return;
+				
 				self.mario.mirror=0;
 				self.mario.start();
 				self.direction = 'right';
 			},
 			ondragend:function (e) {
+				// 游戏胜利禁用按键
+				if(self.isGameVictory) return;
+				
 				self.mario.stop();
 				self.direction = '';
 			}
@@ -384,15 +403,21 @@
 			res:images.btn,
 			rotation:-90,
 			ontap:function (e) {
+				// 游戏胜利禁用按键
+				if(self.isGameVictory) return;
+				
 				if(self.jumpIsPressing) return;
 				self.jumpIsPressing = true;
 			}
 			
 		}));
 		
-		// 按键`上`是否是抬起状态
+		// 按键`上`是否是抬起状态。此属性用于阻止人物连跳
 		var upIsUp = true;
 		window.onkeydown = function(e){
+			// 游戏胜利禁用按键
+			if(self.isGameVictory) return;
+			
 			if(e.keyCode===38){
 				if(upIsUp){
 					upIsUp=false;

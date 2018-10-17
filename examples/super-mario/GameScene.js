@@ -335,21 +335,27 @@ GameScene.prototype.marioImageResCompute = function () {
  */
 GameScene.prototype.marioContactWithCompute = function(){
     var self = this;
-    var temp = [];
-    this.marioContactWith.forEach(function(body){
-        if(body.label==='coin'){
-            audios.touchCoin.currentTime=0;
-            audios.touchCoin.play();
-            self.layer.removeUI(self.getUIFromMatterBody(body));
-            Matter.World.remove(engine.world, body);
-            // 金币+1
-            self.score++;
-            self.coinUI.content="× "+self.score;
-
-        }else{
-            temp.push(body);
-        }
-    })
+	
+	// 接触旗子是否下落至最低点的标志位
+	for(var i=0;i<this.marioContactWith.length;i++){
+		var body = this.marioContactWith[i];
+		
+		// 接触旗子，并且下落至最低点时，去除旗子的刚体，只保留UI
+		if(body.label==='flag' && this.marioStayingOnWall){
+			Matter.World.remove(engine.world, body);
+		}
+		if(body.label==='coin'){
+			audios.touchCoin.currentTime=0;
+			audios.touchCoin.play();
+			self.layer.removeUI(self.getUIFromMatterBody(body));
+			Matter.World.remove(engine.world, body);
+			// 金币+1
+			self.score++;
+			self.coinUI.content="× "+self.score;
+			
+		}
+	}
+	
 };
 
 /***
@@ -379,6 +385,13 @@ GameScene.prototype.gameVictoryCompute = function () {
 		Matter.Body.setVelocity(marioBody,{x:0,y:marioBody.velocity.y});
 		this.direction='left';
 		
+		
+		if(this.marioStayingOnWall){
+			var marioBodyPosition = marioBody.position;
+			!this.mario.isRunning && this.mario.start();
+			Matter.Body.setPosition(marioBody, {x:marioBodyPosition.x+3,y:marioBodyPosition.y});
+			
+		}
 		var key = 'level_'+this.gameLevel+'_onVictory';
 		this[key] && this[key]();
 	}
