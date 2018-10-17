@@ -62,8 +62,12 @@
 		this.newWall(1560,0,10,1);
   
         this.newGround(1650,150,200);
-		// 终点旗子
+		
+        // 终点旗子
 		this.newFlag(1650,150,400);
+		this.newBucket(1800,150,4);
+		
+		
 		// 最下方的死亡线，即Mario最低能降落到多少
 		this.newDeadLine(2000,-100);
 		
