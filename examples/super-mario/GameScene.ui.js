@@ -324,6 +324,7 @@
 			res:images.btn,
 			rotation:180,
 			ondragstart:function (e) {
+				logger('left ondragstart');
 				// 游戏胜利禁用按键
 				if(self.isGameVictory) return;
 				
@@ -332,6 +333,7 @@
 				self.direction = 'left';
 			},
 			ondragend:function (e) {
+				logger('left ondragend');
 				// 游戏胜利禁用按键
 				if(self.isGameVictory) return;
 				
@@ -349,6 +351,7 @@
 			res:images.btn,
 			rotation:0,
 			ondragstart:function (e) {
+				logger('right ondragstart');
 				// 游戏胜利禁用按键
 				if(self.isGameVictory) return;
 				
@@ -357,6 +360,7 @@
 				self.direction = 'right';
 			},
 			ondragend:function (e) {
+				logger('right ondragend');
 				// 游戏胜利禁用按键
 				if(self.isGameVictory) return;
 				
@@ -506,6 +510,12 @@
 			rect:new Ycc.Math.Rect(stageW-btnSize-marginRight,stageH-(btnSize+marginBottom),btnSize,btnSize),
 			fillMode:'scale',
 			res:images.jump,
+			ondragstart:function (e) {
+				logger('jump dragstart');
+			},
+			ondragend:function (e) {
+				logger('jump ondragend');
+			},
 			ontap:function (e) {
 				// 游戏胜利禁用按键
 				if(self.isGameVictory) return;

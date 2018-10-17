@@ -40,7 +40,6 @@ projectInit();
 
 function createYcc() {
 // 创建canvas
-	document.body.innerHTML='';
 	var canvas = document.createElement('canvas');
 	canvas.width=document.documentElement.clientWidth;
 	canvas.height=document.documentElement.clientHeight;
