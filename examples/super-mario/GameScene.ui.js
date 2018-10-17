@@ -156,11 +156,11 @@
 	
 		// 绑定至物理引擎
 		var rect = image.rect,ui = image;
-		rect.x+=(bucketHeight-bucketWidth)/2;
-		rect.y+=(bucketHeight-bucketWidth)/2;
 		var w = rect.width;
 		var h = rect.height;
 		if(image.rotation===90||image.rotation===270){
+			rect.x+=(bucketHeight-bucketWidth)/2;
+			rect.y+=(bucketHeight-bucketWidth)/2;
 			w=rect.height;
 			h=rect.width;
 		}
