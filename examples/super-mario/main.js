@@ -54,7 +54,7 @@ function createYcc() {
 	ycc.ticker.addFrameListener(function () {
 		ycc.layerManager.reRenderAllLayerToStage();
 		currentScene && currentScene.update && currentScene.update();
-		// currentScene && currentScene.debug && currentScene.debug();
+		currentScene && currentScene.debug && currentScene.debug();
 	});
 }
 
@@ -73,6 +73,7 @@ function projectInit() {
 		{name:"jump",url:"./images/jump.png"},
 		{name:"mario",url:"./images/mario-walk.png"},
 		{name:"girl",url:"./images/girl.png"},
+		{name:"mushroom",url:"./images/mushroom.png"},
 		{name:"wall",url:"./images/wall.png"},
 		{name:"marioFight",url:"./images/mario-fight.png"},
 		{name:"marioJump",url:"./images/mario-jump.png"},

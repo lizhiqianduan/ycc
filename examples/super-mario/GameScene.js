@@ -217,7 +217,7 @@ GameScene.prototype.isFighting = function(){
 GameScene.prototype.marioStayingOnWallCompute = function () {
     for(var i=0;i<this.marioContactWith.length;i++){
         var body = this.marioContactWith[i];
-        if(['wall','ground','bucket','flag'].indexOf(body.label)!==-1){
+        if(['wall','ground','bucket','flag','girl','mushroom'].indexOf(body.label)!==-1){
             var marioRect = this.mario.rect;
             var wallRect = this.getUIFromMatterBody(body).rect;
             this.marioStayingOnWall = parseInt(marioRect.y+marioRect.height)<=body.vertices[0].y
@@ -232,6 +232,26 @@ GameScene.prototype.marioStayingOnWallCompute = function () {
     this.marioStayingOnWall = false;
 
 };
+
+/**
+ * 更新界面中的UI的位置，毒蘑菇、小乌龟、飞鸟等
+ */
+GameScene.prototype.updateUIPosition = function () {
+	var self = this;
+	var bodies = Matter.Composite.allBodies(engine.world);
+
+	for(var i=0;i<bodies.length;i++){
+		var body = bodies[i];
+		if(['mushroom'].indexOf(body.label)===-1)
+			continue;
+		var ui = self.getUIFromMatterBody(body);
+		ui.rect.x=body.vertices[0].x;
+		ui.rect.y=body.vertices[0].y;
+	}
+
+};
+
+
 
 /**
  * 判断Mario是否处于悬空、跳跃状态
@@ -453,6 +473,9 @@ GameScene.prototype.update = function () {
 	// 减8是因为Mario图片比实际碰撞body偏大
 	this.mario.rect.x=marioBody.vertices[0].x-8;
 	this.mario.rect.y=marioBody.vertices[0].y;
+	
+	this.updateUIPosition();
+
 	
 	
 	
