@@ -16,7 +16,12 @@ var _hmt = _hmt || [];
 })();
 
 
-function logger(text){
+function logger(){
+	var args = [];
+	for(var i=0;i<arguments.length;i++){
+		args.push(''+arguments[i]+'');
+	}
+	var text = args.join(',');
 	console.log('logger--> '+text);
 	document.getElementById('log-con').innerHTML+=text+'<br>';
 }
