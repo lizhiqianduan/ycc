@@ -16,11 +16,9 @@
         this.newBounds(8);
 		
 		this.newGround(0,150,450);
-		// this.newFlag(100,150,400);
-
-		// 创建路面
-		// this.newGround(0,150,330);
-		// this.newFlag(100,150,100);
+		
+		this.newGirl(220,150);
+		
 		this.newBucket(100,150);
         this.newCoin(100,300,1,4);
 
@@ -59,7 +57,7 @@
 		
 		this.newWall(1560,0,10,1);
   
-        this.newGround(1650,150,200);
+        this.newGround(1650,150,2000);
 		
         // 终点旗子
 		this.newFlag(1650,150,400);

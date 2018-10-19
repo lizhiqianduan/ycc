@@ -129,6 +129,38 @@
 
     };
 	
+	/**
+	 * 新建一个女孩
+	 */
+	GameScene.prototype.newGirl = function (startX,marginBottom) {
+
+		var name = 'girl';
+		var width = width||36;
+		var height = height||64;
+		
+		var image = new Ycc.UI.Image({
+			rect:new Ycc.Math.Rect(startX,stageH-marginBottom-height,width,height),
+			res:images.girl,
+			fillMode:'scale',
+			name:name,
+		});
+		this.layer.addUI(image);
+		
+		// 绑定至物理引擎
+		var rect = image.rect,ui = image;
+		var w = rect.width;
+		var h = rect.height;
+		this.bindMatterBodyWithUI(Matter.Bodies.rectangle(rect.x+rect.width/2,rect.y+rect.height/2,w,h,{
+			isStatic:true,
+			label:name,
+			friction:0,
+			frictionStatic:0,
+			frictionAir:0,
+			restitution:0
+		}),ui);
+		Matter.World.add(engine.world,this.getMatterBodyFromUI(ui));
+		rect = null;ui=null;
+	};
 	
 	/**
 	 * 新建一个桶
