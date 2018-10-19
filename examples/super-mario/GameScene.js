@@ -374,6 +374,10 @@ GameScene.prototype.marioContactWithCompute = function(){
 			self.coinUI.content="× "+self.score;
 			
 		}
+		
+		if(body.label==='mushroom' && this.marioStayingOnWall){
+			// todo
+		}
 	}
 	
 };
