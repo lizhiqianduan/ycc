@@ -146,7 +146,10 @@
 	win.Ycc.prototype._initStageGestureEvent = function () {
 		var self = this;
 		// 鼠标/触摸点开始拖拽时，所指向的UI对象，只用于单个触摸点的情况
-		var dragstartUI = null;
+		//var dragstartUI = null;
+		// 鼠标/触摸点开始拖拽时，所指向的UI对象map，用于多个触摸点的情况
+		var dragstartUIMap = {};
+		
 		var gesture = new Ycc.Gesture({target:this.ctx.canvas});
 		gesture.addListener('tap',gestureListener);
 		gesture.addListener('longtap',gestureListener);
@@ -165,8 +168,9 @@
 			var x = parseInt(e.clientX - self.ctx.canvas.getBoundingClientRect().left),
 				y = parseInt(e.clientY - self.ctx.canvas.getBoundingClientRect().top);
 			
-			dragstartUI = self.getUIFromPointer(new Ycc.Math.Dot(x,y));
+			var dragstartUI = self.getUIFromPointer(new Ycc.Math.Dot(x,y));
 			triggerLayerEvent(e.type,x,y);
+			dragstartUI&&(dragstartUIMap[e.identifier]=dragstartUI);
 			dragstartUI&&dragstartUI.belongTo.enableEventManager&&triggerUIEvent(e.type,x,y,dragstartUI);
 		}
 		function draggingListener(e) {
@@ -175,6 +179,7 @@
 				y = parseInt(e.clientY - self.ctx.canvas.getBoundingClientRect().top);
 			
 			triggerLayerEvent(e.type,x,y);
+			var dragstartUI = dragstartUIMap[e.identifier];
 			dragstartUI&&dragstartUI.belongTo.enableEventManager&&triggerUIEvent(e.type,x,y,dragstartUI);
 		}
 		function dragendListener(e) {
@@ -183,6 +188,7 @@
 				y = parseInt(e.clientY - self.ctx.canvas.getBoundingClientRect().top);
 			
 			triggerLayerEvent(e.type,x,y);
+			var dragstartUI = dragstartUIMap[e.identifier];
 			dragstartUI&&dragstartUI.belongTo.enableEventManager&&triggerUIEvent(e.type,x,y,dragstartUI);
 			dragstartUI = null;
 		}

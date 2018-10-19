@@ -66,6 +66,9 @@
 			self.triggerListener('tap',self._createEventData(life.startTouchEvent,'tap'));
 			self.triggerListener('log','tap triggered');
 
+			// 触发拖拽开始事件
+			self.triggerListener('dragstart',self._createEventData(life.startTouchEvent,'dragstart'));
+
 			// 多个触摸点的情况
 			if(tracer.currentLifeList.length>1){
 				self.triggerListener('log','multi touch start ...');
@@ -83,14 +86,17 @@
 			// 只有一个触摸点的情况
 			prevent.tap = false;
 			prevent.swipe = false;
-			// 触发拖拽开始事件
-			self.triggerListener('dragstart',self._createEventData(life.startTouchEvent,'dragstart'));
 			//长按事件
 			this._longTapTimeout = setTimeout(function () {
 				self.triggerListener('longtap',self._createEventData(life.startTouchEvent,'longtap'));
 			},750);
 		};
 		tracer.onlifechange = function (life) {
+			// 只要存在移动的接触点，就触发dragging事件
+			life.moveTouchEventList.forEach(function (moveEvent) {
+				self.triggerListener('dragging',self._createEventData(moveEvent,'dragging'));
+			});
+			
 			if(tracer.currentLifeList.length>1){
 				prevent.tap=true;
 				prevent.swipe=true;
@@ -119,18 +125,18 @@
 					prevent.tap=true;
 					clearTimeout(this._longTapTimeout);
 				}
-				self.triggerListener('dragging',self._createEventData(lastMove,'dragging'));
 			}
 			
 		};
 		tracer.onlifeend = function (life) {
+			self.triggerListener('dragend',self._createEventData(life.endTouchEvent,'dragend'));
+
 			// 若某个触摸结束，当前触摸点个数为1，说明之前的操作为多点触控。这里发送多点触控结束事件
 			if(tracer.currentLifeList.length===1){
 				return self.triggerListener('multiend',preLife,curLife);
 			}
 			
 			if(tracer.currentLifeList.length===0){
-				self.triggerListener('dragend',self._createEventData(life.endTouchEvent,'dragend'));
 				
 				// 开始和结束时间在300ms内，认为是tap事件
 				if(!prevent.tap && life.endTime-life.startTime<300){
@@ -183,6 +189,9 @@
 		// 记录长按的计时ID，用于判断longtap
 		var longTapTimeoutID = -1;
 
+		// 拖拽过程中的生命周期ID
+		var identifier = 0;
+		
 		/**
 		 * 需求实现：
 		 * 1、事件传递给所有图层
@@ -191,6 +200,7 @@
 		 * */
 		this.option.target.addEventListener('mousedown',function (e) {
 			// console.log(e.type,'...');
+			e.identifier=++identifier;
 			mouseDownEvent = self._createEventData(e);
 			longTapTimeoutID = setTimeout(function () {
 				console.log('longtap',Date.now(),'...');
@@ -227,6 +237,7 @@
 					// 设置标志位
 					dragStartFlag = true;
 				}
+				e.identifier=identifier;
 				self.triggerListener('dragging',self._createEventData(e,'dragging'));
 			}else{
 				// 取消长按事件
@@ -243,6 +254,7 @@
 		 * */
 		this.option.target.addEventListener('mouseup',function (e) {
 			// console.log(e.type,'...');
+			e.identifier=identifier;
 			
 			mouseUpEvent = self._createEventData(e);
 			
@@ -332,6 +344,13 @@
 			 * 事件触发对象
 			 */
 			target:null,
+			
+			/**
+			 * 事件的生命周期ID，只在拖拽过程中存在，存在时此值大于-1
+			 * PC端表示mousedown直至mouseup整个周期
+			 * mobile端表示touchstart直至touchend整个周期
+			 */
+			identifier:-1,
 			
 			clientX:0,
 			clientY:0,
