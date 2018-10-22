@@ -1918,20 +1918,32 @@
 			curRes.res.preload = "load";
 		}
 		
+		var timerId = setTimeout(function () {
+			curRes.res.removeEventListener(successEvent,onSuccess);
+			curRes.res.removeEventListener(errorEvent,onSuccess);
+			onError({message:"获取资源超时！"});
+		},curRes.timeout||10000);
 		
-		curRes.res.addEventListener(successEvent,function () {
+		
+		curRes.res.addEventListener(successEvent,onSuccess);
+		curRes.res.addEventListener(errorEvent,onError);
+		
+		
+		function onSuccess() {
+			clearTimeout(timerId);
 			endResArr.push(curRes);
 			if(typeof curRes.name!=='undefined') endResMap[curRes.name] = curRes.res;
 
-			Ycc.utils.isFn(progressCb) && progressCb(curRes,true,index);
+			Ycc.utils.isFn(progressCb) && progressCb(curRes,null,index);
 			self.loadResOneByOne(resArr,endCb,progressCb,endResArr,endResMap);
-		});
-		curRes.res.addEventListener(errorEvent,function () {
+		}
+		function onError(e) {
+			clearTimeout(timerId);
 			endResArr.push(curRes);
 			if(typeof curRes.name!=='undefined') endResMap[curRes.name] = curRes.res;
-			Ycc.utils.isFn(progressCb) && progressCb(curRes,true,index);
+			Ycc.utils.isFn(progressCb) && progressCb(curRes,e,index);
 			self.loadResOneByOne(resArr,endCb,progressCb,endResArr,endResMap);
-		});
+		}
 
 		
 	};

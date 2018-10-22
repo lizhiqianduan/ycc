@@ -112,7 +112,6 @@
 			curRes.res.removeEventListener(errorEvent,onSuccess);
 			onError({message:"获取资源超时！"});
 		},curRes.timeout||10000);
-		logger(curRes.name+' start');
 		
 		
 		curRes.res.addEventListener(successEvent,onSuccess);
