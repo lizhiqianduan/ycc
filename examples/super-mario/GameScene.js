@@ -139,15 +139,18 @@ GameScene.prototype.debug = function () {
 GameScene.prototype.collisionListenerInit = function () {
 	var self = this;
 	
-	/*Matter.Events.on(engine,'collisionStart',function (event) {
-		var pair = event.pairs[0];
-		var mario = getMarioFromPair(pair);
-		var other = getAnotherBodyFromPair(pair,mario);
-		
-		if(mario&&other){
-			self.marioContactWith = other;
+	Matter.Events.on(engine,'collisionStart',function (event) {
+		for(var i=0;i<event.pairs.length;i++){
+			var pair = event.pairs[i];
+			var mario = getMarioFromPair(pair);
+			var other = getAnotherBodyFromPair(pair,mario);
+			
+			if(mario&&other){
+				var index=self.marioContactWith.indexOf(other);
+				index===-1&&self.marioContactWith.push(other);
+			}
 		}
-	});*/
+	});
 
 	Matter.Events.on(engine,'collisionEnd',function (event) {
 
@@ -234,7 +237,7 @@ GameScene.prototype.marioStayingOnWallCompute = function () {
 };
 
 /**
- * 更新界面中的UI的位置，毒蘑菇、小乌龟、飞鸟等
+ * 更新界面中的UI的位置、速度，毒蘑菇、小乌龟、飞鸟等
  */
 GameScene.prototype.updateUIPosition = function () {
 	var self = this;
@@ -242,11 +245,17 @@ GameScene.prototype.updateUIPosition = function () {
 
 	for(var i=0;i<bodies.length;i++){
 		var body = bodies[i];
-		if(['mushroom'].indexOf(body.label)===-1)
-			continue;
-		var ui = self.getUIFromMatterBody(body);
-		ui.rect.x=body.vertices[0].x;
-		ui.rect.y=body.vertices[0].y;
+		
+		// 更新蘑菇的UI位置
+		if(body.label==='mushroom'){
+			var ui = self.getUIFromMatterBody(body);
+			ui.rect.x=body.vertices[0].x;
+			ui.rect.y=body.vertices[0].y;
+			
+			// 更新蘑菇速度。原因在于：速度较小时，matter引擎碰撞后反弹不了
+			Matter.Body.setVelocity(body,{x:(body.velocity.x>0)?2:-2,y:body.velocity.y});
+			Matter.Body.setAngle(body,0);
+		}
 	}
 
 };
@@ -375,28 +384,43 @@ GameScene.prototype.marioContactWithCompute = function(){
 			
 		}
 		
-		if(body.label==='mushroom' && this.marioStayingOnWall){
-			// todo
+		if(body.label==='mushroom'){
+			// 如果只接触蘑菇，说明是踩在蘑菇上面。否则游戏结束
+			if(this.marioContactWith.length===1 && this.marioStayingOnWall){
+				self.layer.removeUI(self.getUIFromMatterBody(body));
+				Matter.World.remove(engine.world, body);
+			}else{
+				// 去除物理引擎、保留UI
+				Matter.World.remove(engine.world, body);
+				// 角色死亡
+				self.gameOverProcess();
+			}
+		}
+		
+		if(body.label==='deadLine'){
+			// 角色死亡
+			self.gameOverProcess();
 		}
 	}
 	
 };
 
 /***
- * 判断游戏结束
+ * 角色死亡游戏结束之后的处理
  */
-GameScene.prototype.gameOverCompute = function(){
-
-	for(var i=0;i<this.marioContactWith.length;i++){
-		var body = this.marioContactWith[i];
-		if(body.label==='deadLine'){
-			audios.dead2.play();
-			this.gameOverLayer.show = true;
-			ycc.ticker.stop(60);
-			return true;
-		}
-	}
-    return false;
+GameScene.prototype.gameOverProcess = function(){
+	// 禁止按钮图层的事件
+	this.btnLayer.enableEventManager=false;
+	// 方向设为空
+	this.direction='';
+	// 停止帧动画
+	this.mario.stop();
+	// 播放音效
+	audios.dead2.play();
+	// 显示结束之后的图层
+	this.gameOverLayer.show = true;
+	
+	// ycc.ticker.stop(60);
 };
 
 /**
@@ -485,8 +509,6 @@ GameScene.prototype.update = function () {
 	
 	// 判断游戏胜利、执行游戏胜利的回调
 	this.gameVictoryCompute();
-	// 判断角色死亡
-	this.gameOverCompute();
 	
 	// 场景的移动
 	if(this.mario.rect.x-stageW/2>0){

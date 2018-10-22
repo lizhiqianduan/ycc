@@ -169,14 +169,17 @@
 	 * 新建一个蘑菇
 	 * @param startX			起始x坐标
 	 * @param marginBottom		蘑菇距离屏幕最下方的高度
-	 * @param speed				蘑菇速度
 	 */
-	GameScene.prototype.newMushroom = function (startX,marginBottom,speed) {
-		
+	GameScene.prototype.newMushroom = function (startX,marginBottom) {
+		// ui名字
 		var name = 'mushroom';
+
+		// 蘑菇高宽
 		var width = 36;
 		var height = 38;
-		speed = speed || 1;
+
+		// 蘑菇速度
+		var speed = 2;
 		
 		var image = new Ycc.UI.Image({
 			rect:new Ycc.Math.Rect(startX,stageH-marginBottom-height,width,height),
@@ -195,7 +198,7 @@
 			friction:0,
 			frictionStatic:0,
 			frictionAir:0,
-			restitution:0,
+			restitution:1,
 		}),ui);
 		Matter.World.add(engine.world,this.getMatterBodyFromUI(ui));
 		Matter.Body.setVelocity(this.getMatterBodyFromUI(ui),{x:-speed,y:0});

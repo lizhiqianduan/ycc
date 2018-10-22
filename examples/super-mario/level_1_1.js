@@ -17,8 +17,8 @@
 		
 		this.newGround(0,150,450);
 		
-		this.newGirl(220,150);
-		this.newMushroom(300,180);
+		// this.newGirl(220,150);
+		this.newMushroom(350,180);
 		
 		this.newBucket(100,150);
         this.newCoin(100,300,1,4);
