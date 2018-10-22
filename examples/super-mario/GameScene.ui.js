@@ -258,14 +258,17 @@
 	};
 	
 	/**
-	 * 新建一个旗子
+	 * 新建一个旗子，每个关卡只能有一个
+	 * 旗子之后的一个屏幕宽度，场景不再左右移动
 	 * 旗子必须插在地面上，即下方必须存在ground
 	 * @param startX 				旗子的左侧起点
 	 * @param height				旗子下边缘距离屏幕最下方的高度
 	 * @param [flagHeight]			旗子的高度
 	 */
 	GameScene.prototype.newFlag = function (startX,height,flagHeight) {
-		
+		this.endPoint = startX+stageW/2;
+		// 旗子之后的一个屏幕宽度新增一个限制区
+		this.newBounds(startX+stageW);
 		var objectHeight = flagHeight||images.flag.naturalHeight;
 		var objectWidth = images.flag.naturalWidth;
 		

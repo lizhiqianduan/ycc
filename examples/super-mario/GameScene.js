@@ -18,6 +18,9 @@ function GameScene(){
 	
 	// mario的UI
 	this.mario = null;
+	
+	// 终点的x坐标、通过newFlag自动赋值
+	this.endPoint = 0;
 
     // 右上角金币UI
     this.coinUI = null;
@@ -511,7 +514,7 @@ GameScene.prototype.update = function () {
 	this.gameVictoryCompute();
 	
 	// 场景的移动
-	if(this.mario.rect.x-stageW/2>0){
+	if(this.mario.rect.x-stageW/2>0 && this.mario.rect.x<this.endPoint){
 		// 初始layer的x为0
 		this.layer.x = -(this.mario.rect.x-stageW/2);
 	}

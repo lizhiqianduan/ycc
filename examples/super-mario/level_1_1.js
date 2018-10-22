@@ -10,6 +10,8 @@
 
 (function (GameScene) {
 
+	var endBucket = null;
+	
 	GameScene.prototype.level_1_1 = function () {
 
 	    // 起点
@@ -62,7 +64,8 @@
 		
         // 终点旗子
 		this.newFlag(1650,150,400);
-		this.newBucket(1800,150,4);
+		
+		endBucket = this.newBucket(1650+stageW-90,140,4,90,90);
 		
 		
 		// 最下方的死亡线，即Mario最低能降落到多少
@@ -78,6 +81,13 @@
 	 */
 	GameScene.prototype.level_1_1_onVictory = function () {
         // var marioBody = self
+		if(this.marioContactWith.indexOf(endBucket._matterBody)>-1){
+			Matter.World.remove(engine.world, endBucket._matterBody);
+		}
+		
+		// var endBucketIndex = this.layer.uiList.indexOf(endBucket);
+		this.layer.removeUI(endBucket);
+		this.layer.addUI(endBucket);
 	};
 	
 
