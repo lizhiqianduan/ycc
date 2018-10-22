@@ -83,6 +83,9 @@
         // var marioBody = self
 		if(this.marioContactWith.indexOf(endBucket._matterBody)>-1){
 			Matter.World.remove(engine.world, endBucket._matterBody);
+			this.gameOverLayer.show=true;
+			this.gameOverLayer.uiList[0].content='恭喜通关！点击屏幕任意位置重新开始';
+			this.gameOverLayer.uiList[0].color='#ff4d4f';
 		}
 		
 		// var endBucketIndex = this.layer.uiList.indexOf(endBucket);
