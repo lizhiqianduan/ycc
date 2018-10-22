@@ -103,8 +103,12 @@ function projectInit() {
 			
 			currentScene = new GameScene();
 			ycc.layerManager.reRenderAllLayerToStage();
+		},function (item,success) {
+			loading.updateText(item.name+' '+success);
 		});
 		
+	},function (item,success) {
+		loading.updateText(item.name+' '+success);
 	});
 	
 }
