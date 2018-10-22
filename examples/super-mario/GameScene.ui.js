@@ -40,7 +40,8 @@
 		}),ui);
 		Matter.World.add(engine.world,this.getMatterBodyFromUI(ui));
 		rect = null;ui=null;
-		
+
+		return ground;
 	};
 	
 	/**
@@ -162,6 +163,8 @@
 		}),ui);
 		Matter.World.add(engine.world,this.getMatterBodyFromUI(ui));
 		rect = null;ui=null;
+		
+		return image;
 	};
 	
 	
@@ -203,6 +206,7 @@
 		Matter.World.add(engine.world,this.getMatterBodyFromUI(ui));
 		Matter.Body.setVelocity(this.getMatterBodyFromUI(ui),{x:-speed,y:0});
 		rect = null;ui=null;
+		return image;
 	};
 	
 	
@@ -250,6 +254,7 @@
 		}),ui);
 		Matter.World.add(engine.world,this.getMatterBodyFromUI(ui));
 		rect = null;ui=null;
+		return image;
 	};
 	
 	/**
@@ -285,6 +290,7 @@
 		}),ui);
 		Matter.World.add(engine.world,this.getMatterBodyFromUI(ui));
 		rect = null;ui=null;
+		return image;
 	};
 
     /**
