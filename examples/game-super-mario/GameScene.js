@@ -325,7 +325,7 @@ GameScene.prototype.marioImageResCompute = function () {
             // 更新刚体的高、宽
 			this.updateMarioBodyVerticesByMarioRect();
             this.downTouchEndFlag=false;
-        }
+		}
 		  
 		// 赋值序列帧动画第一帧的图片高度
 		this.mario.firstFrameRect.height = this.mario.res.naturalHeight;
@@ -342,6 +342,17 @@ GameScene.prototype.marioImageResCompute = function () {
 			this.isGameVictory = true;
 		}
 		
+		// 人物在空中起身
+		if(this.downTouchEndFlag){
+			// 此处重新赋值的原因在于，人物下蹲后刚体尺寸发生了变化，所以起身时需要重新计算刚体高度
+			// 重新赋值高度
+			this.mario.rect.height = this.mario.res.naturalHeight*2;
+			// 更新刚体的高、宽
+			this.updateMarioBodyVerticesByMarioRect();
+			this.downTouchEndFlag=false;
+			this.mario.firstFrameRect.height = this.mario.res.naturalHeight;
+		}
+		
 	}
 	
 	// 人物处于下蹲状态
@@ -352,7 +363,7 @@ GameScene.prototype.marioImageResCompute = function () {
 		this.mario.frameRectCount = 1;
 
 		// 计算刚体位置
-		pos.y+=this.mario.rect.height-this.mario.res.naturalHeight*2;
+		pos.y+=(this.mario.rect.height-this.mario.res.naturalHeight*2)/2;
 		// 赋值人物高度
 		this.mario.rect.height=this.mario.res.naturalHeight*2;
 		// 赋值刚体高度
