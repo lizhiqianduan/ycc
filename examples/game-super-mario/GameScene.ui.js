@@ -16,8 +16,8 @@
 	/**
 	 * 创建路面
 	 * @param startX 	路面的起点
-	 * @param width		路面宽度（长）
 	 * @param height	路面距离屏幕最下方的高度
+	 * @param width		路面宽度（长）
 	 */
 	GameScene.prototype.newGround = function (startX,height,width) {
 		var ground = new Ycc.UI.Image({
@@ -219,7 +219,7 @@
 		var height = 38;
 
 		// 蘑菇速度
-		var speed = 2;
+		var speed = 1;
 		
 		var image = new Ycc.UI.Image({
 			rect:new Ycc.Math.Rect(startX,stageH-marginBottom-height,width,height),
