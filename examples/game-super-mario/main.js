@@ -54,7 +54,7 @@ function createYcc() {
 	ycc.ticker.addFrameListener(function () {
 		ycc.layerManager.reRenderAllLayerToStage();
 		currentScene && currentScene.update && currentScene.update();
-		// currentScene && currentScene.debug && currentScene.debug();
+		currentScene && currentScene.debug && currentScene.debug();
 	});
 }
 
@@ -82,6 +82,7 @@ function projectInit() {
 		{name:"bucket",url:"./images/bucket.png"},
 		{name:"flag",url:"./images/flag.png"},
 		{name:"marioTouchFlag",url:"./images/mario-touch-flag.png"},
+		{name:"missile",url:"./images/missile.png"},
 	],function (lise,imgs) {
 		
 		ycc.loader.loadResOneByOne([

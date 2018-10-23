@@ -167,6 +167,43 @@
 		return image;
 	};
 	
+	/**
+	 * 新建一个导弹
+	 * @param startX			起始x坐标
+	 * @param marginBottom		导弹距离屏幕最下方的高度
+	 */
+	GameScene.prototype.newMissile = function (startX,marginBottom) {
+		
+		var name = 'missile';
+		var width = 30;
+		var height = 20;
+		
+		var image = new Ycc.UI.Image({
+			rect:new Ycc.Math.Rect(startX,stageH-marginBottom-height,width,height),
+			res:images.missile,
+			fillMode:'scale',
+			name:name,
+		});
+		this.layer.addUI(image);
+		
+		// 绑定至物理引擎
+		var rect = image.rect,ui = image;
+		var w = rect.width;
+		var h = rect.height;
+		this.bindMatterBodyWithUI(Matter.Bodies.rectangle(rect.x+rect.width/2,rect.y+rect.height/2,w,h,{
+			isStatic:true,
+			label:name,
+			friction:0,
+			frictionStatic:0,
+			frictionAir:0,
+			restitution:0
+		}),ui);
+		Matter.World.add(engine.world,this.getMatterBodyFromUI(ui));
+		rect = null;ui=null;
+		
+		return image;
+	};
+	
 	
 	/**
 	 * 新建一个蘑菇

@@ -248,16 +248,25 @@ GameScene.prototype.updateUIPosition = function () {
 
 	for(var i=0;i<bodies.length;i++){
 		var body = bodies[i];
+		var ui = self.getUIFromMatterBody(body);
 		
 		// 更新蘑菇的UI位置
 		if(body.label==='mushroom'){
-			var ui = self.getUIFromMatterBody(body);
 			ui.rect.x=body.vertices[0].x;
 			ui.rect.y=body.vertices[0].y;
 			
 			// 更新蘑菇速度。原因在于：速度较小时，matter引擎碰撞后反弹不了
 			Matter.Body.setVelocity(body,{x:(body.velocity.x>0)?2:-2,y:body.velocity.y});
 			Matter.Body.setAngle(body,0);
+		}
+		
+		// 更新导弹的位置
+		if(body.label==='missile'){
+			// 更新蘑菇速度。原因在于：速度较小时，matter引擎碰撞后反弹不了
+			Matter.Body.setPosition(body,{x:body.position.x-2,y:body.position.y});
+
+			ui.rect.x=body.vertices[0].x;
+			ui.rect.y=body.vertices[0].y;
 		}
 	}
 
@@ -396,13 +405,17 @@ GameScene.prototype.marioContactWithCompute = function(){
 				// 去除物理引擎、保留UI
 				Matter.World.remove(engine.world, body);
 				// 角色死亡
-				self.gameOverProcess();
+				self.marioDeadProcess();
 			}
 		}
+		if(body.label==='missile'){
+			// 去除导弹的刚体，使其UI的位置不再更新
+			Matter.World.remove(engine.world,body);
+		}
 		
-		if(body.label==='deadLine'){
+		if(body.label==='deadLine' || body.label==='missile'){
 			// 角色死亡
-			self.gameOverProcess();
+			self.marioDeadProcess();
 		}
 	}
 	
@@ -411,7 +424,9 @@ GameScene.prototype.marioContactWithCompute = function(){
 /***
  * 角色死亡游戏结束之后的处理
  */
-GameScene.prototype.gameOverProcess = function(){
+GameScene.prototype.marioDeadProcess = function(){
+	// 去除Mario的刚体，防止碰撞，并且去除之后MarioUI的位置不会再更新
+	Matter.World.remove(engine.world,this.mario._matterBody);
 	// 禁止按钮图层的事件
 	this.btnLayer.enableEventManager=false;
 	// 方向设为空

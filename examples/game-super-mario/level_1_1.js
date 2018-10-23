@@ -71,6 +71,10 @@
 		// 最下方的死亡线，即Mario最低能降落到多少
 		this.newDeadLine(2000,-100);
 		
+		// 添加几发导弹
+		this.newMissile(300,300);
+		this.newMissile(1300,400);
+		this.newMissile(2300,500);
 		
 		
 	};
