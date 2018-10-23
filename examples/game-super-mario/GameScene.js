@@ -382,7 +382,7 @@ GameScene.prototype.marioImageResCompute = function () {
  */
 GameScene.prototype.marioContactWithCompute = function(){
     var self = this;
-	
+	var marioBody = self.getMatterBodyFromUI(this.mario);
 	// 接触旗子是否下落至最低点的标志位
 	for(var i=0;i<this.marioContactWith.length;i++){
 		var body = this.marioContactWith[i];
@@ -403,10 +403,19 @@ GameScene.prototype.marioContactWithCompute = function(){
 		}
 		
 		if(body.label==='mushroom'){
-			// 如果只接触蘑菇，说明是踩在蘑菇上面。否则游戏结束
+			// 如果只接触蘑菇，说明是踩在蘑菇上面，并且支持同时踩两个蘑菇。否则游戏结束
 			if(this.marioContactWith.length===1 && this.marioStayingOnWall){
 				self.layer.removeUI(self.getUIFromMatterBody(body));
 				Matter.World.remove(engine.world, body);
+				Matter.Body.setVelocity(marioBody,{x:0,y:-4})
+			}else if(this.marioContactWith.length===2 && this.marioContactWith[0].label==='mushroom'&& this.marioContactWith[1].label==='mushroom' && this.marioStayingOnWall){
+				self.layer.removeUI(self.getUIFromMatterBody(this.marioContactWith[0]));
+				Matter.World.remove(engine.world, this.marioContactWith[0]);
+				self.layer.removeUI(self.getUIFromMatterBody(this.marioContactWith[1]));
+				Matter.World.remove(engine.world, this.marioContactWith[1]);
+				
+				Matter.Body.setVelocity(marioBody,{x:0,y:-4})
+				
 			}else{
 				// 去除物理引擎、保留UI
 				Matter.World.remove(engine.world, body);

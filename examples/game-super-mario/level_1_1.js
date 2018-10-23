@@ -35,7 +35,7 @@
 		this.newGround(0,150,450);
 		
 		// this.newGirl(220,150);
-		// this.newMushroom(220,180);
+		this.newMushroom(220,180);
 		this.newMushroom(260,180);
 		this.newMushroom(300,180);
 		
