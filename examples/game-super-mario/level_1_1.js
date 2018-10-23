@@ -13,7 +13,22 @@
 	var endBucket = null;
 	
 	GameScene.prototype.level_1_1 = function () {
+		
+		this.createBackground(images.bg01,2222,stageH,2);
+		
+		// 游戏接触的弹出图层
+		this.createGameOverLayer();
+		
+		// 方向键
+		this.createDirectionBtn();
+		
+		// 技能键
+		this.createSkillBtn();
+		
+		// 右上角的金币计数
+		this.createCoinUI();
 
+		
 	    // 起点
         this.newBounds(8);
 		

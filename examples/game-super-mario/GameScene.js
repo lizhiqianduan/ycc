@@ -64,13 +64,8 @@ function GameScene(){
 
 // 初始化
 GameScene.prototype.init = function () {
-	this.createGameOverLayer();
-	this.createDirectionBtn();
-	this.createSkillBtn();
 
-    this.createCoinUI();
-
-	// 通过关卡创建当前关卡的UI
+	// 通过关卡创建当前关卡的UI及其场景
 	this['level_'+this.gameLevel] && this['level_'+this.gameLevel]();
 	// 先创建场景，再创建Mario，防止场景覆盖Mario
 	this.createMario();

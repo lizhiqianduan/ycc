@@ -83,6 +83,11 @@ function projectInit() {
 		{name:"flag",url:"./images/flag.png"},
 		{name:"marioTouchFlag",url:"./images/mario-touch-flag.png"},
 		{name:"missile",url:"./images/missile.png"},
+		{name:"bg01",url:"./images/bg01.jpg"},
+		{name:"bg02",url:"./images/bg02.jpg"},
+		{name:"bg03",url:"./images/bg03.jpg"},
+		{name:"bg04",url:"./images/bg04.jpg"},
+		{name:"bg05",url:"./images/bg05.jpg"},
 	],function (lise,imgs) {
 		
 		ycc.loader.loadResOneByOne([
