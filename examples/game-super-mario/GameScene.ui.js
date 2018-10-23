@@ -190,7 +190,7 @@
 		var rect = image.rect,ui = image;
 		var w = rect.width;
 		var h = rect.height;
-		this.bindMatterBodyWithUI(Matter.Bodies.rectangle(rect.x+rect.width/2,rect.y+rect.height/2,w,h,{
+		this.bindMatterBodyWithUI(Matter.Bodies.rectangle(rect.x+rect.width/2+5,rect.y+rect.height/2,w,h,{
 			isStatic:true,
 			label:name,
 			friction:0,

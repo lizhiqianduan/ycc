@@ -265,7 +265,7 @@ GameScene.prototype.updateUIPosition = function () {
 			// 更新蘑菇速度。原因在于：速度较小时，matter引擎碰撞后反弹不了
 			Matter.Body.setPosition(body,{x:body.position.x-2,y:body.position.y});
 
-			ui.rect.x=body.vertices[0].x;
+			ui.rect.x=body.vertices[0].x-5;
 			ui.rect.y=body.vertices[0].y;
 		}
 	}
