@@ -54,7 +54,7 @@ function createYcc() {
 	ycc.ticker.addFrameListener(function () {
 		ycc.layerManager.reRenderAllLayerToStage();
 		currentScene && currentScene.update && currentScene.update();
-		currentScene && currentScene.debug && currentScene.debug();
+		// currentScene && currentScene.debug && currentScene.debug();
 	});
 }
 

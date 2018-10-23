@@ -56,7 +56,7 @@ function GameScene(){
 	this.isGameVictory = false;
 	
 	// 当前游戏关卡
-	this.gameLevel = '1_1';
+	this.gameLevel = (location.hash||'#1_1').slice(1);
 	
 	this.init();
 	
@@ -414,6 +414,7 @@ GameScene.prototype.marioContactWithCompute = function(){
 				self.layer.removeUI(self.getUIFromMatterBody(this.marioContactWith[1]));
 				Matter.World.remove(engine.world, this.marioContactWith[1]);
 				
+				// 给人物一个反弹速度，防止蘑菇删除后人物直接下落
 				Matter.Body.setVelocity(marioBody,{x:0,y:-4})
 				
 			}else{

@@ -102,7 +102,7 @@
         for(var i=0;i<row;i++){
             for(var j=0;j<col;j++){
                 var coin = new Ycc.UI.Image({
-                    rect:new Ycc.Math.Rect(x+(w+wGap)*j,stageH-height-h*i,w,h),
+                    rect:new Ycc.Math.Rect(x+(w+wGap)*j,stageH-height-(h+hGap)*i,w,h),
                     res:images.coin100,
                     fillMode:'scale',
                     name:'coin'
