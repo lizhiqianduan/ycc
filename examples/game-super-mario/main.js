@@ -49,13 +49,39 @@ function createYcc() {
 	ycc = new Ycc().bindCanvas(canvas);
 	stageW = ycc.getStageWidth();
 	stageH = ycc.getStageHeight();
+	
+
+	// 调试信息
+	ycc.debugger.addField('帧间隔',function () {return ycc.ticker.deltaTime;});
+	ycc.debugger.addField('总帧数',function () {return ycc.ticker.frameAllCount;});
+	ycc.debugger.addField('渲染时间',function () {return ycc.ticker.deltaTime;});
+	ycc.debugger.addField('update时间',function () {return ycc.ticker.deltaTime;});
+	ycc.debugger.addField('debug时间',function () {return ycc.ticker.deltaTime;});
 
 // 监听每帧、更新场景
 	ycc.ticker.addFrameListener(function () {
+		var t1 = Date.now();
+
 		ycc.layerManager.reRenderAllLayerToStage();
+
+		var t2 = Date.now();
+		ycc.debugger.updateField('渲染时间',function () {return t2-t1;});
+
 		currentScene && currentScene.update && currentScene.update();
-		// currentScene && currentScene.debug && currentScene.debug();
+		
+		var t3 = Date.now();
+		ycc.debugger.updateField('update时间',function () {return t3-t2;});
+
+		currentScene && currentScene.debug && currentScene.debug();
+		currentScene && currentScene.btnLayer && ycc.debugger.addToLayer(currentScene.btnLayer);
+		ycc.debugger.updateInfo();
+		
+		var t4 = Date.now();
+		ycc.debugger.updateField('debug时间',function () {return t4-t3;});
+		
 	});
+	
+	
 }
 
 

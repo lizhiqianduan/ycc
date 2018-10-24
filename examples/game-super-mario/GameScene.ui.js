@@ -427,7 +427,7 @@
 	
 	
 	/**
-	 * 生成金币UI
+	 * 创建右上角金币计数UI
 	 */
 	GameScene.prototype.createCoinUI = function(){
 		var coin = new Ycc.UI.Image({

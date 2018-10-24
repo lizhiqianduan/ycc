@@ -21,6 +21,7 @@ module.exports = function(grunt){
 						'src/Ycc.Tree.class.js',
 						'src/Ycc.Graph.class.js',
 						'src/Ycc.Ticker.class.js',
+						'src/Ycc.Debugger.class.js',
 						'src/Ycc.Loader.class.js',
 						'src/Ycc.Event.class.js',
 						'src/Ycc.Listener.class.js',
