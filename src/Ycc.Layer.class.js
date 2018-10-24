@@ -41,6 +41,12 @@
 		this.uiList = [];
 		
 		/**
+		 * 该图层ui的总数（只在渲染之后赋值）
+		 * @type {number}
+		 */
+		this.uiCountRecursion = 0;
+		
+		/**
 		 * ycc实例的引用
 		 */
 		this.yccInstance = yccInstance;
@@ -421,13 +427,15 @@
 	 */
 	Ycc.Layer.prototype.reRender = function () {
 		// this.clear();
+		var self = this;
+		self.uiCountRecursion=0;
 		for(var i=0;i<this.uiList.length;i++){
 			if(!this.uiList[i].show) continue;
 			//this.uiList[i].__render();
-
 			// 按树的层次向下渲染
 			this.uiList[i].itor().depthDown(function (ui, level) {
 				//console.log(level,ui);
+				self.uiCountRecursion++;
 				ui.__render();
 			});
 		}

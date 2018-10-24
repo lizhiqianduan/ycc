@@ -27,6 +27,12 @@
 		 */
 		this.renderTime = 0;
 		
+		/**
+		 * 保存渲染的UI个数，主要是reReader方法中的UI个数，开发者可以在每次reRender调用后获取该值
+		 * @type {number}
+		 * @readonly
+		 */
+		this.renderUiCount = 0;
 	};
 	
 	Ycc.LayerManager.prototype.init = function () {
@@ -76,12 +82,14 @@
 	 */
 	Ycc.LayerManager.prototype.reRenderAllLayerToStage = function () {
 		var t1 = Date.now();
+		this.renderUiCount = 0;
 		this.yccInstance.clearStage();
 		for(var i=0;i<this.yccInstance.layerList.length;i++){
 			var layer = this.yccInstance.layerList[i];
 			// 该图层是否可见
-			if(layer.show)
-				layer.reRender();
+			if(!layer.show) continue;
+			layer.reRender();
+			this.renderUiCount+=layer.uiCountRecursion;
 		}
 
 		this.renderTime = Date.now()-t1;
