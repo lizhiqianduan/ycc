@@ -55,6 +55,12 @@
 		this.ticker = null;
 		
 		/**
+		 * 调试模块
+		 * @type {null}
+		 */
+		this.debugger = null;
+		
+		/**
 		 * 资源加载器
 		 * @type {Ycc.Loader}
 		 */
@@ -115,6 +121,8 @@
 		this.layerManager = new Ycc.LayerManager(this);
 		
 		this.ticker = new Ycc.Ticker(this);
+		
+		this.debugger = new Ycc.Debugger(this);
 		
 		this.baseUI = new Ycc.UI(this.ctx.canvas);
 		

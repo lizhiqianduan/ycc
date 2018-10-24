@@ -169,8 +169,9 @@
 				self.broadcastToLayer();
 				// 两帧的时间差
 				self.deltaTime = Date.now()-self.lastFrameTime;
-				// 帧时间差的总和
-				self.deltaTimeTotalValue +=self.deltaTime;
+				// 帧时间差的总和（忽略第一帧）
+				self.frameAllCount>1&&(self.deltaTimeTotalValue +=self.deltaTime);
+				console.log(self.frameAllCount,self.deltaTimeTotalValue);
 				
 				if(self.deltaTime/self.deltaTimeExpect>3){
 					console.warn("第%d帧：",self.frameAllCount);
