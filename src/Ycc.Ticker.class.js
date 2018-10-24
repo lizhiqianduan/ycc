@@ -45,6 +45,24 @@
 		this.lastFrameTime = 0;
 		
 		/**
+		 * 当前帧与上一帧的刷新的时间差
+		 * @type {number}
+		 */
+		this.deltaTime = 0;
+		
+		/**
+		 * 当前帧与上一帧时间差的期望值（根据帧率计算而来的）
+		 * @type {number}
+		 */
+		this.deltaTimeExpect = 0;
+		
+		/**
+		 * 所有帧时间差的总和
+		 * @type {number}
+		 */
+		this.deltaTimeTotalValue = 0;
+		
+		/**
 		 * 所有自定义的帧监听函数列表
 		 * @type {function[]}
 		 */
@@ -105,7 +123,7 @@
 		frameRate = frameRate?frameRate:self.defaultFrameRate;
 		
 		// 每帧理论的间隔时间
-		var frameDeltaTime = 1000/frameRate;
+		self.deltaTimeExpect = 1000/frameRate;
 		
 		var timer = window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame || window.oRequestAnimationFrame || window.msRequestAnimationFrame;
 		
@@ -137,7 +155,7 @@
 			var tickTime = curTime - self.startTime;
 			
 			// 所有帧刷新总时间，理论值
-			var frameTime = self.frameAllCount * frameDeltaTime;
+			var frameTime = self.frameAllCount * self.deltaTimeExpect;
 
 			// 当总帧数*每帧的理论时间小于总心跳时间，触发帧的回调
 			if(tickTime > frameTime){
@@ -149,13 +167,17 @@
 				self.broadcastFrameEvent();
 				// 执行所有图层的帧监听函数
 				self.broadcastToLayer();
+				// 两帧的时间差
+				self.deltaTime = Date.now()-self.lastFrameTime;
+				// 帧时间差的总和
+				self.deltaTimeTotalValue +=self.deltaTime;
 				
-				if((Date.now()-self.lastFrameTime)/frameDeltaTime>3){
+				if(self.deltaTime/self.deltaTimeExpect>3){
 					console.warn("第%d帧：",self.frameAllCount);
-					console.warn("该帧率已低于正常值的1/3！若相邻帧持续警告，请适当降低帧率，或者提升刷新效率！","正常值：",frameRate," 当前值：",1000/(Date.now()-self.lastFrameTime));
+					console.warn("该帧率已低于正常值的1/3！若相邻帧持续警告，请适当降低帧率，或者提升刷新效率！","正常值：",frameRate," 当前值：",1000/self.deltaTime);
 				}
 				// 设置上一帧刷新时间
-				self.lastFrameTime = Date.now();
+				self.lastFrameTime += self.deltaTime;
 			}
 			
 			// 递归调用心跳函数
