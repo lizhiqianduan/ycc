@@ -58,6 +58,23 @@
 		
 		this.jsHeapSizeLimit = null;
 		
+		
+		/**
+		 *
+		 * @type {Array[]}
+		 * {name,cb}
+		 */
+		this.fields = [];
+		
+		/**
+		 * 调试面板的容纳区
+		 * @type {Ycc.UI.Rect}
+		 */
+		this.rect = new Ycc.UI.Rect({
+			rect:new Ycc.Math.Rect(10,10,200,140),
+			color:'rgba(255,255,0,0.5)'
+		});
+		
 	};
 	
 	
@@ -71,7 +88,6 @@
 		
 		// 容纳区
 		var rect = new Ycc.UI.Rect({
-			fill:true,
 			rect:new Ycc.Math.Rect(10,10,200,140),
 			color:'rgba(255,255,0,0.5)'
 		});
@@ -169,9 +185,8 @@
 	 * 更新面板的调试信息
 	 */
 	Ycc.Debugger.prototype.updateInfo = function () {
-		if(!this.deltaTime) return;
-		var ycc = this.yccInstance;
-		this.deltaTime.content="帧间隔 "+ycc.ticker.deltaTime.toFixed(2);
+		var self = this;
+		/*this.deltaTime.content="帧间隔 "+ycc.ticker.deltaTime.toFixed(2);
 		this.deltaTimeExpect.content="期望值 "+ycc.ticker.deltaTimeExpect.toFixed(2);
 		this.frameAllCount.content="总帧数 "+ycc.ticker.frameAllCount;
 		this.deltaTimeAverage.content="帧间隔平均值 "+(ycc.ticker.deltaTimeTotalValue/ycc.ticker.frameAllCount).toFixed(2);
@@ -179,11 +194,58 @@
 		this.renderTime.content="UI渲染时间 "+ycc.layerManager.renderTime;
 		this.totalJSHeapSize.content="totalJSHeapSize "+performance.memory.totalJSHeapSize;
 		this.usedJSHeapSize.content="usedJSHeapSize "+performance.memory.usedJSHeapSize;
-		this.jsHeapSizeLimit.content="jsHeapSizeLimit "+performance.memory.jsHeapSizeLimit;
+		this.jsHeapSizeLimit.content="jsHeapSizeLimit "+performance.memory.jsHeapSizeLimit;*/
+
+		this.rect.rect.height = this.fields.length*20;
+		this.fields.forEach(function (field) {
+			self['field_'+field.name].content = field.name+' '+field.cb();
+		});
+		
 	};
 	
 	
+	/**
+	 * 添加一个信息项
+	 * @param name
+	 * @param cb()	{function}
+	 *  cb必须返回一个值，这个值将直接填入
+	 *
+	 */
+	Ycc.Debugger.prototype.addField = function (name, cb) {
+		var index = this.fields.length;
+		this['field_'+name]  = new Ycc.UI.SingleLineText({
+			content:"usedJSHeapSize "+cb(),
+			fontSize:'12px',
+			rect:new Ycc.Math.Rect(0,20*index,100,20),
+			color:'green'
+		});
+		this.fields.push({name:name,cb:cb});
+		this.rect.addChild(this['field_'+name]);
+	};
 	
+	
+	/**
+	 * 将调试面板添加至某个图层
+	 * @param layer {Ycc.Layer}
+	 */
+	Ycc.Debugger.prototype.addToLayer = function (layer) {
+		if(layer.uiList.indexOf(this.rect)===-1)
+			layer.addUI(this.rect);
+	};
+	
+	/**
+	 * 更新某个调试字段的回调函数
+	 * @param name
+	 * @param cb
+	 */
+	Ycc.Debugger.prototype.updateField = function (name,cb) {
+		for(var i=0;i<this.fields.length;i++){
+			if(this.fields[i].name===name){
+				this.fields[i].cb=cb;
+				return;
+			}
+		}
+	};
 	
 	
 	
