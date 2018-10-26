@@ -261,6 +261,91 @@
 		this.ctx.translate(-this.anchorX-rect.x,-this.anchorY-rect.y);
 	};
 	
+	
+	/**
+	 * 递归释放内存，等待GC
+	 * 将所有引用属性设为null
+	 * @param uiNode	ui节点
+	 */
+	Ycc.UI.release = function (uiNode) {
+		
+		uiNode.itor().leftChildFirst(function (ui) {
+			
+			// 释放listener
+			Ycc.Listener.release(ui);
+			
+			ui.yccInstance=null;
+			
+			/**
+			 * 构造器的引用，Ycc中的每个类都有此属性
+			 */
+			ui.yccClass = null;
+			
+			/**
+			 * 绘图环境
+			 * @type {null}
+			 */
+			ui.ctx = null;
+			
+			/**
+			 * UI所属的图层
+			 * @type {Ycc.Layer}
+			 */
+			ui.belongTo = null;
+			
+			/**
+			 * 用户自定义的数据
+			 * @type {null}
+			 */
+			ui.userData = null;
+			
+			/**
+			 * 基础绘图UI
+			 * @type {Ycc.UI}
+			 */
+			ui.baseUI = null;
+			
+			/**
+			 * 初始化之前的hook
+			 * @type {function}
+			 */
+			ui.beforeInit = null;
+			
+			/**
+			 * 初始化之后的hook
+			 * @type {function}
+			 */
+			ui.afterInit = null;
+			
+			/**
+			 * 计算属性前的hook
+			 * @type {function}
+			 */
+			ui.oncomputestart = null;
+			
+			/**
+			 * 计算属性后的hook
+			 * @type {function}
+			 */
+			ui.oncomputeend = null;
+			
+			/**
+			 * 渲染前的hook
+			 * @type {function}
+			 */
+			ui.onrenderstart = null;
+			
+			/**
+			 * 渲染后的hook
+			 * @type {function}
+			 */
+			ui.onrenderend = null;
+		});
+		
+		
+		
+		
+	};
 
 	/**
 	 * 渲染至绘图环境。

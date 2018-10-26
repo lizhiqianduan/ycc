@@ -142,6 +142,61 @@
 	Ycc.Layer.prototype = new Ycc.Listener();
 	Ycc.Layer.prototype.constructor = Ycc.Layer;
 	
+	
+	/**
+	 * 释放layer的内存，等待GC
+	 * 将所有引用属性置为null
+	 * @param layer
+	 */
+	Ycc.Layer.release = function (layer) {
+		Ycc.Listener.release(layer);
+		
+		/**
+		 * 类型
+		 */
+		layer.yccClass = null;
+		
+		/**
+		 * 存储图层中的所有UI。UI的顺序，即为图层中的渲染顺序。
+		 * @type {Ycc.UI[]}
+		 */
+		layer.uiList = null;
+		
+		/**
+		 * ycc实例的引用
+		 */
+		layer.yccInstance = null;
+		/**
+		 * 图层是否显示
+		 */
+		layer.show = false;
+		
+		/**
+		 * 是否监听舞台的事件。用于控制舞台事件是否广播至图层。默认关闭
+		 * @type {boolean}
+		 */
+		layer.enableEventManager = false;
+		
+		/**
+		 * 是否接收每帧更新的通知。默认为false
+		 * @type {boolean}
+		 */
+		layer.enableFrameEvent = false;
+		
+		/**
+		 * 若接收通知，此函数为接收通知的回调函数。当且仅当enableFrameEvent为true时生效
+		 * @type {function}
+		 */
+		layer.onFrameComing = null;
+	};
+	
+	
+	
+	
+	
+	
+	
+	
 	/**
 	 * 初始化
 	 * @return {null}
@@ -364,11 +419,18 @@
 	 */
 	Ycc.Layer.prototype.removeAllUI = function () {
 		this.uiList.forEach(function (ui) {
-			ui.itor().each(function (child) {
-				child = null;
-			});
+			Ycc.UI.release(ui);
 		});
-		this.uiList=[];
+		this.uiList.length=0;
+	};
+	
+	
+	/**
+	 * 删除自身
+	 */
+	Ycc.Layer.prototype.removeSelf = function () {
+		this.removeAllUI();
+		Ycc.Layer.release(this);
 	};
 	
 	

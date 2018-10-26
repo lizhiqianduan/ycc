@@ -60,6 +60,27 @@
 		nodeMap[this.$id] = this;
 	};
 	
+	/**
+	 * 释放当前节点的内存，非递归
+	 * @param treeNode
+	 */
+	Ycc.Tree.release = function (treeNode) {
+		
+		// 删除引用
+		delete nodeMap[treeNode.$id];
+		
+		/**
+		 * 节点的子节点列表
+		 * @type {Array}
+		 */
+		treeNode.children.length = 0;
+		
+		/**
+		 * 节点所携带的数据
+		 * @type {any}
+		 */
+		treeNode.data = null;
+	};
 	
 	/**
 	 * 获取nodeMap表

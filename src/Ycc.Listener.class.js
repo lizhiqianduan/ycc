@@ -110,6 +110,122 @@
 	
 	
 	/**
+	 * 释放某个监听器的内存
+	 * 将其所有引用属性设为null，等待GC
+	 * @static
+	 * @param listener
+	 */
+	Ycc.Listener.release = function (listener) {
+		// 临时变量
+		var key = null;
+		
+		listener.yccClass = null;
+		
+		/**
+		 * 所有的监听器。key为type，val为listener数组。
+		 * @type {{}}
+		 */
+		for(key in listener.listeners){
+			if(!listener.listeners.hasOwnProperty(key)) continue;
+			listener.listeners[key].length=0;
+			delete listener.listeners[key];
+		}
+		// listener.listeners = null;
+		
+		
+		/**
+		 * 被阻止的事件类型。key为type，val为boolean
+		 * @type {{}}
+		 */
+		Ycc.utils.releaseObject(listener.stopType);
+		// listener.stopType = null;
+		
+		/**
+		 * 被禁用的事件类型。key为type，val为boolean
+		 * @type {{}}
+		 */
+		Ycc.utils.releaseObject(listener.disableType);
+		// listener.disableType = null;
+		
+		/**
+		 * 是否阻止所有的事件触发
+		 * @type {boolean}
+		 */
+		listener.stopAllEvent = true;
+		
+		/**
+		 * 点击 的监听。默认为null
+		 * @type {function}
+		 */
+		listener.onclick = null;
+		/**
+		 * 鼠标按下 的监听。默认为null
+		 * @type {function}
+		 */
+		listener.onmousedown = null;
+		/**
+		 * 鼠标抬起 的监听。默认为null
+		 * @type {function}
+		 */
+		listener.onmouseup = null;
+		/**
+		 * 鼠标移动 的监听。默认为null
+		 * @type {function}
+		 */
+		listener.onmousemove = null;
+		/**
+		 * 拖拽开始 的监听。默认为null
+		 * @type {function}
+		 */
+		listener.ondragstart = null;
+		/**
+		 * 拖拽 的监听。默认为null
+		 * @type {function}
+		 */
+		listener.ondragging = null;
+		/**
+		 * 拖拽结束 的监听。默认为null
+		 * @type {function}
+		 */
+		listener.ondragend = null;
+		/**
+		 * 鼠标移入 的监听。默认为null
+		 * @type {function}
+		 */
+		listener.onmouseover = null;
+		/**
+		 * 鼠标移出 的监听。默认为null
+		 * @type {function}
+		 */
+		listener.onmouseout = null;
+		/**
+		 * 触摸开始 的监听。默认为null
+		 * @type {function}
+		 */
+		listener.ontouchstart = null;
+		
+		/**
+		 * 触摸移动 的监听。默认为null
+		 * @type {function}
+		 */
+		listener.ontouchmove = null;
+		/**
+		 * 触摸结束 的监听。默认为null
+		 * @type {function}
+		 */
+		listener.ontouchend = null;
+		
+		/**
+		 * 点击事件 的监听。默认为null
+		 * @type {function}
+		 */
+		listener.ontap = null;
+	};
+	
+	
+	
+	
+	/**
 	 * 添加某个类型的监听器
 	 * @param type	{string}
 	 * @param listener	{function}
@@ -142,7 +258,7 @@
 		if(!this.stopType[type])
 			Ycc.utils.isFn(this["on"+type]) && this["on"+type].apply(this,Array.prototype.slice.call(arguments,1));
 
-		var ls = this.listeners[type];
+		var ls = this.listeners && this.listeners[type];
 		if(!ls || !Ycc.utils.isArray(ls)) return;
 		for(var i=0;i<ls.length;i++){
 			if(!this.stopType[type])

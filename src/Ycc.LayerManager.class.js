@@ -70,7 +70,10 @@
 	 */
 	Ycc.LayerManager.prototype.deleteAllLayer = function () {
 		for(var i=0;i<this.yccInstance.layerList.length;i++){
-			this.yccInstance.layerList[i]=null;
+			var layer = this.yccInstance.layerList[i];
+			layer.removeAllUI();
+			Ycc.Layer.release(layer);
+			layer = null;
 		}
 		this.yccInstance.layerList=[];
 	};

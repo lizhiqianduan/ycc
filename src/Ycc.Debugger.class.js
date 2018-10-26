@@ -195,7 +195,6 @@
 		this.totalJSHeapSize.content="totalJSHeapSize "+performance.memory.totalJSHeapSize;
 		this.usedJSHeapSize.content="usedJSHeapSize "+performance.memory.usedJSHeapSize;
 		this.jsHeapSizeLimit.content="jsHeapSizeLimit "+performance.memory.jsHeapSizeLimit;*/
-
 		this.rect.rect.height = this.fields.length*20;
 		this.fields.forEach(function (field) {
 			self['field_'+field.name].content = field.name+' '+field.cb();
