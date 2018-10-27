@@ -462,11 +462,13 @@
 	};
 	
 	/**
-	 * 删除图层内的某个UI图形
+	 * 删除图层内的某个UI图形，及其子UI
 	 * @param ui
 	 */
 	Ycc.Layer.prototype.removeUI = function (ui) {
+		if(!ui) return;
 		var index = this.uiList.indexOf(ui);
+		Ycc.UI.release(ui);
 		if(index!==-1){
 			this.uiList.splice(index,1);
 		}

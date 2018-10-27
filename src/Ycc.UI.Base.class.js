@@ -193,7 +193,6 @@
 		Ycc.utils.isFn(this.beforeInit) && this.beforeInit();
 		this.belongTo = layer;
 		this.ctx = layer.ctx;
-		this.baseUI = new Ycc.UI(layer.canvasDom);
 
 		// 初始化时计算一次属性
 		this.computeUIProps();
@@ -271,9 +270,14 @@
 		
 		uiNode.itor().leftChildFirst(function (ui) {
 			
-			// 释放listener
-			Ycc.Listener.release(ui);
+			console.log('release '+(!!ui.yccClass?ui.yccClass.name:''),ui);
 			
+			// 释放Tree的内存
+			Ycc.Tree.release(ui);
+			// 释放listener内存
+			Ycc.Listener.release(ui);
+
+			/////////////// 释放UI内存
 			ui.yccInstance=null;
 			
 			/**

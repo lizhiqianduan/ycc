@@ -233,7 +233,7 @@
 			if(y+config.lineHeight>rect.y+rect.height){
 				break;
 			}
-			this.baseUI.text([x,y],self.displayLines[i],config.fill);
+			this.belongTo.yccInstance.baseUI.text([x,y],self.displayLines[i],config.fill);
 		}
 		this.ctx.restore();
 	};
