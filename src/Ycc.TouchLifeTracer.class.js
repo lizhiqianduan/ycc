@@ -206,7 +206,8 @@
 		this.init();
 	};
 	
-	Ycc.TouchLifeTracer.prototype = new Ycc.Listener();
+	// 继承prototype
+	Ycc.utils.mergeObject(Ycc.TouchLifeTracer.prototype,Ycc.Listener.prototype);
 	
 	/**
 	 * 同步当前HTML元素的touches

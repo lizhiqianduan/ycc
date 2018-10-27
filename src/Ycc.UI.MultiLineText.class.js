@@ -61,7 +61,9 @@
 
 		this.extend(option);
 	};
-	Ycc.UI.MultiLineText.prototype = new Ycc.UI.Base();
+
+	// 继承prototype
+	Ycc.utils.mergeObject(Ycc.UI.MultiLineText.prototype,Ycc.UI.Base.prototype);
 	Ycc.UI.MultiLineText.prototype.constructor = Ycc.UI.MultiLineText;
 	
 	

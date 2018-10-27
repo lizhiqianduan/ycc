@@ -29,7 +29,8 @@
 		
 		this.extend(option);
 	};
-	Ycc.UI.Line.prototype = new Ycc.UI.Base();
+	// 继承prototype
+	Ycc.utils.mergeObject(Ycc.UI.Line.prototype,Ycc.UI.Base.prototype);
 	Ycc.UI.Line.prototype.constructor = Ycc.UI.Line;
 
 	/**

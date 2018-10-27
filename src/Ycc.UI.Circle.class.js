@@ -31,7 +31,8 @@
 		
 		this.extend(option);
 	};
-	Ycc.UI.Circle.prototype = new Ycc.UI.Base();
+	// 继承prototype
+	Ycc.utils.mergeObject(Ycc.UI.Circle.prototype,Ycc.UI.Base.prototype);
 	
 	
 	/**

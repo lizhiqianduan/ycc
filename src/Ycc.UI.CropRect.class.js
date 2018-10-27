@@ -88,7 +88,8 @@
 		
 		this._initUI();
 	};
-	Ycc.UI.CropRect.prototype = new Ycc.UI.Base();
+	// 继承prototype
+	Ycc.utils.mergeObject(Ycc.UI.CropRect.prototype,Ycc.UI.Base.prototype);
 	
 	
 	/**

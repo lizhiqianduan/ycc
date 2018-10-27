@@ -469,6 +469,7 @@
 		if(!ui) return;
 		var index = this.uiList.indexOf(ui);
 		Ycc.UI.release(ui);
+		this.uiList[index]=null;
 		if(index!==-1){
 			this.uiList.splice(index,1);
 		}

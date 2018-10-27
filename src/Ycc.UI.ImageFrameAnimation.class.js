@@ -88,7 +88,8 @@
 		// 初始化
 		this.isRunning = this.autoplay;
 	};
-	Ycc.UI.ImageFrameAnimation.prototype = new Ycc.UI.Base();
+	// 继承prototype
+	Ycc.utils.mergeObject(Ycc.UI.ImageFrameAnimation.prototype,Ycc.UI.Base.prototype);
 	Ycc.UI.ImageFrameAnimation.prototype.constructor = Ycc.UI.ImageFrameAnimation;
 	
 	

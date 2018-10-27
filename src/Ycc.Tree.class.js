@@ -31,6 +31,7 @@
 	 * @constructor
 	 */
 	Ycc.Tree = function() {
+		console.log('exec Tree');
 		
 		/**
 		 * 节点的自增ID，不允许修改，且每个对象必须唯一
@@ -66,7 +67,16 @@
 	 */
 	Ycc.Tree.release = function (treeNode) {
 		
-		// 删除引用
+		// 删除父级children的引用
+		var pa = treeNode.getParent();
+		if(pa){
+			var children = pa.children;
+			var index = children.indexOf(treeNode);
+			if(index!==-1)
+				children[index]=null;
+		}
+		
+		// 删除nodeMap引用
 		delete nodeMap[treeNode.$id];
 		
 		/**
@@ -82,6 +92,14 @@
 		treeNode.data = null;
 	};
 	
+	/**
+	 * 获取nodeMap表
+	 * @return {{}}
+	 */
+	Ycc.Tree.getNodeMap = function () {
+		return nodeMap;
+	};
+
 	/**
 	 * 获取nodeMap表
 	 * @return {{}}

@@ -71,6 +71,7 @@
 		 * @type {Ycc.UI.Rect}
 		 */
 		this.rect = new Ycc.UI.Rect({
+			name:'debuggerRect'
 			rect:new Ycc.Math.Rect(10,10,200,140),
 			color:'rgba(255,255,0,0.5)'
 		});

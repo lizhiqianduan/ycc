@@ -77,7 +77,8 @@
 
 		this.extend(option);
 	};
-	Ycc.UI.Image.prototype = new Ycc.UI.Base();
+	// 继承prototype
+	Ycc.utils.mergeObject(Ycc.UI.Image.prototype,Ycc.UI.Base.prototype);
 	Ycc.UI.Image.prototype.constructor = Ycc.UI.Image;
 	
 	

@@ -37,7 +37,8 @@
 		
 		this.extend(option);
 	};
-	Ycc.UI.Ellipse.prototype = new Ycc.UI.Base();
+	// 继承prototype
+	Ycc.utils.mergeObject(Ycc.UI.Ellipse.prototype,Ycc.UI.Base.prototype);
 	Ycc.UI.Ellipse.prototype.constructor = Ycc.UI.Ellipse;
 	
 	
