@@ -110,9 +110,6 @@
 			this.gameOverLayer.uiList[0].color='#ff4d4f';
 		}
 		
-		// var endBucketIndex = this.layer.uiList.indexOf(endBucket);
-		this.layer.removeUI(endBucket);
-		this.layer.addUI(endBucket);
 	};
 	
 

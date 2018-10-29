@@ -41,7 +41,7 @@
 		this.newGround(600,150,500);
 		this.newGround(1200,150,100);
 		this.newGround(1400,150,100);
-		this.newGround(1500,150,50);
+		this.newGround(1600,150,50);
 		this.newGround(1700,150,50);
 		this.newGround(1800,150,50);
 
@@ -57,8 +57,7 @@
 		
 		this.newWall(4100,200,1,8);
 		this.newWall(4400,300,1,3);
-		this.newWall(4600,400,1,6);
-		this.newWall(4750,300,1,6);
+		this.newWall(4600,400,1,2);
 		
 		this.newGround(4800,150,500);
 		
@@ -77,8 +76,6 @@
 		
 		this.newMushroom(3220,180);
 		this.newMushroom(3260,180);
-		
-		this.newWall(3400,100,1,4);
 		
 		this.newMushroom(4220,180);
 		this.newMushroom(4260,180);
@@ -123,9 +120,6 @@
 			this.gameOverLayer.uiList[0].color='#ff4d4f';
 		}
 		
-		// var endBucketIndex = this.layer.uiList.indexOf(endBucket);
-		this.layer.removeUI(endBucket);
-		this.layer.addUI(endBucket);
 	};
 	
 	
