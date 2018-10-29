@@ -477,10 +477,31 @@
 			else
 				return txt;
 		});
-	}
+	};
 	
-
-
+	
+	/**
+	 * 释放obj内存 只清空字段
+	 * @param obj
+	 */
+	Ycc.utils.releaseObject = function (obj) {
+		for(var key in obj){
+			if(!obj.hasOwnProperty(key)) continue;
+			delete obj[key];
+		}
+	};
+	
+	/**
+	 * 释放arr内存 只清空元素
+	 * @param arr
+	 */
+	Ycc.utils.releaseArray = function (arr) {
+		arr.length = 0;
+	};
+	
+	
+	
+	
 })(Ycc);
 
 ;/**
@@ -843,7 +864,45 @@
 		nodeMap[this.$id] = this;
 	};
 	
+	/**
+	 * 释放当前节点的内存，非递归
+	 * @param treeNode
+	 */
+	Ycc.Tree.release = function (treeNode) {
+		
+		// 删除父级children的引用
+		var pa = treeNode.getParent();
+		if(pa){
+			var children = pa.children;
+			var index = children.indexOf(treeNode);
+			if(index!==-1)
+				children[index]=null;
+		}
+		
+		// 删除nodeMap引用
+		delete nodeMap[treeNode.$id];
+		
+		/**
+		 * 节点的子节点列表
+		 * @type {Array}
+		 */
+		treeNode.children.length = 0;
+		
+		/**
+		 * 节点所携带的数据
+		 * @type {any}
+		 */
+		treeNode.data = null;
+	};
 	
+	/**
+	 * 获取nodeMap表
+	 * @return {{}}
+	 */
+	Ycc.Tree.getNodeMap = function () {
+		return nodeMap;
+	};
+
 	/**
 	 * 获取nodeMap表
 	 * @return {{}}
@@ -1901,9 +1960,9 @@
 		
 		
 		/**
-		 *
+		 * 调试面板所显示的字段
 		 * @type {Array[]}
-		 * {name,cb}
+		 * {name,cb,ui}
 		 */
 		this.fields = [];
 		
@@ -1912,134 +1971,57 @@
 		 * @type {Ycc.UI.Rect}
 		 */
 		this.rect = new Ycc.UI.Rect({
+			name:'debuggerRect',
 			rect:new Ycc.Math.Rect(10,10,200,140),
 			color:'rgba(255,255,0,0.5)'
 		});
 		
+		/**
+		 * 调试面板的图层
+		 */
+		this.layer = yccInstance.layerManager.newLayer({
+			name:"debug图层"
+		});
+		
+		
+		this.init();
 	};
 	
+	
+	Ycc.Debugger.prototype.init = function () {
+		var self = this;
+		this.yccInstance.ticker.addFrameListener(function () {
+			self.updateInfo();
+		});
+	};
 	
 	/**
-	 * 创建左上角的信息面板
-	 * @return {{deltaTime: Ycc.UI.SingleLineText, deltaTimeExpect: Ycc.UI.SingleLineText, frameAllCount: Ycc.UI.SingleLineText, deltaTimeAverage: Ycc.UI.SingleLineText}}
+	 * 显示调试面板
 	 */
-	Ycc.Debugger.prototype.createDebugInfoUI=function(){
-
-		var ycc = this.yccInstance;
-		
-		// 容纳区
-		var rect = new Ycc.UI.Rect({
-			rect:new Ycc.Math.Rect(10,10,200,140),
-			color:'rgba(255,255,0,0.5)'
-		});
-		
-		// 字体样式
-		var fontSize = '12px';
-		var color = 'green';
-		
-		// 第一行
-		this.deltaTime = new Ycc.UI.SingleLineText({
-			content:"帧间隔 "+ycc.ticker.deltaTime,
-			fontSize:fontSize,
-			rect:new Ycc.Math.Rect(0,0,100,20),
-			color:color
-		});
-		this.deltaTimeExpect = new Ycc.UI.SingleLineText({
-			content:"期望值 "+ycc.ticker.deltaTimeExpect,
-			fontSize:fontSize,
-			rect:new Ycc.Math.Rect(100,0,100,20),
-			color:color
-		});
-		
-		// 第二行
-		this.frameAllCount = new Ycc.UI.SingleLineText({
-			content:"总帧数 "+ycc.ticker.frameAllCount,
-			fontSize:fontSize,
-			rect:new Ycc.Math.Rect(0,20,100,20),
-			color:color
-		});
-		this.deltaTimeAverage  = new Ycc.UI.SingleLineText({
-			content:"帧间隔平均值 "+ycc.ticker.deltaTimeTotalValue/ycc.ticker.frameAllCount,
-			fontSize:fontSize,
-			rect:new Ycc.Math.Rect(100,20,100,20),
-			color:color
-		});
-		
-		// 第三行
-		this.renderUiCount = new Ycc.UI.SingleLineText({
-			content:"UI数量 "+ycc.layerManager.renderUiCount,
-			fontSize:fontSize,
-			rect:new Ycc.Math.Rect(0,40,100,20),
-			color:color
-		});
-		this.renderTime  = new Ycc.UI.SingleLineText({
-			content:"UI渲染时间 "+ycc.layerManager.renderTime,
-			fontSize:fontSize,
-			rect:new Ycc.Math.Rect(100,40,100,20),
-			color:color
-		});
-		
-		// 第四行
-		this.totalJSHeapSize = new Ycc.UI.SingleLineText({
-			content:"totalJSHeapSize "+ycc.layerManager.renderUiCount,
-			fontSize:fontSize,
-			rect:new Ycc.Math.Rect(0,60,100,20),
-			color:color
-		});
-
-		// 第五行
-		this.usedJSHeapSize  = new Ycc.UI.SingleLineText({
-			content:"usedJSHeapSize "+ycc.layerManager.renderTime,
-			fontSize:fontSize,
-			rect:new Ycc.Math.Rect(0,80,100,20),
-			color:color
-		});
-		
-		// 第六行
-		this.jsHeapSizeLimit = new Ycc.UI.SingleLineText({
-			content:"jsHeapSizeLimit "+ycc.layerManager.renderUiCount,
-			fontSize:fontSize,
-			rect:new Ycc.Math.Rect(0,100,100,20),
-			color:color
-		});
-		
-		
-		rect.addChild(this.deltaTime);
-		rect.addChild(this.deltaTimeExpect);
-		
-		rect.addChild(this.frameAllCount);
-		rect.addChild(this.deltaTimeAverage);
-		
-		rect.addChild(this.renderUiCount);
-		rect.addChild(this.renderTime);
-		
-		// rect.addChild(this.totalJSHeapSize);
-		// rect.addChild(this.usedJSHeapSize);
-		//
-		// rect.addChild(this.jsHeapSizeLimit);
-		
-		return rect;
+	Ycc.Debugger.prototype.showDebugPanel = function () {
+		var layer = this.layer;
+		if(layer.uiList.indexOf(this.rect)===-1)
+			layer.addUI(this.rect);
 	};
+	
 	
 	
 	/**
 	 * 更新面板的调试信息
 	 */
 	Ycc.Debugger.prototype.updateInfo = function () {
-		var self = this;
-		/*this.deltaTime.content="帧间隔 "+ycc.ticker.deltaTime.toFixed(2);
-		this.deltaTimeExpect.content="期望值 "+ycc.ticker.deltaTimeExpect.toFixed(2);
-		this.frameAllCount.content="总帧数 "+ycc.ticker.frameAllCount;
-		this.deltaTimeAverage.content="帧间隔平均值 "+(ycc.ticker.deltaTimeTotalValue/ycc.ticker.frameAllCount).toFixed(2);
-		this.renderUiCount.content="UI数量 "+ycc.layerManager.renderUiCount;
-		this.renderTime.content="UI渲染时间 "+ycc.layerManager.renderTime;
-		this.totalJSHeapSize.content="totalJSHeapSize "+performance.memory.totalJSHeapSize;
-		this.usedJSHeapSize.content="usedJSHeapSize "+performance.memory.usedJSHeapSize;
-		this.jsHeapSizeLimit.content="jsHeapSizeLimit "+performance.memory.jsHeapSizeLimit;*/
-
+		
+		// 强制使debug面板置顶
+		var layerList = this.yccInstance.layerList;
+		var index = layerList.indexOf(this.layer);
+		if(index+1!==layerList.length){
+			layerList.splice(index,1);
+			layerList.push(this.layer);
+		}
+		
 		this.rect.rect.height = this.fields.length*20;
 		this.fields.forEach(function (field) {
-			self['field_'+field.name].content = field.name+' '+field.cb();
+			field.ui.content = field.name+' '+field.cb();
 		});
 		
 	};
@@ -2054,14 +2036,14 @@
 	 */
 	Ycc.Debugger.prototype.addField = function (name, cb) {
 		var index = this.fields.length;
-		this['field_'+name]  = new Ycc.UI.SingleLineText({
+		var ui  = new Ycc.UI.SingleLineText({
 			content:"usedJSHeapSize "+cb(),
 			fontSize:'12px',
 			rect:new Ycc.Math.Rect(0,20*index,100,20),
 			color:'green'
 		});
-		this.fields.push({name:name,cb:cb});
-		this.rect.addChild(this['field_'+name]);
+		this.fields.push({name:name,cb:cb,ui:ui});
+		this.rect.addChild(ui);
 	};
 	
 	
@@ -2082,6 +2064,7 @@
 	Ycc.Debugger.prototype.updateField = function (name,cb) {
 		for(var i=0;i<this.fields.length;i++){
 			if(this.fields[i].name===name){
+				this.fields[i].cb=null;
 				this.fields[i].cb=cb;
 				return;
 			}
@@ -2453,6 +2436,122 @@
 	
 	
 	/**
+	 * 释放某个监听器的内存
+	 * 将其所有引用属性设为null，等待GC
+	 * @static
+	 * @param listener
+	 */
+	Ycc.Listener.release = function (listener) {
+		// 临时变量
+		var key = null;
+		
+		listener.yccClass = null;
+		
+		/**
+		 * 所有的监听器。key为type，val为listener数组。
+		 * @type {{}}
+		 */
+		for(key in listener.listeners){
+			if(!listener.listeners.hasOwnProperty(key)) continue;
+			listener.listeners[key].length=0;
+			delete listener.listeners[key];
+		}
+		// listener.listeners = null;
+		
+		
+		/**
+		 * 被阻止的事件类型。key为type，val为boolean
+		 * @type {{}}
+		 */
+		Ycc.utils.releaseObject(listener.stopType);
+		// listener.stopType = null;
+		
+		/**
+		 * 被禁用的事件类型。key为type，val为boolean
+		 * @type {{}}
+		 */
+		Ycc.utils.releaseObject(listener.disableType);
+		// listener.disableType = null;
+		
+		/**
+		 * 是否阻止所有的事件触发
+		 * @type {boolean}
+		 */
+		listener.stopAllEvent = true;
+		
+		/**
+		 * 点击 的监听。默认为null
+		 * @type {function}
+		 */
+		listener.onclick = null;
+		/**
+		 * 鼠标按下 的监听。默认为null
+		 * @type {function}
+		 */
+		listener.onmousedown = null;
+		/**
+		 * 鼠标抬起 的监听。默认为null
+		 * @type {function}
+		 */
+		listener.onmouseup = null;
+		/**
+		 * 鼠标移动 的监听。默认为null
+		 * @type {function}
+		 */
+		listener.onmousemove = null;
+		/**
+		 * 拖拽开始 的监听。默认为null
+		 * @type {function}
+		 */
+		listener.ondragstart = null;
+		/**
+		 * 拖拽 的监听。默认为null
+		 * @type {function}
+		 */
+		listener.ondragging = null;
+		/**
+		 * 拖拽结束 的监听。默认为null
+		 * @type {function}
+		 */
+		listener.ondragend = null;
+		/**
+		 * 鼠标移入 的监听。默认为null
+		 * @type {function}
+		 */
+		listener.onmouseover = null;
+		/**
+		 * 鼠标移出 的监听。默认为null
+		 * @type {function}
+		 */
+		listener.onmouseout = null;
+		/**
+		 * 触摸开始 的监听。默认为null
+		 * @type {function}
+		 */
+		listener.ontouchstart = null;
+		
+		/**
+		 * 触摸移动 的监听。默认为null
+		 * @type {function}
+		 */
+		listener.ontouchmove = null;
+		/**
+		 * 触摸结束 的监听。默认为null
+		 * @type {function}
+		 */
+		listener.ontouchend = null;
+		
+		/**
+		 * 点击事件 的监听。默认为null
+		 * @type {function}
+		 */
+		listener.ontap = null;
+	};
+	
+	
+	
+	
+	/**
 	 * 添加某个类型的监听器
 	 * @param type	{string}
 	 * @param listener	{function}
@@ -2485,7 +2584,7 @@
 		if(!this.stopType[type])
 			Ycc.utils.isFn(this["on"+type]) && this["on"+type].apply(this,Array.prototype.slice.call(arguments,1));
 
-		var ls = this.listeners[type];
+		var ls = this.listeners && this.listeners[type];
 		if(!ls || !Ycc.utils.isArray(ls)) return;
 		for(var i=0;i<ls.length;i++){
 			if(!this.stopType[type])
@@ -2738,7 +2837,8 @@
 		this.init();
 	};
 	
-	Ycc.TouchLifeTracer.prototype = new Ycc.Listener();
+	// 继承prototype
+	Ycc.utils.mergeObject(Ycc.TouchLifeTracer.prototype,Ycc.Listener.prototype);
 	
 	/**
 	 * 同步当前HTML元素的touches
@@ -3327,6 +3427,61 @@
 	Ycc.Layer.prototype = new Ycc.Listener();
 	Ycc.Layer.prototype.constructor = Ycc.Layer;
 	
+	
+	/**
+	 * 释放layer的内存，等待GC
+	 * 将所有引用属性置为null
+	 * @param layer
+	 */
+	Ycc.Layer.release = function (layer) {
+		Ycc.Listener.release(layer);
+		
+		/**
+		 * 类型
+		 */
+		layer.yccClass = null;
+		
+		/**
+		 * 存储图层中的所有UI。UI的顺序，即为图层中的渲染顺序。
+		 * @type {Ycc.UI[]}
+		 */
+		layer.uiList = null;
+		
+		/**
+		 * ycc实例的引用
+		 */
+		layer.yccInstance = null;
+		/**
+		 * 图层是否显示
+		 */
+		layer.show = false;
+		
+		/**
+		 * 是否监听舞台的事件。用于控制舞台事件是否广播至图层。默认关闭
+		 * @type {boolean}
+		 */
+		layer.enableEventManager = false;
+		
+		/**
+		 * 是否接收每帧更新的通知。默认为false
+		 * @type {boolean}
+		 */
+		layer.enableFrameEvent = false;
+		
+		/**
+		 * 若接收通知，此函数为接收通知的回调函数。当且仅当enableFrameEvent为true时生效
+		 * @type {function}
+		 */
+		layer.onFrameComing = null;
+	};
+	
+	
+	
+	
+	
+	
+	
+	
 	/**
 	 * 初始化
 	 * @return {null}
@@ -3549,11 +3704,19 @@
 	 */
 	Ycc.Layer.prototype.removeAllUI = function () {
 		this.uiList.forEach(function (ui) {
-			ui.itor().each(function (child) {
-				child = null;
-			});
+			Ycc.UI.release(ui);
 		});
-		this.uiList=[];
+		this.uiList.length=0;
+	};
+	
+	
+	/**
+	 * 删除自身
+	 */
+	Ycc.Layer.prototype.removeSelf = function () {
+		this.removeAllUI();
+		this.yccInstance.layerManager.deleteLayer(this);
+		Ycc.Layer.release(this);
 	};
 	
 	
@@ -3585,11 +3748,14 @@
 	};
 	
 	/**
-	 * 删除图层内的某个UI图形
+	 * 删除图层内的某个UI图形，及其子UI
 	 * @param ui
 	 */
 	Ycc.Layer.prototype.removeUI = function (ui) {
+		if(!ui) return;
 		var index = this.uiList.indexOf(ui);
+		Ycc.UI.release(ui);
+		this.uiList[index]=null;
 		if(index!==-1){
 			this.uiList.splice(index,1);
 		}
@@ -3772,7 +3938,10 @@
 	 */
 	Ycc.LayerManager.prototype.deleteAllLayer = function () {
 		for(var i=0;i<this.yccInstance.layerList.length;i++){
-			this.yccInstance.layerList[i]=null;
+			var layer = this.yccInstance.layerList[i];
+			layer.removeAllUI();
+			Ycc.Layer.release(layer);
+			layer = null;
 		}
 		this.yccInstance.layerList=[];
 	};
@@ -4490,7 +4659,6 @@
 		Ycc.utils.isFn(this.beforeInit) && this.beforeInit();
 		this.belongTo = layer;
 		this.ctx = layer.ctx;
-		this.baseUI = new Ycc.UI(layer.canvasDom);
 
 		// 初始化时计算一次属性
 		this.computeUIProps();
@@ -4558,6 +4726,99 @@
 		this.ctx.translate(-this.anchorX-rect.x,-this.anchorY-rect.y);
 	};
 	
+	
+	/**
+	 * 递归释放内存，等待GC
+	 * 将所有引用属性设为null
+	 * @param uiNode	ui节点
+	 */
+	Ycc.UI.release = function (uiNode) {
+		
+		uiNode.itor().leftChildFirst(function (ui) {
+			
+			console.log('release '+(!!ui.yccClass?ui.yccClass.name:''),ui);
+			
+			if(ui.yccClass===Ycc.UI.Image || ui.yccClass===Ycc.UI.ImageFrameAnimation)
+				ui.res=null;
+			
+			// 释放Tree的内存
+			Ycc.Tree.release(ui);
+			// 释放listener内存
+			Ycc.Listener.release(ui);
+
+			/////////////// 释放UI内存
+			ui.yccInstance=null;
+			
+			/**
+			 * 构造器的引用，Ycc中的每个类都有此属性
+			 */
+			ui.yccClass = null;
+			
+			/**
+			 * 绘图环境
+			 * @type {null}
+			 */
+			ui.ctx = null;
+			
+			/**
+			 * UI所属的图层
+			 * @type {Ycc.Layer}
+			 */
+			ui.belongTo = null;
+			
+			/**
+			 * 用户自定义的数据
+			 * @type {null}
+			 */
+			ui.userData = null;
+			
+			/**
+			 * 基础绘图UI
+			 * @type {Ycc.UI}
+			 */
+			ui.baseUI = null;
+			
+			/**
+			 * 初始化之前的hook
+			 * @type {function}
+			 */
+			ui.beforeInit = null;
+			
+			/**
+			 * 初始化之后的hook
+			 * @type {function}
+			 */
+			ui.afterInit = null;
+			
+			/**
+			 * 计算属性前的hook
+			 * @type {function}
+			 */
+			ui.oncomputestart = null;
+			
+			/**
+			 * 计算属性后的hook
+			 * @type {function}
+			 */
+			ui.oncomputeend = null;
+			
+			/**
+			 * 渲染前的hook
+			 * @type {function}
+			 */
+			ui.onrenderstart = null;
+			
+			/**
+			 * 渲染后的hook
+			 * @type {function}
+			 */
+			ui.onrenderend = null;
+		});
+		
+		
+		
+		
+	};
 
 	/**
 	 * 渲染至绘图环境。
@@ -4775,7 +5036,8 @@
 		
 		this.extend(option);
 	};
-	Ycc.UI.Ellipse.prototype = new Ycc.UI.Base();
+	// 继承prototype
+	Ycc.utils.mergeObject(Ycc.UI.Ellipse.prototype,Ycc.UI.Base.prototype);
 	Ycc.UI.Ellipse.prototype.constructor = Ycc.UI.Ellipse;
 	
 	
@@ -4879,7 +5141,8 @@
 		
 		this.extend(option);
 	};
-	Ycc.UI.Circle.prototype = new Ycc.UI.Base();
+	// 继承prototype
+	Ycc.utils.mergeObject(Ycc.UI.Circle.prototype,Ycc.UI.Base.prototype);
 	
 	
 	/**
@@ -5007,7 +5270,8 @@
 
 		this.extend(option);
 	};
-	Ycc.UI.Image.prototype = new Ycc.UI.Base();
+	// 继承prototype
+	Ycc.utils.mergeObject(Ycc.UI.Image.prototype,Ycc.UI.Base.prototype);
 	Ycc.UI.Image.prototype.constructor = Ycc.UI.Image;
 	
 	
@@ -5268,7 +5532,8 @@
 		// 初始化
 		this.isRunning = this.autoplay;
 	};
-	Ycc.UI.ImageFrameAnimation.prototype = new Ycc.UI.Base();
+	// 继承prototype
+	Ycc.utils.mergeObject(Ycc.UI.ImageFrameAnimation.prototype,Ycc.UI.Base.prototype);
 	Ycc.UI.ImageFrameAnimation.prototype.constructor = Ycc.UI.ImageFrameAnimation;
 	
 	
@@ -5378,7 +5643,8 @@
 		
 		this.extend(option);
 	};
-	Ycc.UI.Line.prototype = new Ycc.UI.Base();
+	// 继承prototype
+	Ycc.utils.mergeObject(Ycc.UI.Line.prototype,Ycc.UI.Base.prototype);
 	Ycc.UI.Line.prototype.constructor = Ycc.UI.Line;
 
 	/**
@@ -5448,7 +5714,8 @@
 		this.color = "black";
 		this.extend(option);
 	};
-	Ycc.UI.BrokenLine.prototype = new Ycc.UI.Base();
+	// 继承prototype
+	Ycc.utils.mergeObject(Ycc.UI.BrokenLine.prototype,Ycc.UI.Base.prototype);
 	
 	/**
 	 * 计算UI的各种属性。此操作必须在绘制之前调用。
@@ -5574,7 +5841,9 @@
 
 		this.extend(option);
 	};
-	Ycc.UI.MultiLineText.prototype = new Ycc.UI.Base();
+
+	// 继承prototype
+	Ycc.utils.mergeObject(Ycc.UI.MultiLineText.prototype,Ycc.UI.Base.prototype);
 	Ycc.UI.MultiLineText.prototype.constructor = Ycc.UI.MultiLineText;
 	
 	
@@ -5746,7 +6015,7 @@
 			if(y+config.lineHeight>rect.y+rect.height){
 				break;
 			}
-			this.baseUI.text([x,y],self.displayLines[i],config.fill);
+			this.belongTo.yccInstance.baseUI.text([x,y],self.displayLines[i],config.fill);
 		}
 		this.ctx.restore();
 	};
@@ -5790,8 +6059,8 @@
 		this.color = "black";
 		this.extend(option);
 	};
-	Ycc.UI.Rect.prototype = new Ycc.UI.Base();
-	Ycc.UI.Rect.prototype.constructor = Ycc.UI.Rect;
+	// 继承prototype
+	Ycc.utils.mergeObject(Ycc.UI.Rect.prototype,Ycc.UI.Base.prototype);
 	
 	/**
 	 * 绘制
@@ -5906,7 +6175,8 @@
 		
 		this._initUI();
 	};
-	Ycc.UI.CropRect.prototype = new Ycc.UI.Base();
+	// 继承prototype
+	Ycc.utils.mergeObject(Ycc.UI.CropRect.prototype,Ycc.UI.Base.prototype);
 	
 	
 	/**
@@ -6275,7 +6545,9 @@
 
 		this.extend(option);
 	};
-	Ycc.UI.SingleLineText.prototype = new Ycc.UI.Base();
+
+	// 继承prototype
+	Ycc.utils.mergeObject(Ycc.UI.SingleLineText.prototype,Ycc.UI.Base.prototype);
 	Ycc.UI.SingleLineText.prototype.constructor = Ycc.UI.SingleLineText;
 	
 	

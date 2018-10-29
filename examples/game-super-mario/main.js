@@ -66,6 +66,7 @@ function createYcc() {
 	ycc.debugger.addField('帧间隔',function () {return ycc.ticker.deltaTime;});
 	ycc.debugger.addField('总帧数',function () {return ycc.ticker.frameAllCount;});
 	ycc.debugger.addField('总UI数',function () {return currentScene&&currentScene.layer.uiCountRecursion;});
+	ycc.debugger.addField('画面位置',function () {return currentScene&&currentScene.layer.x;});
 	ycc.debugger.addField('渲染时间',function () {return t2-t1;});
 	ycc.debugger.addField('update时间',function () {return t3-t2;});
 	ycc.debugger.addField('debug时间',function () {return t4-t3;});
