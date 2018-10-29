@@ -430,6 +430,7 @@
 	 */
 	Ycc.Layer.prototype.removeSelf = function () {
 		this.removeAllUI();
+		this.yccInstance.layerManager.deleteLayer(this);
 		Ycc.Layer.release(this);
 	};
 	

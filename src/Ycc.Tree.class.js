@@ -31,7 +31,6 @@
 	 * @constructor
 	 */
 	Ycc.Tree = function() {
-		console.log('exec Tree');
 		
 		/**
 		 * 节点的自增ID，不允许修改，且每个对象必须唯一
