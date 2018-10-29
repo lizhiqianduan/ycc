@@ -683,6 +683,7 @@
 	 * 创建游戏结束图层，及其内容
 	 */
 	GameScene.prototype.createGameOverLayer = function () {
+		var self = this;
 		this.gameOverLayer = ycc.layerManager.newLayer({enableEventManager:true,name:"游戏结束图层",show:false});
 		this.gameOverLayer.addUI(new Ycc.UI.SingleLineText({
 			content:"点击屏幕任意位置重新开始",
@@ -691,9 +692,24 @@
 			yAlign:'center',
 			rectBgColor:'rgba(0,0,0,0.5)',
 			ontap:function () {
-				ycc.layerManager.deleteAllLayer();
-				currentScene.update = null;
+				// ycc.layerManager.deleteAllLayer();
+				
+				// 去除body引用
+				Matter.Composite.allBodies(engine.world).forEach(function (body) {
+					if(body._yccUI){
+						body._yccUI._matterBody=null;
+						body._yccUI=null;
+					}
+					Matter.World.remove(engine.world,body);
+				});
+				Matter.Engine.clear(engine);
+
+				self.btnLayer.removeSelf();
+				self.layer.removeSelf();
+				self.gameOverLayer.removeSelf();
+				self.update = null;
 				currentScene = null;
+
 				projectInit();
 			}
 		}))

@@ -443,6 +443,10 @@ GameScene.prototype.marioContactWithCompute = function(){
 GameScene.prototype.marioDeadProcess = function(){
 	// 去除Mario的刚体，防止碰撞，并且去除之后MarioUI的位置不会再更新
 	Matter.World.remove(engine.world,this.mario._matterBody);
+
+	// 停止更新
+	this.update = null;
+	
 	// 禁止按钮图层的事件
 	this.btnLayer.enableEventManager=false;
 	// 方向设为空

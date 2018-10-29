@@ -25,11 +25,23 @@ var currentScene = null;
 var loading = null;
 // 物理引擎
 var engine = null;
+// 调试时间节点
+var t1=0,t2=0,t3=0,t4=0;
+
 //////
 
 
 createYcc();
-projectInit();
+
+
+loading = new Loading();
+loadRes(function (imgs, musics) {
+	loading.hidden();
+	images=imgs;
+	audios=musics;
+	projectInit();
+	
+});
 
 
 
@@ -50,49 +62,46 @@ function createYcc() {
 	stageW = ycc.getStageWidth();
 	stageH = ycc.getStageHeight();
 	
-
-	// 调试信息
+	
 	ycc.debugger.addField('帧间隔',function () {return ycc.ticker.deltaTime;});
 	ycc.debugger.addField('总帧数',function () {return ycc.ticker.frameAllCount;});
-	ycc.debugger.addField('渲染时间',function () {return ycc.ticker.deltaTime;});
-	ycc.debugger.addField('update时间',function () {return ycc.ticker.deltaTime;});
-	ycc.debugger.addField('debug时间',function () {return ycc.ticker.deltaTime;});
+	ycc.debugger.addField('总UI数',function () {return currentScene&&currentScene.layer.uiCountRecursion;});
+	ycc.debugger.addField('渲染时间',function () {return t2-t1;});
+	ycc.debugger.addField('update时间',function () {return t3-t2;});
+	ycc.debugger.addField('debug时间',function () {return t4-t3;});
+	ycc.debugger.showDebugPanel();
+
+
+
+
 
 // 监听每帧、更新场景
 	ycc.ticker.addFrameListener(function () {
-		var t1 = Date.now();
+		t1 = Date.now();
 
 		ycc.layerManager.reRenderAllLayerToStage();
 
-		var t2 = Date.now();
-		ycc.debugger.updateField('渲染时间',function () {return t2-t1;});
+		t2 = Date.now();
 
 		currentScene && currentScene.update && currentScene.update();
 		
-		var t3 = Date.now();
-		ycc.debugger.updateField('update时间',function () {return t3-t2;});
+		t3 = Date.now();
 
 		currentScene && currentScene.debug && currentScene.debug();
-		currentScene && currentScene.btnLayer && ycc.debugger.addToLayer(currentScene.btnLayer);
-		ycc.debugger.updateInfo();
 		
-		var t4 = Date.now();
-		ycc.debugger.updateField('debug时间',function () {return t4-t3;});
-		
+		t4 = Date.now();
+
 	});
+	
 	
 	
 }
 
 
 
-function projectInit() {
-	
-	loading = new Loading();
-	ycc.ticker.start(60);
-	
-	
-	// 加载资源
+
+// 加载资源
+function loadRes(cb){
 	ycc.loader.loadResOneByOne([
 		{name:"btn",url:"./images/btn.jpg"},
 		{name:"fight",url:"./images/fight.png"},
@@ -115,7 +124,6 @@ function projectInit() {
 		{name:"bg04",url:"./images/bg04.jpg"},
 		{name:"bg05",url:"./images/bg05.jpg"},
 	],function (lise,imgs) {
-		
 		ycc.loader.loadResOneByOne([
 			{name:"bgm",type:"audio",url:"./audios/bgm.mp3"},
 			{name:"jump",type:"audio",url:"./audios/jump.mp3"},
@@ -124,17 +132,7 @@ function projectInit() {
 			{name:"dead1",type:"audio",url:"./audios/dead1.mp3"},
 			{name:"dead2",type:"audio",url:"./audios/dead2.mp3"},
 		],function (lise,musics) {
-			console.log(imgs,222);
-			console.log(musics,333);
-			images = imgs;
-			audios = musics;
-			loading.hidden();
-			
-			engine = Matter.Engine.create();
-			Matter.Engine.run(engine);
-			
-			currentScene = new GameScene();
-			ycc.layerManager.reRenderAllLayerToStage();
+			cb(imgs,musics);
 		},function (item,error) {
 			loading.updateText(item.name);
 		});
@@ -142,5 +140,16 @@ function projectInit() {
 	},function (item,error) {
 		loading.updateText(item.name);
 	});
+	
+}
+
+
+function projectInit() {
+	
+	ycc.ticker.start(60);
+	engine = Matter.Engine.create();
+	Matter.Engine.run(engine);
+	currentScene = new GameScene();
+	ycc.layerManager.reRenderAllLayerToStage();
 	
 }
