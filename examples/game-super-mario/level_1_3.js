@@ -53,7 +53,7 @@
 		// 终点旗子
 		this.newFlag(300,150,400);
 		this.newGround(300,200,1000);
-		endBucket = this.newBucket(300+stageW-90,140,4,90,90);
+		endBucket = this.newBucket(300+stageW-90,200-10,4,90,90);
 		
 	};
 	
@@ -66,6 +66,12 @@
 			this.gameOverLayer.uiList[0].content='恭喜通关！点击屏幕任意位置重新开始';
 			this.gameOverLayer.uiList[0].color='#ff4d4f';
 		}
+		
+		// 最后的桶在图层最前面，人物走进去的效果
+		var uiList = endBucket.belongTo.uiList;
+		var i=uiList.indexOf(endBucket);
+		uiList.splice(i,1);
+		uiList.push(endBucket);
 		
 	};
 	

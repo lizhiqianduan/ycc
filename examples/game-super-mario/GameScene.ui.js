@@ -56,7 +56,8 @@
 		var wallWidth 	= 40;
 		var wallHeight 	= 40;
 		
-		for(var i=0;i<row;i++){
+		// 方案一：每行都是一个完整的body
+		/*for(var i=0;i<row;i++){
 			var wall = new Ycc.UI.Image({
 				rect:new Ycc.Math.Rect(x,stageH-height-wallHeight*i,wallWidth*col,wallHeight),
 				res:images.wall,
@@ -79,7 +80,34 @@
 			}),ui);
 			Matter.World.add(engine.world,this.getMatterBodyFromUI(ui));
 			rect = null;ui=null;
-			
+		}*/
+		
+		// 方案二：每行每列都是一个单独的body
+		for(var i=0;i<row;i++){
+			for(var j=0;j<col;j++){
+				var wall = new Ycc.UI.Image({
+					rect:new Ycc.Math.Rect(x+j*wallWidth,stageH-height-wallHeight*i,wallWidth,wallHeight),
+					res:images.wall,
+					fillMode:'scaleRepeat',
+					scaleRepeatRect:new Ycc.Math.Rect(0,0,wallWidth,wallHeight),
+					name:'wall'
+				});
+				
+				this.layer.addUI(wall);
+				// 绑定至物理引擎
+				var rect = wall.rect,ui = wall;
+				this.bindMatterBodyWithUI(Matter.Bodies.rectangle(rect.x+rect.width/2,rect.y+rect.height/2,rect.width,rect.height,{
+					isStatic:true,
+					friction:0,
+					frictionStatic:0,
+					frictionAir:0,
+					restitution:0,
+					label:"wall",
+					group:-1
+				}),ui);
+				Matter.World.add(engine.world,this.getMatterBodyFromUI(ui));
+				rect = null;ui=null;
+			}
 		}
 		
 	};
