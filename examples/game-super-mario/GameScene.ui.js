@@ -50,13 +50,15 @@
 	 * @param height	最下一行距离屏幕最下方的高度
 	 * @param row		行数
 	 * @param col		列数
+	 * @param [special]	特殊的墙体，它是一个二维数组
+	 * [[row,col,type],[row,col,type]]
 	 */
-	GameScene.prototype.newWall = function (x, height,row, col) {
+	GameScene.prototype.newWall = function (x, height,row, col,special) {
 		// 一朵墙高宽
 		var wallWidth 	= 40;
 		var wallHeight 	= 40;
 		
-		// 方案一：每行都是一个完整的body
+		// 方案一：每行都是一个完整的body。缺点：人物碰撞时无法方便判断与哪个墙体body碰撞
 		/*for(var i=0;i<row;i++){
 			var wall = new Ycc.UI.Image({
 				rect:new Ycc.Math.Rect(x,stageH-height-wallHeight*i,wallWidth*col,wallHeight),
@@ -82,8 +84,8 @@
 			rect = null;ui=null;
 		}*/
 		
-		// 方案二：每行每列都是一个单独的body
-		for(var i=0;i<row;i++){
+		// 方案二：每行每列都是一个单独的body。缺点：人物在墙面行走时容易被单独的墙体body卡住
+		/*for(var i=0;i<row;i++){
 			for(var j=0;j<col;j++){
 				var wall = new Ycc.UI.Image({
 					rect:new Ycc.Math.Rect(x+j*wallWidth,stageH-height-wallHeight*i,wallWidth,wallHeight),
@@ -108,6 +110,44 @@
 				Matter.World.add(engine.world,this.getMatterBodyFromUI(ui));
 				rect = null;ui=null;
 			}
+		}*/
+		
+		// 方案三：结合方案一和二，每行一个rect绑定一个body，rect添加多个子UI
+		for(var i=0;i<row;i++){
+			// 一行墙体的容器
+			var wallBox = new Ycc.UI.Rect({
+				rect:new Ycc.Math.Rect(x,stageH-height-wallHeight*i,wallWidth*col,wallHeight),
+				color:'rgba(0,0,0,0)',
+				name:'wallBox'
+			});
+			
+			this.layer.addUI(wallBox);
+			// 绑定至物理引擎
+			var rect = wallBox.rect,ui = wallBox;
+			this.bindMatterBodyWithUI(Matter.Bodies.rectangle(rect.x+rect.width/2,rect.y+rect.height/2,rect.width,rect.height,{
+				isStatic:true,
+				friction:0,
+				frictionStatic:0,
+				frictionAir:0,
+				restitution:0,
+				label:"wallBox",
+				group:-1
+			}),ui);
+			Matter.World.add(engine.world,this.getMatterBodyFromUI(ui));
+			rect = null;ui=null;
+		}
+		
+		
+		for(var j=0;j<col;j++){
+			var wall = new Ycc.UI.Image({
+				rect:new Ycc.Math.Rect(j*wallWidth,0,wallWidth,wallHeight),
+				res:images.wall,
+				fillMode:'scaleRepeat',
+				scaleRepeatRect:new Ycc.Math.Rect(0,0,wallWidth,wallHeight),
+				name:'wall'
+			});
+			
+			wallBox.addChild(wall);
 		}
 		
 	};

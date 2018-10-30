@@ -49,11 +49,15 @@
 		// 	this.newBucket(100+i*5,350);
 		// }
 		
-		this.newWall(0,200,1,5);
+		this.newWall(0,200,1,10);
+		
+		this.newWall(200,350,1,5);
+
 		// 终点旗子
-		this.newFlag(300,150,400);
-		this.newGround(300,200,1000);
-		endBucket = this.newBucket(300+stageW-90,200-10,4,90,90);
+		var x=500;
+		this.newFlag(x,200,400);
+		this.newGround(x,200,1000);
+		endBucket = this.newBucket(x+stageW-90,200-10,4,90,90);
 		
 	};
 	
