@@ -934,6 +934,19 @@
 	};
 	
 	/**
+	 * 删除一颗子树，只能删除直接子节点
+	 * @param tree
+	 * @return {*}
+	 */
+	Ycc.Tree.prototype.removeChildTree = function (tree) {
+		var index = this.children.indexOf(tree);
+		if(index===-1) return this;
+		this.children.splice(index,1);
+		return this;
+	};
+	
+	
+	/**
 	 * 获取树的深度
 	 * @return {number}
 	 */
@@ -3752,13 +3765,14 @@
 	 * @param ui
 	 */
 	Ycc.Layer.prototype.removeUI = function (ui) {
-		if(!ui) return;
+		if(!ui) return false;
 		var index = this.uiList.indexOf(ui);
+		if(index===-1) return false;
+		
 		Ycc.UI.release(ui);
 		this.uiList[index]=null;
-		if(index!==-1){
-			this.uiList.splice(index,1);
-		}
+		this.uiList.splice(index,1);
+		return true;
 	};
 	
 	/**
@@ -4708,6 +4722,16 @@
 		if(this.belongTo)
 			ui.init(this.belongTo);
 		this.addChildTree(ui);
+		return this;
+	};
+	
+	/**
+	 * 删除子ui
+	 * @param ui
+	 */
+	Ycc.UI.Base.prototype.removeChild = function (ui) {
+		this.removeChildTree(ui);
+		Ycc.UI.release(ui);
 		return this;
 	};
 	

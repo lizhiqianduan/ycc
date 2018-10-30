@@ -424,6 +424,27 @@ GameScene.prototype.marioContactWithCompute = function(){
 				self.marioDeadProcess();
 			}
 		}
+		
+		// 处理人物撞墙的撞碎效果 todo
+		if(body.label==='wallBox' && !this.marioStayingOnWall){
+			var marioRect = this.mario.rect;
+			var wallRect = this.getUIFromMatterBody(body).rect;
+			var test = parseInt(marioRect.y)>=body.vertices[0].y+wallRect.height
+				&& marioRect.x+marioRect.width-17>body.vertices[0].x
+				&& marioRect.x<=body.vertices[0].x+wallRect.width-17;
+
+			// var test = parseInt(marioRect.y)>=body.vertices[0].y+wallRect.height
+			// 	&& marioRect.x+marioRect.width-17>body.vertices[0].x;
+			
+			
+			if(test){
+				__log='撞上了 '+(new Date().toLocaleTimeString()+' '+(marioRect.x)+' '+(body.vertices[0].x+wallRect.width));
+				this.marioHitWall(body);
+			}
+		}
+		
+		
+		
 		if(body.label==='missile'){
 			// 去除导弹的刚体，使其UI的位置不再更新
 			Matter.World.remove(engine.world,body);
@@ -507,6 +528,33 @@ GameScene.prototype.directionCompute = function () {
 		Matter.Body.setPosition(marioBody, {x:marioBodyPosition.x+3,y:marioBodyPosition.y});
 	}
 
+};
+
+/**
+ * 处理人物撞墙的撞碎效果
+ * @param wallBoxBody
+ */
+GameScene.prototype.marioHitWall = function (wallBoxBody) {
+	var wallBox = this.getUIFromMatterBody(wallBoxBody);
+	var marioRect = this.mario.getAbsolutePosition();
+	// Mario中线
+	var middleX = marioRect.x+marioRect.width/2;
+	
+	for(var i=0;i<wallBox.children.length;i++){
+		var child = wallBox.children[i].getAbsolutePosition();
+		if(middleX<child.width+child.x && middleX>child.x){
+			// wallBox.belongTo.removeUI(wallBox.children[i]);
+			wallBox.removeChild(wallBox.children[i]);
+		}
+		
+		// 恰好撞在中线处，可以撞碎两块墙
+		if(middleX===child.x){
+			wallBox.removeChild(wallBox.children[i]);
+			if(wallBox.children[i+1]) wallBox.removeChild(wallBox.children[i+1]);
+		}
+	}
+	
+	
 };
 
 // 每帧的更新函数

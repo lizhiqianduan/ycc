@@ -26,7 +26,7 @@ var loading = null;
 // 物理引擎
 var engine = null;
 // 调试时间节点
-var t1=0,t2=0,t3=0,t4=0;
+var t1=0,t2=0,t3=0,t4=0,__log='自定义';
 
 //////
 
@@ -70,6 +70,7 @@ function createYcc() {
 	ycc.debugger.addField('渲染时间',function () {return t2-t1;});
 	ycc.debugger.addField('update时间',function () {return t3-t2;});
 	ycc.debugger.addField('debug时间',function () {return t4-t3;});
+	ycc.debugger.addField('自定义',function () {return __log;});
 	ycc.debugger.showDebugPanel();
 
 
@@ -111,7 +112,7 @@ function loadRes(cb){
 		{name:"girl",url:"./images/girl.png"},
 		{name:"mushroom",url:"./images/mushroom.png"},
 		{name:"wall",url:"./images/wall.png"},
-		{name:"wallSpecial01",url:"./images/wall-special-01.png"},
+		{name:"wallSpecial01",url:"./images/wall-special-01.jpg"},
 		{name:"marioFight",url:"./images/mario-fight.png"},
 		{name:"marioJump",url:"./images/mario-jump.png"},
 		{name:"marioDown",url:"./images/mario-down.png"},

@@ -51,7 +51,7 @@
 		
 		this.newWall(0,200,1,10);
 		
-		this.newWall(200,350,1,5);
+		this.newWall(200,350,1,3);
 
 		// 终点旗子
 		var x=500;
