@@ -130,6 +130,19 @@
 	};
 	
 	/**
+	 * 删除一颗子树，只能删除直接子节点
+	 * @param tree
+	 * @return {*}
+	 */
+	Ycc.Tree.prototype.removeChildTree = function (tree) {
+		var index = this.children.indexOf(tree);
+		if(index===-1) return this;
+		this.children.splice(index,1);
+		return this;
+	};
+	
+	
+	/**
 	 * 获取树的深度
 	 * @return {number}
 	 */

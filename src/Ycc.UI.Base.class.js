@@ -246,6 +246,16 @@
 	};
 	
 	/**
+	 * 删除子ui
+	 * @param ui
+	 */
+	Ycc.UI.Base.prototype.removeChild = function (ui) {
+		this.removeChildTree(ui);
+		Ycc.UI.release(ui);
+		return this;
+	};
+	
+	/**
 	 * 坐标系的缩放和旋转。
 	 * 先缩放、再旋转。
 	 * @todo 子类渲染前需要调用此方法

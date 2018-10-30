@@ -467,13 +467,14 @@
 	 * @param ui
 	 */
 	Ycc.Layer.prototype.removeUI = function (ui) {
-		if(!ui) return;
+		if(!ui) return false;
 		var index = this.uiList.indexOf(ui);
+		if(index===-1) return false;
+		
 		Ycc.UI.release(ui);
 		this.uiList[index]=null;
-		if(index!==-1){
-			this.uiList.splice(index,1);
-		}
+		this.uiList.splice(index,1);
+		return true;
 	};
 	
 	/**
