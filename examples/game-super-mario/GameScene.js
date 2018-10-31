@@ -391,6 +391,8 @@ GameScene.prototype.marioContactWithCompute = function(){
 			this.isGameVictory = true;
 			// 并且下落至最低点时，去除旗子的刚体，只保留UI
 			if(this.marioStayingOnWall){
+				audios.victory.currentTime=0;
+				audios.victory.play();
 				Matter.World.remove(engine.world, body);
 			}
 		}
