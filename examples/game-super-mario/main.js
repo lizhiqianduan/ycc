@@ -130,6 +130,7 @@ function loadRes(cb){
 		ycc.loader.loadResOneByOne([
 			{name:"bgm",type:"audio",url:"./audios/bgm.mp3"},
 			{name:"jump",type:"audio",url:"./audios/jump.mp3"},
+			{name:"victory",type:"audio",url:"./audios/victory.mp3"},
 			{name:"touchWall",type:"audio",url:"./audios/touchWall.mp3"},
 			{name:"touchCoin",type:"audio",url:"./audios/touchCoin.mp3"},
 			{name:"touchMushroom",type:"audio",url:"./audios/touchMushroom.mp3"},

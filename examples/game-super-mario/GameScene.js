@@ -331,10 +331,9 @@ GameScene.prototype.marioImageResCompute = function () {
 		this.mario.res = this.downIsPressing?images.marioDown:images.marioJump;
 		this.mario.frameRectCount = 1;
 		
-		// 人物碰到了旗子
-		if(this.marioContactWith && this.marioContactWith[0] && this.marioContactWith[0].label==='flag'){
+		// 人物在空中，且游戏胜利，说明人物正在空中接触旗子
+		if(this.isGameVictory){
 			this.mario.res = images.marioTouchFlag;
-			this.isGameVictory = true;
 		}
 		
 		// 人物在空中起身
@@ -387,10 +386,15 @@ GameScene.prototype.marioContactWithCompute = function(){
 	for(var i=0;i<this.marioContactWith.length;i++){
 		var body = this.marioContactWith[i];
 		
-		// 接触旗子，并且下落至最低点时，去除旗子的刚体，只保留UI
-		if(body.label==='flag' && this.marioStayingOnWall){
-			Matter.World.remove(engine.world, body);
+		// 接触旗子，游戏胜利
+		if(body.label==='flag'){
+			this.isGameVictory = true;
+			// 并且下落至最低点时，去除旗子的刚体，只保留UI
+			if(this.marioStayingOnWall){
+				Matter.World.remove(engine.world, body);
+			}
 		}
+		
 		if(body.label==='coin'){
 			audios.touchCoin.currentTime=0;
 			audios.touchCoin.play();
