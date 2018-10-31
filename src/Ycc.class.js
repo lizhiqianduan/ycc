@@ -67,6 +67,12 @@
 		this.loader = new Ycc.Loader();
 		
 		/**
+		 * 异步请求的封装
+		 * @type {Ycc.Ajax}
+		 */
+		this.ajax = new Ycc.Ajax();
+		
+		/**
 		 * 基础绘图UI。这些绘图操作会直接作用于舞台。
 		 * @type {Ycc.UI}
 		 */
