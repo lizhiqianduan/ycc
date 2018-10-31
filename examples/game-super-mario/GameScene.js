@@ -430,7 +430,7 @@ GameScene.prototype.marioContactWithCompute = function(){
 			var marioRect = this.mario.rect;
 			var wallRect = this.getUIFromMatterBody(body).rect;
 			var test = parseInt(marioRect.y)>=body.vertices[0].y+wallRect.height
-				&& marioRect.x+marioRect.width-17>body.vertices[0].x
+				&& marioRect.x+marioRect.width-16>body.vertices[0].x
 				&& marioRect.x<=body.vertices[0].x+wallRect.width-17;
 
 			// var test = parseInt(marioRect.y)>=body.vertices[0].y+wallRect.height
@@ -535,25 +535,93 @@ GameScene.prototype.directionCompute = function () {
  * @param wallBoxBody
  */
 GameScene.prototype.marioHitWall = function (wallBoxBody) {
+	var self = this;
 	var wallBox = this.getUIFromMatterBody(wallBoxBody);
+	var wallBoxRect = wallBox.getAbsolutePosition();
 	var marioRect = this.mario.getAbsolutePosition();
 	// Mario中线
 	var middleX = marioRect.x+marioRect.width/2;
 	
+	console.log('mario middle x--> ',middleX);
+	
+	
+	if(middleX<=wallBoxRect.x){
+		console.log('撞第一块');
+		// wallBox.children[0] && wallBox.removeChild(wallBox.children[0]);
+		rebuildWall(wallBox,0,1);
+		return;
+	}
+
+	if(middleX>=wallBoxRect.x+wallBoxRect.width){
+		console.log('撞最后一块');
+		rebuildWall(wallBox,wallBox.children.length-1,1);
+		// wallBox.children[wallBox.children.length-1] && wallBox.removeChild(wallBox.children[wallBox.children.length-1]);
+		return;
+	}
+	
+	
 	for(var i=0;i<wallBox.children.length;i++){
 		var child = wallBox.children[i].getAbsolutePosition();
 		if(middleX<child.width+child.x && middleX>child.x){
-			// wallBox.belongTo.removeUI(wallBox.children[i]);
-			wallBox.removeChild(wallBox.children[i]);
+			rebuildWall(wallBox,i,1);
+			// wallBox.removeChild(wallBox.children[i]);
+			return;
 		}
 		
 		// 恰好撞在中线处，可以撞碎两块墙
 		if(middleX===child.x){
-			wallBox.removeChild(wallBox.children[i]);
-			if(wallBox.children[i+1]) wallBox.removeChild(wallBox.children[i+1]);
+			console.log('撞相邻两块');
+			rebuildWall(wallBox,i,2);
+			// wallBox.removeChild(wallBox.children[i]);
+			// if(wallBox.children[i-1]) wallBox.removeChild(wallBox.children[i-1]);
 		}
 	}
 	
+	
+	/**
+	 * 人物撞击墙体时，重新构建该墙体
+	 */
+	/**
+	 *
+	 * @param wallBoxUI 		撞击前的墙体UI
+	 * @param index				消失墙的朵数的起点
+	 * @param delCount			消失墙的的朵数
+	 */
+	function rebuildWall(wallBoxUI,index,delCount){
+		var rect = wallBoxUI.rect;
+		var children = wallBoxUI.children;
+		var len = children.length;
+
+		// 一块都不剩的情况
+		if(len<=delCount){
+			console.log('一块都不剩')
+		}else if(index>0 && index+delCount<len){
+			// 分成两块
+			console.log('分成两块');
+			self.newWall(children[0].getAbsolutePosition().x-self.layer.x,stageH-(rect.y+rect.height),1,index);
+			self.newWall(children[index+delCount].getAbsolutePosition().x-self.layer.x,stageH-(rect.y+rect.height),1,len-index-delCount);
+		}else{
+		//撞击后还是一块的情况
+			console.log('还剩一块');
+			var i = 0;
+			if(delCount===1){
+				if(index===0) i=1;
+				else i=0;
+			}
+			if(delCount===2){
+				if(index===1) i=delCount;
+				else i=0;
+			}
+
+			var x = children[i].getAbsolutePosition().x-self.layer.x;
+			self.newWall(x,stageH-(rect.y+rect.height),1,len-delCount);
+		}
+		
+		// 删除之前的物理刚体及其UI
+		Matter.World.remove(engine.world, self.getMatterBodyFromUI(wallBoxUI));
+		self.layer.removeUI(wallBoxUI);
+		
+	}
 	
 };
 

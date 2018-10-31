@@ -46,17 +46,18 @@
 	
 	/**
 	 * 创建一堆墙
-	 * @param x			起始x坐标
-	 * @param height	最下一行距离屏幕最下方的高度
-	 * @param row		行数
-	 * @param col		列数
-	 * @param [special]	特殊的墙体，它是一个二维数组
+	 * @param x				起始x坐标
+	 * @param marginBottom	最下一行距离屏幕最下方的高度
+	 * @param row			行数
+	 * @param col			列数
+	 * @param [special]		特殊的墙体，它是一个二维数组
 	 * [[row,col,type],[row,col,type]]
 	 */
-	GameScene.prototype.newWall = function (x, height,row, col,special) {
+	GameScene.prototype.newWall = function (x, marginBottom,row, col,special) {
 		// 一朵墙高宽
 		var wallWidth 	= 40;
 		var wallHeight 	= 40;
+		var height = marginBottom;
 		
 		// 方案一：每行都是一个完整的body。缺点：人物碰撞时无法方便判断与哪个墙体body碰撞
 		/*for(var i=0;i<row;i++){
@@ -116,7 +117,7 @@
 		for(var i=0;i<row;i++){
 			// 一行墙体的容器
 			var wallBox = new Ycc.UI.Rect({
-				rect:new Ycc.Math.Rect(x,stageH-height-wallHeight*i,wallWidth*col,wallHeight),
+				rect:new Ycc.Math.Rect(x,stageH-height-wallHeight*(i+1),wallWidth*col,wallHeight),
 				color:'rgba(0,0,0,0)',
 				name:'wallBox'
 			});
@@ -443,6 +444,7 @@
 	GameScene.prototype.createMario = function () {
 		this.mario = new Ycc.UI.ImageFrameAnimation({
 			rect:new Ycc.Math.Rect(10,0,18*2,images.mario.naturalHeight*2),
+			// rect:new Ycc.Math.Rect(320-26,stageH-300,18*2,images.mario.naturalHeight*2),
 			res:images.mario,
 			firstFrameRect:new Ycc.Math.Rect(0,0,18,images.mario.naturalHeight),
 			frameRectCount:3,
