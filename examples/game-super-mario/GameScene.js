@@ -24,6 +24,9 @@ function GameScene(){
 
     // 右上角金币UI
     this.coinUI = null;
+    
+    // 音乐按钮
+    this.musicBtn = null;
 
     // 分数
     this.score = 0;
@@ -71,8 +74,8 @@ GameScene.prototype.init = function () {
 	this.createMario();
 	
 	this.collisionListenerInit();
-//    audios.bgm.currentTime=0;
-//    audios.bgm.play();
+   audios.bgm.currentTime=0;
+   audios.bgm.play();
 };
 
 
@@ -240,7 +243,16 @@ GameScene.prototype.marioStayingOnWallCompute = function () {
 GameScene.prototype.updateUIPosition = function () {
 	var self = this;
 	var bodies = Matter.Composite.allBodies(engine.world);
-
+	
+	// console.log(audios.bgm.running);
+	if(audios.bgm.running){
+		this.musicBtn.children[0].show = false;
+		this.musicBtn.rotation+=1;
+	}else{
+		this.musicBtn.children[0].show = true;
+		this.musicBtn.rotation=0;
+	}
+	
 	for(var i=0;i<bodies.length;i++){
 		var body = bodies[i];
 		var ui = self.getUIFromMatterBody(body);
@@ -411,6 +423,8 @@ GameScene.prototype.marioContactWithCompute = function(){
 		if(body.label==='mushroom'){
 			// 如果只接触蘑菇，说明是踩在蘑菇上面，并且支持同时踩两个蘑菇。否则游戏结束
 			if(this.marioContactWith.length===1 && this.marioStayingOnWall){
+				audios.touchMushroom.currentTime=0;
+				audios.touchMushroom.play();
 				self.layer.removeUI(self.getUIFromMatterBody(body));
 				Matter.World.remove(engine.world, body);
 				Matter.Body.setVelocity(marioBody,{x:0,y:-4})

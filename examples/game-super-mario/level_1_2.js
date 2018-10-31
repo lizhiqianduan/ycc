@@ -45,8 +45,8 @@
 		this.newGround(1700,150,50);
 		this.newGround(1800,150,50);
 
-		this.newWall(1900,300,1,4);
-		this.newWall(2200,400,1,2);
+		this.newWall(1900,200,1,4);
+		this.newWall(2200,300,1,2);
 		this.newWall(2400,400,1,3);
 		this.newWall(2600,200,1,3);
 		this.newWall(2700,100,1,3);

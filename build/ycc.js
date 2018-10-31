@@ -2273,6 +2273,12 @@
 		 * @type {null}
 		 */
 		this.source = null;
+		
+		/**
+		 * 是否正在播放
+		 * @type {boolean}
+		 */
+		this.running = false;
 	}
 	
 	/**
@@ -2290,6 +2296,8 @@
 	AudioPolyfill.prototype.play = function () {
 		var context = this.context;
 		if(!context) return;
+
+		this.running = true;
 		
 		var source = context.createBufferSource();
 		source.buffer = this.buf;
@@ -2303,7 +2311,10 @@
 	 * 暂停音效
 	 */
 	AudioPolyfill.prototype.pause = function () {
+		var context = this.context;
 		if(!context) return;
+
+		this.running = false;
 		this.source.stop();
 	};
 	
@@ -3942,7 +3953,8 @@
 			this.uiList[i].itor().depthDown(function (ui, level) {
 				//console.log(level,ui);
 				self.uiCountRecursion++;
-				ui.__render();
+				if(ui.show)
+					ui.__render();
 			});
 		}
 	};

@@ -107,6 +107,7 @@ function loadRes(cb){
 	ycc.loader.loadResOneByOne([
 		{name:"btn",url:"./images/btn.jpg"},
 		{name:"fight",url:"./images/fight.png"},
+		{name:"music",url:"./images/music.png"},
 		{name:"jump",url:"./images/jump.png"},
 		{name:"mario",url:"./images/mario-walk.png"},
 		{name:"girl",url:"./images/girl.png"},

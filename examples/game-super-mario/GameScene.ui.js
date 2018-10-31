@@ -747,6 +747,46 @@
 			}
 		}));
 		
+		this.createMusicBtn();
+	};
+	
+	/**
+	 * 创建音乐按钮
+	 */
+	GameScene.prototype.createMusicBtn = function () {
+		var self = this;
+		var btn = new Ycc.UI.Image({
+			rect:new Ycc.Math.Rect(stageW-40,10,30,30),
+			anchorX:15,
+			anchorY:15,
+			fillMode:'scale',
+			res:images.music,
+			name:'musicBtn',
+			ontap:function (e) {
+				if(audios.bgm.running)
+					audios.bgm.pause();
+				else
+					audios.bgm.play();
+				
+			}
+		});
+		btn.addChild(new Ycc.UI.Line({
+			start:new Ycc.Math.Dot(5,5),
+			end:new Ycc.Math.Dot(25,25),
+			width:5,
+			color:'#ccc',
+			ontap:function (e) {
+				if(audios.bgm.running)
+					audios.bgm.pause();
+				else
+					audios.bgm.play();
+				
+			}
+		}));
+		
+		this.musicBtn=btn;
+		// 音乐按钮
+		self.btnLayer.addUI(btn);
 	};
 	
 	/**

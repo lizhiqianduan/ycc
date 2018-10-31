@@ -503,7 +503,8 @@
 			this.uiList[i].itor().depthDown(function (ui, level) {
 				//console.log(level,ui);
 				self.uiCountRecursion++;
-				ui.__render();
+				if(ui.show)
+					ui.__render();
 			});
 		}
 	};
