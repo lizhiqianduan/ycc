@@ -67,6 +67,12 @@
 		this.loader = new Ycc.Loader();
 		
 		/**
+		 * 异步请求的封装
+		 * @type {Ycc.Ajax}
+		 */
+		this.ajax = new Ycc.Ajax();
+		
+		/**
 		 * 基础绘图UI。这些绘图操作会直接作用于舞台。
 		 * @type {Ycc.UI}
 		 */
@@ -2106,6 +2112,11 @@
 	Ycc.Loader = function () {
 		this.yccClass = Ycc.Loader;
 		
+		/**
+		 * 异步模块
+		 * @type {Ycc.Ajax}
+		 */
+		this.ajax = new Ycc.Ajax();
 	};
 	
 	/**
@@ -2186,26 +2197,35 @@
 		var errorEvent = "error";
 		curRes.type = curRes.type || 'image';
 		
-		if(curRes.type==='image'){
-			curRes.res = new Image();
-			curRes.res.src = curRes.url;
-		}
-		if(curRes.type==='audio'){
-			successEvent = 'loadedmetadata';
-			curRes.res = new Audio();
-			curRes.res.src = curRes.url;
-			curRes.res.preload = "load";
-		}
 		
 		var timerId = setTimeout(function () {
 			curRes.res.removeEventListener(successEvent,onSuccess);
 			curRes.res.removeEventListener(errorEvent,onSuccess);
 			onError({message:"获取资源超时！"});
 		},curRes.timeout||10000);
-		
-		
-		curRes.res.addEventListener(successEvent,onSuccess);
-		curRes.res.addEventListener(errorEvent,onError);
+
+		if(curRes.type==='image'){
+			curRes.res = new Image();
+			curRes.res.src = curRes.url;
+
+			curRes.res.addEventListener(successEvent,onSuccess);
+			curRes.res.addEventListener(errorEvent,onError);
+
+		}else if(curRes.type==='audio'){
+			curRes.res = new AudioPolyfill();
+			if(!curRes.res.context){
+				onError({message:"浏览器不支持AudioContext！"});
+				return;
+			}
+			self.ajax.get(curRes.url,(function (curRes) {
+				return function (arrayBuffer) {
+					curRes.res.context.decodeAudioData(arrayBuffer, function(buf) {
+						curRes.res.buf=buf;
+						onSuccess();
+					}, onError);
+				}
+			})(curRes),onError,'arraybuffer');
+		}
 		
 		
 		function onSuccess() {
@@ -2239,6 +2259,127 @@
 		}
 		return null;
 	};
+	
+	
+	/**
+	 * audio元素的垫片，此类是私有类
+	 * @constructor
+	 */
+	function AudioPolyfill(){
+		this.currentTime = 0;
+		
+		/**
+		 * 播放器
+		 * @type {null}
+		 */
+		this.source = null;
+	}
+	
+	/**
+	 * audio api环境
+	 * 公用属性
+	 * @readonly
+	 */
+	AudioPolyfill.prototype.context = (window.AudioContext || window.webkitAudioContext) && new (window.AudioContext || window.webkitAudioContext)();
+	
+	
+	/**
+	 * 播放音效
+	 * 根据currentTime播放
+	 */
+	AudioPolyfill.prototype.play = function () {
+		var context = this.context;
+		if(!context) return;
+		
+		var source = context.createBufferSource();
+		source.buffer = this.buf;
+		source.connect(context.destination);
+		source.start(this.currentTime);
+		
+		this.source = source;
+	};
+	
+	/**
+	 * 暂停音效
+	 */
+	AudioPolyfill.prototype.pause = function () {
+		if(!context) return;
+		this.source.stop();
+	};
+	
+	
+})(window.Ycc);;/**
+ * @file    Ycc.Ajax.class.js
+ * @author  xiaohei
+ * @date    2018/10/31
+ * @description  Ycc.Ajax.class文件
+ */
+
+
+
+(function (Ycc) {
+	
+	/**
+	 * 异步加载类
+	 * @constructor
+	 */
+	Ycc.Ajax = function () {
+		this.yccClass = Ycc.Ajax;
+	};
+	
+	
+
+	/**
+	 * ajax get请求
+	 * @param url
+	 * @param successCb			成功的回调函数
+	 * @param errorCb			失败的回调函数
+	 * @param responseType
+	 */
+	/**
+	 * ajax get请求
+	 * @param option
+	 * @param option.url
+	 * @param option.successCb
+	 * @param option.successCb
+	 * @param option.responseType
+	 */
+	Ycc.Ajax.prototype.get = function (option) {
+		var self = this;
+		
+		var url='',
+			successCb,
+			errorCb,
+			responseType='json';
+		if(arguments.length===1){
+			url='';
+			successCb=option.successCb;
+			errorCb=option.errorCb;
+			responseType='json';
+		}else {
+			url=arguments[0];
+			successCb=arguments[1];
+			errorCb=arguments[2];
+			responseType=arguments[3];
+		}
+		
+		
+		var request = new XMLHttpRequest();
+		request.open('GET', url, true);
+		request.responseType = responseType;
+		
+		// Decode asynchronously
+		request.onload = function() {
+			successCb.call(self,request.response);
+		};
+		
+		request.onerror = function (e) {
+			errorCb.call(self,e);
+		};
+		request.send();
+	};
+	
+	
 	
 	
 })(window.Ycc);;/**

@@ -132,6 +132,7 @@ function loadRes(cb){
 			{name:"jump",type:"audio",url:"./audios/jump.mp3"},
 			{name:"touchWall",type:"audio",url:"./audios/touchWall.mp3"},
 			{name:"touchCoin",type:"audio",url:"./audios/touchCoin.mp3"},
+			{name:"touchMushroom",type:"audio",url:"./audios/touchMushroom.mp3"},
 			{name:"dead1",type:"audio",url:"./audios/dead1.mp3"},
 			{name:"dead2",type:"audio",url:"./audios/dead2.mp3"},
 		],function (lise,musics) {
@@ -146,6 +147,9 @@ function loadRes(cb){
 	
 }
 
+window.onerror = function (e) {
+	alert('系统错误！'+e);
+};
 
 function projectInit() {
 	

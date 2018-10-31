@@ -433,12 +433,9 @@ GameScene.prototype.marioContactWithCompute = function(){
 				&& marioRect.x+marioRect.width-16>body.vertices[0].x
 				&& marioRect.x<=body.vertices[0].x+wallRect.width-17;
 
-			// var test = parseInt(marioRect.y)>=body.vertices[0].y+wallRect.height
-			// 	&& marioRect.x+marioRect.width-17>body.vertices[0].x;
-			
-			
 			if(test){
-				__log='撞上了 '+(new Date().toLocaleTimeString()+' '+(marioRect.x)+' '+(body.vertices[0].x+wallRect.width));
+				audios.touchWall.currentTime=0;
+				audios.touchWall.play();
 				this.marioHitWall(body);
 			}
 		}
