@@ -42,7 +42,7 @@
 		 * 上一帧刷新的时间戳
 		 * @type {number}
 		 */
-		this.lastFrameTime = 0;
+		this.lastFrameTime = this.startTime;
 		
 		/**
 		 * 当前帧与上一帧的刷新的时间差
@@ -74,12 +74,12 @@
 		 */
 		this.defaultFrameRate = 60;
 		
-		
 		/**
-		 * 实时帧率
+		 * 默认帧间隔
 		 * @type {number}
 		 */
-		this.realTimeFrameRate = this.defaultFrameRate;
+		this.defaultDeltaTime = 1e3/this.defaultFrameRate;
+		
 		
 		/**
 		 * 总帧数
@@ -161,8 +161,6 @@
 			if(tickTime > frameTime){
 				// 总帧数加1
 				self.frameAllCount++;
-				// 设置实时帧率
-				self.realTimeFrameRate = self.frameAllCount*1000/(curTime-self.startTime);
 				// 执行所有自定义的帧监听函数
 				self.broadcastFrameEvent();
 				// 执行所有图层的帧监听函数
