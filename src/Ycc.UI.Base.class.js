@@ -280,7 +280,7 @@
 		
 		uiNode.itor().leftChildFirst(function (ui) {
 			
-			console.log('release '+(!!ui.yccClass?ui.yccClass.name:''),ui);
+			// console.log('release '+(!!ui.yccClass?ui.yccClass.name:''),ui);
 			
 			if(ui.yccClass===Ycc.UI.Image || ui.yccClass===Ycc.UI.ImageFrameAnimation)
 				ui.res=null;

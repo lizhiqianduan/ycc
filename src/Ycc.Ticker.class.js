@@ -36,7 +36,7 @@
 		 * 启动时间戳
 		 * @type {number}
 		 */
-		this.startTime = Date.now();
+		this.startTime = performance.now();
 		
 		/**
 		 * 上一帧刷新的时间戳
@@ -136,7 +136,7 @@
 			}
 		);
 		// 启动时间
-		self.startTime = Date.now();
+		self.startTime = performance.now();
 		// 启动心跳
 		self._timerId = timer.call(window, cb);
 		self._isRunning = true;
@@ -146,7 +146,7 @@
 		function cb() {
 			
 			// 当前时间
-			var curTime = self.timerTickCount===0?self.startTime:Date.now();
+			var curTime = self.timerTickCount===0?self.startTime:performance.now();
 
 			// 总的心跳数加1
 			self.timerTickCount++;
@@ -168,7 +168,7 @@
 				// 执行所有图层的帧监听函数
 				self.broadcastToLayer();
 				// 两帧的时间差
-				self.deltaTime = Date.now()-self.lastFrameTime;
+				self.deltaTime = performance.now()-self.lastFrameTime;
 				// 帧时间差的总和（忽略第一帧）
 				self.frameAllCount>1&&(self.deltaTimeTotalValue +=self.deltaTime);
 				
