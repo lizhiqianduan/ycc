@@ -89,7 +89,8 @@ function createYcc() {
 		
 		t3 = Date.now();
 
-		// currentScene && currentScene.debug && currentScene.debug();
+		currentScene && currentScene.debug && currentScene.debug();
+		// window.onerror = function (e) { alert('系统错误！'+e); };
 		
 		t4 = Date.now();
 
@@ -149,9 +150,6 @@ function loadRes(cb){
 	
 }
 
-window.onerror = function (e) {
-	alert('系统错误！'+e);
-};
 
 function projectInit() {
 	

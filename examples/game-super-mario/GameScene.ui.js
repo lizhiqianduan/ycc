@@ -136,19 +136,19 @@
 			}),ui);
 			Matter.World.add(engine.world,this.getMatterBodyFromUI(ui));
 			rect = null;ui=null;
-		}
-		
-		
-		for(var j=0;j<col;j++){
-			var wall = new Ycc.UI.Image({
-				rect:new Ycc.Math.Rect(j*wallWidth,0,wallWidth,wallHeight),
-				res:images.wall,
-				fillMode:'scaleRepeat',
-				scaleRepeatRect:new Ycc.Math.Rect(0,0,wallWidth,wallHeight),
-				name:'wall'
-			});
 			
-			wallBox.addChild(wall);
+			// 子UI
+			for(var j=0;j<col;j++){
+				var wall = new Ycc.UI.Image({
+					rect:new Ycc.Math.Rect(j*wallWidth,0,wallWidth,wallHeight),
+					res:images.wall,
+					fillMode:'scaleRepeat',
+					scaleRepeatRect:new Ycc.Math.Rect(0,0,wallWidth,wallHeight),
+					name:'wall'
+				});
+				
+				wallBox.addChild(wall);
+			}
 		}
 		
 	};
