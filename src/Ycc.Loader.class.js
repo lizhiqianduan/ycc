@@ -203,7 +203,7 @@
 
 		this.running = true;
 		// 先stop
-		this.source.stop();
+		this.source && this.source.stop();
 		var source = context.createBufferSource();
 		source.buffer = this.buf;
 		source.connect(context.destination);
@@ -221,6 +221,7 @@
 
 		this.running = false;
 		this.source.stop();
+		this.source = null;
 	};
 	
 	
