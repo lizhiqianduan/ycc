@@ -2204,11 +2204,7 @@
 		curRes.type = curRes.type || 'image';
 		
 		
-		var timerId = setTimeout(function () {
-			curRes.res.removeEventListener(successEvent,onSuccess);
-			curRes.res.removeEventListener(errorEvent,onSuccess);
-			onError({message:"获取资源超时！"});
-		},curRes.timeout||10000);
+		var timerId = 0;
 
 		if(curRes.type==='image'){
 			curRes.res = new Image();
@@ -2217,6 +2213,13 @@
 			curRes.res.addEventListener(successEvent,onSuccess);
 			curRes.res.addEventListener(errorEvent,onError);
 
+			// 超时提示只针对图片
+			timerId = setTimeout(function () {
+				curRes.res.removeEventListener(successEvent,onSuccess);
+				curRes.res.removeEventListener(errorEvent,onSuccess);
+				onError({message:"获取资源超时！"});
+			},curRes.timeout||10000);
+			
 		}else if(curRes.type==='audio'){
 			curRes.res = new AudioPolyfill();
 			if(!curRes.res.context){
