@@ -1719,13 +1719,13 @@
 		 * 启动时间戳
 		 * @type {number}
 		 */
-		this.startTime = Date.now();
+		this.startTime = performance.now();
 		
 		/**
 		 * 上一帧刷新的时间戳
 		 * @type {number}
 		 */
-		this.lastFrameTime = 0;
+		this.lastFrameTime = this.startTime;
 		
 		/**
 		 * 当前帧与上一帧的刷新的时间差
@@ -1738,6 +1738,12 @@
 		 * @type {number}
 		 */
 		this.deltaTimeExpect = 0;
+		
+		/**
+		 * 实际帧间隔与期望帧间隔的时间比
+		 * @type {number}
+		 */
+		this.deltaTimeRatio = 1;
 		
 		/**
 		 * 所有帧时间差的总和
@@ -1757,12 +1763,12 @@
 		 */
 		this.defaultFrameRate = 60;
 		
-		
 		/**
-		 * 实时帧率
+		 * 默认帧间隔
 		 * @type {number}
 		 */
-		this.realTimeFrameRate = this.defaultFrameRate;
+		this.defaultDeltaTime = 1e3/this.defaultFrameRate;
+		
 		
 		/**
 		 * 总帧数
@@ -1819,7 +1825,7 @@
 			}
 		);
 		// 启动时间
-		self.startTime = Date.now();
+		self.startTime = performance.now();
 		// 启动心跳
 		self._timerId = timer.call(window, cb);
 		self._isRunning = true;
@@ -1829,7 +1835,7 @@
 		function cb() {
 			
 			// 当前时间
-			var curTime = self.timerTickCount===0?self.startTime:Date.now();
+			var curTime = self.timerTickCount===0?self.startTime:performance.now();
 
 			// 总的心跳数加1
 			self.timerTickCount++;
@@ -1844,14 +1850,14 @@
 			if(tickTime > frameTime){
 				// 总帧数加1
 				self.frameAllCount++;
-				// 设置实时帧率
-				self.realTimeFrameRate = self.frameAllCount*1000/(curTime-self.startTime);
 				// 执行所有自定义的帧监听函数
 				self.broadcastFrameEvent();
 				// 执行所有图层的帧监听函数
 				self.broadcastToLayer();
 				// 两帧的时间差
-				self.deltaTime = Date.now()-self.lastFrameTime;
+				self.deltaTime = performance.now()-self.lastFrameTime;
+				// 帧间隔缩放比
+				self.deltaTimeRatio = self.deltaTime/self.deltaTimeExpect;
 				// 帧时间差的总和（忽略第一帧）
 				self.frameAllCount>1&&(self.deltaTimeTotalValue +=self.deltaTime);
 				
@@ -2298,7 +2304,8 @@
 		if(!context) return;
 
 		this.running = true;
-		
+		// 先stop
+		this.source && this.source.stop();
 		var source = context.createBufferSource();
 		source.buffer = this.buf;
 		source.connect(context.destination);
@@ -2316,6 +2323,7 @@
 
 		this.running = false;
 		this.source.stop();
+		this.source = null;
 	};
 	
 	
@@ -4913,7 +4921,7 @@
 		
 		uiNode.itor().leftChildFirst(function (ui) {
 			
-			console.log('release '+(!!ui.yccClass?ui.yccClass.name:''),ui);
+			// console.log('release '+(!!ui.yccClass?ui.yccClass.name:''),ui);
 			
 			if(ui.yccClass===Ycc.UI.Image || ui.yccClass===Ycc.UI.ImageFrameAnimation)
 				ui.res=null;

@@ -57,6 +57,12 @@
 		this.deltaTimeExpect = 0;
 		
 		/**
+		 * 实际帧间隔与期望帧间隔的时间比
+		 * @type {number}
+		 */
+		this.deltaTimeRatio = 1;
+		
+		/**
 		 * 所有帧时间差的总和
 		 * @type {number}
 		 */
@@ -167,6 +173,8 @@
 				self.broadcastToLayer();
 				// 两帧的时间差
 				self.deltaTime = performance.now()-self.lastFrameTime;
+				// 帧间隔缩放比
+				self.deltaTimeRatio = self.deltaTime/self.deltaTimeExpect;
 				// 帧时间差的总和（忽略第一帧）
 				self.frameAllCount>1&&(self.deltaTimeTotalValue +=self.deltaTime);
 				

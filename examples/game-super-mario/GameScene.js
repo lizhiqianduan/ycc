@@ -269,8 +269,7 @@ GameScene.prototype.updateUIPosition = function () {
 		
 		// 更新导弹的位置
 		if(body.label==='missile'){
-			// 更新蘑菇速度。原因在于：速度较小时，matter引擎碰撞后反弹不了
-			Matter.Body.setPosition(body,{x:body.position.x-2,y:body.position.y});
+			Matter.Body.setPosition(body,{x:body.position.x-2*ycc.ticker.deltaTimeRatio,y:body.position.y});
 
 			ui.rect.x=body.vertices[0].x-5;
 			ui.rect.y=body.vertices[0].y;
@@ -427,8 +426,12 @@ GameScene.prototype.marioContactWithCompute = function(){
 				audios.touchMushroom.play();
 				self.layer.removeUI(self.getUIFromMatterBody(body));
 				Matter.World.remove(engine.world, body);
+
+				// 给人物一个反弹速度，防止蘑菇删除后人物直接下落
 				Matter.Body.setVelocity(marioBody,{x:0,y:-4})
 			}else if(this.marioContactWith.length===2 && this.marioContactWith[0].label==='mushroom'&& this.marioContactWith[1].label==='mushroom' && this.marioStayingOnWall){
+				audios.touchMushroom.currentTime=0;
+				audios.touchMushroom.play();
 				self.layer.removeUI(self.getUIFromMatterBody(this.marioContactWith[0]));
 				Matter.World.remove(engine.world, this.marioContactWith[0]);
 				self.layer.removeUI(self.getUIFromMatterBody(this.marioContactWith[1]));
@@ -479,6 +482,9 @@ GameScene.prototype.marioContactWithCompute = function(){
  * 角色死亡游戏结束之后的处理
  */
 GameScene.prototype.marioDeadProcess = function(){
+	// 停止背景乐
+	audios.bgm.pause();
+	
 	// 去除Mario的刚体，防止碰撞，并且去除之后MarioUI的位置不会再更新
 	Matter.World.remove(engine.world,this.mario._matterBody);
 
@@ -513,7 +519,7 @@ GameScene.prototype.gameVictoryCompute = function () {
 		if(this.marioStayingOnWall){
 			var marioBodyPosition = marioBody.position;
 			!this.mario.isRunning && this.mario.start();
-			Matter.Body.setPosition(marioBody, {x:marioBodyPosition.x+3,y:marioBodyPosition.y});
+			Matter.Body.setPosition(marioBody, {x:marioBodyPosition.x+3*ycc.ticker.deltaTimeRatio,y:marioBodyPosition.y});
 			
 		}
 		var key = 'level_'+this.gameLevel+'_onVictory';
@@ -539,10 +545,10 @@ GameScene.prototype.directionCompute = function () {
 	
 	// 正常的左右移动
 	if(this.direction==='left'){
-		Matter.Body.setPosition(marioBody, {x:marioBodyPosition.x-3,y:marioBodyPosition.y});
+		Matter.Body.setPosition(marioBody, {x:marioBodyPosition.x-3*ycc.ticker.deltaTimeRatio,y:marioBodyPosition.y});
 	}
 	if(this.direction==='right'){
-		Matter.Body.setPosition(marioBody, {x:marioBodyPosition.x+3,y:marioBodyPosition.y});
+		Matter.Body.setPosition(marioBody, {x:marioBodyPosition.x+3*ycc.ticker.deltaTimeRatio,y:marioBodyPosition.y});
 	}
 
 };

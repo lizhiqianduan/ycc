@@ -89,7 +89,7 @@ function createYcc() {
 		
 		t3 = Date.now();
 
-		currentScene && currentScene.debug && currentScene.debug();
+		// currentScene && currentScene.debug && currentScene.debug();
 		
 		t4 = Date.now();
 
