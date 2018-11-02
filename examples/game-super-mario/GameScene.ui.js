@@ -835,34 +835,53 @@
 	GameScene.prototype.createGameOverLayer = function () {
 		var self = this;
 		this.gameOverLayer = ycc.layerManager.newLayer({enableEventManager:true,name:"游戏结束图层",show:false});
-		this.gameOverLayer.addUI(new Ycc.UI.SingleLineText({
-			content:"点击屏幕任意位置重新开始",
+		
+		var mask = new Ycc.UI.Rect({
 			rect:new Ycc.Math.Rect(0,0,stageW,stageH),
+			color:'rgba(0,0,0,0.6)',
+		});
+		var restartBtn = new Ycc.UI.Image({
+			rect:new Ycc.Math.Rect(stageW/2-60/2,stageH/2+50,80,40),
+			res:images.button,
+			fillMode:'scale'
+		});
+		var text = new Ycc.UI.SingleLineText({
+			rect:new Ycc.Math.Rect(0,0,80,40),
+			fontSize:'16px',
+			content:"重新开始",
 			xAlign:'center',
 			yAlign:'center',
-			rectBgColor:'rgba(0,0,0,0.5)',
-			ontap:function () {
-				// ycc.layerManager.deleteAllLayer();
-				
-				// 去除body引用
-				Matter.Composite.allBodies(engine.world).forEach(function (body) {
-					if(body._yccUI){
-						body._yccUI._matterBody=null;
-						body._yccUI=null;
-					}
-					Matter.World.remove(engine.world,body);
-				});
-				Matter.Engine.clear(engine);
+			ontap:restart
+		});
+		
 
-				self.btnLayer.removeSelf();
-				self.layer.removeSelf();
-				self.gameOverLayer.removeSelf();
-				self.update = null;
-				currentScene = null;
-
-				projectInit();
-			}
-		}))
+		restartBtn.addChild(text);
+		mask.addChild(restartBtn);
+		
+		this.gameOverLayer.addUI(mask);
+		
+		
+		
+		
+		function restart() {
+			// 去除body引用
+			Matter.Composite.allBodies(engine.world).forEach(function (body) {
+				if(body._yccUI){
+					body._yccUI._matterBody=null;
+					body._yccUI=null;
+				}
+				Matter.World.remove(engine.world,body);
+			});
+			Matter.Engine.clear(engine);
+			
+			self.btnLayer.removeSelf();
+			self.layer.removeSelf();
+			self.gameOverLayer.removeSelf();
+			self.update = null;
+			currentScene = null;
+			
+			projectInit();
+		}
 	};
 	
 })(window.GameScene);
