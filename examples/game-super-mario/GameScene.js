@@ -458,8 +458,6 @@ GameScene.prototype.marioContactWithCompute = function(){
 				&& marioRect.x<=body.vertices[0].x+wallRect.width-17;
 
 			if(test){
-				audios.touchWall.currentTime=0;
-				audios.touchWall.play();
 				this.marioHitWall(body);
 			}
 		}
@@ -598,15 +596,13 @@ GameScene.prototype.marioHitWall = function (wallBoxBody) {
 			rebuildWall(wallBox,i,2);
 			// wallBox.removeChild(wallBox.children[i]);
 			// if(wallBox.children[i-1]) wallBox.removeChild(wallBox.children[i-1]);
+			return;
 		}
 	}
 	
 	
 	/**
 	 * 人物撞击墙体时，重新构建该墙体
-	 */
-	/**
-	 *
 	 * @param wallBoxUI 		撞击前的墙体UI
 	 * @param index				消失墙的朵数的起点
 	 * @param delCount			消失墙的的朵数
@@ -616,35 +612,95 @@ GameScene.prototype.marioHitWall = function (wallBoxBody) {
 		var children = wallBoxUI.children;
 		var len = children.length;
 
+		// 只要其中有一个是特殊墙体，都不重新构建
+		if(children[index].__specialType!==0 || children[index+delCount-1].__specialType!==0){
+			
+			var child = (children[index].__specialType===1 && children[index]) || (children[index+delCount-1].__specialType===1 && children[index+delCount-1]);
+			// 如果撞击了金币墙体，整个重建
+			if(child){
+				// 墙体金币数减一
+				child.__coinNumber--;
+				// 总金币+1
+				self.score++;
+				self.coinUI.content="× "+self.score;
+
+				// 播放音效
+				audios.touchCoin.currentTime=0;
+				audios.touchCoin.play();
+				if(child.__coinNumber===0)
+					child.__specialType=2;
+				self.newWall(children[0].getAbsolutePosition().x-self.layer.x,stageH-(rect.y+rect.height),1,len,rebuildSpecial(0,len-1));
+				// 删除之前的物理刚体及其UI
+				Matter.World.remove(engine.world, self.getMatterBodyFromUI(wallBoxUI));
+				self.layer.removeUI(wallBoxUI);
+			}
+			return;
+		}
+		
+		// 没有撞击特殊墙体时，播放音效
+		audios.touchWall.currentTime=0;
+		audios.touchWall.play();
+		
 		// 一块都不剩的情况
 		if(len<=delCount){
 			console.log('一块都不剩')
 		}else if(index>0 && index+delCount<len){
 			// 分成两块
 			console.log('分成两块');
-			self.newWall(children[0].getAbsolutePosition().x-self.layer.x,stageH-(rect.y+rect.height),1,index);
-			self.newWall(children[index+delCount].getAbsolutePosition().x-self.layer.x,stageH-(rect.y+rect.height),1,len-index-delCount);
+			self.newWall(children[0].getAbsolutePosition().x-self.layer.x,stageH-(rect.y+rect.height),1,index,rebuildSpecial(0,index));
+			self.newWall(children[index+delCount].getAbsolutePosition().x-self.layer.x,stageH-(rect.y+rect.height),1,len-index-delCount,rebuildSpecial(index+delCount,len-1));
 		}else{
 		//撞击后还是一块的情况
 			console.log('还剩一块');
 			var i = 0;
+			var special = null;
 			if(delCount===1){
-				if(index===0) i=1;
-				else i=0;
+				// 前面少一块
+				if(index===0) {
+					i=1;
+					special = rebuildSpecial(1,len-1);
+					__log = JSON.stringify(special);
+				}else{
+					// 后面少一块
+					i=0;
+					special = rebuildSpecial(0,index);
+				}
 			}
 			if(delCount===2){
-				if(index===1) i=delCount;
-				else i=0;
+				// 前面少2块
+				if(index===1) {
+					i=delCount;
+					special = rebuildSpecial(index,len-1);
+				}else {
+					// 后面少2块
+					i=0;
+					special = rebuildSpecial(0,index);
+				}
 			}
 
 			var x = children[i].getAbsolutePosition().x-self.layer.x;
-			self.newWall(x,stageH-(rect.y+rect.height),1,len-delCount);
+			self.newWall(x,stageH-(rect.y+rect.height),1,len-delCount,special);
 		}
 		
 		// 删除之前的物理刚体及其UI
 		Matter.World.remove(engine.world, self.getMatterBodyFromUI(wallBoxUI));
 		self.layer.removeUI(wallBoxUI);
 		
+		
+		/**
+		 * 根据开始和结束的下标，重新构造special，以保证撞击之前的UI效果
+		 * 处理 金币墙体、不可撞碎的墙体等
+		 * @param startIndex
+		 * @param endIndex
+		 */
+		function rebuildSpecial(startIndex, endIndex) {
+			var special = [];
+			for(var i=startIndex;i<=endIndex;i++){
+				if(children[i].__specialType!==0)
+					special.push([0,i-startIndex,children[i].__specialType,children[i].__coinNumber]);
+			}
+			return special;
+		}
 	}
 	
 };

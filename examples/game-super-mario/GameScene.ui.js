@@ -139,18 +139,58 @@
 			
 			// 子UI
 			for(var j=0;j<col;j++){
+				var itemSpecial = getItemSpecial(i,j);
+				var specialType = (itemSpecial && itemSpecial[2]) || 0;
 				var wall = new Ycc.UI.Image({
 					rect:new Ycc.Math.Rect(j*wallWidth,0,wallWidth,wallHeight),
-					res:images.wall,
+					res:getResBySpecialType(specialType),
 					fillMode:'scaleRepeat',
 					scaleRepeatRect:new Ycc.Math.Rect(0,0,wallWidth,wallHeight),
 					name:'wall'
 				});
 				
+				// 附加字段
+				// 类型
+				wall.__specialType = specialType;
+				// 墙体内的金币数目
+				wall.__coinNumber = (specialType===1 && itemSpecial[3]) || 0;
+				
 				wallBox.addChild(wall);
 			}
 		}
 		
+		/**
+		 * 根据类型获取墙体的UI
+		 * @param type
+		 * @return {*}
+		 */
+		function getResBySpecialType(type) {
+			if(type===0) return images.wall;
+			if(type===1) return images.wallSpecial01;
+			if(type===2) return images.wallSpecial02;
+		}
+		
+		
+		/**
+		 * 根据行号和列号获取墙体的特殊类型
+		 * 1 -- 普通墙体
+		 * 2 -- 金币墙体
+		 * 3 -- 不可撞碎墙体
+		 *
+		 * @param rowIndex
+		 * @param colIndex
+		 * @return {Array}
+		 */
+		function getItemSpecial(rowIndex, colIndex) {
+			// 默认为0
+			if(!special || special.length===0) return null;
+			
+			for(var i=0;i<special.length;i++){
+				if(special[i][0]===rowIndex && special[i][1]===colIndex)
+					return special[i];
+			}
+			return null;
+		}
 	};
 
 

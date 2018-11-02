@@ -115,6 +115,7 @@ function loadRes(cb){
 		{name:"mushroom",url:"./images/mushroom.png"},
 		{name:"wall",url:"./images/wall.png"},
 		{name:"wallSpecial01",url:"./images/wall-special-01.jpg"},
+		{name:"wallSpecial02",url:"./images/wall-special-02.png"},
 		{name:"marioFight",url:"./images/mario-fight.png"},
 		{name:"marioJump",url:"./images/mario-jump.png"},
 		{name:"marioDown",url:"./images/mario-down.png"},
