@@ -840,30 +840,87 @@
 			rect:new Ycc.Math.Rect(0,0,stageW,stageH),
 			color:'rgba(0,0,0,0.6)',
 		});
-		var restartBtn = new Ycc.UI.Image({
-			rect:new Ycc.Math.Rect(stageW/2-60/2,stageH/2+50,80,40),
+		
+		
+		var btn,text;
+		// 重玩按钮
+		btn = new Ycc.UI.Image({
+			rect:new Ycc.Math.Rect(stageW/2-110,stageH/2+50,100,40),
 			res:images.button,
-			fillMode:'scale'
+			fillMode:'scale',
+			oncomputestart:function () {
+				if(self.isGameVictory){
+					this.rect.x=stageW/2-110;
+				}else{
+					this.rect.x=stageW/2-100/2;
+				}
+			}
 		});
-		var text = new Ycc.UI.SingleLineText({
-			rect:new Ycc.Math.Rect(0,0,80,40),
+		text = new Ycc.UI.SingleLineText({
+			rect:new Ycc.Math.Rect(0,0,100,40),
 			fontSize:'16px',
 			content:"重新开始",
 			xAlign:'center',
 			yAlign:'center',
 			ontap:restart
 		});
+		btn.addChild(text);
+		mask.addChild(btn);
 		
-
-		restartBtn.addChild(text);
-		mask.addChild(restartBtn);
+		
+		// 下一关按钮
+		btn = new Ycc.UI.Image({
+			rect:new Ycc.Math.Rect(stageW/2,stageH/2+50,100,40),
+			res:images.button,
+			show:false,
+			fillMode:'scale'
+		});
+		text = new Ycc.UI.SingleLineText({
+			rect:new Ycc.Math.Rect(0,0,100,40),
+			fontSize:'16px',
+			content:"下一关",
+			xAlign:'center',
+			yAlign:'center',
+			ontap:nextLevel,
+			oncomputestart:function () {
+				if(self.isGameVictory){
+					this.getParent().show = true;
+					this.show = true;
+					this.content='下一关';
+				}else{
+					this.getParent().show = false;
+					this.show = false;
+				}
+			}
+		});
+		btn.addChild(text);
+		mask.addChild(btn);
+		
 		
 		this.gameOverLayer.addUI(mask);
 		
 		
 		
+		function nextLevel() {
+			clearMemory();
+			var index = levelList.indexOf(self.gameLevel);
+			if(index===-1) return;
+			if(index===levelList.length-1){
+				alert('恭喜你！玩通关了！点击返回第一关！');
+				window.location.href=window.location.pathname+'#'+levelList[0];
+				window.location.reload();
+				return;
+			}
+			window.location.href=window.location.pathname+'#'+levelList[index+1];
+			window.location.reload();
+		}
 		
 		function restart() {
+			clearMemory();
+			projectInit();
+		}
+		
+		function clearMemory() {
 			// 去除body引用
 			Matter.Composite.allBodies(engine.world).forEach(function (body) {
 				if(body._yccUI){
@@ -879,8 +936,6 @@
 			self.gameOverLayer.removeSelf();
 			self.update = null;
 			currentScene = null;
-			
-			projectInit();
 		}
 	};
 	

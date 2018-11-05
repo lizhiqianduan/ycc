@@ -27,7 +27,8 @@ var loading = null;
 var engine = null;
 // 调试时间节点
 var t1=0,t2=0,t3=0,t4=0,__log='自定义';
-
+// 关卡列表
+var levelList=['1_1','1_2','1_3'];
 //////
 
 
