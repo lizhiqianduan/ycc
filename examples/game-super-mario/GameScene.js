@@ -627,6 +627,11 @@ GameScene.prototype.marioHitWall = function (wallBoxBody) {
 				// 播放音效
 				audios.touchCoin.currentTime=0;
 				audios.touchCoin.play();
+				
+				// 撞击金币的特效
+				var childAbsolute = child.getAbsolutePosition();
+				self.newCoinAnimation(childAbsolute.x+childAbsolute.width/2-self.layer.x,stageH-(childAbsolute.y),2,6);
+				
 				if(child.__coinNumber===0)
 					child.__specialType=2;
 				self.newWall(children[0].getAbsolutePosition().x-self.layer.x,stageH-(rect.y+rect.height),1,len,rebuildSpecial(0,len-1));
@@ -703,6 +708,20 @@ GameScene.prototype.marioHitWall = function (wallBoxBody) {
 		}
 	}
 	
+};
+
+/**
+ * 删除界面上的UI，及其被绑定的body
+ * @param ui 	GameScene.ui中创建的ui
+ */
+GameScene.prototype.removeUI = function (ui) {
+	var body = ui._matterBody;
+	if(body){
+		ui._matterBody._yccUI = null;
+		ui._matterBody=null;
+		Matter.World.remove(engine.world,body);
+	}
+	this.layer.removeUI(ui);
 };
 
 // 每帧的更新函数

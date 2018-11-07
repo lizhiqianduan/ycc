@@ -132,7 +132,9 @@
 				frictionAir:0,
 				restitution:0,
 				label:"wallBox",
-				group:-1
+				collisionFilter:{
+					group:-1
+				}
 			}),ui);
 			Matter.World.add(engine.world,this.getMatterBodyFromUI(ui));
 			rect = null;ui=null;
@@ -238,6 +240,102 @@
         }
 
     };
+	
+	
+	/**
+	 * 新建一个金币旋转特性
+	 * @param middleX			旋转的中心线
+	 * @param marginBottom		初始位置距离最下方的高度
+	 * @param zoomSpeed			旋转速度，可取值1 2 4 5 10
+	 * @param upSpeed			向上的初速度
+	 */
+	GameScene.prototype.newCoinAnimation = function (middleX, marginBottom,zoomSpeed,upSpeed) {
+		var self = this;
+		var w = 20;
+		var h = 34;
+		// 旋转速度
+		zoomSpeed = zoomSpeed || 2;
+		// 向上的初速度
+		upSpeed = upSpeed || 4;
+		
+		var x = middleX-w/2;
+		var coin = new Ycc.UI.Image({
+			rect:new Ycc.Math.Rect(x,stageH-marginBottom-h,w,h),
+			res:images.coin100,
+			fillMode:'scale',
+			name:'coinAnimation'
+		});
+		
+		// 绑定至物理引擎
+		var rect = coin.rect,ui = coin;
+		var body = Matter.Bodies.rectangle(rect.x+rect.width/2,rect.y+rect.height/2,rect.width,rect.height,{
+			friction:0,
+			frictionStatic:0,
+			frictionAir:0,
+			restitution:0,
+			label:"coinAnimation",
+			collisionFilter:{
+				// 不与其他刚体碰撞
+				group:-1
+			},
+		});
+		this.bindMatterBodyWithUI(body,ui);
+		Matter.World.add(engine.world,body);
+		Matter.Body.setVelocity(body, {x:0,y:-upSpeed});
+		rect = null;ui=null;
+		
+		console.log(body);
+		
+		coin.addListener('computestart',startListener);
+		coin.addListener('renderend',renderendListener);
+		
+		this.layer.addUI(coin);
+		
+		
+		function renderendListener() {
+			if(parseInt(body.velocity.y)===0){
+				coin.removeListener('computestart',startListener);
+				coin.removeListener('renderend',renderendListener);
+				self.removeUI(this);
+			}
+			
+		}
+		function startListener() {
+			var ui = this;
+			ui.mirrorCount=ui.mirrorCount || 0;
+			ui.zoomOut=!!ui.zoomOut;
+			
+			// console.log(ui.mirrorCount,ycc.ticker.frameAllCount);
+			// if(ycc.ticker.frameAllCount===71) debugger;
+			
+			Matter.Body.setAngle(body,0);
+			
+			ui.rect.y=body.vertices[0].y;
+			
+			if(ui.rect.width===0){
+				ui.zoomOut = true;
+				ui.mirrorCount++;
+			}
+			
+			if(ui.rect.width===w)
+				ui.zoomOut = false;
+			
+			if(ui.mirrorCount%2===0)
+				ui.mirror=0;
+			else
+				ui.mirror=1;
+			
+			if(ui.zoomOut){
+				ui.rect.x-=zoomSpeed/2;
+				ui.rect.width+=zoomSpeed;
+			}else{
+				ui.rect.x+=zoomSpeed/2;
+				ui.rect.width-=zoomSpeed;
+			}
+			
+		}
+	};
+ 
 	
 	/**
 	 * 新建一个女孩

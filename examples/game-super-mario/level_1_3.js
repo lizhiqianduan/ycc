@@ -51,7 +51,9 @@
 		
 		this.newWall(0,200,1,10,[[0,2,1]]);
 		
-		this.newWall(100,350,2,5,[[1,2,1,3]]);
+		this.newWall(150,350,2,5,[[1,2,1,3]]);
+		
+		this.newMushroom(350,500);
 
 		// 终点旗子
 		var x=500;
