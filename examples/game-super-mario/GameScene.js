@@ -632,13 +632,20 @@ GameScene.prototype.marioHitWall = function (wallBoxBody) {
 				// 撞击金币的特效
 				var childAbsolute = child.getAbsolutePosition();
 				self.newCoinAnimation(childAbsolute.x+childAbsolute.width/2-self.layer.x,stageH-(childAbsolute.y),2,6);
-				
-				if(child.__coinNumber===0)
+
+				// 直到墙体的金币数为0时，才重新构建墙体
+				if(child.__coinNumber===0){
+					console.log(33333333);
 					child.__specialType=2;
-				self.newWall(children[0].getAbsolutePosition().x-self.layer.x,stageH-(rect.y+rect.height),1,len,rebuildSpecial(0,len-1));
-				// 删除之前的物理刚体及其UI
-				Matter.World.remove(engine.world, self.getMatterBodyFromUI(wallBoxUI));
-				self.layer.removeUI(wallBoxUI);
+					var tempX = children[0].getAbsolutePosition().x-self.layer.x;
+					var tempSpecial = rebuildSpecial(0,len-1);
+					self.newWall(tempX,stageH-(rect.y+rect.height),1,len,tempSpecial);
+
+					// 删除之前的物理刚体及其UI
+					Matter.World.remove(engine.world, self.getMatterBodyFromUI(wallBoxUI));
+					self.layer.removeUI(wallBoxUI);
+					tempX=0;tempSpecial=null;
+				}
 			}
 			return;
 		}

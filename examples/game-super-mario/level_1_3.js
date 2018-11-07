@@ -11,6 +11,10 @@
 	var endBucket = null;
 	
 	GameScene.prototype.level_1_3 = function () {
+		// 临时变量
+		var x=0;
+		var marginBottom=150;
+		var width = 200;
 		
 		// 游戏背景图
 		this.createBackground(images.bg01,9999,stageH,2);
@@ -34,29 +38,27 @@
 		// 起点
 		this.newBounds(8);
 		
-		// this.newWall(0,-50,1,10);
-		
-		// var i=0;
-		// for(i=0;i<100;i++){
-		// 	this.newGirl(100+i*5,150);
-		// }
-		//
-		// for(i=0;i<100;i++){
-		// 	this.newBucket(100+i*5,250);
-		// }
-		//
-		// for(i=0;i<1000;i++){
-		// 	this.newBucket(100+i*5,350);
-		// }
-		
 		this.newWall(0,200,1,10,[[0,2,1]]);
 		
 		this.newWall(150,350,2,5,[[1,2,1,3]]);
 		
 		this.newMushroom(350,500);
+		
+		
+		x=500;
+		marginBottom=150;
+		width=400;
+		this.newGround(x,marginBottom,width);
+		this.newBucket(x,marginBottom);
+		this.newBucket(x+width-80,marginBottom,1,80);
+		this.newWall(x+100,marginBottom+200,1,4,[[0,1,1,1],[0,2,1,1]]);
+		this.newMushroom(x+100,marginBottom);
+		this.newMushroom(x+150,marginBottom);
+		this.newMushroom(x+200,marginBottom);
+		
 
 		// 终点旗子
-		var x=500;
+		x=1500;
 		this.newFlag(x,200,400);
 		this.newGround(x,200,1000);
 		endBucket = this.newBucket(x+stageW-90,200-10,4,90,90);
