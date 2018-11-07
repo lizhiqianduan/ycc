@@ -445,7 +445,7 @@
 			friction:0,
 			frictionStatic:0,
 			frictionAir:0,
-			restitution:1,
+			restitution:0,
 		}),ui);
 		Matter.World.add(engine.world,this.getMatterBodyFromUI(ui));
 		Matter.Body.setVelocity(this.getMatterBodyFromUI(ui),{x:-speed,y:0});

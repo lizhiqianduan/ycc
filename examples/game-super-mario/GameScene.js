@@ -261,9 +261,10 @@ GameScene.prototype.updateUIPosition = function () {
 		if(body.label==='mushroom'){
 			ui.rect.x=body.vertices[0].x;
 			ui.rect.y=body.vertices[0].y;
-			
+			// 蘑菇落地之后反弹势能设为0，即不反弹
+			body.restitution=body.velocity.y===0?1:0;
 			// 更新蘑菇速度。原因在于：速度较小时，matter引擎碰撞后反弹不了
-			Matter.Body.setVelocity(body,{x:(body.velocity.x>0)?1:-1,y:body.velocity.y});
+			Matter.Body.setVelocity(body,{x:(body.velocity.x>=0)?1:-1,y:body.velocity.y});
 			Matter.Body.setAngle(body,0);
 		}
 		
