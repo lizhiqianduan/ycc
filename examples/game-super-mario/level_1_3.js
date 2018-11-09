@@ -45,6 +45,12 @@
 		this.newMushroom(350,500);
 		
 		
+		/**
+		 *
+		 *    -----
+		 * |   ^^^   |
+		 *  _________
+		 */
 		x=500;
 		marginBottom=150;
 		width=400;
@@ -52,13 +58,30 @@
 		this.newBucket(x,marginBottom);
 		this.newBucket(x+width-80,marginBottom,1,80);
 		this.newWall(x+100,marginBottom+200,1,4,[[0,1,1,1],[0,2,1,1]]);
+		this.newCoin(x+150,marginBottom+250,1,3);
 		this.newMushroom(x+100,marginBottom);
 		this.newMushroom(x+150,marginBottom);
 		this.newMushroom(x+200,marginBottom);
 		
-
+		
+		/**
+		 *       __
+		 *    __
+		 * __
+		 */
+		x=1000;
+		marginBottom = 150;
+		width=700;
+		this.newWall(x,marginBottom,1,5);
+		this.newWall(x+250,marginBottom+100,1,5);
+		this.newWall(x+500,marginBottom+200,1,5);
+		this.newMushroom(x+200,marginBottom+200);
+		this.newCoin(x,marginBottom+100,1,3);
+		this.newCoin(x+250,marginBottom+100+100,1,3);
+		this.newCoin(x+500,marginBottom+200+100,1,3);
+		
 		// 终点旗子
-		x=1500;
+		x=1800;
 		this.newFlag(x,200,400);
 		this.newGround(x,200,1000);
 		endBucket = this.newBucket(x+stageW-90,200-10,4,90,90);

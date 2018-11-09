@@ -635,7 +635,6 @@ GameScene.prototype.marioHitWall = function (wallBoxBody) {
 
 				// 直到墙体的金币数为0时，才重新构建墙体
 				if(child.__coinNumber===0){
-					console.log(33333333);
 					child.__specialType=2;
 					var tempX = children[0].getAbsolutePosition().x-self.layer.x;
 					var tempSpecial = rebuildSpecial(0,len-1);
