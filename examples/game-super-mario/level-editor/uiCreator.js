@@ -87,7 +87,7 @@ function newMissile(btn){
 		}
 		
 		// 返回
-		return [propsDefault.startX+layerX,propsDefault.marginBottom];
+		return [propsDefault.startX-layerX,propsDefault.marginBottom];
 	};
 	uiSequence.push({name:fnName,params:params});
 	
@@ -125,7 +125,7 @@ function newGirl(btn){
 		}
 		
 		// 返回
-		return [propsDefault.startX+layerX,propsDefault.marginBottom];
+		return [propsDefault.startX-layerX,propsDefault.marginBottom];
 	};
 	uiSequence.push({name:fnName,params:params});
 	
@@ -168,7 +168,7 @@ function newCoin(btn){
 		}
 		
 		// 返回
-		return [propsDefault.startX+layerX,propsDefault.height,propsDefault.row,propsDefault.col];
+		return [propsDefault.startX-layerX,propsDefault.height,propsDefault.row,propsDefault.col];
 	};
 	uiSequence.push({name:fnName,params:params});
 	
@@ -212,7 +212,7 @@ function newWall(btn){
 		}
 		propsDefault.special = document.getElementById(name+'-prop-'+key).value;
 		// 返回
-		return [propsDefault.startX+layerX,propsDefault.marginBottom,propsDefault.row,propsDefault.col,JSON.parse(propsDefault.special)];
+		return [propsDefault.startX-layerX,propsDefault.marginBottom,propsDefault.row,propsDefault.col,JSON.parse(propsDefault.special)];
 	};
 	uiSequence.push({name:fnName,params:params});
 	
@@ -256,7 +256,7 @@ function newGround(btn){
 		}
 
 		// 返回
-		return [propsDefault.startX+layerX,propsDefault.height,propsDefault.width];
+		return [propsDefault.startX-layerX,propsDefault.height,propsDefault.width];
 	};
 	uiSequence.push({name:fnName,params:params});
 	
