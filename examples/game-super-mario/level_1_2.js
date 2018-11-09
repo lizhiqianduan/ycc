@@ -104,6 +104,8 @@
 		this.newMissile(1900,600);
 		this.newMissile(3300,500);
 		
+		// 先创建场景，再创建Mario，防止场景覆盖Mario
+		this.createMario();
 		
 	};
 	

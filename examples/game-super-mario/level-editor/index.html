@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name=viewport content="width=device-width,initial-scale=1,user-scalable=0,viewport-fit=cover">
+	<title>关卡编辑器</title>
+	<link rel="stylesheet" href="../../style.css">
+	<style>
+		body{
+			font-size: 0;
+			position: relative;
+		}
+		#log{
+			position: fixed;
+			left: 0;
+			top:0;
+			z-index:999;
+			width:100%;
+			height:300px;
+			overflow-y: scroll;
+			font-size:12px;
+			color:red;
+			display: none;
+		}
+
+		#canvas{
+			float: left;
+		}
+
+
+
+		#tools{
+			float: left;
+			font-size:12px;
+		}
+		#tools input[type=text],#tools input[type=number]{
+			height: 24px;
+			line-height: 24px;
+		}
+
+		#start{
+			margin-top: 20px;
+		}
+
+		#props{
+			margin-top:20px;
+			display: none;
+		}
+		#props .tool-prop{
+			display: none;
+		}
+
+
+		#tool-list{
+			margin-top: 20px;
+		}
+		#tool-list button{
+			display: block;
+			text-align: center;
+			width:100%;
+		}
+		#tool-list button[active]{
+			background-color: #aaa;
+		}
+
+
+
+	</style>
+</head>
+<body>
+
+<div id="log">
+	<div><button onclick="document.getElementById('log-con').innerHTML=''">清空</button></div>
+	<div id="log-con">
+
+	</div>
+</div>
+
+
+<div id="wrap">
+	<div id="canvas">
+
+	</div>
+	<div id="tools">
+		<div><span>关卡名：</span><input type="text" id="level-name"></div>
+		<div><span>界面x：</span><input type="number" id="layerX" value="0" onchange="onLayerXChange()"></div>
+		<div id="tool-list">
+			选择UI： <br>
+			<div><button onclick="newGround(this)">地面</button></div>
+			<div><button onclick="newWall(this)">墙体</button></div>
+			<div><button onclick="newCoin(this)">金币</button></div>
+			<div><button onclick="newGirl(this)">公主</button></div>
+			<div><button onclick="newMissile(this)">导弹</button></div>
+			<div><button onclick="newMushroom(this)">蘑菇</button></div>
+		</div>
+
+		<div id="props">
+			更改属性： <br>
+
+			<!-- 地面 -->
+			<div id="ground-prop" class="tool-prop">
+				<div>startX: <input type="number" id="ground-prop-startX" value="0" onchange="onPropChange()"></div>
+				<div>height: <input type="number" id="ground-prop-height" value="0" onchange="onPropChange()"></div>
+				<div>width: <input type="number" id="ground-prop-width" value="0" onchange="onPropChange()"></div>
+			</div>
+
+			<!-- 墙体 -->
+			<div id="wall-prop" class="tool-prop">
+				<div>startX: <input type="number" id="wall-prop-startX" value="0" onchange="onPropChange()"></div>
+				<div>marginBottom: <input type="number" id="wall-prop-marginBottom" value="0" onchange="onPropChange()"></div>
+				<div>row: <input type="number" id="wall-prop-row" value="0" onchange="onPropChange()"></div>
+				<div>col: <input type="number" id="wall-prop-col" value="0" onchange="onPropChange()"></div>
+				<div>special: <input type="text" id="wall-prop-special" value="[]" onchange="onPropChange()"></div>
+			</div>
+
+			<!-- 金币 -->
+			<div id="coin-prop" class="tool-prop">
+				<div>startX: <input type="number" id="coin-prop-startX" value="0" onchange="onPropChange()"></div>
+				<div>height: <input type="number" id="coin-prop-height" value="0" onchange="onPropChange()"></div>
+				<div>row: <input type="number" id="coin-prop-row" value="0" onchange="onPropChange()"></div>
+				<div>col: <input type="number" id="coin-prop-col" value="0" onchange="onPropChange()"></div>
+			</div>
+
+			<!-- 女神 -->
+			<div id="girl-prop" class="tool-prop">
+				<div>startX: <input type="number" id="girl-prop-startX" value="0" onchange="onPropChange()"></div>
+				<div>marginBottom: <input type="number" id="girl-prop-marginBottom" value="0" onchange="onPropChange()"></div>
+			</div>
+
+			<div id="missile-prop" class="tool-prop">
+				<div>startX: <input type="number" id="missile-prop-startX" value="0" onchange="onPropChange()"></div>
+				<div>marginBottom: <input type="number" id="missile-prop-marginBottom" value="0" onchange="onPropChange()"></div>
+			</div>
+
+			<div id="mushroom-prop" class="tool-prop">
+				<div>startX: <input type="number" id="mushroom-prop-startX" value="0" onchange="onPropChange()"></div>
+				<div>marginBottom: <input type="number" id="mushroom-prop-marginBottom" value="0" onchange="onPropChange()"></div>
+			</div>
+
+
+			<button onclick="sureOnclick()">确认新增</button>
+			<button onclick="cancelOnclick()">取消新增</button>
+		</div>
+
+		<div id="start">
+			<button>生成关卡JS文件</button>
+			<button>启动调试</button>
+		</div>
+
+	</div>
+</div>
+
+</body>
+</html>
+
+<!-- 公用模块 -->
+<script src="../../common.js"></script>
+
+<!-- Ycc库 -->
+<script src="../../../build/ycc.js"></script>
+
+<!-- 物理引擎库matter -->
+<script src="../lib/matter-js/matter.js"></script>
+
+
+
+<script src="../Loading.js"></script>
+<script src="../GameScene.js"></script>
+<script src="../GameScene.ui.js"></script>
+
+<!--关卡-->
+<!--<script src="../level_1_1.js"></script>-->
+<!--<script src="../level_1_2.js"></script>-->
+<!--<script src="../level_1_3.js"></script>-->
+
+
+
+
+<script src="./main.js"></script>
+
+<script src="./uiCreator.js"></script>

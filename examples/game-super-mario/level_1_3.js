@@ -86,6 +86,10 @@
 		this.newGround(x,200,1000);
 		endBucket = this.newBucket(x+stageW-90,200-10,4,90,90);
 		
+		
+		// 先创建场景，再创建Mario，防止场景覆盖Mario
+		this.createMario();
+		
 	};
 	
 	
