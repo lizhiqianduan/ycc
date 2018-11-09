@@ -457,13 +457,14 @@
 	/**
 	 * 新建一个桶
 	 * @param startX 				桶的左侧起点
-	 * @param height				桶下边缘距离屏幕最下方的高度
+	 * @param marginBottom			桶下边缘距离屏幕最下方的高度
 	 * @param [bucketWidth]			桶的宽度
 	 * @param [bucketHeight]		桶的高度
 	 * @param [direction]			桶的朝向  1上 2右 3下 4左
 	 */
-	GameScene.prototype.newBucket = function (startX,height,direction,bucketWidth,bucketHeight) {
+	GameScene.prototype.newBucket = function (startX,marginBottom,direction,bucketWidth,bucketHeight) {
 		
+		var height = marginBottom;
 		bucketWidth=bucketWidth||80;
 		bucketHeight=bucketHeight||90;
 

@@ -63,6 +63,10 @@
 			background-color: #aaa;
 		}
 
+		#js{
+			font-size: 12px;
+			clear: both;
+		}
 
 
 	</style>
@@ -92,6 +96,7 @@
 			<div><button onclick="newGirl(this)">公主</button></div>
 			<div><button onclick="newMissile(this)">导弹</button></div>
 			<div><button onclick="newMushroom(this)">蘑菇</button></div>
+			<div><button onclick="newBucket(this)">桶</button></div>
 		</div>
 
 		<div id="props">
@@ -137,18 +142,32 @@
 				<div>marginBottom: <input type="number" id="mushroom-prop-marginBottom" value="0" onchange="onPropChange()"></div>
 			</div>
 
+			<div id="bucket-prop" class="tool-prop">
+				<div>startX: <input type="number" id="bucket-prop-startX" value="0" onchange="onPropChange()"></div>
+				<div>marginBottom: <input type="number" id="bucket-prop-marginBottom" value="0" onchange="onPropChange()"></div>
+				<div>direction: <input type="number" id="bucket-prop-direction" value="0" onchange="onPropChange()"></div>
+				<div>bucketWidth: <input type="number" id="bucket-prop-bucketWidth" value="0" onchange="onPropChange()"></div>
+				<div>bucketHeight: <input type="number" id="bucket-prop-bucketHeight" value="0" onchange="onPropChange()"></div>
+			</div>
+
 
 			<button onclick="sureOnclick()">确认新增</button>
 			<button onclick="cancelOnclick()">取消新增</button>
 		</div>
 
 		<div id="start">
-			<button>生成关卡JS文件</button>
+			<button onclick="createJs()">生成关卡JS文件</button>
 			<button>启动调试</button>
 		</div>
 
 	</div>
 </div>
+
+<div id="js">
+
+</div>
+
+
 
 </body>
 </html>

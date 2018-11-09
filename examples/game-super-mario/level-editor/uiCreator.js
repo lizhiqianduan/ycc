@@ -15,7 +15,44 @@ var uiSequence = [
 ];
 
 
-
+function newBucket(btn){
+	var name = 'bucket';
+	var fnName = 'newBucket';
+	var propsDefault = {
+		startX:0,
+		marginBottom:200,
+		direction:1,
+		bucketWidth:80,
+		bucketHeight:90
+	};
+	
+	// 禁用
+	disableBtn(btn);
+	// 显示属性更改区
+	document.getElementById('props').style.display='block';
+	document.getElementById(name+'-prop').style.display='block';
+	
+	// 重置属性
+	for(var key in propsDefault){
+		document.getElementById(name+'-prop-'+key).value=propsDefault[key];
+	}
+	
+	var params = function () {
+		// 场景图层的x坐标
+		var layerX = parseInt(document.getElementById('layerX').value);
+		
+		// 取属性值
+		for(var key in propsDefault){
+			propsDefault[key] = parseInt(document.getElementById(name+'-prop-'+key).value);
+		}
+		
+		// 返回
+		return [propsDefault.startX-layerX,propsDefault.marginBottom,propsDefault.direction,propsDefault.bucketWidth,propsDefault.bucketHeight];
+	};
+	uiSequence.push({name:fnName,params:params});
+	
+	execUISequence();
+}
 
 
 function newMushroom(btn){
@@ -48,7 +85,7 @@ function newMushroom(btn){
 		}
 		
 		// 返回
-		return [propsDefault.startX+layerX,propsDefault.marginBottom];
+		return [propsDefault.startX-layerX,propsDefault.marginBottom];
 	};
 	uiSequence.push({name:fnName,params:params});
 	
@@ -369,4 +406,21 @@ function disableBtn(btn) {
 	for(i=0;i<btnItem.length;i++){
 		btnItem[i].disabled=true;
 	}
+}
+
+
+/**
+ * 生成js文件
+ */
+function createJs(){
+	var str = '';
+	uiSequence.forEach(function (ui) {
+		var temp = ui.params.map(function (param) {
+			return JSON.stringify(param);
+		});
+		var item = 'this.'+ui.name+'('+temp.join(',')+');';
+		str+=item;
+	});
+	console.log(str);
+	document.getElementById('js').innerText=str;
 }
