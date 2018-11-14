@@ -14,6 +14,9 @@ var uiSequence = [
 	// {name:'newGround',params:function(){ return [0,150,100]};}
 ];
 
+execUISequence();
+
+
 
 function newBucket(btn){
 	var name = 'bucket';
@@ -27,7 +30,7 @@ function newBucket(btn){
 	};
 	
 	// 禁用
-	disableBtn(btn);
+	beforeSelectUI(btn);
 	// 显示属性更改区
 	document.getElementById('props').style.display='block';
 	document.getElementById(name+'-prop').style.display='block';
@@ -65,7 +68,7 @@ function newMushroom(btn){
 	};
 	
 	// 禁用
-	disableBtn(btn);
+	beforeSelectUI(btn);
 	// 显示属性更改区
 	document.getElementById('props').style.display='block';
 	document.getElementById(name+'-prop').style.display='block';
@@ -104,7 +107,7 @@ function newMissile(btn){
 	};
 	
 	// 禁用
-	disableBtn(btn);
+	beforeSelectUI(btn);
 	// 显示属性更改区
 	document.getElementById('props').style.display='block';
 	document.getElementById(name+'-prop').style.display='block';
@@ -142,7 +145,7 @@ function newGirl(btn){
 	};
 	
 	// 禁用
-	disableBtn(btn);
+	beforeSelectUI(btn);
 	// 显示属性更改区
 	document.getElementById('props').style.display='block';
 	document.getElementById(name+'-prop').style.display='block';
@@ -185,7 +188,7 @@ function newCoin(btn){
 	};
 	
 	// 禁用
-	disableBtn(btn);
+	beforeSelectUI(btn);
 	// 显示属性更改区
 	document.getElementById('props').style.display='block';
 	document.getElementById(name+'-prop').style.display='block';
@@ -229,7 +232,7 @@ function newWall(btn){
 	};
 	
 	// 禁用
-	disableBtn(btn);
+	beforeSelectUI(btn);
 	// 显示属性更改区
 	document.getElementById('props').style.display='block';
 	document.getElementById(name+'-prop').style.display='block';
@@ -273,7 +276,7 @@ function newGround(btn){
 	};
 	
 	// 禁用
-	disableBtn(btn);
+	beforeSelectUI(btn);
 	// 显示属性更改区
 	document.getElementById('props').style.display='block';
 	document.getElementById(name+'-prop').style.display='block';
@@ -317,16 +320,28 @@ function onPropChange() {
 }
 
 /**
- * 执行ui的创建序列
+ * 执行ui的创建序列，并更改已添加的UI
  */
 function execUISequence() {
+	var liveUI = document.querySelector('#live-ui');
+	// 已添加的UI是否为空
+	var liveUIEmpty = true;
+	liveUI.innerHTML='';
 	for(var i=0;i<uiSequence.length;i++){
 		var uiCreator = uiSequence[i];
 		var fnName = uiCreator.name;
 		if(Ycc.utils.isFn(uiCreator.params))
 			currentScene[fnName].apply(currentScene,uiCreator.params());
-		if(Ycc.utils.isArray(uiCreator.params))
+		// 若params参数是数组，说明该UI已经被添加至舞台
+		if(Ycc.utils.isArray(uiCreator.params)){
+			liveUIEmpty = false;
+			console.log(uiCreator,333);
 			currentScene[fnName].apply(currentScene,uiCreator.params);
+			liveUI.innerHTML+='<div>'+ fnName +' '+ JSON.stringify(uiCreator.params) +'<span onclick="deleteUI(\'' + encodeURI(JSON.stringify(uiCreator)) + '\')">点击删除</span></div>';
+		}
+	}
+	if(liveUIEmpty){
+		liveUI.innerHTML='空';
 	}
 }
 
@@ -368,7 +383,8 @@ function sureOnclick() {
 	var lastProp = uiSequence[uiSequence.length-1];
 	if(lastProp && Ycc.utils.isFn(lastProp.params))
 		lastProp.params = lastProp.params();
-	
+	clearAllUI();
+	execUISequence();
 }
 
 function cancelOnclick() {
@@ -381,7 +397,7 @@ function cancelOnclick() {
 	
 	// UI属性全部隐藏
 	document.getElementById('props').style.display='none';
-	var uiPropItem = document.querySelectorAll('tool-prop');
+	var uiPropItem = document.querySelectorAll('.tool-prop');
 	for(i=0;i<uiPropItem.length;i++){
 		uiPropItem[i].style.display='none';
 	}
@@ -395,19 +411,48 @@ function cancelOnclick() {
 }
 
 /**
- * 禁用所有按钮，并给当前按钮添加active属性
+ * 所有UI的点击前的hook函数
+ * 给当前按钮添加active属性，标识选中
  * @param btn
  */
-function disableBtn(btn) {
-	// removeAttribute('active')
-	btn.setAttribute('active',1);
-	// 按钮全部禁用
+function beforeSelectUI(btn) {
+	var isActive = false;
 	var btnItem = document.querySelectorAll('#tool-list button');
 	for(i=0;i<btnItem.length;i++){
-		btnItem[i].disabled=true;
+		if(parseInt(btnItem[i].getAttribute('active'))===1){
+			isActive=true;
+			break;
+		}
 	}
+	// 如果存在已激活的按钮，说明之前正在编辑，取消编辑
+	if(isActive){
+		cancelOnclick();
+	}
+
+	btn.setAttribute('active',1);
+	btn.disabled=true;
 }
 
+/**
+ * 删除UI的点击事件
+ * @param uiCreatorString
+ */
+function deleteUI(uiCreatorString) {
+	uiCreatorString = decodeURI(uiCreatorString);
+	console.log(uiCreatorString);
+	for(var i=0;i<uiSequence.length;i++){
+		var uiCreator = uiSequence[i];
+		// 若params参数是数组，说明该UI已经被添加至舞台
+		if(Ycc.utils.isArray(uiCreator.params)){
+			if(uiCreatorString===JSON.stringify(uiCreator)){
+				uiSequence.splice(i,1);
+				clearAllUI();
+				execUISequence();
+				return;
+			}
+		}
+	}
+}
 
 /**
  * 生成js文件

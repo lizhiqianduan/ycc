@@ -130,7 +130,7 @@ function loadRes(cb){
 		{name:"bg05",url:"../images/bg05.jpg"},
 	],function (lise,imgs) {
 		ycc.loader.loadResOneByOne([
-			{name:"bgm",type:"audio",url:"../audios/bgm.mp3"},
+			{name:"bgm",type:"audio",url:"../audios/bgm2.mp3"},
 			{name:"jump",type:"audio",url:"../audios/jump.mp3"},
 			{name:"victory",type:"audio",url:"../audios/victory.mp3"},
 			{name:"touchWall",type:"audio",url:"../audios/touchWall.mp3"},
