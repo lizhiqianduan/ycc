@@ -225,7 +225,7 @@ function newWall(btn){
 	var fnName = 'newWall';
 	var propsDefault = {
 		startX:0,
-		marginBottom:200,
+		marginBottom:260,
 		row:1,
 		col:3,
 		special:'[]'

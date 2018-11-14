@@ -79,8 +79,12 @@ body *{
     margin-top:20px;
     margin-left: -360px;
 }
-
+#live-ui{
+    max-height:200px;
+    overflow-y: scroll;
+}
 #live-ui span{
+    color:#2a6496;
     float: right;
     cursor: pointer;
     user-select: none;
@@ -168,7 +172,7 @@ body *{
     #tools{
         float: left;
         font-size:12px;
-        margin-top:20px;
+        margin-top:5px;
         margin-left: 0;
     }
     #tools .panel{
@@ -180,5 +184,21 @@ body *{
     #tool-list{
         width:60px;
     }
-
+    #level-name, #layerX{
+        width:40px;
+    }
+    #canvas canvas{
+        width:150px;
+    }
+    body{
+        padding-bottom:30px;
+    }
+    #start {
+        margin-top: 5px;
+        text-align: center;
+        padding-bottom: 5px;
+    }
+    #canvas{
+        margin-top: 5px;
+    }
 }
