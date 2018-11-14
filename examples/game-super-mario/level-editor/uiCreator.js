@@ -23,7 +23,7 @@ function newBucket(btn){
 	var fnName = 'newBucket';
 	var propsDefault = {
 		startX:0,
-		marginBottom:200,
+		marginBottom:150,
 		direction:1,
 		bucketWidth:80,
 		bucketHeight:90
@@ -64,7 +64,7 @@ function newMushroom(btn){
 	var fnName = 'newMushroom';
 	var propsDefault = {
 		startX:0,
-		marginBottom:200
+		marginBottom:150
 	};
 	
 	// 禁用
@@ -141,7 +141,7 @@ function newGirl(btn){
 	var fnName = 'newGirl';
 	var propsDefault = {
 		startX:0,
-		marginBottom:200
+		marginBottom:150
 	};
 	
 	// 禁用
@@ -271,7 +271,7 @@ function newGround(btn){
 	var fnName = 'newGround';
 	var propsDefault = {
 		startX:0,
-		height:200,
+		height:150,
 		width:300
 	};
 	
@@ -337,7 +337,7 @@ function execUISequence() {
 			liveUIEmpty = false;
 			console.log(uiCreator,333);
 			currentScene[fnName].apply(currentScene,uiCreator.params);
-			liveUI.innerHTML+='<div>'+ fnName +' '+ JSON.stringify(uiCreator.params) +'<span onclick="deleteUI(\'' + encodeURI(JSON.stringify(uiCreator)) + '\')">点击删除</span></div>';
+			liveUI.innerHTML+='<div class="clearfix">'+ fnName +' '+ JSON.stringify(uiCreator.params) +'<span onclick="deleteUI(\'' + encodeURI(JSON.stringify(uiCreator)) + '\')">点击删除</span></div>';
 		}
 	}
 	if(liveUIEmpty){

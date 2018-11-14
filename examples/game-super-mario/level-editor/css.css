@@ -150,3 +150,35 @@ body *{
     clear: both;
 }
 
+.clearfix:after{display:table;content:" ";clear:both;height: 0;visibility: hidden;}
+
+
+/*********************** 移动端布局 **************************/
+@media screen and (max-width:800px) {
+    .panel{
+        width:120px;
+        padding:5px;
+    }
+    #props input{
+        width:28px;
+    }
+    .tool-wrap{
+        margin-left: 0;
+    }
+    #tools{
+        float: left;
+        font-size:12px;
+        margin-top:20px;
+        margin-left: 0;
+    }
+    #tools .panel{
+        margin-left: 5px;
+    }
+    #live-ui-panel{
+        width:120px;
+    }
+    #tool-list{
+        width:60px;
+    }
+
+}
