@@ -1897,6 +1897,16 @@
 		this.frameListenerList.push(listener);
 	};
 	
+	/**
+	 * 移除某个监听函数
+	 * @param listener
+	 */
+	Ycc.Ticker.prototype.removeFrameListener = function (listener) {
+		var index = this.frameListenerList.indexOf(listener);
+		if(index!==-1)
+			this.frameListenerList.splice(index,1);
+	};
+	
 	
 	/**
 	 * 执行所有自定义的帧监听函数

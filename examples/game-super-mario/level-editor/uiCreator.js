@@ -469,3 +469,32 @@ function createJs(){
 	console.log(str);
 	document.getElementById('js').innerText=str;
 }
+
+/**
+ * 开始调试
+ */
+function debugStart(btn){
+	console.log(btn,333);
+	var dom = document.getElementById('layerX');
+	
+	if(btn.innerText==='启动调试'){
+		btn.innerText = '暂停调试';
+		dom.disabled=true;
+		ycc.ticker.addFrameListener(frameListener);
+	}else{
+		btn.innerText = '启动调试';
+		dom.disabled=false;
+		ycc.ticker.removeFrameListener(frameListener);
+	}
+}
+
+/**
+ * 调试时的每帧监听函数
+ */
+function frameListener() {
+	var dom = document.getElementById('layerX');
+	var layerX = parseInt(dom.value);
+	layerX-=2;
+	dom.value=layerX;
+	onLayerXChange();
+}

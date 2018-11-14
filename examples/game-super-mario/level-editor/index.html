@@ -26,9 +26,9 @@
 <div id="wrap">
 	<div id="start">
 		<div class="item"><span>关卡名：</span><input type="text" id="level-name"></div>
-		<div class="item"><span>界面x：</span><input type="number" id="layerX" value="0" onchange="onLayerXChange()"></div>
+		<div class="item"><span>界面x：</span><input type="number" id="layerX" value="0" step="10" onchange="onLayerXChange()"></div>
 		<button onclick="createJs()">生成JS文件</button>
-		<button>启动调试</button>
+		<button onclick="debugStart(this)">启动调试</button>
 	</div>
 	<hr>
 	<div class="tool-wrap">
