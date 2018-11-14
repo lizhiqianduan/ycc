@@ -19,6 +19,8 @@ var stageH = 0;
 var images = null;
 // 所以音频资源
 var audios = null;
+// 背景乐自动播放
+var bgmAutoplay = true;
 // 当前场景
 var currentScene = null;
 // loading窗

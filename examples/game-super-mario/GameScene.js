@@ -72,8 +72,10 @@ GameScene.prototype.init = function () {
 	this['level_'+this.gameLevel] && this['level_'+this.gameLevel]();
 	
 	this.collisionListenerInit();
-   audios.bgm.currentTime=0;
-   audios.bgm.play();
+	if(bgmAutoplay){
+		audios.bgm.currentTime=0;
+		audios.bgm.play();
+	}
 };
 
 

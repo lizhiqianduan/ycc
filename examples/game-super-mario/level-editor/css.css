@@ -152,6 +152,7 @@ body *{
 #js{
     font-size: 12px;
     clear: both;
+    word-break: break-all;
 }
 
 .clearfix:after{display:table;content:" ";clear:both;height: 0;visibility: hidden;}

@@ -6,15 +6,14 @@
  */
 
 
-// 当前编辑器内UI的数目
-var currentUIListLength = 0;
 
 // 需要添加的ui顺序
 var uiSequence = [
 	// {name:'newGround',params:function(){ return [0,150,100]};}
 ];
 
-execUISequence();
+if(localStorage.getItem('uiSequence'))
+	uiSequence = JSON.parse(localStorage.getItem('uiSequence'));
 
 
 
@@ -383,6 +382,8 @@ function sureOnclick() {
 	var lastProp = uiSequence[uiSequence.length-1];
 	if(lastProp && Ycc.utils.isFn(lastProp.params))
 		lastProp.params = lastProp.params();
+	// 存入localStorage，防止刷新页面丢失
+	localStorage.setItem('uiSequence',JSON.stringify(uiSequence));
 	clearAllUI();
 	execUISequence();
 }
@@ -467,6 +468,8 @@ function createJs(){
 		str+=item;
 	});
 	console.log(str);
+	// 创建js时删除存储
+	localStorage.removeItem('uiSequence');
 	document.getElementById('js').innerText=str;
 }
 
@@ -498,3 +501,8 @@ function frameListener() {
 	dom.value=layerX;
 	onLayerXChange();
 }
+
+
+window.onerror = function (e) {
+	alert(e);
+};
