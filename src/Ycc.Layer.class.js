@@ -524,6 +524,9 @@
 			if(uiIsShow&&!ui.show) continue;
 			// 右子树优先寻找
 			ui.itor().rightChildFirst(function (child) {
+				// 跳过不可见的UI
+				if(uiIsShow&&!child.show) return false;
+				
 				// 如果位于rect内，此处根据绝对坐标比较
 				if(dot.isInRect(child.getAbsolutePosition())){
 					temp = child;
