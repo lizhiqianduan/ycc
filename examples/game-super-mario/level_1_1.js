@@ -9,29 +9,18 @@
 
 
 (function (GameScene) {
-
-	var endBucket = null;
 	
-	GameScene.prototype.level_1_1 = function () {
+	
+	GameScene.prototype.level_1_2 = function () {
+		this.levelCommonSetting();
 		
-		this.createBackground(images.bg01,2222,stageH,2);
+		uiCreator.call(this);
 		
-		// 游戏接触的弹出图层
-		this.createGameOverLayer();
-		
-		// 方向键
-		this.createDirectionBtn();
-		
-		// 技能键
-		this.createSkillBtn();
-		
-		// 右上角的金币计数
-		this.createCoinUI();
-
-		
-	    // 起点
-        this.newBounds(8);
-		
+		this.levelCommonEnd(1650);
+	};
+	
+	
+	function uiCreator(){
 		this.newGround(0,150,450);
 		
 		// this.newGirl(220,150);
@@ -40,31 +29,31 @@
 		this.newMushroom(300,180);
 		
 		this.newBucket(100,150);
-        this.newCoin(100,300,1,4);
+		this.newCoin(100,300,1,4);
 		
 		this.newBucket(350,150);
-
-        this.newCoin(380,300,1,1);
-
-        this.newCoin(450,350,1,1);
-
-        this.newGround(550,150,100);
-        this.newCoin(550,350,1,2);
-
-
-
-
-
-
+		
+		this.newCoin(380,300,1,1);
+		
+		this.newCoin(450,350,1,1);
+		
+		this.newGround(550,150,100);
+		this.newCoin(550,350,1,2);
+		
+		
+		
+		
+		
+		
 		// 创建一堵墙
-        this.newWall(700,250,1,3);
-        this.newCoin(700,450,1,5);
-
-        this.newWall(850,400,1,3);
-        this.newCoin(850,450,1,2);
-
-        this.newWall(1050,50,1,3);
-        this.newCoin(1050,250,1,5);
+		this.newWall(700,250,1,3);
+		this.newCoin(700,450,1,5);
+		
+		this.newWall(850,400,1,3);
+		this.newCoin(850,450,1,2);
+		
+		this.newWall(1050,50,1,3);
+		this.newCoin(1050,250,1,5);
 		
 		
 		
@@ -77,47 +66,14 @@
 		this.newWall(1460,0,8,1);
 		
 		this.newWall(1560,0,10,1);
-  
-        this.newGround(1650,150,2000);
-		
-        // 终点旗子
-		this.newFlag(1650,150,400);
-		
-		endBucket = this.newBucket(1650+stageW-90,140,4,90,90);
-		
-		
-		// 最下方的死亡线，即Mario最低能降落到多少
-		this.newDeadLine(2000,-100);
-		
 		// 添加几发导弹
 		this.newMissile(300,300);
 		this.newMissile(1300,400);
 		this.newMissile(2300,500);
 		
-		// 先创建场景，再创建Mario，防止场景覆盖Mario
-		this.createMario();
 		
-	};
+	}
 	
-	
-	/**
-     * 当前关卡结束后的处理
-	 */
-	GameScene.prototype.level_1_1_onVictory = function () {
-        // var marioBody = self
-		if(this.marioContactWith.indexOf(endBucket._matterBody)>-1){
-			Matter.World.remove(engine.world, endBucket._matterBody);
-			this.gameOverLayer.show=true;
-		}
-		// 最后的桶在图层最前面，人物走进去的效果
-		var uiList = endBucket.belongTo.uiList;
-		var i=uiList.indexOf(endBucket);
-		uiList.splice(i,1);
-		uiList.push(endBucket);
-		
-	};
-	
-
 
 
 })(window.GameScene);
