@@ -113,10 +113,16 @@ GameScene.prototype.getUIFromMatterBody = function (body) {
 
 /**
  * 关卡公共的设置
+ * @param bgName
+ * @param bgRepeatType
+ * @param bgWidth
  */
-GameScene.prototype.levelCommonSetting = function () {
+GameScene.prototype.levelCommonSetting = function (bgName,bgRepeatType,bgWidth) {
+	bgName = bgName || 'bg01';
+	bgRepeatType = bgRepeatType || 2;
+	bgWidth = bgWidth || 9999;
 	// 游戏背景图
-	this.createBackground(images.bg01,9999,stageH,2);
+	this.createBackground(bgName,bgWidth,stageH,bgRepeatType);
 	
 	// 游戏接触的弹出图层
 	this.createGameOverLayer();
@@ -131,7 +137,7 @@ GameScene.prototype.levelCommonSetting = function () {
 	this.createCoinUI();
 	
 	// 最下方的死亡线，即Mario最低能降落到多少，超出即认为死亡
-	this.newDeadLine(9999,-100);
+	this.newDeadLine(bgWidth,-100);
 	
 	
 	// 起点

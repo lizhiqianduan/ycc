@@ -611,12 +611,13 @@
 	
 	/**
 	 * 创建背景
-	 * @param imgRes		背景图片资源
+	 * @param imgName		背景图片资源的名称，对应于loader加载时的name字段
 	 * @param width			背景需要覆盖的区域宽
 	 * @param height		背景需要覆盖的区域高
 	 * @param type			背景图片资源的类型	1-方图  2-长图 默认方图
 	 */
-	GameScene.prototype.createBackground = function (imgRes,width,height,type) {
+	GameScene.prototype.createBackground = function (imgName,width,height,type) {
+		var imgRes = images[imgName];
 		type = type || 1;
 		var rect = null;
 		if(type===1)
