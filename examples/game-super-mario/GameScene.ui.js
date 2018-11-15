@@ -1001,6 +1001,7 @@
 		
 		
 		function nextLevel() {
+			console.log('nextLevel');
 			clearMemory();
 			var index = levelList.indexOf(self.gameLevel);
 			if(index===-1) return;
@@ -1015,6 +1016,7 @@
 		}
 		
 		function restart() {
+			console.log('restart');
 			clearMemory();
 			projectInit();
 		}

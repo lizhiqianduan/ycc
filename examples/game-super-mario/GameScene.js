@@ -61,6 +61,9 @@ function GameScene(){
 	// 当前游戏关卡
 	this.gameLevel = (location.hash||'#1_1').slice(1);
 	
+	// 通关时的桶，默认的通关效果
+	this.endBucket = null;
+
 	this.init();
 	
 }
@@ -108,6 +111,66 @@ GameScene.prototype.getUIFromMatterBody = function (body) {
 	return body._yccUI;
 };
 
+/**
+ * 关卡公共的设置
+ */
+GameScene.prototype.levelCommonSetting = function () {
+	// 游戏背景图
+	this.createBackground(images.bg01,9999,stageH,2);
+	
+	// 游戏接触的弹出图层
+	this.createGameOverLayer();
+	
+	// 方向键
+	this.createDirectionBtn();
+	
+	// 技能键
+	this.createSkillBtn();
+	
+	// 右上角的金币计数
+	this.createCoinUI();
+	
+	// 最下方的死亡线，即Mario最低能降落到多少，超出即认为死亡
+	this.newDeadLine(9999,-100);
+	
+	
+	// 起点
+	this.newBounds(8);
+};
+
+/**
+ * 关卡公用的结束标志，即旗子后面一个走进去的桶
+ * 只要人物碰到旗子即认为通关
+ * @param x	旗子所在的位置
+ */
+GameScene.prototype.levelCommonEnd = function (x) {
+	// 终点旗子
+	x=x||1800;
+	this.newFlag(x,200,400);
+	this.newGround(x,200,1000);
+	this.endBucket = this.newBucket(x+stageW-90,200-10,4,90,90);
+	
+	// 创建Mario，防止场景覆盖Mario
+	this.createMario();
+};
+
+/**
+ * 关卡默认的通关回调
+ */
+GameScene.prototype.levelCommonOnVictory = function () {
+	var endBucket = this.endBucket;
+	if(this.marioContactWith.indexOf(endBucket._matterBody)>-1){
+		Matter.World.remove(engine.world, endBucket._matterBody);
+		this.gameOverLayer.show=true;
+	}
+	
+	// 最后的桶在图层最前面，人物走进去的效果
+	var uiList = endBucket.belongTo.uiList;
+	var i=uiList.indexOf(endBucket);
+	uiList.splice(i,1);
+	uiList.push(endBucket);
+
+};
 
 
 
@@ -523,7 +586,11 @@ GameScene.prototype.gameVictoryCompute = function () {
 			
 		}
 		var key = 'level_'+this.gameLevel+'_onVictory';
-		this[key] && this[key]();
+		if(this[key]){
+			this[key]();
+		}else{
+			this.levelCommonOnVictory();
+		}
 	}
 };
 
