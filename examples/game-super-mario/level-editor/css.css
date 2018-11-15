@@ -25,7 +25,7 @@ button{
 button:hover{
     background-color:#2a6496;
 }
-input[type=text],input[type=number]{
+input[type=text],input[type=number],select{
     height: 24px;
     line-height: 24px;
     outline: none;

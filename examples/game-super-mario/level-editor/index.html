@@ -25,7 +25,16 @@
 
 <div id="wrap">
 	<div id="start">
-		<div class="item"><span>关卡名：</span><input type="text" id="level-name"></div>
+		<div class="item">
+			<span>背景图：</span>
+			<select name="" id="bgName" value="bg01" onchange="onBgNameChange(this)">
+				<option value="bg01">bg01</option>
+				<option value="bg02">bg02</option>
+				<option value="bg03">bg03</option>
+				<option value="bg04">bg04</option>
+				<option value="bg05">bg05</option>
+			</select>
+		</div>
 		<div class="item"><span>界面x：</span><input type="number" id="layerX" value="0" step="10" onchange="onLayerXChange()"></div>
 		<button onclick="createJs()">生成JS</button>
 		<button onclick="debugStart(this)">启动调试</button>

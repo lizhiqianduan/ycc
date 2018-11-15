@@ -9,11 +9,14 @@
 
 // 需要添加的ui顺序
 var uiSequence = [
-	// {name:'newGround',params:function(){ return [0,150,100]};}
+	// 第一个UI始终是背景设置
+	{name:'levelCommonSetting',params:['bg01',2,9999]}
 ];
 
-if(localStorage.getItem('uiSequence'))
+if(localStorage.getItem('uiSequence')){
 	uiSequence = JSON.parse(localStorage.getItem('uiSequence'));
+	document.querySelector('#bgName').value = uiSequence[0].params[0];
+}
 
 
 
@@ -309,6 +312,22 @@ function newGround(btn){
 function onLayerXChange(){
 	currentScene.layer.x = parseInt(document.getElementById('layerX').value);
 }
+
+/**
+ * 背景的更改事件
+ * @param select
+ */
+function onBgNameChange(select) {
+	console.log(select.value);
+	uiSequence[0].params[0]=select.value;
+
+	// 存入localStorage，防止刷新页面丢失
+	localStorage.setItem('uiSequence',JSON.stringify(uiSequence));
+
+	clearAllUI();
+	execUISequence();
+}
+
 
 /**
  * UI属性更新的函数
