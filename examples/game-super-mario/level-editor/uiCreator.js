@@ -353,9 +353,11 @@ function execUISequence() {
 		// 若params参数是数组，说明该UI已经被添加至舞台
 		if(Ycc.utils.isArray(uiCreator.params)){
 			liveUIEmpty = false;
-			console.log(uiCreator,333);
 			currentScene[fnName].apply(currentScene,uiCreator.params);
-			liveUI.innerHTML+='<div class="clearfix">'+ fnName +' '+ JSON.stringify(uiCreator.params) +'<span onclick="deleteUI(\'' + encodeURI(JSON.stringify(uiCreator)) + '\')">点击删除</span></div>';
+			if(i!==0)
+				liveUI.innerHTML+='<div class="clearfix">'+ fnName +' '+ JSON.stringify(uiCreator.params) +'<span onclick="deleteUI(\'' + encodeURI(JSON.stringify(uiCreator)) + '\')">点击删除</span></div>';
+			else
+				liveUI.innerHTML+='<div class="clearfix">'+ fnName +' '+ JSON.stringify(uiCreator.params) +'</div>';
 		}
 	}
 	if(liveUIEmpty){
@@ -499,12 +501,12 @@ function debugStart(btn){
 	console.log(btn,333);
 	var dom = document.getElementById('layerX');
 	
-	if(btn.innerText==='启动调试'){
-		btn.innerText = '暂停调试';
+	if(btn.innerText==='调试'){
+		btn.innerText = '暂停';
 		dom.disabled=true;
 		ycc.ticker.addFrameListener(frameListener);
 	}else{
-		btn.innerText = '启动调试';
+		btn.innerText = '调试';
 		dom.disabled=false;
 		ycc.ticker.removeFrameListener(frameListener);
 	}
