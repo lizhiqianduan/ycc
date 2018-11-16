@@ -50,11 +50,6 @@
 		 * ycc实例的引用
 		 */
 		this.yccInstance = yccInstance;
-		/**
-		 * 虚拟canvas元素的引用
-		 * @type {Element}
-		 */
-		this.canvasDom = null;
 		
 		/**
 		 * 当前图层的绘图环境
@@ -203,14 +198,9 @@
 	 */
 	Ycc.Layer.prototype.init = function () {
 		var self = this;
-		var canvasDom = this.yccInstance.canvasDom;
-		// var canvasDom = document.createElement("canvas");
-		// canvasDom.width = this.width;
-		// canvasDom.height = this.height;
 		
 		// 初始化图层属性
-		this.ctx = canvasDom.getContext('2d');
-		this.canvasDom = canvasDom;
+		this.ctx = this.yccInstance.ctx;
 		
 		// 初始化画布属性
 		self._setCtxProps();

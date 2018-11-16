@@ -21,11 +21,6 @@
 	win.Ycc = function Ycc(config){
 		
 		/**
-		 * canvas的Dom对象
-		 */
-		this.canvasDom = null;
-		
-		/**
 		 * 绘图环境
 		 * @type {CanvasRenderingContext2D}
 		 */
@@ -64,13 +59,13 @@
 		 * 资源加载器
 		 * @type {Ycc.Loader}
 		 */
-		this.loader = new Ycc.Loader();
+		this.loader = new win.Ycc.Loader();
 		
 		/**
 		 * 异步请求的封装
 		 * @type {Ycc.Ajax}
 		 */
-		this.ajax = new Ycc.Ajax();
+		this.ajax = new win.Ycc.Ajax();
 		
 		/**
 		 * 基础绘图UI。这些绘图操作会直接作用于舞台。
@@ -111,26 +106,23 @@
 	
 	/**
 	 * 绑定canvas元素，一个canvas绑定一个ycc实例
-	 * @param canvasDom		canvas的HTML元素。即，显示舞台
+	 * @param ctx		canvas的绘图环境
 	 */
-	win.Ycc.prototype.bindCanvas = function (canvasDom) {
-		canvasDom._ycc = this;
+	win.Ycc.prototype.bindCanvas = function (ctx) {
 		
-		this.canvasDom = canvasDom;
-		
-		this.ctx = this.canvasDom.getContext("2d");
+		this.ctx = ctx;
 		
 		this.layerList = [];
 		
-		this.photoManager = new Ycc.PhotoManager(this);
+		this.photoManager = new win.Ycc.PhotoManager(this);
 		
-		this.layerManager = new Ycc.LayerManager(this);
+		this.layerManager = new win.Ycc.LayerManager(this);
 		
-		this.ticker = new Ycc.Ticker(this);
+		this.ticker = new win.Ycc.Ticker(this);
 		
-		this.debugger = new Ycc.Debugger(this);
+		this.debugger = new win.Ycc.Debugger(this);
 		
-		this.baseUI = new Ycc.UI(this.ctx.canvas);
+		this.baseUI = new win.Ycc.UI(this);
 		
 		this.init();
 		
@@ -164,7 +156,7 @@
 		// 鼠标/触摸点开始拖拽时，所指向的UI对象map，用于多个触摸点的情况
 		var dragstartUIMap = {};
 		
-		var gesture = new Ycc.Gesture({target:this.ctx.canvas});
+		var gesture = new win.Ycc.Gesture({target:this.ctx.canvas});
 		gesture.addListener('tap',gestureListener);
 		gesture.addListener('longtap',gestureListener);
 		gesture.addListener('doubletap',gestureListener);
@@ -182,7 +174,7 @@
 			var x = parseInt(e.clientX - self.ctx.canvas.getBoundingClientRect().left),
 				y = parseInt(e.clientY - self.ctx.canvas.getBoundingClientRect().top);
 			
-			var dragstartUI = self.getUIFromPointer(new Ycc.Math.Dot(x,y));
+			var dragstartUI = self.getUIFromPointer(new win.Ycc.Math.Dot(x,y));
 			triggerLayerEvent(e.type,x,y);
 			dragstartUI&&(dragstartUIMap[e.identifier]=dragstartUI);
 			dragstartUI&&dragstartUI.belongTo.enableEventManager&&triggerUIEvent(e.type,x,y,dragstartUI);
@@ -214,7 +206,7 @@
 			var x = parseInt(e.clientX - self.ctx.canvas.getBoundingClientRect().left),
 				y = parseInt(e.clientY - self.ctx.canvas.getBoundingClientRect().top);
 			
-			var ui = self.getUIFromPointer(new Ycc.Math.Dot(x,y));
+			var ui = self.getUIFromPointer(new win.Ycc.Math.Dot(x,y));
 			triggerLayerEvent(e.type,x,y);
 			ui&&ui.belongTo.enableEventManager&&triggerUIEvent(e.type,x,y,ui);
 		}
@@ -223,7 +215,7 @@
 			for(var i=self.layerList.length-1;i>=0;i--){
 				var layer = self.layerList[i];
 				if(!layer.enableEventManager) continue;
-				layer.enableEventManager&&layer.triggerListener(type,new Ycc.Event({
+				layer.enableEventManager&&layer.triggerListener(type,new win.Ycc.Event({
 					type:type,
 					x:x,
 					y:y
@@ -232,7 +224,7 @@
 		}
 		
 		function triggerUIEvent(type,x,y,ui){
-			ui.triggerListener(type,new Ycc.Event({
+			ui.triggerListener(type,new win.Ycc.Event({
 				x:x,
 				y:y,
 				type:type,
