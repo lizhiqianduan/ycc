@@ -7,7 +7,13 @@
  */
 
 
-
+// 兼容微信
+if("undefined"!==wx){
+	window = wx;
+	var navigator = {
+		userAgent:'android'
+	};
+}
 
 (function (win) {
 	
@@ -88,27 +94,37 @@
 		 * @type {boolean}
 		 */
 		this.isMobile = Ycc.utils.isMobile();
+		
+		this.stageW = 0;
+		
+		this.stageH = 0;
 	};
 	
 	/**
 	 * 获取舞台的宽
 	 */
 	win.Ycc.prototype.getStageWidth = function () {
-		return this.ctx.canvas.width;
+		return this.stageW;
 	};
 	
 	/**
 	 * 获取舞台的高
 	 */
 	win.Ycc.prototype.getStageHeight = function () {
-		return this.ctx.canvas.height;
+		return this.stageH;
 	};
 	
 	/**
 	 * 绑定canvas元素，一个canvas绑定一个ycc实例
-	 * @param ctx		canvas的绘图环境
+	 * @param ctx
+	 * @param stageW
+	 * @param stageH
+	 * @return {Ycc}
 	 */
-	win.Ycc.prototype.bindCanvas = function (ctx) {
+	win.Ycc.prototype.bindCanvas = function (ctx,stageW,stageH) {
+		
+		this.stageW = stageW;
+		this.stageH = stageH;
 		
 		this.ctx = ctx;
 		
@@ -294,3 +310,13 @@
 		return null;
 	};
 })(window);
+
+
+// 兼容微信
+if("undefined"!==wx){
+	module.exports = window.Ycc;
+	var Ycc = window.Ycc;
+	Ycc.prototype.getStageWidth = function () {
+	
+	};
+};
