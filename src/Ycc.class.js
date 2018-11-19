@@ -105,17 +105,17 @@ Ycc.prototype.getStageHeight = function () {
 
 /**
  * 绑定canvas元素，一个canvas绑定一个ycc实例
- * @param ctx
+ * @param canvas
  * @param stageW
  * @param stageH
  * @return {Ycc}
  */
-Ycc.prototype.bindCanvas = function (ctx,stageW,stageH) {
+Ycc.prototype.bindCanvas = function (canvas,stageW,stageH) {
 	
 	this.stageW = stageW || 375;
 	this.stageH = stageH || 667;
 	
-	this.ctx = ctx;
+	this.ctx = canvas.getContext('2d');
 	
 	this.layerList = [];
 	

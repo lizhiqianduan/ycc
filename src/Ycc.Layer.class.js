@@ -497,6 +497,8 @@
 					ui.__render();
 			});
 		}
+		// 兼容wx端，wx端多一个draw API
+		self.ctx.draw && self.ctx.draw();
 	};
 	
 	/**
