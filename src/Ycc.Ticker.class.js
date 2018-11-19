@@ -131,20 +131,21 @@
 		// 每帧理论的间隔时间
 		self.deltaTimeExpect = 1000/frameRate;
 		
-		var timer = window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame || window.oRequestAnimationFrame || window.msRequestAnimationFrame;
+		var timer = requestAnimationFrame || webkitRequestAnimationFrame || mozRequestAnimationFrame || oRequestAnimationFrame || msRequestAnimationFrame;
 		
 		// 初始帧数量设为0
 		self.frameAllCount = 0;
 
 		// timer兼容
 		timer || (timer = function(e) {
-				return window.setTimeout(e, 1e3 / 60);
+				return setTimeout(e, 1e3 / 60);
 			}
 		);
 		// 启动时间
 		self.startTime = performance.now();
 		// 启动心跳
-		self._timerId = timer.call(window, cb);
+		// self._timerId = timer.call(window, cb);
+		self._timerId = timer(cb);
 		self._isRunning = true;
 		
 		
@@ -187,7 +188,8 @@
 			}
 			
 			// 递归调用心跳函数
-			self._timerId = timer.call(window,cb);
+			// self._timerId = timer.call(window,cb);
+			self._timerId = timer(cb);
 		}
 		
 	};
@@ -196,9 +198,9 @@
 	 * 停止心跳
 	 */
 	Ycc.Ticker.prototype.stop = function () {
-		var stop = window.cancelAnimationFrame || window.webkitCancelAnimationFrame || window.mozCancelAnimationFrame || window.oCancelAnimationFrame;
+		var stop = cancelAnimationFrame || webkitCancelAnimationFrame || mozCancelAnimationFrame || oCancelAnimationFrame;
 		stop || (stop = function (id) {
-			return window.clearTimeout(id);
+			return clearTimeout(id);
 		});
 		stop(this._timerId);
 		this._isRunning = false;
@@ -250,4 +252,4 @@
 	
 	
 	
-})(window.Ycc);
+})(Ycc);

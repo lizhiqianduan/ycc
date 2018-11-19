@@ -45,6 +45,10 @@ module.exports = function(grunt){
 						'src/Ycc.UI.Rect.class.js',
 						'src/Ycc.UI.CropRect.class.js',
 						'src/Ycc.UI.SingleLineText.class.js',
+						
+						// polyfill
+						'src/Ycc.polyfill.wx.js',
+						
                     ],
                     dest: 'build/ycc.js'
                 }
@@ -97,14 +101,19 @@ module.exports = function(grunt){
 				livereload: 9000
 			},
 			files:["./src/*.js","./GruntFile.js"],
-            tasks: ["clean","concat","uglify:lib"]
+            tasks: ["clean","concat","uglify:lib","copy"]
         },
-		copy:[
-				{expand:true,cwd:"./src", src: '*.js', dest: 'build/'}
-  			]/*.concat(fs.readdirSync("./examples").map(function (t) {
-  				return {expand:true,cwd:"./build", src: '*.js', dest: 'examples/'+t+'/lib/'};
-  			}))*/
+		// copy:[
+		// 		{expand:true,cwd:"./src", src: '*.js', dest: 'build/'}
+  		// 	]/*.concat(fs.readdirSync("./examples").map(function (t) {
+  		// 		return {expand:true,cwd:"./build", src: '*.js', dest: 'examples/'+t+'/lib/'};
+  		// 	}))*/
 		
+		copy:{
+        	task1:{
+				expand:true,cwd:'./build',src:'ycc.js',dest:'F:\\wx-miniprogram\\lib\\'
+			}
+		}
 		
     });
 

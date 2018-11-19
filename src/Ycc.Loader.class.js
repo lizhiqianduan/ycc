@@ -193,7 +193,7 @@
 	 * 公用属性
 	 * @readonly
 	 */
-	AudioPolyfill.prototype.context = (window.AudioContext || window.webkitAudioContext) && new (window.AudioContext || window.webkitAudioContext)();
+	AudioPolyfill.prototype.context = ("undefined"!==typeof AudioContext || "undefined"!==typeof webkitAudioContext) && new (AudioContext || webkitAudioContext)();
 	
 	
 	/**
@@ -228,4 +228,4 @@
 	};
 	
 	
-})(window.Ycc);
+})(Ycc);

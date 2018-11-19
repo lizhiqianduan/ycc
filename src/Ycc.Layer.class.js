@@ -576,4 +576,4 @@
 		return res;
 	};
 	
-})(window.Ycc);
+})(Ycc);

@@ -58,7 +58,7 @@ function createYcc() {
 	document.getElementById('canvas').appendChild(canvas);
 
 // 初始化全局变量
-	ycc = new Ycc().bindCanvas(canvas);
+	ycc = new Ycc().bindCanvas(canvas.getContext('2d'));
 	stageW = ycc.getStageWidth();
 	stageH = ycc.getStageHeight();
 	
