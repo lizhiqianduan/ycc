@@ -21,6 +21,12 @@
 		 * @type {Ycc.Ajax}
 		 */
 		this.ajax = new Ycc.Ajax();
+		
+		/**
+		 * 基础地址，末尾必须有斜线'/'
+		 * @type {string}
+		 */
+		this.basePath = '';
 	};
 	
 	/**
@@ -106,7 +112,7 @@
 
 		if(curRes.type==='image'){
 			curRes.res = new Image();
-			curRes.res.src = curRes.url;
+			curRes.res.src = self.basePath + curRes.url;
 
 			curRes.res.addEventListener(successEvent,onSuccess);
 			curRes.res.addEventListener(errorEvent,onError);
@@ -124,7 +130,8 @@
 				onError({message:"浏览器不支持AudioContext！"});
 				return;
 			}
-			self.ajax.get(curRes.url,(function (curRes) {
+			console.log(self.basePath + curRes.url);
+			self.ajax.get(self.basePath + curRes.url,(function (curRes) {
 				return function (arrayBuffer) {
 					curRes.res.context.decodeAudioData(arrayBuffer, function(buf) {
 						curRes.res.buf=buf;
