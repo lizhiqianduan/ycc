@@ -22,6 +22,12 @@ var Ycc = function Ycc(config){
 	this.ctx = null;
 	
 	/**
+	 * 与ycc绑定的canvas元素
+	 * @type {null}
+	 */
+	this.canvasDom = null;
+	
+	/**
 	 * Layer对象数组。包含所有的图层
 	 * @type {Array}
 	 */
@@ -93,27 +99,24 @@ var Ycc = function Ycc(config){
  * 获取舞台的宽
  */
 Ycc.prototype.getStageWidth = function () {
-	return this.stageW;
+	return this.canvasDom.width;
 };
 
 /**
  * 获取舞台的高
  */
 Ycc.prototype.getStageHeight = function () {
-	return this.stageH;
+	return this.canvasDom.height;
 };
 
 /**
  * 绑定canvas元素，一个canvas绑定一个ycc实例
  * @param canvas
- * @param stageW
- * @param stageH
  * @return {Ycc}
  */
-Ycc.prototype.bindCanvas = function (canvas,stageW,stageH) {
+Ycc.prototype.bindCanvas = function (canvas) {
 	
-	this.stageW = stageW || 375;
-	this.stageH = stageH || 667;
+	this.canvasDom = canvas;
 	
 	this.ctx = canvas.getContext('2d');
 	
