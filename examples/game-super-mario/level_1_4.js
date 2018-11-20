@@ -18,5 +18,5 @@
 	}
 	
 	
-})(window.GameScene);
+})(GameScene);
 

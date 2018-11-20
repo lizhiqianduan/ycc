@@ -101,19 +101,13 @@ module.exports = function(grunt){
 				livereload: 9000
 			},
 			files:["./src/*.js","./GruntFile.js"],
-            tasks: ["clean","concat","uglify:lib","copy"]
+            tasks: ["clean","concat","uglify:lib"]
         },
 		// copy:[
 		// 		{expand:true,cwd:"./src", src: '*.js', dest: 'build/'}
   		// 	]/*.concat(fs.readdirSync("./examples").map(function (t) {
   		// 		return {expand:true,cwd:"./build", src: '*.js', dest: 'examples/'+t+'/lib/'};
   		// 	}))*/
-		
-		copy:{
-        	task1:{
-				expand:true,cwd:'./build',src:'ycc.js',dest:'F:\\wx-miniprogram\\lib\\'
-			}
-		}
 		
     });
 

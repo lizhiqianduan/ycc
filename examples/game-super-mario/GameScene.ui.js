@@ -1041,4 +1041,4 @@
 		}
 	};
 	
-})(window.GameScene);
+})(GameScene);

@@ -11,7 +11,7 @@
 (function (GameScene) {
 	
 	
-	GameScene.prototype.level_1_2 = function () {
+	GameScene.prototype.level_1_1 = function () {
 		this.levelCommonSetting();
 		
 		uiCreator.call(this);
@@ -76,4 +76,4 @@
 	
 
 
-})(window.GameScene);
+})(GameScene);

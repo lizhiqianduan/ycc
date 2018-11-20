@@ -68,4 +68,4 @@
 	}
 	
 	
-})(window.GameScene);
+})(GameScene);

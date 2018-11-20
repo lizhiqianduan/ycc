@@ -81,4 +81,4 @@
 		
 	}
 	
-})(window.GameScene);
+})(GameScene);

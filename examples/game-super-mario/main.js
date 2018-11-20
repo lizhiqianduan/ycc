@@ -54,11 +54,13 @@ loadRes(function (imgs, musics) {
 
 
 function createYcc() {
+	if(typeof canvas === 'undefined'){
 // 创建canvas
-	var canvas = document.createElement('canvas');
-	canvas.width=document.documentElement.clientWidth;
-	canvas.height=document.documentElement.clientHeight;
-	document.body.appendChild(canvas);
+		window.canvas = document.createElement('canvas');
+		canvas.width=window.innerWidth;
+		canvas.height=window.innerHeight;
+		document.body.appendChild(canvas);
+	}
 
 // 初始化全局变量
 	ycc = new Ycc().bindCanvas(canvas);

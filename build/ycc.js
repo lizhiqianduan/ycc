@@ -22,6 +22,12 @@ var Ycc = function Ycc(config){
 	this.ctx = null;
 	
 	/**
+	 * 与ycc绑定的canvas元素
+	 * @type {null}
+	 */
+	this.canvasDom = null;
+	
+	/**
 	 * Layer对象数组。包含所有的图层
 	 * @type {Array}
 	 */
@@ -93,29 +99,26 @@ var Ycc = function Ycc(config){
  * 获取舞台的宽
  */
 Ycc.prototype.getStageWidth = function () {
-	return this.stageW;
+	return this.canvasDom.width;
 };
 
 /**
  * 获取舞台的高
  */
 Ycc.prototype.getStageHeight = function () {
-	return this.stageH;
+	return this.canvasDom.height;
 };
 
 /**
  * 绑定canvas元素，一个canvas绑定一个ycc实例
- * @param ctx
- * @param stageW
- * @param stageH
+ * @param canvas
  * @return {Ycc}
  */
-Ycc.prototype.bindCanvas = function (ctx,stageW,stageH) {
+Ycc.prototype.bindCanvas = function (canvas) {
 	
-	this.stageW = stageW || 375;
-	this.stageH = stageH || 667;
+	this.canvasDom = canvas;
 	
-	this.ctx = ctx;
+	this.ctx = canvas.getContext('2d');
 	
 	this.layerList = [];
 	
@@ -1846,7 +1849,7 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 			var frameTime = self.frameAllCount * self.deltaTimeExpect;
 
 			// 当总帧数*每帧的理论时间小于总心跳时间，触发帧的回调
-			if(tickTime > frameTime){
+			if(tickTime > frameTime || "undefined"!==typeof wx){
 				// 总帧数加1
 				self.frameAllCount++;
 				// 执行所有自定义的帧监听函数
@@ -3002,7 +3005,11 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 				for(var i=0;i<touches.length;i++){
 					var touch = touches[i];
 					var life = self.findCurrentLifeByTouchID(touch.identifier);
-					life.moveTouchEventList.push(touch);
+					var index = self.indexOfTouchFromMoveTouchEventList(life.moveTouchEventList,touch);
+					if(index===-1)
+						life.moveTouchEventList.push(touch);
+					else
+						life.moveTouchEventList[index]=touch;
 					// self.onlifechange && self.onlifechange(life);
 					self.triggerListener('lifechange',life);
 				}
@@ -3048,6 +3055,17 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 		for(i=0;i<e.targetTouches.length;i++){
 			this.targetTouches.push(touches[i]);
 		}
+	};
+	
+	/**
+	 * 寻找移动过的接触点
+	 */
+	Ycc.TouchLifeTracer.prototype.indexOfTouchFromMoveTouchEventList = function (moveTouchEventList,touch) {
+		for(var i=0;i<moveTouchEventList.length;i++){
+			if(touch.identifier===moveTouchEventList[i].identifier)
+				return i;
+		}
+		return -1;
 	};
 	
 })(Ycc);;/**
@@ -3968,6 +3986,8 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 					ui.__render();
 			});
 		}
+		// 兼容wx端，wx端多一个draw API
+		self.ctx.draw && self.ctx.draw();
 	};
 	
 	/**
@@ -6852,9 +6872,9 @@ if("undefined"!== typeof wx){
 	//
 	// };
 	
-	Ycc.Gesture.prototype._init = function () {
+	/*Ycc.Gesture.prototype._init = function () {
 		console.log('wx gesture init');
-	};
+	};*/
 	
 	Ycc.utils.isMobile = function () {
 		console.log('wx isMobile');
