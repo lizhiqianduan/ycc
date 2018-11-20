@@ -165,7 +165,7 @@
 			var frameTime = self.frameAllCount * self.deltaTimeExpect;
 
 			// 当总帧数*每帧的理论时间小于总心跳时间，触发帧的回调
-			if(tickTime > frameTime){
+			if(tickTime > frameTime || "undefined"!==typeof wx){
 				// 总帧数加1
 				self.frameAllCount++;
 				// 执行所有自定义的帧监听函数

@@ -185,7 +185,6 @@
 				for(var i=0;i<touches.length;i++){
 					var touch = touches[i];
 					var life = self.findCurrentLifeByTouchID(touch.identifier);
-					console.log(touch,3333);
 					var index = self.indexOfTouchFromMoveTouchEventList(life.moveTouchEventList,touch);
 					if(index===-1)
 						life.moveTouchEventList.push(touch);
