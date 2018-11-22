@@ -4768,7 +4768,7 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 		 * 区域的背景色
 		 * @type {string}
 		 */
-		this.rectBgColor = "transparent";
+		this.rectBgColor = "rgba(0,0,0,0)";
 
 		/**
 		 * 背景色的透明度。默认不透明
@@ -6948,7 +6948,12 @@ function Loading(){
  * @description  GameScene文件
  */
 
-function GameScene(){
+/**
+ * 游戏场景的构造器
+ * @param levelName	关卡名
+ * @constructor
+ */
+function GameScene(levelName){
 	
 	// 游戏进行中的图层
 	this.layer = ycc.layerManager.newLayer({enableEventManager:true,name:'场景图层'});
@@ -7002,7 +7007,7 @@ function GameScene(){
 	this.isGameVictory = false;
 	
 	// 当前游戏关卡
-	this.gameLevel = (location.hash||'#1_1').slice(1);
+	this.gameLevel = (location.hash || levelName ||'#1_1').slice(1);
 	
 	// 通关时的桶，默认的通关效果
 	this.endBucket = null;
@@ -8807,9 +8812,15 @@ GameScene.prototype.update = function () {
 			if(index===-1) return;
 			if(index===levelList.length-1){
 				alert('恭喜你！玩通关了！点击返回第一关！');
+				if("undefined"!==typeof wx){
+					return projectInit('#'+levelList[0]);
+				}
 				window.location.href=window.location.pathname+'#'+levelList[0];
 				window.location.reload();
 				return;
+			}
+			if("undefined"!==typeof wx){
+				return projectInit('#'+levelList[index+1]);
 			}
 			window.location.href=window.location.pathname+'#'+levelList[index+1];
 			window.location.reload();
@@ -8818,7 +8829,7 @@ GameScene.prototype.update = function () {
 		function restart() {
 			console.log('restart');
 			clearMemory();
-			projectInit();
+			projectInit('#'+self.gameLevel);
 		}
 		
 		function clearMemory() {
@@ -9189,7 +9200,7 @@ function createYcc() {
 		
 		t3 = Date.now();
 
-		currentScene && currentScene.debug && currentScene.debug();
+		// currentScene && currentScene.debug && currentScene.debug();
 		// window.onerror = function (e) { alert('系统错误！'+e); };
 		
 		t4 = Date.now();
@@ -9206,7 +9217,7 @@ function createYcc() {
 // 加载资源
 function loadRes(cb){
 	// http://172.16.10.32:7777/examples/game-super-mario/
-	ycc.loader.basePath = 'http://172.16.10.32:7777/examples/game-super-mario/';
+	ycc.loader.basePath = 'https://www.lizhiqianduan.com/products/ycc/examples/game-super-mario/';
 	ycc.loader.loadResOneByOne([
 		{name:"btn",url:"./images/btn.jpg"},
 		{name:"button",url:"./images/button.png"},
@@ -9249,18 +9260,23 @@ function loadRes(cb){
 		});
 		
 	},function (item,error) {
+		// 兼容wx
+		if (!item.res.naturalWidth) {
+			item.res.naturalWidth = item.res.width;
+			item.res.naturalHeight = item.res.height;
+		}
 		loading.updateText(item.name);
 	});
 	
 }
 
 
-function projectInit() {
+function projectInit(levelName) {
 	
 	ycc.ticker.start(60);
 	engine = Matter.Engine.create();
 	Matter.Engine.run(engine);
-	currentScene = new GameScene();
+	currentScene = new GameScene(levelName);
 	ycc.layerManager.reRenderAllLayerToStage();
 	
 }

@@ -94,7 +94,7 @@ function createYcc() {
 		
 		t3 = Date.now();
 
-		currentScene && currentScene.debug && currentScene.debug();
+		// currentScene && currentScene.debug && currentScene.debug();
 		// window.onerror = function (e) { alert('系统错误！'+e); };
 		
 		t4 = Date.now();
@@ -111,7 +111,7 @@ function createYcc() {
 // 加载资源
 function loadRes(cb){
 	// http://172.16.10.32:7777/examples/game-super-mario/
-	ycc.loader.basePath = 'http://172.16.10.32:7777/examples/game-super-mario/';
+	ycc.loader.basePath = 'https://www.lizhiqianduan.com/products/ycc/examples/game-super-mario/';
 	ycc.loader.loadResOneByOne([
 		{name:"btn",url:"./images/btn.jpg"},
 		{name:"button",url:"./images/button.png"},
@@ -165,12 +165,12 @@ function loadRes(cb){
 }
 
 
-function projectInit() {
+function projectInit(levelName) {
 	
 	ycc.ticker.start(60);
 	engine = Matter.Engine.create();
 	Matter.Engine.run(engine);
-	currentScene = new GameScene();
+	currentScene = new GameScene(levelName);
 	ycc.layerManager.reRenderAllLayerToStage();
 	
 }

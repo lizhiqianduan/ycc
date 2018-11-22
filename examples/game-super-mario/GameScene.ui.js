@@ -1008,9 +1008,15 @@
 			if(index===-1) return;
 			if(index===levelList.length-1){
 				alert('恭喜你！玩通关了！点击返回第一关！');
+				if("undefined"!==typeof wx){
+					return projectInit('#'+levelList[0]);
+				}
 				window.location.href=window.location.pathname+'#'+levelList[0];
 				window.location.reload();
 				return;
+			}
+			if("undefined"!==typeof wx){
+				return projectInit('#'+levelList[index+1]);
 			}
 			window.location.href=window.location.pathname+'#'+levelList[index+1];
 			window.location.reload();
@@ -1019,7 +1025,7 @@
 		function restart() {
 			console.log('restart');
 			clearMemory();
-			projectInit();
+			projectInit('#'+self.gameLevel);
 		}
 		
 		function clearMemory() {

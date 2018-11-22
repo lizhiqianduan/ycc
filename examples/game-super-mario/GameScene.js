@@ -5,7 +5,12 @@
  * @description  GameScene文件
  */
 
-function GameScene(){
+/**
+ * 游戏场景的构造器
+ * @param levelName	关卡名
+ * @constructor
+ */
+function GameScene(levelName){
 	
 	// 游戏进行中的图层
 	this.layer = ycc.layerManager.newLayer({enableEventManager:true,name:'场景图层'});
@@ -59,7 +64,7 @@ function GameScene(){
 	this.isGameVictory = false;
 	
 	// 当前游戏关卡
-	this.gameLevel = (location.hash||'#1_1').slice(1);
+	this.gameLevel = (location.hash || levelName ||'#1_1').slice(1);
 	
 	// 通关时的桶，默认的通关效果
 	this.endBucket = null;
