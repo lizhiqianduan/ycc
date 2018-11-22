@@ -90,7 +90,7 @@
 		 * 区域的背景色
 		 * @type {string}
 		 */
-		this.rectBgColor = "transparent";
+		this.rectBgColor = "rgba(0,0,0,0)";
 
 		/**
 		 * 背景色的透明度。默认不透明
