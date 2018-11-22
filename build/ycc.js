@@ -203,8 +203,12 @@ Ycc.prototype._initStageGestureEvent = function () {
 		
 		triggerLayerEvent(e.type,x,y);
 		var dragstartUI = dragstartUIMap[e.identifier];
-		dragstartUI&&dragstartUI.belongTo.enableEventManager&&triggerUIEvent(e.type,x,y,dragstartUI);
-		dragstartUI = null;
+		// wx端的一个bug
+		if (dragstartUI){
+			dragstartUI.belongTo.enableEventManager && triggerUIEvent(e.type, x, y, dragstartUI);
+			dragstartUI = null;
+			dragstartUIMap[e.identifier]=null;
+		}
 	}
 	
 	// 通用监听
@@ -2136,6 +2140,12 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 		 * @type {Ycc.Ajax}
 		 */
 		this.ajax = new Ycc.Ajax();
+		
+		/**
+		 * 基础地址，末尾必须有斜线'/'
+		 * @type {string}
+		 */
+		this.basePath = '';
 	};
 	
 	/**
@@ -2221,7 +2231,7 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 
 		if(curRes.type==='image'){
 			curRes.res = new Image();
-			curRes.res.src = curRes.url;
+			curRes.res.src = self.basePath + curRes.url;
 
 			curRes.res.addEventListener(successEvent,onSuccess);
 			curRes.res.addEventListener(errorEvent,onError);
@@ -2239,7 +2249,8 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 				onError({message:"浏览器不支持AudioContext！"});
 				return;
 			}
-			self.ajax.get(curRes.url,(function (curRes) {
+			console.log(self.basePath + curRes.url);
+			self.ajax.get(self.basePath + curRes.url,(function (curRes) {
 				return function (arrayBuffer) {
 					curRes.res.context.decodeAudioData(arrayBuffer, function(buf) {
 						curRes.res.buf=buf;
@@ -4757,7 +4768,7 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 		 * 区域的背景色
 		 * @type {string}
 		 */
-		this.rectBgColor = "transparent";
+		this.rectBgColor = "rgba(0,0,0,0)";
 
 		/**
 		 * 背景色的透明度。默认不透明
@@ -6880,4 +6891,10 @@ if("undefined"!== typeof wx){
 		console.log('wx isMobile');
 		return true;
 	};
+	
+	if("undefined"!== typeof performance){
+		performance.now = function () {
+			return Date.now();
+		};
+	}
 };
