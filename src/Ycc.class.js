@@ -203,8 +203,12 @@ Ycc.prototype._initStageGestureEvent = function () {
 		
 		triggerLayerEvent(e.type,x,y);
 		var dragstartUI = dragstartUIMap[e.identifier];
-		dragstartUI&&dragstartUI.belongTo.enableEventManager&&triggerUIEvent(e.type,x,y,dragstartUI);
-		dragstartUI = null;
+		// wx端的一个bug
+		if (dragstartUI){
+			dragstartUI.belongTo.enableEventManager && triggerUIEvent(e.type, x, y, dragstartUI);
+			dragstartUI = null;
+			dragstartUIMap[e.identifier]=null;
+		}
 	}
 	
 	// 通用监听

@@ -21,4 +21,10 @@ if("undefined"!== typeof wx){
 		console.log('wx isMobile');
 		return true;
 	};
+	
+	if("undefined"!== typeof performance){
+		performance.now = function () {
+			return Date.now();
+		};
+	}
 };
