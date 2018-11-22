@@ -203,8 +203,12 @@ Ycc.prototype._initStageGestureEvent = function () {
 		
 		triggerLayerEvent(e.type,x,y);
 		var dragstartUI = dragstartUIMap[e.identifier];
-		dragstartUI&&dragstartUI.belongTo.enableEventManager&&triggerUIEvent(e.type,x,y,dragstartUI);
-		dragstartUI = null;
+		// wx端的一个bug
+		if (dragstartUI){
+			dragstartUI.belongTo.enableEventManager && triggerUIEvent(e.type, x, y, dragstartUI);
+			dragstartUI = null;
+			dragstartUIMap[e.identifier]=null;
+		}
 	}
 	
 	// 通用监听
@@ -1849,7 +1853,7 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 			var frameTime = self.frameAllCount * self.deltaTimeExpect;
 
 			// 当总帧数*每帧的理论时间小于总心跳时间，触发帧的回调
-			if(tickTime > frameTime){
+			if(tickTime > frameTime || "undefined"!==typeof wx){
 				// 总帧数加1
 				self.frameAllCount++;
 				// 执行所有自定义的帧监听函数
@@ -2136,6 +2140,12 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 		 * @type {Ycc.Ajax}
 		 */
 		this.ajax = new Ycc.Ajax();
+		
+		/**
+		 * 基础地址，末尾必须有斜线'/'
+		 * @type {string}
+		 */
+		this.basePath = '';
 	};
 	
 	/**
@@ -2221,7 +2231,7 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 
 		if(curRes.type==='image'){
 			curRes.res = new Image();
-			curRes.res.src = curRes.url;
+			curRes.res.src = self.basePath + curRes.url;
 
 			curRes.res.addEventListener(successEvent,onSuccess);
 			curRes.res.addEventListener(errorEvent,onError);
@@ -2239,7 +2249,8 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 				onError({message:"浏览器不支持AudioContext！"});
 				return;
 			}
-			self.ajax.get(curRes.url,(function (curRes) {
+			console.log(self.basePath + curRes.url);
+			self.ajax.get(self.basePath + curRes.url,(function (curRes) {
 				return function (arrayBuffer) {
 					curRes.res.context.decodeAudioData(arrayBuffer, function(buf) {
 						curRes.res.buf=buf;
@@ -3005,7 +3016,11 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 				for(var i=0;i<touches.length;i++){
 					var touch = touches[i];
 					var life = self.findCurrentLifeByTouchID(touch.identifier);
-					life.moveTouchEventList.push(touch);
+					var index = self.indexOfTouchFromMoveTouchEventList(life.moveTouchEventList,touch);
+					if(index===-1)
+						life.moveTouchEventList.push(touch);
+					else
+						life.moveTouchEventList[index]=touch;
 					// self.onlifechange && self.onlifechange(life);
 					self.triggerListener('lifechange',life);
 				}
@@ -3051,6 +3066,17 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 		for(i=0;i<e.targetTouches.length;i++){
 			this.targetTouches.push(touches[i]);
 		}
+	};
+	
+	/**
+	 * 寻找移动过的接触点
+	 */
+	Ycc.TouchLifeTracer.prototype.indexOfTouchFromMoveTouchEventList = function (moveTouchEventList,touch) {
+		for(var i=0;i<moveTouchEventList.length;i++){
+			if(touch.identifier===moveTouchEventList[i].identifier)
+				return i;
+		}
+		return -1;
 	};
 	
 })(Ycc);;/**
@@ -6852,19 +6878,25 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 
 // 兼容微信
 if("undefined"!== typeof wx){
-	exports.Ycc = Ycc;
+	module.exports = Ycc;
 	// Ycc.prototype.getStageWidth = function () {
 	//
 	// };
 	
-	Ycc.Gesture.prototype._init = function () {
+	/*Ycc.Gesture.prototype._init = function () {
 		console.log('wx gesture init');
-	};
+	};*/
 	
 	Ycc.utils.isMobile = function () {
 		console.log('wx isMobile');
 		return true;
 	};
+	
+	if("undefined"!== typeof performance){
+		performance.now = function () {
+			return Date.now();
+		};
+	}
 };;/**
  * @file    Loading.js
  * @author  xiaohei
@@ -9139,7 +9171,7 @@ function createYcc() {
 	ycc.debugger.addField('update时间',function () {return t3-t2;});
 	ycc.debugger.addField('debug时间',function () {return t4-t3;});
 	ycc.debugger.addField('自定义',function () {return __log;});
-	ycc.debugger.showDebugPanel();
+	// ycc.debugger.showDebugPanel();
 
 
 
@@ -9173,6 +9205,8 @@ function createYcc() {
 
 // 加载资源
 function loadRes(cb){
+	// http://172.16.10.32:7777/examples/game-super-mario/
+	ycc.loader.basePath = 'http://172.16.10.32:7777/examples/game-super-mario/';
 	ycc.loader.loadResOneByOne([
 		{name:"btn",url:"./images/btn.jpg"},
 		{name:"button",url:"./images/button.png"},

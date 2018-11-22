@@ -76,7 +76,7 @@ function createYcc() {
 	ycc.debugger.addField('update时间',function () {return t3-t2;});
 	ycc.debugger.addField('debug时间',function () {return t4-t3;});
 	ycc.debugger.addField('自定义',function () {return __log;});
-	ycc.debugger.showDebugPanel();
+	// ycc.debugger.showDebugPanel();
 
 
 
@@ -110,6 +110,8 @@ function createYcc() {
 
 // 加载资源
 function loadRes(cb){
+	// http://172.16.10.32:7777/examples/game-super-mario/
+	ycc.loader.basePath = 'http://172.16.10.32:7777/examples/game-super-mario/';
 	ycc.loader.loadResOneByOne([
 		{name:"btn",url:"./images/btn.jpg"},
 		{name:"button",url:"./images/button.png"},
@@ -152,6 +154,11 @@ function loadRes(cb){
 		});
 		
 	},function (item,error) {
+		// 兼容wx
+		if (!item.res.naturalWidth) {
+			item.res.naturalWidth = item.res.width;
+			item.res.naturalHeight = item.res.height;
+		}
 		loading.updateText(item.name);
 	});
 	
