@@ -2274,7 +2274,11 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 		
 		
 		function onSuccess() {
+			console.log('loader:',curRes.name,'success');
 			clearTimeout(timerId);
+			curRes.res.removeEventListener(successEvent,onSuccess);
+			curRes.res.removeEventListener(errorEvent,onSuccess);
+
 			endResArr.push(curRes);
 			if(typeof curRes.name!=='undefined') endResMap[curRes.name] = curRes.res;
 
@@ -2282,9 +2286,14 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 			self.loadResOneByOne(resArr,endCb,progressCb,endResArr,endResMap);
 		}
 		function onError(e) {
+			console.log('loader:',curRes.name,'error');
 			clearTimeout(timerId);
+			curRes.res.removeEventListener(successEvent,onSuccess);
+			curRes.res.removeEventListener(errorEvent,onSuccess);
+
 			endResArr.push(curRes);
 			if(typeof curRes.name!=='undefined') endResMap[curRes.name] = curRes.res;
+
 			Ycc.utils.isFn(progressCb) && progressCb(curRes,e,index);
 			self.loadResOneByOne(resArr,endCb,progressCb,endResArr,endResMap);
 		}
@@ -9194,7 +9203,7 @@ function createYcc() {
 	ycc.debugger.addField('update时间',function () {return t3-t2;});
 	ycc.debugger.addField('debug时间',function () {return t4-t3;});
 	ycc.debugger.addField('自定义',function () {return __log;});
-	// ycc.debugger.showDebugPanel();
+	ycc.debugger.showDebugPanel();
 
 
 
@@ -9212,7 +9221,7 @@ function createYcc() {
 		
 		t3 = Date.now();
 
-		// currentScene && currentScene.debug && currentScene.debug();
+		currentScene && currentScene.debug && currentScene.debug();
 		// window.onerror = function (e) { alert('系统错误！'+e); };
 		
 		t4 = Date.now();
