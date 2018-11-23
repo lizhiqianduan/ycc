@@ -4971,6 +4971,22 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 	
 	
 	/**
+	 * 判断ui是否存在于舞台之外，渲染时可以不予渲染
+	 * 在compute之后使用，判断更准确
+	 * @return {boolean}
+	 */
+	Ycc.UI.Base.prototype.isOutOfStage = function () {
+		var stageW = this.belongTo.yccInstance.getStageWidth();
+		var stageH = this.belongTo.yccInstance.getStageHeight();
+		var absolute = this.getAbsolutePosition();
+		return absolute.x>stageW
+			|| (absolute.x+absolute.width<0)
+			|| absolute.y>stageH
+			|| (absolute.y+absolute.height<0);
+	};
+	
+	
+	/**
 	 * 递归释放内存，等待GC
 	 * 将所有引用属性设为null
 	 * @param uiNode	ui节点
@@ -5099,7 +5115,9 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 		this.triggerListener('computestart',new Ycc.Event("computestart"));
 		this.computeUIProps();
 		this.triggerListener('computeend',new Ycc.Event("computeend"));
-		
+		// 超出舞台时，不予渲染
+		if(this.isOutOfStage())
+			return;
 		// 绘制UI的背景，rectBgColor、rectBgAlpha
 		this.renderRectBgColor();
 		
