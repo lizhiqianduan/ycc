@@ -2273,11 +2273,14 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 		}
 		
 		
+		
 		function onSuccess() {
 			console.log('loader:',curRes.name,'success');
 			clearTimeout(timerId);
-			curRes.res.removeEventListener(successEvent,onSuccess);
-			curRes.res.removeEventListener(errorEvent,onSuccess);
+			if(curRes.type==='image' || ("undefined"!==typeof wx && curRes.type==='audio' )){
+				curRes.res.removeEventListener(successEvent,onSuccess);
+				curRes.res.removeEventListener(errorEvent,onError);
+			}
 
 			endResArr.push(curRes);
 			if(typeof curRes.name!=='undefined') endResMap[curRes.name] = curRes.res;
@@ -2288,8 +2291,10 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 		function onError(e) {
 			console.log('loader:',curRes.name,'error');
 			clearTimeout(timerId);
-			curRes.res.removeEventListener(successEvent,onSuccess);
-			curRes.res.removeEventListener(errorEvent,onSuccess);
+			if(curRes.type==='image' || ("undefined"!==typeof wx && curRes.type==='audio' )){
+				curRes.res.removeEventListener(successEvent,onSuccess);
+				curRes.res.removeEventListener(errorEvent,onError);
+			}
 
 			endResArr.push(curRes);
 			if(typeof curRes.name!=='undefined') endResMap[curRes.name] = curRes.res;
