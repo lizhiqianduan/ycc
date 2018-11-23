@@ -14,19 +14,21 @@ function Loading(){
 		content:'',
 		fontSize:'12px',
 		rect:new Ycc.Math.Rect(0,stageH/2+20,stageW,20),
-		xAlign:"center"
+		xAlign:"center",
+		color:'red'
 	});
 	
 	this.layer = ycc.layerManager.newLayer();
 	
 	this.layer.addUI(new Ycc.UI.Rect({
 		rect:new Ycc.Math.Rect(0,0,stageW,stageH),
-		color:"rgba(0,0,0,0.1)"
+		color:"gray"
 	}));
 	this.layer.addUI(new Ycc.UI.SingleLineText({
 		content:"正在加载...",
 		rect:new Ycc.Math.Rect(0,stageH/2,stageW,20),
-		xAlign:"center"
+		xAlign:"center",
+		color:'red'
 	}));
 	this.layer.addUI(this.textUI);
 	
