@@ -76,7 +76,7 @@ function createYcc() {
 	ycc.debugger.addField('update时间',function () {return t3-t2;});
 	ycc.debugger.addField('debug时间',function () {return t4-t3;});
 	ycc.debugger.addField('自定义',function () {return __log;});
-	// ycc.debugger.showDebugPanel();
+	ycc.debugger.showDebugPanel();
 
 
 
@@ -94,7 +94,7 @@ function createYcc() {
 		
 		t3 = Date.now();
 
-		// currentScene && currentScene.debug && currentScene.debug();
+		currentScene && currentScene.debug && currentScene.debug();
 		// window.onerror = function (e) { alert('系统错误！'+e); };
 		
 		t4 = Date.now();
@@ -111,7 +111,8 @@ function createYcc() {
 // 加载资源
 function loadRes(cb){
 	// http://172.16.10.32:7777/examples/game-super-mario/
-	ycc.loader.basePath = 'https://www.lizhiqianduan.com/products/ycc/examples/game-super-mario/';
+	if("undefined"!==typeof wx)
+		ycc.loader.basePath = 'https://www.lizhiqianduan.com/products/ycc/examples/game-super-mario/';
 	ycc.loader.loadResOneByOne([
 		{name:"btn",url:"./images/btn.jpg"},
 		{name:"button",url:"./images/button.png"},

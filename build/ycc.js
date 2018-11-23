@@ -2244,6 +2244,18 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 			},curRes.timeout||10000);
 			
 		}else if(curRes.type==='audio'){
+			// 兼容wx端
+			if("undefined"!==typeof wx){
+				curRes.res = new Audio();
+				curRes.res.src = self.basePath + curRes.url;
+				successEvent = 'loadedmetadata';
+				errorEvent = 'error';
+				curRes.res.addEventListener(successEvent,onSuccess);
+				curRes.res.addEventListener(errorEvent,onError);
+				return;
+			}
+			
+			
 			curRes.res = new AudioPolyfill();
 			if(!curRes.res.context){
 				onError({message:"浏览器不支持AudioContext！"});

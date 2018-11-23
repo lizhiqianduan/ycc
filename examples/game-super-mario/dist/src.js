@@ -2244,6 +2244,18 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 			},curRes.timeout||10000);
 			
 		}else if(curRes.type==='audio'){
+			// 兼容wx端
+			if("undefined"!==typeof wx){
+				curRes.res = new Audio();
+				curRes.res.src = self.basePath + curRes.url;
+				successEvent = 'loadedmetadata';
+				errorEvent = 'error';
+				curRes.res.addEventListener(successEvent,onSuccess);
+				curRes.res.addEventListener(errorEvent,onError);
+				return;
+			}
+			
+			
 			curRes.res = new AudioPolyfill();
 			if(!curRes.res.context){
 				onError({message:"浏览器不支持AudioContext！"});
@@ -9217,7 +9229,8 @@ function createYcc() {
 // 加载资源
 function loadRes(cb){
 	// http://172.16.10.32:7777/examples/game-super-mario/
-	ycc.loader.basePath = 'https://www.lizhiqianduan.com/products/ycc/examples/game-super-mario/';
+	if("undefined"!==typeof wx)
+		ycc.loader.basePath = 'https://www.lizhiqianduan.com/products/ycc/examples/game-super-mario/';
 	ycc.loader.loadResOneByOne([
 		{name:"btn",url:"./images/btn.jpg"},
 		{name:"button",url:"./images/button.png"},
