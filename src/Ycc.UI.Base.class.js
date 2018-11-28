@@ -87,22 +87,34 @@
 		
 		
 		/**
-		 * 区域的背景色
+		 * 容纳区的背景色
 		 * @type {string}
 		 */
 		this.rectBgColor = "rgba(0,0,0,0)";
-
+		
 		/**
-		 * 背景色的透明度。默认不透明
+		 * 容纳区的边框宽度
 		 * @type {number}
 		 */
-		this.rectBgAlpha = 1;
+		this.rectBorderWidth = 0;
+		
+		/**
+		 * 容纳区边框颜色
+		 * @type {string}
+		 */
+		this.rectBorderColor = "#000";
 		
 		/**
 		 * 是否显示
 		 * @type {boolean}
 		 */
 		this.show = true;
+		
+		/**
+		 * 默认情况下，UI阻止事件冒泡，但不会阻止事件传播给图层
+		 * @type {boolean}
+		 */
+		this.stopEventBubbleUp = true;
 		
 		/**
 		 * 线条宽度
@@ -209,19 +221,41 @@
 	};
 	
 	/**
-	 * 渲染rect的背景
+	 * 渲染容纳区rect的背景色
+	 * @param absoluteRect	{Ycc.Math.Rect}	容纳区的绝对位置
 	 */
-	Ycc.UI.Base.prototype.renderRectBgColor = function () {
-		var rect = this.getAbsolutePosition();
+	Ycc.UI.Base.prototype.renderRectBgColor = function (absoluteRect) {
+		var rect = absoluteRect;
 		this.ctx.save();
-		this.ctx.globalAlpha = this.rectBgAlpha;
 		this.ctx.fillStyle = this.rectBgColor;
 		this.ctx.beginPath();
 		this.ctx.rect(rect.x,rect.y,rect.width,rect.height);
 		this.ctx.closePath();
 		this.ctx.fill();
 		this.ctx.restore();
+		rect = null;
 	};
+	
+	/**
+	 * 渲染容纳区rect的边框
+	 * @param absoluteRect	{Ycc.Math.Rect}	容纳区的绝对位置
+	 */
+	Ycc.UI.Base.prototype.renderRectBorder = function (absoluteRect) {
+		// 边框宽度为0，不渲染
+		if(this.rectBorderWidth<=0) return;
+
+		var rect = absoluteRect;
+		this.ctx.save();
+		this.ctx.strokeStyle = this.rectBorderColor;
+		this.ctx.strokeWidth = this.rectBorderWidth;
+		this.ctx.beginPath();
+		this.ctx.rect(rect.x,rect.y,rect.width,rect.height);
+		this.ctx.closePath();
+		this.ctx.stroke();
+		this.ctx.restore();
+		rect = null;
+	};
+	
 	
 	/**
 	 * 删除自身。
@@ -419,8 +453,11 @@
 		// 超出舞台时，不予渲染
 		if(this.isOutOfStage())
 			return;
-		// 绘制UI的背景，rectBgColor、rectBgAlpha
-		this.renderRectBgColor();
+		var absolutePosition = this.getAbsolutePosition();
+		// 绘制UI的背景，rectBgColor
+		this.renderRectBgColor(absolutePosition);
+		// 绘制容纳区的边框
+		this.renderRectBorder(absolutePosition);
 		
 		// 全局UI配置项，是否绘制UI的容器
 		if(this.belongTo.yccInstance.config.debug.drawContainer){

@@ -183,29 +183,32 @@ Ycc.prototype._initStageGestureEvent = function () {
 			y = parseInt(e.clientY - self.ctx.canvas.getBoundingClientRect().top);
 		
 		var dragstartUI = self.getUIFromPointer(new Ycc.Math.Dot(x,y));
-		triggerLayerEvent(e.type,x,y);
 		dragstartUI&&(dragstartUIMap[e.identifier]=dragstartUI);
-		dragstartUI&&dragstartUI.belongTo.enableEventManager&&triggerUIEvent(e.type,x,y,dragstartUI);
+		// dragstartUI&&dragstartUI.belongTo.enableEventManager&&triggerUIEvent(e.type,x,y,dragstartUI);
+		triggerUIEventBubbleUp(e.type,x,y,dragstartUI);
+		triggerLayerEvent(e.type,x,y);
 	}
 	function draggingListener(e) {
 		// 在canvas中的绝对位置
 		var x = parseInt(e.clientX - self.ctx.canvas.getBoundingClientRect().left),
 			y = parseInt(e.clientY - self.ctx.canvas.getBoundingClientRect().top);
 		
-		triggerLayerEvent(e.type,x,y);
 		var dragstartUI = dragstartUIMap[e.identifier];
-		dragstartUI&&dragstartUI.belongTo.enableEventManager&&triggerUIEvent(e.type,x,y,dragstartUI);
+		// dragstartUI&&dragstartUI.belongTo.enableEventManager&&triggerUIEvent(e.type,x,y,dragstartUI);
+		triggerUIEventBubbleUp(e.type,x,y,dragstartUI);
+		triggerLayerEvent(e.type,x,y);
 	}
 	function dragendListener(e) {
 		// 在canvas中的绝对位置
 		var x = parseInt(e.clientX - self.ctx.canvas.getBoundingClientRect().left),
 			y = parseInt(e.clientY - self.ctx.canvas.getBoundingClientRect().top);
 		
-		triggerLayerEvent(e.type,x,y);
 		var dragstartUI = dragstartUIMap[e.identifier];
+		triggerUIEventBubbleUp(e.type,x,y,dragstartUI);
+		triggerLayerEvent(e.type,x,y);
 		// wx端的一个bug
 		if (dragstartUI){
-			dragstartUI.belongTo.enableEventManager && triggerUIEvent(e.type, x, y, dragstartUI);
+			// dragstartUI.belongTo.enableEventManager && triggerUIEvent(e.type, x, y, dragstartUI);
 			dragstartUI = null;
 			dragstartUIMap[e.identifier]=null;
 		}
@@ -219,8 +222,11 @@ Ycc.prototype._initStageGestureEvent = function () {
 			y = parseInt(e.clientY - self.ctx.canvas.getBoundingClientRect().top);
 		
 		var ui = self.getUIFromPointer(new Ycc.Math.Dot(x,y));
+		// triggerLayerEvent(e.type,x,y);
+		// ui&&ui.belongTo.enableEventManager&&triggerUIEvent(e.type,x,y,ui);
+
+		triggerUIEventBubbleUp(e.type,x,y,ui);
 		triggerLayerEvent(e.type,x,y);
-		ui&&ui.belongTo.enableEventManager&&triggerUIEvent(e.type,x,y,ui);
 	}
 	
 	function triggerLayerEvent(type,x,y){
@@ -242,6 +248,29 @@ Ycc.prototype._initStageGestureEvent = function () {
 			type:type,
 			target:ui
 		}));
+	}
+	
+	/**
+	 * 冒泡触发UI的事件
+	 * @param type
+	 * @param x
+	 * @param y
+	 * @param ui
+	 * @return {null}
+	 */
+	function triggerUIEventBubbleUp(type,x,y,ui) {
+		if(ui && ui.belongTo.enableEventManager){
+			// 触发ui的事件
+			ui.triggerListener(type,new Ycc.Event({x:x,y:y,type:type,target:ui}));
+
+			// 如果ui阻止了事件冒泡，则不触发其父级的事件
+			if(ui.stopEventBubbleUp) return;
+			
+			// 触发父级ui的事件
+			ui.getParentList().reverse().forEach(function (fa) {
+				fa.triggerListener(type,new Ycc.Event({x:x,y:y,type:type,target:fa}));
+			});
+		}
 	}
 	
 };
