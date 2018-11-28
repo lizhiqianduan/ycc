@@ -941,60 +941,33 @@
 			color:'rgba(0,0,0,0.6)',
 		});
 		
-		
-		var btn,text;
-		// 重玩按钮
-		btn = new Ycc.UI.Image({
+		var restartBtn,nextBtn;
+		restartBtn = new Ycc.UI.ComponentButton({
 			rect:new Ycc.Math.Rect(stageW/2-110,stageH/2+50,100,40),
-			res:images.button,
-			fillMode:'scale',
+			backgroundImageRes:images.button,
+			text:'重新开始',
 			oncomputestart:function () {
 				if(self.isGameVictory){
 					this.rect.x=stageW/2-110;
+					nextBtn&&(nextBtn.show = true);
 				}else{
 					this.rect.x=stageW/2-100/2;
+					nextBtn&&(nextBtn.show = false);
 				}
-			}
-		});
-		text = new Ycc.UI.SingleLineText({
-			rect:new Ycc.Math.Rect(0,0,100,40),
-			fontSize:'16px',
-			content:"重新开始",
-			xAlign:'center',
-			yAlign:'center',
+			},
 			ontap:restart
 		});
-		btn.addChild(text);
-		mask.addChild(btn);
 		
+		mask.addChild(restartBtn);
 		
-		// 下一关按钮
-		btn = new Ycc.UI.Image({
+		nextBtn = new Ycc.UI.ComponentButton({
 			rect:new Ycc.Math.Rect(stageW/2,stageH/2+50,100,40),
-			res:images.button,
+			backgroundImageRes:images.button,
+			text:'下一关',
 			show:false,
-			fillMode:'scale'
+			ontap:nextLevel
 		});
-		text = new Ycc.UI.SingleLineText({
-			rect:new Ycc.Math.Rect(0,0,100,40),
-			fontSize:'16px',
-			content:"下一关",
-			xAlign:'center',
-			yAlign:'center',
-			ontap:nextLevel,
-			oncomputestart:function () {
-				if(self.isGameVictory){
-					this.getParent().show = true;
-					this.show = true;
-					this.content='下一关';
-				}else{
-					this.getParent().show = false;
-					this.show = false;
-				}
-			}
-		});
-		btn.addChild(text);
-		mask.addChild(btn);
+		mask.addChild(nextBtn);
 		
 		
 		this.gameOverLayer.addUI(mask);
