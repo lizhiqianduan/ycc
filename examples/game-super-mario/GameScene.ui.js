@@ -936,12 +936,27 @@
 		var self = this;
 		this.gameOverLayer = ycc.layerManager.newLayer({enableEventManager:true,name:"游戏结束图层",show:false});
 		
-		var mask = new Ycc.UI.Rect({
+		var restartBtn,nextBtn,mask,text;
+		
+		// 遮罩
+		mask = new Ycc.UI.Rect({
 			rect:new Ycc.Math.Rect(0,0,stageW,stageH),
 			color:'rgba(0,0,0,0.6)',
 		});
+		text = new Ycc.UI.SingleLineText({
+			rect:new Ycc.Math.Rect(0,stageH/2,stageW,5),
+			xAlign:'center',
+			color:'red',
+			oncomputestart:function () {
+				this.content = '您的得分：'+ self.score;
+				var index = levelList.indexOf(self.gameLevel);
+				if(index===levelList.length-1 && self.isGameVictory){
+					this.content = '您的得分：'+ self.score+' '+'恭喜通关！';
+				}
+			}
+		});
 		
-		var restartBtn,nextBtn;
+		// 重玩按钮
 		restartBtn = new Ycc.UI.ComponentButton({
 			rect:new Ycc.Math.Rect(stageW/2-110,stageH/2+50,100,40),
 			backgroundImageRes:images.button,
@@ -958,8 +973,7 @@
 			ontap:restart
 		});
 		
-		mask.addChild(restartBtn);
-		
+		// 下一关按钮
 		nextBtn = new Ycc.UI.ComponentButton({
 			rect:new Ycc.Math.Rect(stageW/2,stageH/2+50,100,40),
 			backgroundImageRes:images.button,
@@ -967,6 +981,10 @@
 			show:false,
 			ontap:nextLevel
 		});
+		
+		
+		mask.addChild(text);
+		mask.addChild(restartBtn);
 		mask.addChild(nextBtn);
 		
 		
@@ -980,7 +998,6 @@
 			var index = levelList.indexOf(self.gameLevel);
 			if(index===-1) return;
 			if(index===levelList.length-1){
-				alert('恭喜你！玩通关了！点击返回第一关！');
 				if("undefined"!==typeof wx){
 					return projectInit('#'+levelList[0]);
 				}
