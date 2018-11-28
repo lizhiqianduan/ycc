@@ -47,6 +47,12 @@
 		 */
 		this.text = "";
 		
+		/**
+		 * 按钮文字颜色
+		 * @type {string}
+		 */
+		this.textColor = "black";
+		
 		this.extend(option);
 		
 		this.__componentInit();
@@ -73,6 +79,7 @@
 			this.addChild(new Ycc.UI.SingleLineText({
 				rect:new Ycc.Math.Rect(0,0,this.rect.width,this.rect.height),
 				content:this.text,
+				color:this.textColor,
 				xAlign:'center',
 				ontap:function (e) {
 					console.log(e);
