@@ -72,7 +72,8 @@
 			this.addChild(new Ycc.UI.Image({
 				rect:new Ycc.Math.Rect(0,0,this.rect.width,this.rect.height),
 				fillMode:'scale',
-				res:this.backgroundImageRes
+				res:this.backgroundImageRes,
+				stopEventBubbleUp:false
 			}));
 		}
 		if(this.text!==""){
@@ -81,9 +82,7 @@
 				content:this.text,
 				color:this.textColor,
 				xAlign:'center',
-				ontap:function (e) {
-					console.log(e);
-				}
+				stopEventBubbleUp:false
 			}));
 		}
 	};

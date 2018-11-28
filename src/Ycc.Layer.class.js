@@ -495,6 +495,8 @@
 				self.uiCountRecursion++;
 				if(ui.show)
 					ui.__render();
+				else
+					return -1;
 			});
 		}
 		// 兼容wx端，wx端多一个draw API

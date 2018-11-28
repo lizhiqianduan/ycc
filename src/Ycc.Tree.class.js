@@ -238,7 +238,7 @@
 		 * @param nodes {Ycc.Tree[]}
 		 * @param cb(node,layer)
 		 * @param [layer]	{number} 当前nodes列表所在的层级，可选参数
-		 * @return {boolean}
+		 * @return {boolean|number}
 		 */
 		function depthDownByNodes(nodes,cb,layer){
 			if(nodes.length===0)
@@ -249,11 +249,14 @@
 			// 是否停止遍历下一层的标志位
 			var breakFlag = false;
 			for(var i=0;i<nodes.length;i++) {
+				var rvl = cb.call(self, nodes[i], layer);
 				// 如果返回为true，则表示停止遍历下一层
-				if (cb.call(self, nodes[i], layer)) {
+				// 如果返回为-1，则表示当前节点的所有子孙节点不再遍历
+				if (rvl===true) {
 					breakFlag = true;
 					break;
-				}
+				}else if(rvl===-1)
+					continue;
 				nextNodes = nextNodes.concat(nodes[i].children);
 			}
 			if(breakFlag){
