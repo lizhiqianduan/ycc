@@ -45,6 +45,9 @@ module.exports = function(grunt){
 					'src/Ycc.UI.Rect.class.js',
 					'src/Ycc.UI.CropRect.class.js',
 					'src/Ycc.UI.SingleLineText.class.js',
+					
+					// 组件
+					'src/Ycc.UI.ComponentButton.class.js',
 			
 					// polyfill
 					'src/Ycc.polyfill.wx.js',
