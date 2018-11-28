@@ -7002,6 +7002,7 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 	 * @param option.rectBorderColor	{String}			按钮区域的边框颜色，继承于base
 	 * @param option.backgroundImageRes	{String}			按钮区域的图片资源
 	 * @param option.text				{String}			按钮内的文字
+	 * @param option.textColor			{String}			按钮内的文字的颜色
 	 * @constructor
 	 */
 	Ycc.UI.ComponentButton = function ComponentButton(option) {
@@ -7038,6 +7039,20 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 		 */
 		this.textColor = "black";
 		
+		/**
+		 * 背景
+		 * @type {null}
+		 * @private
+		 */
+		this.__bgUI = null;
+		
+		/**
+		 * 文字
+		 * @type {null}
+		 * @private
+		 */
+		this.__textUI = null;
+		
 		this.extend(option);
 		
 		this.__componentInit();
@@ -7054,21 +7069,41 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 	Ycc.UI.ComponentButton.prototype.__componentInit = function () {
 		
 		if(this.backgroundImageRes){
-			this.addChild(new Ycc.UI.Image({
+			this.__bgUI = new Ycc.UI.Image({
 				rect:new Ycc.Math.Rect(0,0,this.rect.width,this.rect.height),
 				fillMode:'scale',
 				res:this.backgroundImageRes,
 				stopEventBubbleUp:false
-			}));
+			});
+			this.addChild(this.__bgUI);
 		}
 		if(this.text!==""){
-			this.addChild(new Ycc.UI.SingleLineText({
+			this.__textUI = new Ycc.UI.SingleLineText({
 				rect:new Ycc.Math.Rect(0,0,this.rect.width,this.rect.height),
 				content:this.text,
 				color:this.textColor,
 				xAlign:'center',
 				stopEventBubbleUp:false
-			}));
+			});
+			this.addChild(this.__textUI);
+		}
+	};
+	
+	
+	/**
+	 * 更新属性
+	 */
+	Ycc.UI.Base.prototype.computeUIProps = function () {
+		if(this.__bgUI){
+			this.__bgUI.rect.width = this.rect.width;
+			this.__bgUI.rect.height = this.rect.height;
+			this.__bgUI.res = this.backgroundImageRes;
+		}
+		if(this.__textUI){
+			this.__textUI.rect.width = this.rect.width;
+			this.__textUI.rect.height = this.rect.height;
+			this.__textUI.content = this.text;
+			this.__textUI.color = this.textColor;
 		}
 	};
 })(Ycc);;/**
@@ -8950,93 +8985,33 @@ GameScene.prototype.update = function () {
 			color:'rgba(0,0,0,0.6)',
 		});
 		
-		
-		var btn,text;
-		// 重玩按钮
-		/*btn = new Ycc.UI.Image({
-			rect:new Ycc.Math.Rect(stageW/2-110,stageH/2+50,100,40),
-			res:images.button,
-			fillMode:'scale',
-			oncomputestart:function () {
-				if(self.isGameVictory){
-					this.rect.x=stageW/2-110;
-				}else{
-					this.rect.x=stageW/2-100/2;
-				}
-			}
-		});
-		text = new Ycc.UI.SingleLineText({
-			rect:new Ycc.Math.Rect(0,0,100,40),
-			fontSize:'16px',
-			content:"重新开始",
-			xAlign:'center',
-			yAlign:'center',
-			ontap:restart
-		});
-		btn.addChild(text);*/
-		
-		btn = new Ycc.UI.ComponentButton({
+		var restartBtn,nextBtn;
+		restartBtn = new Ycc.UI.ComponentButton({
 			rect:new Ycc.Math.Rect(stageW/2-110,stageH/2+50,100,40),
 			backgroundImageRes:images.button,
 			text:'重新开始',
 			oncomputestart:function () {
 				if(self.isGameVictory){
 					this.rect.x=stageW/2-110;
+					nextBtn&&(nextBtn.show = true);
 				}else{
 					this.rect.x=stageW/2-100/2;
+					nextBtn&&(nextBtn.show = false);
 				}
 			},
 			ontap:restart
 		});
 		
-		mask.addChild(btn);
+		mask.addChild(restartBtn);
 		
-		
-		// 下一关按钮
-		/*btn = new Ycc.UI.Image({
-			rect:new Ycc.Math.Rect(stageW/2,stageH/2+50,100,40),
-			res:images.button,
-			show:false,
-			fillMode:'scale'
-		});
-		text = new Ycc.UI.SingleLineText({
-			rect:new Ycc.Math.Rect(0,0,100,40),
-			fontSize:'16px',
-			content:"下一关",
-			xAlign:'center',
-			yAlign:'center',
-			ontap:nextLevel,
-			oncomputestart:function () {
-				if(self.isGameVictory){
-					this.getParent().show = true;
-					this.show = true;
-					this.content='下一关';
-				}else{
-					this.getParent().show = false;
-					this.show = false;
-				}
-			}
-		});
-		btn.addChild(text);*/
-		
-		btn = new Ycc.UI.ComponentButton({
+		nextBtn = new Ycc.UI.ComponentButton({
 			rect:new Ycc.Math.Rect(stageW/2,stageH/2+50,100,40),
 			backgroundImageRes:images.button,
 			text:'下一关',
 			show:false,
-			oncomputestart:function () {
-				if(self.isGameVictory){
-					this.getParent().show = true;
-					this.show = true;
-					// this.content='下一关';
-				}else{
-					this.getParent().show = false;
-					this.show = false;
-				}
-			},
 			ontap:nextLevel
 		});
-		mask.addChild(btn);
+		mask.addChild(nextBtn);
 		
 		
 		this.gameOverLayer.addUI(mask);
