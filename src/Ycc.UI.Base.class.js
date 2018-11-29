@@ -426,10 +426,11 @@
 	
 	/**
 	 * 绘制UI的容器（红色小方框）
+	 * @param absoluteRect {Ycc.Math.Rect}	UI的绝对坐标
 	 * @private
 	 */
-	Ycc.UI.Base.prototype._renderContainer = function () {
-		var rect = this.rect;
+	Ycc.UI.Base.prototype._renderContainer = function (absoluteRect) {
+		var rect = absoluteRect;
 		this.ctx.save();
 		this.ctx.beginPath();
 		this.ctx.strokeStyle = "#ff0000";
@@ -437,6 +438,7 @@
 		this.ctx.closePath();
 		this.ctx.stroke();
 		this.ctx.restore();
+		rect=null;
 	};
 	
 	/**
@@ -461,7 +463,7 @@
 		
 		// 全局UI配置项，是否绘制UI的容器
 		if(this.belongTo.yccInstance.config.debug.drawContainer){
-			this._renderContainer();
+			this._renderContainer(absolutePosition);
 		}
 		
 		
