@@ -4062,7 +4062,7 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 	};
 	
 	/**
-	 * 获取图层中某个点所对应的最上层UI，最上层UI根据右子树优先遍历。
+	 * 获取图层中某个点所对应的最上层UI，最上层UI根据层级向下遍历，取层级最深的可见UI。
 	 * @param dot {Ycc.Math.Dot}	点坐标，为舞台的绝对坐标
 	 * @param uiIsShow {Boolean}	是否只获取显示在舞台上的UI，默认为true
 	 * @return {UI}
@@ -4071,18 +4071,39 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 		uiIsShow = Ycc.utils.isBoolean(uiIsShow)?uiIsShow:true;
 		var self = this;
 		var temp = null;
-		for(var i =self.uiList.length-1;i>=0;i--){
+		/*for(var i =self.uiList.length-1;i>=0;i--){
 			var ui = self.uiList[i];
 			if(uiIsShow&&!ui.show) continue;
 			// 右子树优先寻找
 			ui.itor().rightChildFirst(function (child) {
+				console.log(child);
 				// 跳过不可见的UI
 				if(uiIsShow&&!child.show) return false;
 				
 				// 如果位于rect内，此处根据绝对坐标比较
 				if(dot.isInRect(child.getAbsolutePosition())){
+					console.log(child,222);
 					temp = child;
 					return true;
+				}
+			});
+		}*/
+		
+		
+		var tempLevel = 0;
+		for(var i=0;i<this.uiList.length;i++){
+			var ui = self.uiList[i];
+			if(uiIsShow&&!ui.show) continue;
+			//this.uiList[i].__render();
+			// 按树的层次向下遍历
+			this.uiList[i].itor().depthDown(function (child, level) {
+				// 跳过不可见的UI，返回-1阻止继续遍历其子UI
+				if(uiIsShow&&!child.show) return -1;
+
+				// 如果位于rect内，并且层级更深，则暂存，此处根据绝对坐标比较
+				if(dot.isInRect(child.getAbsolutePosition()) && level>=tempLevel){
+					temp = child;
+					tempLevel=level;
 				}
 			});
 		}
@@ -5164,10 +5185,11 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 	
 	/**
 	 * 绘制UI的容器（红色小方框）
+	 * @param absoluteRect {Ycc.Math.Rect}	UI的绝对坐标
 	 * @private
 	 */
-	Ycc.UI.Base.prototype._renderContainer = function () {
-		var rect = this.rect;
+	Ycc.UI.Base.prototype._renderContainer = function (absoluteRect) {
+		var rect = absoluteRect;
 		this.ctx.save();
 		this.ctx.beginPath();
 		this.ctx.strokeStyle = "#ff0000";
@@ -5175,6 +5197,7 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 		this.ctx.closePath();
 		this.ctx.stroke();
 		this.ctx.restore();
+		rect=null;
 	};
 	
 	/**
@@ -5199,7 +5222,7 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 		
 		// 全局UI配置项，是否绘制UI的容器
 		if(this.belongTo.yccInstance.config.debug.drawContainer){
-			this._renderContainer();
+			this._renderContainer(absolutePosition);
 		}
 		
 		
@@ -8980,12 +9003,27 @@ GameScene.prototype.update = function () {
 		var self = this;
 		this.gameOverLayer = ycc.layerManager.newLayer({enableEventManager:true,name:"游戏结束图层",show:false});
 		
-		var mask = new Ycc.UI.Rect({
+		var restartBtn,nextBtn,mask,text;
+		
+		// 遮罩
+		mask = new Ycc.UI.Rect({
 			rect:new Ycc.Math.Rect(0,0,stageW,stageH),
 			color:'rgba(0,0,0,0.6)',
 		});
+		text = new Ycc.UI.SingleLineText({
+			rect:new Ycc.Math.Rect(0,stageH/2,stageW,5),
+			xAlign:'center',
+			color:'red',
+			oncomputestart:function () {
+				this.content = '您的得分：'+ self.score;
+				var index = levelList.indexOf(self.gameLevel);
+				if(index===levelList.length-1 && self.isGameVictory){
+					this.content = '您的得分：'+ self.score+' '+'恭喜通关！';
+				}
+			}
+		});
 		
-		var restartBtn,nextBtn;
+		// 重玩按钮
 		restartBtn = new Ycc.UI.ComponentButton({
 			rect:new Ycc.Math.Rect(stageW/2-110,stageH/2+50,100,40),
 			backgroundImageRes:images.button,
@@ -9002,8 +9040,7 @@ GameScene.prototype.update = function () {
 			ontap:restart
 		});
 		
-		mask.addChild(restartBtn);
-		
+		// 下一关按钮
 		nextBtn = new Ycc.UI.ComponentButton({
 			rect:new Ycc.Math.Rect(stageW/2,stageH/2+50,100,40),
 			backgroundImageRes:images.button,
@@ -9011,6 +9048,10 @@ GameScene.prototype.update = function () {
 			show:false,
 			ontap:nextLevel
 		});
+		
+		
+		mask.addChild(text);
+		mask.addChild(restartBtn);
 		mask.addChild(nextBtn);
 		
 		
@@ -9024,7 +9065,6 @@ GameScene.prototype.update = function () {
 			var index = levelList.indexOf(self.gameLevel);
 			if(index===-1) return;
 			if(index===levelList.length-1){
-				alert('恭喜你！玩通关了！点击返回第一关！');
 				if("undefined"!==typeof wx){
 					return projectInit('#'+levelList[0]);
 				}
@@ -9078,11 +9118,14 @@ GameScene.prototype.update = function () {
 	
 	
 	GameScene.prototype.level_1_1 = function () {
-		this.levelCommonSetting();
+		/*this.levelCommonSetting();
 		
 		uiCreator.call(this);
 		
 		this.levelCommonEnd(1650);
+		*/
+		this.createGameOverLayer();
+		
 	};
 	
 	

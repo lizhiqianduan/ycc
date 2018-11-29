@@ -183,29 +183,32 @@ Ycc.prototype._initStageGestureEvent = function () {
 			y = parseInt(e.clientY - self.ctx.canvas.getBoundingClientRect().top);
 		
 		var dragstartUI = self.getUIFromPointer(new Ycc.Math.Dot(x,y));
-		triggerLayerEvent(e.type,x,y);
 		dragstartUI&&(dragstartUIMap[e.identifier]=dragstartUI);
-		dragstartUI&&dragstartUI.belongTo.enableEventManager&&triggerUIEvent(e.type,x,y,dragstartUI);
+		// dragstartUI&&dragstartUI.belongTo.enableEventManager&&triggerUIEvent(e.type,x,y,dragstartUI);
+		triggerUIEventBubbleUp(e.type,x,y,dragstartUI);
+		triggerLayerEvent(e.type,x,y);
 	}
 	function draggingListener(e) {
 		// 在canvas中的绝对位置
 		var x = parseInt(e.clientX - self.ctx.canvas.getBoundingClientRect().left),
 			y = parseInt(e.clientY - self.ctx.canvas.getBoundingClientRect().top);
 		
-		triggerLayerEvent(e.type,x,y);
 		var dragstartUI = dragstartUIMap[e.identifier];
-		dragstartUI&&dragstartUI.belongTo.enableEventManager&&triggerUIEvent(e.type,x,y,dragstartUI);
+		// dragstartUI&&dragstartUI.belongTo.enableEventManager&&triggerUIEvent(e.type,x,y,dragstartUI);
+		triggerUIEventBubbleUp(e.type,x,y,dragstartUI);
+		triggerLayerEvent(e.type,x,y);
 	}
 	function dragendListener(e) {
 		// 在canvas中的绝对位置
 		var x = parseInt(e.clientX - self.ctx.canvas.getBoundingClientRect().left),
 			y = parseInt(e.clientY - self.ctx.canvas.getBoundingClientRect().top);
 		
-		triggerLayerEvent(e.type,x,y);
 		var dragstartUI = dragstartUIMap[e.identifier];
+		triggerUIEventBubbleUp(e.type,x,y,dragstartUI);
+		triggerLayerEvent(e.type,x,y);
 		// wx端的一个bug
 		if (dragstartUI){
-			dragstartUI.belongTo.enableEventManager && triggerUIEvent(e.type, x, y, dragstartUI);
+			// dragstartUI.belongTo.enableEventManager && triggerUIEvent(e.type, x, y, dragstartUI);
 			dragstartUI = null;
 			dragstartUIMap[e.identifier]=null;
 		}
@@ -219,8 +222,11 @@ Ycc.prototype._initStageGestureEvent = function () {
 			y = parseInt(e.clientY - self.ctx.canvas.getBoundingClientRect().top);
 		
 		var ui = self.getUIFromPointer(new Ycc.Math.Dot(x,y));
+		// triggerLayerEvent(e.type,x,y);
+		// ui&&ui.belongTo.enableEventManager&&triggerUIEvent(e.type,x,y,ui);
+
+		triggerUIEventBubbleUp(e.type,x,y,ui);
 		triggerLayerEvent(e.type,x,y);
-		ui&&ui.belongTo.enableEventManager&&triggerUIEvent(e.type,x,y,ui);
 	}
 	
 	function triggerLayerEvent(type,x,y){
@@ -242,6 +248,29 @@ Ycc.prototype._initStageGestureEvent = function () {
 			type:type,
 			target:ui
 		}));
+	}
+	
+	/**
+	 * 冒泡触发UI的事件
+	 * @param type
+	 * @param x
+	 * @param y
+	 * @param ui
+	 * @return {null}
+	 */
+	function triggerUIEventBubbleUp(type,x,y,ui) {
+		if(ui && ui.belongTo.enableEventManager){
+			// 触发ui的事件
+			ui.triggerListener(type,new Ycc.Event({x:x,y:y,type:type,target:ui}));
+
+			// 如果ui阻止了事件冒泡，则不触发其父级的事件
+			if(ui.stopEventBubbleUp) return;
+			
+			// 触发父级ui的事件
+			ui.getParentList().reverse().forEach(function (fa) {
+				fa.triggerListener(type,new Ycc.Event({x:x,y:y,type:type,target:fa}));
+			});
+		}
 	}
 	
 };
@@ -1053,7 +1082,7 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 		 * @param nodes {Ycc.Tree[]}
 		 * @param cb(node,layer)
 		 * @param [layer]	{number} 当前nodes列表所在的层级，可选参数
-		 * @return {boolean}
+		 * @return {boolean|number}
 		 */
 		function depthDownByNodes(nodes,cb,layer){
 			if(nodes.length===0)
@@ -1064,11 +1093,14 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 			// 是否停止遍历下一层的标志位
 			var breakFlag = false;
 			for(var i=0;i<nodes.length;i++) {
+				var rvl = cb.call(self, nodes[i], layer);
 				// 如果返回为true，则表示停止遍历下一层
-				if (cb.call(self, nodes[i], layer)) {
+				// 如果返回为-1，则表示当前节点的所有子孙节点不再遍历
+				if (rvl===true) {
 					breakFlag = true;
 					break;
-				}
+				}else if(rvl===-1)
+					continue;
 				nextNodes = nextNodes.concat(nodes[i].children);
 			}
 			if(breakFlag){
@@ -2273,11 +2305,14 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 		}
 		
 		
+		
 		function onSuccess() {
 			console.log('loader:',curRes.name,'success');
 			clearTimeout(timerId);
-			curRes.res.removeEventListener(successEvent,onSuccess);
-			curRes.res.removeEventListener(errorEvent,onSuccess);
+			if(curRes.type==='image' || ("undefined"!==typeof wx && curRes.type==='audio' )){
+				curRes.res.removeEventListener(successEvent,onSuccess);
+				curRes.res.removeEventListener(errorEvent,onError);
+			}
 
 			endResArr.push(curRes);
 			if(typeof curRes.name!=='undefined') endResMap[curRes.name] = curRes.res;
@@ -2288,8 +2323,10 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 		function onError(e) {
 			console.log('loader:',curRes.name,'error');
 			clearTimeout(timerId);
-			curRes.res.removeEventListener(successEvent,onSuccess);
-			curRes.res.removeEventListener(errorEvent,onSuccess);
+			if(curRes.type==='image' || ("undefined"!==typeof wx && curRes.type==='audio' )){
+				curRes.res.removeEventListener(successEvent,onSuccess);
+				curRes.res.removeEventListener(errorEvent,onError);
+			}
 
 			endResArr.push(curRes);
 			if(typeof curRes.name!=='undefined') endResMap[curRes.name] = curRes.res;
@@ -4016,6 +4053,8 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 				self.uiCountRecursion++;
 				if(ui.show)
 					ui.__render();
+				else
+					return -1;
 			});
 		}
 		// 兼容wx端，wx端多一个draw API
@@ -4786,22 +4825,34 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 		
 		
 		/**
-		 * 区域的背景色
+		 * 容纳区的背景色
 		 * @type {string}
 		 */
 		this.rectBgColor = "rgba(0,0,0,0)";
-
+		
 		/**
-		 * 背景色的透明度。默认不透明
+		 * 容纳区的边框宽度
 		 * @type {number}
 		 */
-		this.rectBgAlpha = 1;
+		this.rectBorderWidth = 0;
+		
+		/**
+		 * 容纳区边框颜色
+		 * @type {string}
+		 */
+		this.rectBorderColor = "#000";
 		
 		/**
 		 * 是否显示
 		 * @type {boolean}
 		 */
 		this.show = true;
+		
+		/**
+		 * 默认情况下，UI阻止事件冒泡，但不会阻止事件传播给图层
+		 * @type {boolean}
+		 */
+		this.stopEventBubbleUp = true;
 		
 		/**
 		 * 线条宽度
@@ -4908,19 +4959,41 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 	};
 	
 	/**
-	 * 渲染rect的背景
+	 * 渲染容纳区rect的背景色
+	 * @param absoluteRect	{Ycc.Math.Rect}	容纳区的绝对位置
 	 */
-	Ycc.UI.Base.prototype.renderRectBgColor = function () {
-		var rect = this.getAbsolutePosition();
+	Ycc.UI.Base.prototype.renderRectBgColor = function (absoluteRect) {
+		var rect = absoluteRect;
 		this.ctx.save();
-		this.ctx.globalAlpha = this.rectBgAlpha;
 		this.ctx.fillStyle = this.rectBgColor;
 		this.ctx.beginPath();
 		this.ctx.rect(rect.x,rect.y,rect.width,rect.height);
 		this.ctx.closePath();
 		this.ctx.fill();
 		this.ctx.restore();
+		rect = null;
 	};
+	
+	/**
+	 * 渲染容纳区rect的边框
+	 * @param absoluteRect	{Ycc.Math.Rect}	容纳区的绝对位置
+	 */
+	Ycc.UI.Base.prototype.renderRectBorder = function (absoluteRect) {
+		// 边框宽度为0，不渲染
+		if(this.rectBorderWidth<=0) return;
+
+		var rect = absoluteRect;
+		this.ctx.save();
+		this.ctx.strokeStyle = this.rectBorderColor;
+		this.ctx.strokeWidth = this.rectBorderWidth;
+		this.ctx.beginPath();
+		this.ctx.rect(rect.x,rect.y,rect.width,rect.height);
+		this.ctx.closePath();
+		this.ctx.stroke();
+		this.ctx.restore();
+		rect = null;
+	};
+	
 	
 	/**
 	 * 删除自身。
@@ -5118,8 +5191,11 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 		// 超出舞台时，不予渲染
 		if(this.isOutOfStage())
 			return;
-		// 绘制UI的背景，rectBgColor、rectBgAlpha
-		this.renderRectBgColor();
+		var absolutePosition = this.getAbsolutePosition();
+		// 绘制UI的背景，rectBgColor
+		this.renderRectBgColor(absolutePosition);
+		// 绘制容纳区的边框
+		this.renderRectBorder(absolutePosition);
 		
 		// 全局UI配置项，是否绘制UI的容器
 		if(this.belongTo.yccInstance.config.debug.drawContainer){
@@ -6907,6 +6983,129 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 	
 	
 	
+})(Ycc);;/**
+ * @file    Ycc.UI.ComponentButton.class.js
+ * @author  xiaohei
+ * @date    2018/11/27
+ * @description  Ycc.UI.ComponentButton.class文件
+ */
+
+(function (Ycc) {
+	
+	/**
+	 * 按钮组件
+	 * 组件自身也是一个UI，所以option包含ui.base的所有属性
+	 * @param option					{Object}
+	 * @param option.rect				{Ycc.Math.Rect}		相对于父级按钮的位置，继承于base
+	 * @param option.rectBgColor		{String}			按钮区域的背景色，继承于base
+	 * @param option.rectBorderWidth	{Number}			按钮区域的边框宽度，继承于base
+	 * @param option.rectBorderColor	{String}			按钮区域的边框颜色，继承于base
+	 * @param option.backgroundImageRes	{String}			按钮区域的图片资源
+	 * @param option.text				{String}			按钮内的文字
+	 * @param option.textColor			{String}			按钮内的文字的颜色
+	 * @constructor
+	 */
+	Ycc.UI.ComponentButton = function ComponentButton(option) {
+		Ycc.UI.Base.call(this,option);
+		this.yccClass = Ycc.UI.ComponentButton;
+		
+		/**
+		 * 容纳区的边框宽度
+		 * @type {number}
+		 */
+		this.rectBorderWidth = 1;
+		
+		/**
+		 * 容纳区边框颜色
+		 * @type {string}
+		 */
+		this.rectBorderColor = "#000";
+		
+		/**
+		 * 背景图资源
+		 * @type {null}
+		 */
+		this.backgroundImageRes = null;
+		
+		/**
+		 * 按钮内的文字
+		 * @type {string}
+		 */
+		this.text = "";
+		
+		/**
+		 * 按钮文字颜色
+		 * @type {string}
+		 */
+		this.textColor = "black";
+		
+		/**
+		 * 背景
+		 * @type {null}
+		 * @private
+		 */
+		this.__bgUI = null;
+		
+		/**
+		 * 文字
+		 * @type {null}
+		 * @private
+		 */
+		this.__textUI = null;
+		
+		this.extend(option);
+		
+		this.__componentInit();
+	};
+	// 继承prototype
+	Ycc.utils.mergeObject(Ycc.UI.ComponentButton.prototype,Ycc.UI.Base.prototype);
+	Ycc.UI.ComponentButton.prototype.constructor = Ycc.UI.ComponentButton;
+	
+	
+	/**
+	 * 组件初始化
+	 * @private
+	 */
+	Ycc.UI.ComponentButton.prototype.__componentInit = function () {
+		
+		if(this.backgroundImageRes){
+			this.__bgUI = new Ycc.UI.Image({
+				rect:new Ycc.Math.Rect(0,0,this.rect.width,this.rect.height),
+				fillMode:'scale',
+				res:this.backgroundImageRes,
+				stopEventBubbleUp:false
+			});
+			this.addChild(this.__bgUI);
+		}
+		if(this.text!==""){
+			this.__textUI = new Ycc.UI.SingleLineText({
+				rect:new Ycc.Math.Rect(0,0,this.rect.width,this.rect.height),
+				content:this.text,
+				color:this.textColor,
+				xAlign:'center',
+				stopEventBubbleUp:false
+			});
+			this.addChild(this.__textUI);
+		}
+	};
+	
+	
+	/**
+	 * 更新属性
+	 */
+	Ycc.UI.Base.prototype.computeUIProps = function () {
+		if(this.__bgUI){
+			this.__bgUI.rect.width = this.rect.width;
+			this.__bgUI.rect.height = this.rect.height;
+			this.__bgUI.res = this.backgroundImageRes;
+		}
+		if(this.__textUI){
+			this.__textUI.rect.width = this.rect.width;
+			this.__textUI.rect.height = this.rect.height;
+			this.__textUI.content = this.text;
+			this.__textUI.color = this.textColor;
+		}
+	};
 })(Ycc);;/**
  * @file    Ycc.polyfill.wx.js
  * @author  xiaohei
@@ -8781,65 +8980,56 @@ GameScene.prototype.update = function () {
 		var self = this;
 		this.gameOverLayer = ycc.layerManager.newLayer({enableEventManager:true,name:"游戏结束图层",show:false});
 		
-		var mask = new Ycc.UI.Rect({
+		var restartBtn,nextBtn,mask,text;
+		
+		// 遮罩
+		mask = new Ycc.UI.Rect({
 			rect:new Ycc.Math.Rect(0,0,stageW,stageH),
 			color:'rgba(0,0,0,0.6)',
 		});
+		text = new Ycc.UI.SingleLineText({
+			rect:new Ycc.Math.Rect(0,stageH/2,stageW,5),
+			xAlign:'center',
+			color:'red',
+			oncomputestart:function () {
+				this.content = '您的得分：'+ self.score;
+				var index = levelList.indexOf(self.gameLevel);
+				if(index===levelList.length-1 && self.isGameVictory){
+					this.content = '您的得分：'+ self.score+' '+'恭喜通关！';
+				}
+			}
+		});
 		
-		
-		var btn,text;
 		// 重玩按钮
-		btn = new Ycc.UI.Image({
+		restartBtn = new Ycc.UI.ComponentButton({
 			rect:new Ycc.Math.Rect(stageW/2-110,stageH/2+50,100,40),
-			res:images.button,
-			fillMode:'scale',
+			backgroundImageRes:images.button,
+			text:'重新开始',
 			oncomputestart:function () {
 				if(self.isGameVictory){
 					this.rect.x=stageW/2-110;
+					nextBtn&&(nextBtn.show = true);
 				}else{
 					this.rect.x=stageW/2-100/2;
+					nextBtn&&(nextBtn.show = false);
 				}
-			}
-		});
-		text = new Ycc.UI.SingleLineText({
-			rect:new Ycc.Math.Rect(0,0,100,40),
-			fontSize:'16px',
-			content:"重新开始",
-			xAlign:'center',
-			yAlign:'center',
+			},
 			ontap:restart
 		});
-		btn.addChild(text);
-		mask.addChild(btn);
-		
 		
 		// 下一关按钮
-		btn = new Ycc.UI.Image({
+		nextBtn = new Ycc.UI.ComponentButton({
 			rect:new Ycc.Math.Rect(stageW/2,stageH/2+50,100,40),
-			res:images.button,
+			backgroundImageRes:images.button,
+			text:'下一关',
 			show:false,
-			fillMode:'scale'
+			ontap:nextLevel
 		});
-		text = new Ycc.UI.SingleLineText({
-			rect:new Ycc.Math.Rect(0,0,100,40),
-			fontSize:'16px',
-			content:"下一关",
-			xAlign:'center',
-			yAlign:'center',
-			ontap:nextLevel,
-			oncomputestart:function () {
-				if(self.isGameVictory){
-					this.getParent().show = true;
-					this.show = true;
-					this.content='下一关';
-				}else{
-					this.getParent().show = false;
-					this.show = false;
-				}
-			}
-		});
-		btn.addChild(text);
-		mask.addChild(btn);
+		
+		
+		mask.addChild(text);
+		mask.addChild(restartBtn);
+		mask.addChild(nextBtn);
 		
 		
 		this.gameOverLayer.addUI(mask);
@@ -8852,7 +9042,6 @@ GameScene.prototype.update = function () {
 			var index = levelList.indexOf(self.gameLevel);
 			if(index===-1) return;
 			if(index===levelList.length-1){
-				alert('恭喜你！玩通关了！点击返回第一关！');
 				if("undefined"!==typeof wx){
 					return projectInit('#'+levelList[0]);
 				}
