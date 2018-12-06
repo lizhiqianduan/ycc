@@ -9,13 +9,15 @@
 
 // 根目录
 var root = './examples/game-super-mario/';
+// 目标根目录
+var destRoot = './examples/wx-minigame/examples/game-super-mario/';
 
 module.exports = {
 	concat:{
 		game_super_mario: {
 			src: [
 				// core
-				'../../build/ycc.js',
+				// '../../build/ycc.js',
 				// './lib/matter-js/matter.js',
 				'./Loading.js',
 				'./GameScene.js',
@@ -26,12 +28,12 @@ module.exports = {
 				'./level_1_4.js',
 				'./main.js',
 			].map(function (t) { return root+t; }),
-			dest: root+'./dist/src.js'
+			dest: destRoot+'src.js'
 		}
 	},
 	clean:{
 		game_super_mario:{
-			contents:[root+"dist"]
+			contents:[destRoot+"src.js",destRoot+"src.min.js"]
 		}
 	},
 	uglify:{
@@ -42,8 +44,8 @@ module.exports = {
 			files: [
 				{
 					expand: true,
-					src: [root+'dist/src.js'],
-					dest: root+'dist',
+					src: [destRoot+'src.js'],
+					dest: destRoot,
 					rename: function (dst, src) {
 						return src.replace('.js', '.min.js');
 					}
