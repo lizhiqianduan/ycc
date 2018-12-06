@@ -52,6 +52,11 @@ module.exports = {
 				}
 			]
 		},
+	},
+	copy:{
+		game_super_mario: {
+			expand:true,cwd:"./build", src: '*.js', dest: destRoot+'../../build/'
+		}
 	}
 	
 };

@@ -115,7 +115,7 @@ module.exports = function(grunt){
 	grunt.registerTask('release', ["clean","concat","uglify","jsdoc"]);
 
 	// super-mario任务
-	grunt.registerTask('build:game_super_mario', ["clean:game_super_mario","concat:game_super_mario","uglify:game_super_mario"]);
+	grunt.registerTask('build:game_super_mario', ["clean:game_super_mario","concat:game_super_mario","uglify:game_super_mario","copy:game_super_mario"]);
 
 
 };
