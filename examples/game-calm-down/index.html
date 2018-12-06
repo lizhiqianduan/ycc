@@ -38,8 +38,10 @@
 
 
 <script>
-	if(!Ycc.utils.isMobile())
-        throw new Error(alert('此示例只能在移动端查看！'));
+	if(!Ycc.utils.isMobile()){
+		document.body.innerHTML='<img src="./images/qr.png"/>';
+		throw new Error('PC端请扫码进入！');
+	}
     if(!DeviceOrientationEvent)
         throw new Error(alert('您这个手机不支持陀螺仪哦！'));
 

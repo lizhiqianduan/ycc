@@ -23,8 +23,10 @@
 
 
 <script>
-	if(!Ycc.utils.isMobile())
-		alert("此示例在移动端查看效果更佳！");
+	if(!Ycc.utils.isMobile()){
+		document.body.innerHTML='<img src="./images/qr.png"/>';
+		throw new Error('PC端请扫码进入！');
+	}
 
 	var canvas = document.createElement('canvas');
 	console.log(document.documentElement.clientWidth,document.documentElement.clientHeight);
@@ -365,6 +367,7 @@
 
 				// 存在未点击的白块，游戏结束
 				if(rect.color==="white") {
+					console.log('游戏结束');
 					this.overLayer.show = true;
 					this.finalScoreText.content = "您最终得了"+this.score+"分";
 					if(this.score<50)

@@ -2088,6 +2088,8 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 		// 强制使debug面板置顶
 		var layerList = this.yccInstance.layerList;
 		var index = layerList.indexOf(this.layer);
+		// bug 调试layer必须存在
+		if(index===-1) return;
 		if(index+1!==layerList.length){
 			layerList.splice(index,1);
 			layerList.push(this.layer);
