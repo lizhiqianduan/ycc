@@ -129,7 +129,7 @@
 	
 	/**
 	 * 根据json数组绘制所有图层
-	 * @param jsonArray {[{option,ui[]}]}
+	 * @param jsonArray {Array} json数组，示例：[{option,ui[]}]
 	 * @return {*}
 	 */
 	Ycc.LayerManager.prototype.renderAllLayerByJsonArray = function (jsonArray) {

@@ -340,7 +340,7 @@
 	 * 若节点有子节点必须包含children字段，且为数组
 	 * 只关注data和children字段，其他字段将忽略
 	 *
-	 * @param json{data,children} {object} json对象
+	 * @param json {object} json对象，示例：{data,children}
 	 * @return {Ycc.Tree}
 	 */
 	Ycc.Tree.createByJSON = function (json) {

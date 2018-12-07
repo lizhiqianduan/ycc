@@ -60,9 +60,8 @@
 		
 		
 		/**
-		 * 调试面板所显示的字段
-		 * @type {Array[]}
-		 * {name,cb,ui}
+		 * 调试面板所显示的字段，示例：[{name,cb,ui}]
+		 * @type {Array}
 		 */
 		this.fields = [];
 		
