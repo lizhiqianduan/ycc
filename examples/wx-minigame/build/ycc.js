@@ -1184,7 +1184,7 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 	 * 若节点有子节点必须包含children字段，且为数组
 	 * 只关注data和children字段，其他字段将忽略
 	 *
-	 * @param json{data,children} {object} json对象
+	 * @param json {object} json对象，示例：{data,children}
 	 * @return {Ycc.Tree}
 	 */
 	Ycc.Tree.createByJSON = function (json) {
@@ -1437,8 +1437,8 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 	/**
 	 * 创建一个有向图
 	 * @static
-	 * @param vArr {[{id,data,...}]} 顶点列表
-	 * @param eArr {[{fromId,toId,data,...}]}	边列表
+	 * @param vArr {Array} 顶点列表，示例：[{id,data,...}]
+	 * @param eArr {Array}	边列表，示例：[{fromId,toId,data,...}]
 	 */
 	Ycc.Graph.createDirectedGraph  = function (vArr,eArr) {
 		var graph = new Ycc.Graph(1);
@@ -1584,8 +1584,8 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 	/**
 	 * 创建一个无向图
 	 * @static
-	 * @param vArr {[{id,data,...}]} 顶点列表
-	 * @param eArr {[{ids,data,...}]}	边列表，ids为边关联的两个顶点id列表，长度为2
+	 * @param vArr {Array} 顶点列表，示例：[{id,data,...}]
+	 * @param eArr {Array}	边列表，ids为边关联的两个顶点id列表，长度为2，示例：[{ids,data,...}]
 	 */
 	Ycc.Graph.createUnDirectedGraph  = function (vArr,eArr) {
 		var graph = new Ycc.Graph(2);
@@ -2034,9 +2034,8 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 		
 		
 		/**
-		 * 调试面板所显示的字段
-		 * @type {Array[]}
-		 * {name,cb,ui}
+		 * 调试面板所显示的字段，示例：[{name,cb,ui}]
+		 * @type {Array}
 		 */
 		this.fields = [];
 		
@@ -2088,6 +2087,8 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 		// 强制使debug面板置顶
 		var layerList = this.yccInstance.layerList;
 		var index = layerList.indexOf(this.layer);
+		// bug 调试layer必须存在
+		if(index===-1) return;
 		if(index+1!==layerList.length){
 			layerList.splice(index,1);
 			layerList.push(this.layer);
@@ -4290,7 +4291,7 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 	
 	/**
 	 * 根据json数组绘制所有图层
-	 * @param jsonArray {[{option,ui[]}]}
+	 * @param jsonArray {Array} json数组，示例：[{option,ui[]}]
 	 * @return {*}
 	 */
 	Ycc.LayerManager.prototype.renderAllLayerByJsonArray = function (jsonArray) {
@@ -7139,7 +7140,6 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 
 // 兼容微信
 if("undefined"!== typeof wx){
-	module.exports = Ycc;
 	// Ycc.prototype.getStageWidth = function () {
 	//
 	// };
@@ -7158,4 +7158,15 @@ if("undefined"!== typeof wx){
 			return Date.now();
 		};
 	}
-};
+};;/**
+ * @file    Ycc.polyfill.export.js
+ * @author  xiaohei
+ * @date    2018/12/11
+ * @description  Ycc.polyfill.export文件
+ *
+ * 导出兼容文件，兼容npm模块的加载模式
+ */
+
+;if("undefined"!== typeof module) {
+	exports = module.exports = Ycc;
+}
