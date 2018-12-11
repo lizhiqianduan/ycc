@@ -8,7 +8,6 @@
 
 // 兼容微信
 if("undefined"!== typeof wx){
-	module.exports = Ycc;
 	// Ycc.prototype.getStageWidth = function () {
 	//
 	// };

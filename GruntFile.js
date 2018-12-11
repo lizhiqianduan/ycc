@@ -51,6 +51,7 @@ module.exports = function(grunt){
 			
 					// polyfill
 					'src/Ycc.polyfill.wx.js',
+					'src/Ycc.polyfill.export.js',
 		
 				],
 				dest: 'build/ycc.js'

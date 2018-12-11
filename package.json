@@ -2,7 +2,7 @@
   "name": "ycc",
   "version": "0.0.0",
   "description": "\"# ycc\"",
-  "main": "ycc.js",
+  "main": "./build/ycc.min.js",
   "scripts": {
     "start": "grunt",
     "build": "grunt build",
