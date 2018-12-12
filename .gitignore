@@ -1,6 +1,4 @@
 /node_modules
 .idea
-/build
-/docs
+/examples/**/node_modules
 package-lock.json
-/examples/**/lib/**
