@@ -1,0 +1,3803 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Source: Ycc.Layer.class.js</title>
+    
+    
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <script src="scripts/jquery.min.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/bootstrap.min.css">
+    <link type="text/css" rel="stylesheet" href="styles/jaguar.css">
+    
+    
+    <script>
+    var config = {"monospaceLinks":false,"cleverLinks":false,"default":{"outputSourceFiles":true}};
+    </script>
+    
+
+    
+</head>
+<body>
+<div id="wrap" class="clearfix">
+    
+<div class="navigation">
+    <h3 class="applicationName"><a href="index.html"></a></h3>
+
+    <div class="search">
+        <input id="search" type="text" class="form-control input-sm" placeholder="Search Documentations">
+    </div>
+    <ul class="list">
+    
+        <li class="item" data-name="Ycc">
+            <span class="title">
+                <a href="Ycc.html">Ycc</a>
+                
+            </span>
+            <ul class="members itemMembers">
+            
+            <span class="subtitle">Members</span>
+            
+                <li data-name="Ycc#ajax"><a href="Ycc.html#ajax">ajax</a></li>
+            
+                <li data-name="Ycc#baseUI"><a href="Ycc.html#baseUI">baseUI</a></li>
+            
+                <li data-name="Ycc#canvasDom"><a href="Ycc.html#canvasDom">canvasDom</a></li>
+            
+                <li data-name="Ycc#config"><a href="Ycc.html#config">config</a></li>
+            
+                <li data-name="Ycc#ctx"><a href="Ycc.html#ctx">ctx</a></li>
+            
+                <li data-name="Ycc#debugger"><a href="Ycc.html#debugger">debugger</a></li>
+            
+                <li data-name="Ycc#isMobile"><a href="Ycc.html#isMobile">isMobile</a></li>
+            
+                <li data-name="Ycc#layerList"><a href="Ycc.html#layerList">layerList</a></li>
+            
+                <li data-name="Ycc#layerManager"><a href="Ycc.html#layerManager">layerManager</a></li>
+            
+                <li data-name="Ycc#loader"><a href="Ycc.html#loader">loader</a></li>
+            
+                <li data-name="Ycc#photoManager"><a href="Ycc.html#photoManager">photoManager</a></li>
+            
+                <li data-name="Ycc#ticker"><a href="Ycc.html#ticker">ticker</a></li>
+            
+            </ul>
+            <ul class="typedefs itemMembers">
+            
+            </ul>
+            <ul class="methods itemMembers">
+            
+            <span class="subtitle">Methods</span>
+            
+                <li data-name="Ycc#_initStageGestureEvent"><a href="Ycc.html#_initStageGestureEvent">_initStageGestureEvent</a></li>
+            
+                <li data-name="Ycc#bindCanvas"><a href="Ycc.html#bindCanvas">bindCanvas</a></li>
+            
+                <li data-name="Ycc#clearStage"><a href="Ycc.html#clearStage">clearStage</a></li>
+            
+                <li data-name="Ycc#findLayerById"><a href="Ycc.html#findLayerById">findLayerById</a></li>
+            
+                <li data-name="Ycc#findUiById"><a href="Ycc.html#findUiById">findUiById</a></li>
+            
+                <li data-name="Ycc#getStageHeight"><a href="Ycc.html#getStageHeight">getStageHeight</a></li>
+            
+                <li data-name="Ycc#getStageWidth"><a href="Ycc.html#getStageWidth">getStageWidth</a></li>
+            
+                <li data-name="Ycc#getUIFromPointer"><a href="Ycc.html#getUIFromPointer">getUIFromPointer</a></li>
+            
+                <li data-name="Ycc#init"><a href="Ycc.html#init">init</a></li>
+            
+            </ul>
+            <ul class="events itemMembers">
+            
+            </ul>
+        </li>
+    
+        <li class="item" data-name="Ycc.Ajax">
+            <span class="title">
+                <a href="Ycc.Ajax.html">Ycc.Ajax</a>
+                
+            </span>
+            <ul class="members itemMembers">
+            
+            </ul>
+            <ul class="typedefs itemMembers">
+            
+            </ul>
+            <ul class="methods itemMembers">
+            
+            <span class="subtitle">Methods</span>
+            
+                <li data-name="Ycc.Ajax#get"><a href="Ycc.Ajax.html#get">get</a></li>
+            
+            </ul>
+            <ul class="events itemMembers">
+            
+            </ul>
+        </li>
+    
+        <li class="item" data-name="Ycc.Debugger">
+            <span class="title">
+                <a href="Ycc.Debugger.html">Ycc.Debugger</a>
+                
+            </span>
+            <ul class="members itemMembers">
+            
+            <span class="subtitle">Members</span>
+            
+                <li data-name="Ycc.Debugger#deltaTime"><a href="Ycc.Debugger.html#deltaTime">deltaTime</a></li>
+            
+                <li data-name="Ycc.Debugger#deltaTimeAverage"><a href="Ycc.Debugger.html#deltaTimeAverage">deltaTimeAverage</a></li>
+            
+                <li data-name="Ycc.Debugger#deltaTimeExpect"><a href="Ycc.Debugger.html#deltaTimeExpect">deltaTimeExpect</a></li>
+            
+                <li data-name="Ycc.Debugger#fields"><a href="Ycc.Debugger.html#fields">fields</a></li>
+            
+                <li data-name="Ycc.Debugger#frameAllCount"><a href="Ycc.Debugger.html#frameAllCount">frameAllCount</a></li>
+            
+                <li data-name="Ycc.Debugger#layer"><a href="Ycc.Debugger.html#layer">layer</a></li>
+            
+                <li data-name="Ycc.Debugger#rect"><a href="Ycc.Debugger.html#rect">rect</a></li>
+            
+                <li data-name="Ycc.Debugger#renderTime"><a href="Ycc.Debugger.html#renderTime">renderTime</a></li>
+            
+                <li data-name="Ycc.Debugger#renderUiCount"><a href="Ycc.Debugger.html#renderUiCount">renderUiCount</a></li>
+            
+                <li data-name="Ycc.Debugger#yccInstance"><a href="Ycc.Debugger.html#yccInstance">yccInstance</a></li>
+            
+            </ul>
+            <ul class="typedefs itemMembers">
+            
+            </ul>
+            <ul class="methods itemMembers">
+            
+            <span class="subtitle">Methods</span>
+            
+                <li data-name="Ycc.Debugger#addField"><a href="Ycc.Debugger.html#addField">addField</a></li>
+            
+                <li data-name="Ycc.Debugger#addToLayer"><a href="Ycc.Debugger.html#addToLayer">addToLayer</a></li>
+            
+                <li data-name="Ycc.Debugger#showDebugPanel"><a href="Ycc.Debugger.html#showDebugPanel">showDebugPanel</a></li>
+            
+                <li data-name="Ycc.Debugger#updateField"><a href="Ycc.Debugger.html#updateField">updateField</a></li>
+            
+                <li data-name="Ycc.Debugger#updateInfo"><a href="Ycc.Debugger.html#updateInfo">updateInfo</a></li>
+            
+            </ul>
+            <ul class="events itemMembers">
+            
+            </ul>
+        </li>
+    
+        <li class="item" data-name="Ycc.Event">
+            <span class="title">
+                <a href="Ycc.Event.html">Ycc.Event</a>
+                
+            </span>
+            <ul class="members itemMembers">
+            
+            <span class="subtitle">Members</span>
+            
+                <li data-name="Ycc.Event#originEvent"><a href="Ycc.Event.html#originEvent">originEvent</a></li>
+            
+                <li data-name="Ycc.Event#stop"><a href="Ycc.Event.html#stop">stop</a></li>
+            
+                <li data-name="Ycc.Event#target"><a href="Ycc.Event.html#target">target</a></li>
+            
+                <li data-name="Ycc.Event#type"><a href="Ycc.Event.html#type">type</a></li>
+            
+                <li data-name="Ycc.Event#x"><a href="Ycc.Event.html#x">x</a></li>
+            
+                <li data-name="Ycc.Event#y"><a href="Ycc.Event.html#y">y</a></li>
+            
+            </ul>
+            <ul class="typedefs itemMembers">
+            
+            </ul>
+            <ul class="methods itemMembers">
+            
+            </ul>
+            <ul class="events itemMembers">
+            
+            </ul>
+        </li>
+    
+        <li class="item" data-name="Ycc.Gesture">
+            <span class="title">
+                <a href="Ycc.Gesture.html">Ycc.Gesture</a>
+                
+            </span>
+            <ul class="members itemMembers">
+            
+            <span class="subtitle">Members</span>
+            
+                <li data-name="Ycc.Gesture#_longTapTimeout"><a href="Ycc.Gesture.html#_longTapTimeout">_longTapTimeout</a></li>
+            
+                <li data-name="Ycc.Gesture#disableType"><a href="Ycc.Gesture.html#disableType">disableType</a></li>
+            
+                <li data-name="Ycc.Gesture#listeners"><a href="Ycc.Gesture.html#listeners">listeners</a></li>
+            
+                <li data-name="Ycc.Gesture#onclick"><a href="Ycc.Gesture.html#onclick">onclick</a></li>
+            
+                <li data-name="Ycc.Gesture#ondragend"><a href="Ycc.Gesture.html#ondragend">ondragend</a></li>
+            
+                <li data-name="Ycc.Gesture#ondragging"><a href="Ycc.Gesture.html#ondragging">ondragging</a></li>
+            
+                <li data-name="Ycc.Gesture#ondragstart"><a href="Ycc.Gesture.html#ondragstart">ondragstart</a></li>
+            
+                <li data-name="Ycc.Gesture#onmousedown"><a href="Ycc.Gesture.html#onmousedown">onmousedown</a></li>
+            
+                <li data-name="Ycc.Gesture#onmousemove"><a href="Ycc.Gesture.html#onmousemove">onmousemove</a></li>
+            
+                <li data-name="Ycc.Gesture#onmouseout"><a href="Ycc.Gesture.html#onmouseout">onmouseout</a></li>
+            
+                <li data-name="Ycc.Gesture#onmouseover"><a href="Ycc.Gesture.html#onmouseover">onmouseover</a></li>
+            
+                <li data-name="Ycc.Gesture#onmouseup"><a href="Ycc.Gesture.html#onmouseup">onmouseup</a></li>
+            
+                <li data-name="Ycc.Gesture#ontap"><a href="Ycc.Gesture.html#ontap">ontap</a></li>
+            
+                <li data-name="Ycc.Gesture#ontouchend"><a href="Ycc.Gesture.html#ontouchend">ontouchend</a></li>
+            
+                <li data-name="Ycc.Gesture#ontouchmove"><a href="Ycc.Gesture.html#ontouchmove">ontouchmove</a></li>
+            
+                <li data-name="Ycc.Gesture#ontouchstart"><a href="Ycc.Gesture.html#ontouchstart">ontouchstart</a></li>
+            
+                <li data-name="Ycc.Gesture#stopAllEvent"><a href="Ycc.Gesture.html#stopAllEvent">stopAllEvent</a></li>
+            
+                <li data-name="Ycc.Gesture#stopType"><a href="Ycc.Gesture.html#stopType">stopType</a></li>
+            
+            </ul>
+            <ul class="typedefs itemMembers">
+            
+            </ul>
+            <ul class="methods itemMembers">
+            
+            <span class="subtitle">Methods</span>
+            
+                <li data-name="Ycc.Gesture#_createEventData"><a href="Ycc.Gesture.html#_createEventData">_createEventData</a></li>
+            
+                <li data-name="Ycc.Gesture#_getSwipeDirection"><a href="Ycc.Gesture.html#_getSwipeDirection">_getSwipeDirection</a></li>
+            
+                <li data-name="Ycc.Gesture#_initForMobile"><a href="Ycc.Gesture.html#_initForMobile">_initForMobile</a></li>
+            
+                <li data-name="Ycc.Gesture#_initForPC"><a href="Ycc.Gesture.html#_initForPC">_initForPC</a></li>
+            
+                <li data-name="Ycc.Gesture#addListener"><a href="Ycc.Gesture.html#addListener">addListener</a></li>
+            
+                <li data-name="Ycc.Gesture#disableEvent"><a href="Ycc.Gesture.html#disableEvent">disableEvent</a></li>
+            
+                <li data-name="Ycc.Gesture#getZoomRateAndRotateAngle"><a href="Ycc.Gesture.html#getZoomRateAndRotateAngle">getZoomRateAndRotateAngle</a></li>
+            
+                <li data-name="Ycc.Gesture#removeListener"><a href="Ycc.Gesture.html#removeListener">removeListener</a></li>
+            
+                <li data-name="Ycc.Gesture#resumeEvent"><a href="Ycc.Gesture.html#resumeEvent">resumeEvent</a></li>
+            
+                <li data-name="Ycc.Gesture#stop"><a href="Ycc.Gesture.html#stop">stop</a></li>
+            
+                <li data-name="Ycc.Gesture#triggerListener"><a href="Ycc.Gesture.html#triggerListener">triggerListener</a></li>
+            
+            </ul>
+            <ul class="events itemMembers">
+            
+            </ul>
+        </li>
+    
+        <li class="item" data-name="Ycc.Graph">
+            <span class="title">
+                <a href="Ycc.Graph.html">Ycc.Graph</a>
+                
+            </span>
+            <ul class="members itemMembers">
+            
+            <span class="subtitle">Members</span>
+            
+                <li data-name="Ycc.Graph#$id"><a href="Ycc.Graph.html#$id">$id</a></li>
+            
+                <li data-name="Ycc.Graph#eList"><a href="Ycc.Graph.html#eList">eList</a></li>
+            
+                <li data-name="Ycc.Graph#type"><a href="Ycc.Graph.html#type">type</a></li>
+            
+                <li data-name="Ycc.Graph#vList"><a href="Ycc.Graph.html#vList">vList</a></li>
+            
+            </ul>
+            <ul class="typedefs itemMembers">
+            
+            </ul>
+            <ul class="methods itemMembers">
+            
+            <span class="subtitle">Methods</span>
+            
+                <li data-name="Ycc.Graph.createDirectedGraph"><a href="Ycc.Graph.html#.createDirectedGraph">createDirectedGraph</a></li>
+            
+                <li data-name="Ycc.Graph.createUnDirectedGraph"><a href="Ycc.Graph.html#.createUnDirectedGraph">createUnDirectedGraph</a></li>
+            
+                <li data-name="Ycc.Graph#bfs"><a href="Ycc.Graph.html#bfs">bfs</a></li>
+            
+                <li data-name="Ycc.Graph#dfs"><a href="Ycc.Graph.html#dfs">dfs</a></li>
+            
+                <li data-name="Ycc.Graph#getMapE"><a href="Ycc.Graph.html#getMapE">getMapE</a></li>
+            
+                <li data-name="Ycc.Graph#getMapV"><a href="Ycc.Graph.html#getMapV">getMapV</a></li>
+            
+            </ul>
+            <ul class="events itemMembers">
+            
+            </ul>
+        </li>
+    
+        <li class="item" data-name="Ycc.Graph.DirectedE">
+            <span class="title">
+                <a href="Ycc.Graph.DirectedE.html">Ycc.Graph.DirectedE</a>
+                
+            </span>
+            <ul class="members itemMembers">
+            
+            <span class="subtitle">Members</span>
+            
+                <li data-name="Ycc.Graph.DirectedE#$id"><a href="Ycc.Graph.DirectedE.html#$id">$id</a></li>
+            
+                <li data-name="Ycc.Graph.DirectedE#data"><a href="Ycc.Graph.DirectedE.html#data">data</a></li>
+            
+                <li data-name="Ycc.Graph.DirectedE#fromID"><a href="Ycc.Graph.DirectedE.html#fromID">fromID</a></li>
+            
+                <li data-name="Ycc.Graph.DirectedE#toID"><a href="Ycc.Graph.DirectedE.html#toID">toID</a></li>
+            
+            </ul>
+            <ul class="typedefs itemMembers">
+            
+            </ul>
+            <ul class="methods itemMembers">
+            
+            <span class="subtitle">Methods</span>
+            
+                <li data-name="Ycc.Graph.DirectedE#init"><a href="Ycc.Graph.DirectedE.html#init">init</a></li>
+            
+            </ul>
+            <ul class="events itemMembers">
+            
+            </ul>
+        </li>
+    
+        <li class="item" data-name="Ycc.Graph.DirectedV">
+            <span class="title">
+                <a href="Ycc.Graph.DirectedV.html">Ycc.Graph.DirectedV</a>
+                
+            </span>
+            <ul class="members itemMembers">
+            
+            <span class="subtitle">Members</span>
+            
+                <li data-name="Ycc.Graph.DirectedV#$id"><a href="Ycc.Graph.DirectedV.html#$id">$id</a></li>
+            
+                <li data-name="Ycc.Graph.DirectedV#data"><a href="Ycc.Graph.DirectedV.html#data">data</a></li>
+            
+                <li data-name="Ycc.Graph.DirectedV#inIDs"><a href="Ycc.Graph.DirectedV.html#inIDs">inIDs</a></li>
+            
+                <li data-name="Ycc.Graph.DirectedV#outIDs"><a href="Ycc.Graph.DirectedV.html#outIDs">outIDs</a></li>
+            
+            </ul>
+            <ul class="typedefs itemMembers">
+            
+            </ul>
+            <ul class="methods itemMembers">
+            
+            <span class="subtitle">Methods</span>
+            
+                <li data-name="Ycc.Graph.DirectedV#getAccessibleIds"><a href="Ycc.Graph.DirectedV.html#getAccessibleIds">getAccessibleIds</a></li>
+            
+            </ul>
+            <ul class="events itemMembers">
+            
+            </ul>
+        </li>
+    
+        <li class="item" data-name="Ycc.Graph.UnDirectedE">
+            <span class="title">
+                <a href="Ycc.Graph.UnDirectedE.html">Ycc.Graph.UnDirectedE</a>
+                
+            </span>
+            <ul class="members itemMembers">
+            
+            <span class="subtitle">Members</span>
+            
+                <li data-name="Ycc.Graph.UnDirectedE#$id"><a href="Ycc.Graph.UnDirectedE.html#$id">$id</a></li>
+            
+                <li data-name="Ycc.Graph.UnDirectedE#data"><a href="Ycc.Graph.UnDirectedE.html#data">data</a></li>
+            
+                <li data-name="Ycc.Graph.UnDirectedE#vIDs"><a href="Ycc.Graph.UnDirectedE.html#vIDs">vIDs</a></li>
+            
+            </ul>
+            <ul class="typedefs itemMembers">
+            
+            </ul>
+            <ul class="methods itemMembers">
+            
+            <span class="subtitle">Methods</span>
+            
+                <li data-name="Ycc.Graph.UnDirectedE#init"><a href="Ycc.Graph.UnDirectedE.html#init">init</a></li>
+            
+            </ul>
+            <ul class="events itemMembers">
+            
+            </ul>
+        </li>
+    
+        <li class="item" data-name="Ycc.Graph.UnDirectedV">
+            <span class="title">
+                <a href="Ycc.Graph.UnDirectedV.html">Ycc.Graph.UnDirectedV</a>
+                
+            </span>
+            <ul class="members itemMembers">
+            
+            <span class="subtitle">Members</span>
+            
+                <li data-name="Ycc.Graph.UnDirectedV#$id"><a href="Ycc.Graph.UnDirectedV.html#$id">$id</a></li>
+            
+                <li data-name="Ycc.Graph.UnDirectedV#data"><a href="Ycc.Graph.UnDirectedV.html#data">data</a></li>
+            
+                <li data-name="Ycc.Graph.UnDirectedV#eIDs"><a href="Ycc.Graph.UnDirectedV.html#eIDs">eIDs</a></li>
+            
+            </ul>
+            <ul class="typedefs itemMembers">
+            
+            </ul>
+            <ul class="methods itemMembers">
+            
+            <span class="subtitle">Methods</span>
+            
+                <li data-name="Ycc.Graph.UnDirectedV#getAccessibleIds"><a href="Ycc.Graph.UnDirectedV.html#getAccessibleIds">getAccessibleIds</a></li>
+            
+            </ul>
+            <ul class="events itemMembers">
+            
+            </ul>
+        </li>
+    
+        <li class="item" data-name="Ycc.Layer">
+            <span class="title">
+                <a href="Ycc.Layer.html">Ycc.Layer</a>
+                
+            </span>
+            <ul class="members itemMembers">
+            
+            <span class="subtitle">Members</span>
+            
+                <li data-name="Ycc.Layer#ctx"><a href="Ycc.Layer.html#ctx">ctx</a></li>
+            
+                <li data-name="Ycc.Layer#disableType"><a href="Ycc.Layer.html#disableType">disableType</a></li>
+            
+                <li data-name="Ycc.Layer#enableEventManager"><a href="Ycc.Layer.html#enableEventManager">enableEventManager</a></li>
+            
+                <li data-name="Ycc.Layer#enableFrameEvent"><a href="Ycc.Layer.html#enableFrameEvent">enableFrameEvent</a></li>
+            
+                <li data-name="Ycc.Layer#height"><a href="Ycc.Layer.html#height">height</a></li>
+            
+                <li data-name="Ycc.Layer#id"><a href="Ycc.Layer.html#id">id</a></li>
+            
+                <li data-name="Ycc.Layer#listeners"><a href="Ycc.Layer.html#listeners">listeners</a></li>
+            
+                <li data-name="Ycc.Layer#name"><a href="Ycc.Layer.html#name">name</a></li>
+            
+                <li data-name="Ycc.Layer#onclick"><a href="Ycc.Layer.html#onclick">onclick</a></li>
+            
+                <li data-name="Ycc.Layer#ondragend"><a href="Ycc.Layer.html#ondragend">ondragend</a></li>
+            
+                <li data-name="Ycc.Layer#ondragging"><a href="Ycc.Layer.html#ondragging">ondragging</a></li>
+            
+                <li data-name="Ycc.Layer#ondragstart"><a href="Ycc.Layer.html#ondragstart">ondragstart</a></li>
+            
+                <li data-name="Ycc.Layer#onmousedown"><a href="Ycc.Layer.html#onmousedown">onmousedown</a></li>
+            
+                <li data-name="Ycc.Layer#onmousemove"><a href="Ycc.Layer.html#onmousemove">onmousemove</a></li>
+            
+                <li data-name="Ycc.Layer#onmouseout"><a href="Ycc.Layer.html#onmouseout">onmouseout</a></li>
+            
+                <li data-name="Ycc.Layer#onmouseover"><a href="Ycc.Layer.html#onmouseover">onmouseover</a></li>
+            
+                <li data-name="Ycc.Layer#onmouseup"><a href="Ycc.Layer.html#onmouseup">onmouseup</a></li>
+            
+                <li data-name="Ycc.Layer#ontap"><a href="Ycc.Layer.html#ontap">ontap</a></li>
+            
+                <li data-name="Ycc.Layer#ontouchend"><a href="Ycc.Layer.html#ontouchend">ontouchend</a></li>
+            
+                <li data-name="Ycc.Layer#ontouchmove"><a href="Ycc.Layer.html#ontouchmove">ontouchmove</a></li>
+            
+                <li data-name="Ycc.Layer#ontouchstart"><a href="Ycc.Layer.html#ontouchstart">ontouchstart</a></li>
+            
+                <li data-name="Ycc.Layer#show"><a href="Ycc.Layer.html#show">show</a></li>
+            
+                <li data-name="Ycc.Layer#stopAllEvent"><a href="Ycc.Layer.html#stopAllEvent">stopAllEvent</a></li>
+            
+                <li data-name="Ycc.Layer#stopType"><a href="Ycc.Layer.html#stopType">stopType</a></li>
+            
+                <li data-name="Ycc.Layer#textValue"><a href="Ycc.Layer.html#textValue">textValue</a></li>
+            
+                <li data-name="Ycc.Layer#type"><a href="Ycc.Layer.html#type">type</a></li>
+            
+                <li data-name="Ycc.Layer#uiCountRecursion"><a href="Ycc.Layer.html#uiCountRecursion">uiCountRecursion</a></li>
+            
+                <li data-name="Ycc.Layer#uiList"><a href="Ycc.Layer.html#uiList">uiList</a></li>
+            
+                <li data-name="Ycc.Layer#width"><a href="Ycc.Layer.html#width">width</a></li>
+            
+                <li data-name="Ycc.Layer#x"><a href="Ycc.Layer.html#x">x</a></li>
+            
+                <li data-name="Ycc.Layer#y"><a href="Ycc.Layer.html#y">y</a></li>
+            
+                <li data-name="Ycc.Layer#yccClass"><a href="Ycc.Layer.html#yccClass">yccClass</a></li>
+            
+                <li data-name="Ycc.Layer#yccInstance"><a href="Ycc.Layer.html#yccInstance">yccInstance</a></li>
+            
+            </ul>
+            <ul class="typedefs itemMembers">
+            
+            </ul>
+            <ul class="methods itemMembers">
+            
+            <span class="subtitle">Methods</span>
+            
+                <li data-name="Ycc.Layer.release"><a href="Ycc.Layer.html#.release">release</a></li>
+            
+                <li data-name="Ycc.Layer#_initEvent"><a href="Ycc.Layer.html#_initEvent">_initEvent</a></li>
+            
+                <li data-name="Ycc.Layer#_setCtxProps"><a href="Ycc.Layer.html#_setCtxProps">_setCtxProps</a></li>
+            
+                <li data-name="Ycc.Layer#addListener"><a href="Ycc.Layer.html#addListener">addListener</a></li>
+            
+                <li data-name="Ycc.Layer#addUI"><a href="Ycc.Layer.html#addUI">addUI</a></li>
+            
+                <li data-name="Ycc.Layer#clear"><a href="Ycc.Layer.html#clear">clear</a></li>
+            
+                <li data-name="Ycc.Layer#disableEvent"><a href="Ycc.Layer.html#disableEvent">disableEvent</a></li>
+            
+                <li data-name="Ycc.Layer#getUIFromPointer"><a href="Ycc.Layer.html#getUIFromPointer">getUIFromPointer</a></li>
+            
+                <li data-name="Ycc.Layer#init"><a href="Ycc.Layer.html#init">init</a></li>
+            
+                <li data-name="Ycc.Layer#onFrameComing"><a href="Ycc.Layer.html#onFrameComing">onFrameComing</a></li>
+            
+                <li data-name="Ycc.Layer#removeAllUI"><a href="Ycc.Layer.html#removeAllUI">removeAllUI</a></li>
+            
+                <li data-name="Ycc.Layer#removeListener"><a href="Ycc.Layer.html#removeListener">removeListener</a></li>
+            
+                <li data-name="Ycc.Layer#removeSelf"><a href="Ycc.Layer.html#removeSelf">removeSelf</a></li>
+            
+                <li data-name="Ycc.Layer#removeUI"><a href="Ycc.Layer.html#removeUI">removeUI</a></li>
+            
+                <li data-name="Ycc.Layer#render"><a href="Ycc.Layer.html#render">render</a></li>
+            
+                <li data-name="Ycc.Layer#renderToStage"><a href="Ycc.Layer.html#renderToStage">renderToStage</a></li>
+            
+                <li data-name="Ycc.Layer#reRender"><a href="Ycc.Layer.html#reRender">reRender</a></li>
+            
+                <li data-name="Ycc.Layer#resumeEvent"><a href="Ycc.Layer.html#resumeEvent">resumeEvent</a></li>
+            
+                <li data-name="Ycc.Layer#stop"><a href="Ycc.Layer.html#stop">stop</a></li>
+            
+                <li data-name="Ycc.Layer#transformToAbsolute"><a href="Ycc.Layer.html#transformToAbsolute">transformToAbsolute</a></li>
+            
+                <li data-name="Ycc.Layer#transformToLocal"><a href="Ycc.Layer.html#transformToLocal">transformToLocal</a></li>
+            
+                <li data-name="Ycc.Layer#triggerListener"><a href="Ycc.Layer.html#triggerListener">triggerListener</a></li>
+            
+            </ul>
+            <ul class="events itemMembers">
+            
+            </ul>
+        </li>
+    
+        <li class="item" data-name="Ycc.LayerManager">
+            <span class="title">
+                <a href="Ycc.LayerManager.html">Ycc.LayerManager</a>
+                
+            </span>
+            <ul class="members itemMembers">
+            
+            <span class="subtitle">Members</span>
+            
+                <li data-name="Ycc.LayerManager#renderTime"><a href="Ycc.LayerManager.html#renderTime">renderTime</a></li>
+            
+                <li data-name="Ycc.LayerManager#renderUiCount"><a href="Ycc.LayerManager.html#renderUiCount">renderUiCount</a></li>
+            
+                <li data-name="Ycc.LayerManager#yccInstance"><a href="Ycc.LayerManager.html#yccInstance">yccInstance</a></li>
+            
+            </ul>
+            <ul class="typedefs itemMembers">
+            
+            </ul>
+            <ul class="methods itemMembers">
+            
+            <span class="subtitle">Methods</span>
+            
+                <li data-name="Ycc.LayerManager#deleteAllLayer"><a href="Ycc.LayerManager.html#deleteAllLayer">deleteAllLayer</a></li>
+            
+                <li data-name="Ycc.LayerManager#deleteLayer"><a href="Ycc.LayerManager.html#deleteLayer">deleteLayer</a></li>
+            
+                <li data-name="Ycc.LayerManager#enableEventManagerAll"><a href="Ycc.LayerManager.html#enableEventManagerAll">enableEventManagerAll</a></li>
+            
+                <li data-name="Ycc.LayerManager#enableEventManagerOnly"><a href="Ycc.LayerManager.html#enableEventManagerOnly">enableEventManagerOnly</a></li>
+            
+                <li data-name="Ycc.LayerManager#newLayer"><a href="Ycc.LayerManager.html#newLayer">newLayer</a></li>
+            
+                <li data-name="Ycc.LayerManager#renderAllLayerByJsonArray"><a href="Ycc.LayerManager.html#renderAllLayerByJsonArray">renderAllLayerByJsonArray</a></li>
+            
+                <li data-name="Ycc.LayerManager#reRenderAllLayerToStage"><a href="Ycc.LayerManager.html#reRenderAllLayerToStage">reRenderAllLayerToStage</a></li>
+            
+            </ul>
+            <ul class="events itemMembers">
+            
+            </ul>
+        </li>
+    
+        <li class="item" data-name="Ycc.Listener">
+            <span class="title">
+                <a href="Ycc.Listener.html">Ycc.Listener</a>
+                
+            </span>
+            <ul class="members itemMembers">
+            
+            <span class="subtitle">Members</span>
+            
+                <li data-name="Ycc.Listener#disableType"><a href="Ycc.Listener.html#disableType">disableType</a></li>
+            
+                <li data-name="Ycc.Listener#listeners"><a href="Ycc.Listener.html#listeners">listeners</a></li>
+            
+                <li data-name="Ycc.Listener#onclick"><a href="Ycc.Listener.html#onclick">onclick</a></li>
+            
+                <li data-name="Ycc.Listener#ondragend"><a href="Ycc.Listener.html#ondragend">ondragend</a></li>
+            
+                <li data-name="Ycc.Listener#ondragging"><a href="Ycc.Listener.html#ondragging">ondragging</a></li>
+            
+                <li data-name="Ycc.Listener#ondragstart"><a href="Ycc.Listener.html#ondragstart">ondragstart</a></li>
+            
+                <li data-name="Ycc.Listener#onmousedown"><a href="Ycc.Listener.html#onmousedown">onmousedown</a></li>
+            
+                <li data-name="Ycc.Listener#onmousemove"><a href="Ycc.Listener.html#onmousemove">onmousemove</a></li>
+            
+                <li data-name="Ycc.Listener#onmouseout"><a href="Ycc.Listener.html#onmouseout">onmouseout</a></li>
+            
+                <li data-name="Ycc.Listener#onmouseover"><a href="Ycc.Listener.html#onmouseover">onmouseover</a></li>
+            
+                <li data-name="Ycc.Listener#onmouseup"><a href="Ycc.Listener.html#onmouseup">onmouseup</a></li>
+            
+                <li data-name="Ycc.Listener#ontap"><a href="Ycc.Listener.html#ontap">ontap</a></li>
+            
+                <li data-name="Ycc.Listener#ontouchend"><a href="Ycc.Listener.html#ontouchend">ontouchend</a></li>
+            
+                <li data-name="Ycc.Listener#ontouchmove"><a href="Ycc.Listener.html#ontouchmove">ontouchmove</a></li>
+            
+                <li data-name="Ycc.Listener#ontouchstart"><a href="Ycc.Listener.html#ontouchstart">ontouchstart</a></li>
+            
+                <li data-name="Ycc.Listener#stopAllEvent"><a href="Ycc.Listener.html#stopAllEvent">stopAllEvent</a></li>
+            
+                <li data-name="Ycc.Listener#stopType"><a href="Ycc.Listener.html#stopType">stopType</a></li>
+            
+            </ul>
+            <ul class="typedefs itemMembers">
+            
+            </ul>
+            <ul class="methods itemMembers">
+            
+            <span class="subtitle">Methods</span>
+            
+                <li data-name="Ycc.Listener.release"><a href="Ycc.Listener.html#.release">release</a></li>
+            
+                <li data-name="Ycc.Listener#addListener"><a href="Ycc.Listener.html#addListener">addListener</a></li>
+            
+                <li data-name="Ycc.Listener#disableEvent"><a href="Ycc.Listener.html#disableEvent">disableEvent</a></li>
+            
+                <li data-name="Ycc.Listener#removeListener"><a href="Ycc.Listener.html#removeListener">removeListener</a></li>
+            
+                <li data-name="Ycc.Listener#resumeEvent"><a href="Ycc.Listener.html#resumeEvent">resumeEvent</a></li>
+            
+                <li data-name="Ycc.Listener#stop"><a href="Ycc.Listener.html#stop">stop</a></li>
+            
+                <li data-name="Ycc.Listener#triggerListener"><a href="Ycc.Listener.html#triggerListener">triggerListener</a></li>
+            
+            </ul>
+            <ul class="events itemMembers">
+            
+            </ul>
+        </li>
+    
+        <li class="item" data-name="Ycc.Loader">
+            <span class="title">
+                <a href="Ycc.Loader.html">Ycc.Loader</a>
+                
+            </span>
+            <ul class="members itemMembers">
+            
+            <span class="subtitle">Members</span>
+            
+                <li data-name="Ycc.Loader#ajax"><a href="Ycc.Loader.html#ajax">ajax</a></li>
+            
+                <li data-name="Ycc.Loader#basePath"><a href="Ycc.Loader.html#basePath">basePath</a></li>
+            
+            </ul>
+            <ul class="typedefs itemMembers">
+            
+            </ul>
+            <ul class="methods itemMembers">
+            
+            <span class="subtitle">Methods</span>
+            
+                <li data-name="Ycc.Loader#getResByName"><a href="Ycc.Loader.html#getResByName">getResByName</a></li>
+            
+                <li data-name="Ycc.Loader#loadResOneByOne"><a href="Ycc.Loader.html#loadResOneByOne">loadResOneByOne</a></li>
+            
+                <li data-name="Ycc.Loader#loadResParallel"><a href="Ycc.Loader.html#loadResParallel">loadResParallel</a></li>
+            
+            </ul>
+            <ul class="events itemMembers">
+            
+            </ul>
+        </li>
+    
+        <li class="item" data-name="Ycc.Math">
+            <span class="title">
+                <a href="Ycc.Math.html">Ycc.Math</a>
+                
+            </span>
+            <ul class="members itemMembers">
+            
+            </ul>
+            <ul class="typedefs itemMembers">
+            
+            </ul>
+            <ul class="methods itemMembers">
+            
+            </ul>
+            <ul class="events itemMembers">
+            
+            </ul>
+        </li>
+    
+        <li class="item" data-name="Ycc.Math.Dot">
+            <span class="title">
+                <a href="Ycc.Math.Dot.html">Ycc.Math.Dot</a>
+                
+            </span>
+            <ul class="members itemMembers">
+            
+            <span class="subtitle">Members</span>
+            
+                <li data-name="Ycc.Math.Dot#x"><a href="Ycc.Math.Dot.html#x">x</a></li>
+            
+                <li data-name="Ycc.Math.Dot#y"><a href="Ycc.Math.Dot.html#y">y</a></li>
+            
+            </ul>
+            <ul class="typedefs itemMembers">
+            
+            </ul>
+            <ul class="methods itemMembers">
+            
+            <span class="subtitle">Methods</span>
+            
+                <li data-name="Ycc.Math.Dot#isInRect"><a href="Ycc.Math.Dot.html#isInRect">isInRect</a></li>
+            
+            </ul>
+            <ul class="events itemMembers">
+            
+            </ul>
+        </li>
+    
+        <li class="item" data-name="Ycc.Math.Dot">
+            <span class="title">
+                <a href="Ycc.Math.Dot.html">Ycc.Math.Dot</a>
+                
+            </span>
+            <ul class="members itemMembers">
+            
+            <span class="subtitle">Members</span>
+            
+                <li data-name="Ycc.Math.Dot#x"><a href="Ycc.Math.Dot.html#x">x</a></li>
+            
+                <li data-name="Ycc.Math.Dot#y"><a href="Ycc.Math.Dot.html#y">y</a></li>
+            
+            </ul>
+            <ul class="typedefs itemMembers">
+            
+            </ul>
+            <ul class="methods itemMembers">
+            
+            <span class="subtitle">Methods</span>
+            
+                <li data-name="Ycc.Math.Dot#isInRect"><a href="Ycc.Math.Dot.html#isInRect">isInRect</a></li>
+            
+            </ul>
+            <ul class="events itemMembers">
+            
+            </ul>
+        </li>
+    
+        <li class="item" data-name="Ycc.Math.Matrix">
+            <span class="title">
+                <a href="Ycc.Math.Matrix.html">Ycc.Math.Matrix</a>
+                
+            </span>
+            <ul class="members itemMembers">
+            
+            </ul>
+            <ul class="typedefs itemMembers">
+            
+            </ul>
+            <ul class="methods itemMembers">
+            
+            <span class="subtitle">Methods</span>
+            
+                <li data-name="Ycc.Math.Matrix#dot"><a href="Ycc.Math.Matrix.html#dot">dot</a></li>
+            
+                <li data-name="Ycc.Math.Matrix#get"><a href="Ycc.Math.Matrix.html#get">get</a></li>
+            
+                <li data-name="Ycc.Math.Matrix#set"><a href="Ycc.Math.Matrix.html#set">set</a></li>
+            
+            </ul>
+            <ul class="events itemMembers">
+            
+            </ul>
+        </li>
+    
+        <li class="item" data-name="Ycc.Math.Rect">
+            <span class="title">
+                <a href="Ycc.Math.Rect.html">Ycc.Math.Rect</a>
+                
+            </span>
+            <ul class="members itemMembers">
+            
+            <span class="subtitle">Members</span>
+            
+                <li data-name="Ycc.Math.Rect#height"><a href="Ycc.Math.Rect.html#height">height</a></li>
+            
+                <li data-name="Ycc.Math.Rect#width"><a href="Ycc.Math.Rect.html#width">width</a></li>
+            
+                <li data-name="Ycc.Math.Rect#x"><a href="Ycc.Math.Rect.html#x">x</a></li>
+            
+                <li data-name="Ycc.Math.Rect#y"><a href="Ycc.Math.Rect.html#y">y</a></li>
+            
+                <li data-name="Ycc.Math.Rect#yccClass"><a href="Ycc.Math.Rect.html#yccClass">yccClass</a></li>
+            
+            </ul>
+            <ul class="typedefs itemMembers">
+            
+            </ul>
+            <ul class="methods itemMembers">
+            
+            <span class="subtitle">Methods</span>
+            
+                <li data-name="Ycc.Math.Rect#getVertices"><a href="Ycc.Math.Rect.html#getVertices">getVertices</a></li>
+            
+                <li data-name="Ycc.Math.Rect#toPositive"><a href="Ycc.Math.Rect.html#toPositive">toPositive</a></li>
+            
+                <li data-name="Ycc.Math.Rect#updateByVertices"><a href="Ycc.Math.Rect.html#updateByVertices">updateByVertices</a></li>
+            
+            </ul>
+            <ul class="events itemMembers">
+            
+            </ul>
+        </li>
+    
+        <li class="item" data-name="Ycc.Math.Rect">
+            <span class="title">
+                <a href="Ycc.Math.Rect.html">Ycc.Math.Rect</a>
+                
+            </span>
+            <ul class="members itemMembers">
+            
+            <span class="subtitle">Members</span>
+            
+                <li data-name="Ycc.Math.Rect#height"><a href="Ycc.Math.Rect.html#height">height</a></li>
+            
+                <li data-name="Ycc.Math.Rect#width"><a href="Ycc.Math.Rect.html#width">width</a></li>
+            
+                <li data-name="Ycc.Math.Rect#x"><a href="Ycc.Math.Rect.html#x">x</a></li>
+            
+                <li data-name="Ycc.Math.Rect#y"><a href="Ycc.Math.Rect.html#y">y</a></li>
+            
+                <li data-name="Ycc.Math.Rect#yccClass"><a href="Ycc.Math.Rect.html#yccClass">yccClass</a></li>
+            
+            </ul>
+            <ul class="typedefs itemMembers">
+            
+            </ul>
+            <ul class="methods itemMembers">
+            
+            <span class="subtitle">Methods</span>
+            
+                <li data-name="Ycc.Math.Rect#getVertices"><a href="Ycc.Math.Rect.html#getVertices">getVertices</a></li>
+            
+                <li data-name="Ycc.Math.Rect#toPositive"><a href="Ycc.Math.Rect.html#toPositive">toPositive</a></li>
+            
+                <li data-name="Ycc.Math.Rect#updateByVertices"><a href="Ycc.Math.Rect.html#updateByVertices">updateByVertices</a></li>
+            
+            </ul>
+            <ul class="events itemMembers">
+            
+            </ul>
+        </li>
+    
+        <li class="item" data-name="Ycc.Math.Rect">
+            <span class="title">
+                <a href="Ycc.Math.Rect.html">Ycc.Math.Rect</a>
+                
+            </span>
+            <ul class="members itemMembers">
+            
+            <span class="subtitle">Members</span>
+            
+                <li data-name="Ycc.Math.Rect#height"><a href="Ycc.Math.Rect.html#height">height</a></li>
+            
+                <li data-name="Ycc.Math.Rect#width"><a href="Ycc.Math.Rect.html#width">width</a></li>
+            
+                <li data-name="Ycc.Math.Rect#x"><a href="Ycc.Math.Rect.html#x">x</a></li>
+            
+                <li data-name="Ycc.Math.Rect#y"><a href="Ycc.Math.Rect.html#y">y</a></li>
+            
+                <li data-name="Ycc.Math.Rect#yccClass"><a href="Ycc.Math.Rect.html#yccClass">yccClass</a></li>
+            
+            </ul>
+            <ul class="typedefs itemMembers">
+            
+            </ul>
+            <ul class="methods itemMembers">
+            
+            <span class="subtitle">Methods</span>
+            
+                <li data-name="Ycc.Math.Rect#getVertices"><a href="Ycc.Math.Rect.html#getVertices">getVertices</a></li>
+            
+                <li data-name="Ycc.Math.Rect#toPositive"><a href="Ycc.Math.Rect.html#toPositive">toPositive</a></li>
+            
+                <li data-name="Ycc.Math.Rect#updateByVertices"><a href="Ycc.Math.Rect.html#updateByVertices">updateByVertices</a></li>
+            
+            </ul>
+            <ul class="events itemMembers">
+            
+            </ul>
+        </li>
+    
+        <li class="item" data-name="Ycc.Math.Vector">
+            <span class="title">
+                <a href="Ycc.Math.Vector.html">Ycc.Math.Vector</a>
+                
+            </span>
+            <ul class="members itemMembers">
+            
+            </ul>
+            <ul class="typedefs itemMembers">
+            
+            </ul>
+            <ul class="methods itemMembers">
+            
+            <span class="subtitle">Methods</span>
+            
+                <li data-name="Ycc.Math.Vector#cross"><a href="Ycc.Math.Vector.html#cross">cross</a></li>
+            
+                <li data-name="Ycc.Math.Vector#dot"><a href="Ycc.Math.Vector.html#dot">dot</a></li>
+            
+                <li data-name="Ycc.Math.Vector#getLength"><a href="Ycc.Math.Vector.html#getLength">getLength</a></li>
+            
+            </ul>
+            <ul class="events itemMembers">
+            
+            </ul>
+        </li>
+    
+        <li class="item" data-name="Ycc.PhotoManager">
+            <span class="title">
+                <a href="Ycc.PhotoManager.html">Ycc.PhotoManager</a>
+                
+            </span>
+            <ul class="members itemMembers">
+            
+            </ul>
+            <ul class="typedefs itemMembers">
+            
+            </ul>
+            <ul class="methods itemMembers">
+            
+            <span class="subtitle">Methods</span>
+            
+                <li data-name="Ycc.PhotoManager#delPhotoById"><a href="Ycc.PhotoManager.html#delPhotoById">delPhotoById</a></li>
+            
+                <li data-name="Ycc.PhotoManager#getHistoryPhotos"><a href="Ycc.PhotoManager.html#getHistoryPhotos">getHistoryPhotos</a></li>
+            
+                <li data-name="Ycc.PhotoManager#showLastPhoto"><a href="Ycc.PhotoManager.html#showLastPhoto">showLastPhoto</a></li>
+            
+                <li data-name="Ycc.PhotoManager#showPhoto"><a href="Ycc.PhotoManager.html#showPhoto">showPhoto</a></li>
+            
+                <li data-name="Ycc.PhotoManager#takePhoto"><a href="Ycc.PhotoManager.html#takePhoto">takePhoto</a></li>
+            
+            </ul>
+            <ul class="events itemMembers">
+            
+            </ul>
+        </li>
+    
+        <li class="item" data-name="Ycc.Ticker">
+            <span class="title">
+                <a href="Ycc.Ticker.html">Ycc.Ticker</a>
+                
+            </span>
+            <ul class="members itemMembers">
+            
+            <span class="subtitle">Members</span>
+            
+                <li data-name="Ycc.Ticker#_isRunning"><a href="Ycc.Ticker.html#_isRunning">_isRunning</a></li>
+            
+                <li data-name="Ycc.Ticker#_timerId"><a href="Ycc.Ticker.html#_timerId">_timerId</a></li>
+            
+                <li data-name="Ycc.Ticker#defaultDeltaTime"><a href="Ycc.Ticker.html#defaultDeltaTime">defaultDeltaTime</a></li>
+            
+                <li data-name="Ycc.Ticker#defaultFrameRate"><a href="Ycc.Ticker.html#defaultFrameRate">defaultFrameRate</a></li>
+            
+                <li data-name="Ycc.Ticker#deltaTime"><a href="Ycc.Ticker.html#deltaTime">deltaTime</a></li>
+            
+                <li data-name="Ycc.Ticker#deltaTimeExpect"><a href="Ycc.Ticker.html#deltaTimeExpect">deltaTimeExpect</a></li>
+            
+                <li data-name="Ycc.Ticker#deltaTimeRatio"><a href="Ycc.Ticker.html#deltaTimeRatio">deltaTimeRatio</a></li>
+            
+                <li data-name="Ycc.Ticker#deltaTimeTotalValue"><a href="Ycc.Ticker.html#deltaTimeTotalValue">deltaTimeTotalValue</a></li>
+            
+                <li data-name="Ycc.Ticker#frameAllCount"><a href="Ycc.Ticker.html#frameAllCount">frameAllCount</a></li>
+            
+                <li data-name="Ycc.Ticker#frameListenerList"><a href="Ycc.Ticker.html#frameListenerList">frameListenerList</a></li>
+            
+                <li data-name="Ycc.Ticker#lastFrameTime"><a href="Ycc.Ticker.html#lastFrameTime">lastFrameTime</a></li>
+            
+                <li data-name="Ycc.Ticker#startTime"><a href="Ycc.Ticker.html#startTime">startTime</a></li>
+            
+                <li data-name="Ycc.Ticker#timerTickCount"><a href="Ycc.Ticker.html#timerTickCount">timerTickCount</a></li>
+            
+                <li data-name="Ycc.Ticker#yccInstance"><a href="Ycc.Ticker.html#yccInstance">yccInstance</a></li>
+            
+            </ul>
+            <ul class="typedefs itemMembers">
+            
+            </ul>
+            <ul class="methods itemMembers">
+            
+            <span class="subtitle">Methods</span>
+            
+                <li data-name="Ycc.Ticker#addFrameListener"><a href="Ycc.Ticker.html#addFrameListener">addFrameListener</a></li>
+            
+                <li data-name="Ycc.Ticker#broadcastFrameEvent"><a href="Ycc.Ticker.html#broadcastFrameEvent">broadcastFrameEvent</a></li>
+            
+                <li data-name="Ycc.Ticker#broadcastToLayer"><a href="Ycc.Ticker.html#broadcastToLayer">broadcastToLayer</a></li>
+            
+                <li data-name="Ycc.Ticker#removeFrameListener"><a href="Ycc.Ticker.html#removeFrameListener">removeFrameListener</a></li>
+            
+                <li data-name="Ycc.Ticker#start"><a href="Ycc.Ticker.html#start">start</a></li>
+            
+                <li data-name="Ycc.Ticker#stop"><a href="Ycc.Ticker.html#stop">stop</a></li>
+            
+            </ul>
+            <ul class="events itemMembers">
+            
+            </ul>
+        </li>
+    
+        <li class="item" data-name="Ycc.TouchLifeTracer">
+            <span class="title">
+                <a href="Ycc.TouchLifeTracer.html">Ycc.TouchLifeTracer</a>
+                
+            </span>
+            <ul class="members itemMembers">
+            
+            <span class="subtitle">Members</span>
+            
+                <li data-name="Ycc.TouchLifeTracer#_lifeList"><a href="Ycc.TouchLifeTracer.html#_lifeList">_lifeList</a></li>
+            
+                <li data-name="Ycc.TouchLifeTracer#changedTouches"><a href="Ycc.TouchLifeTracer.html#changedTouches">changedTouches</a></li>
+            
+                <li data-name="Ycc.TouchLifeTracer#currentLifeList"><a href="Ycc.TouchLifeTracer.html#currentLifeList">currentLifeList</a></li>
+            
+                <li data-name="Ycc.TouchLifeTracer#disableType"><a href="Ycc.TouchLifeTracer.html#disableType">disableType</a></li>
+            
+                <li data-name="Ycc.TouchLifeTracer#listeners"><a href="Ycc.TouchLifeTracer.html#listeners">listeners</a></li>
+            
+                <li data-name="Ycc.TouchLifeTracer#onclick"><a href="Ycc.TouchLifeTracer.html#onclick">onclick</a></li>
+            
+                <li data-name="Ycc.TouchLifeTracer#ondragend"><a href="Ycc.TouchLifeTracer.html#ondragend">ondragend</a></li>
+            
+                <li data-name="Ycc.TouchLifeTracer#ondragging"><a href="Ycc.TouchLifeTracer.html#ondragging">ondragging</a></li>
+            
+                <li data-name="Ycc.TouchLifeTracer#ondragstart"><a href="Ycc.TouchLifeTracer.html#ondragstart">ondragstart</a></li>
+            
+                <li data-name="Ycc.TouchLifeTracer#onlifechange"><a href="Ycc.TouchLifeTracer.html#onlifechange">onlifechange</a></li>
+            
+                <li data-name="Ycc.TouchLifeTracer#onlifeend"><a href="Ycc.TouchLifeTracer.html#onlifeend">onlifeend</a></li>
+            
+                <li data-name="Ycc.TouchLifeTracer#onlifestart"><a href="Ycc.TouchLifeTracer.html#onlifestart">onlifestart</a></li>
+            
+                <li data-name="Ycc.TouchLifeTracer#onmousedown"><a href="Ycc.TouchLifeTracer.html#onmousedown">onmousedown</a></li>
+            
+                <li data-name="Ycc.TouchLifeTracer#onmousemove"><a href="Ycc.TouchLifeTracer.html#onmousemove">onmousemove</a></li>
+            
+                <li data-name="Ycc.TouchLifeTracer#onmouseout"><a href="Ycc.TouchLifeTracer.html#onmouseout">onmouseout</a></li>
+            
+                <li data-name="Ycc.TouchLifeTracer#onmouseover"><a href="Ycc.TouchLifeTracer.html#onmouseover">onmouseover</a></li>
+            
+                <li data-name="Ycc.TouchLifeTracer#onmouseup"><a href="Ycc.TouchLifeTracer.html#onmouseup">onmouseup</a></li>
+            
+                <li data-name="Ycc.TouchLifeTracer#ontap"><a href="Ycc.TouchLifeTracer.html#ontap">ontap</a></li>
+            
+                <li data-name="Ycc.TouchLifeTracer#ontouchend"><a href="Ycc.TouchLifeTracer.html#ontouchend">ontouchend</a></li>
+            
+                <li data-name="Ycc.TouchLifeTracer#ontouchmove"><a href="Ycc.TouchLifeTracer.html#ontouchmove">ontouchmove</a></li>
+            
+                <li data-name="Ycc.TouchLifeTracer#ontouchstart"><a href="Ycc.TouchLifeTracer.html#ontouchstart">ontouchstart</a></li>
+            
+                <li data-name="Ycc.TouchLifeTracer#stopAllEvent"><a href="Ycc.TouchLifeTracer.html#stopAllEvent">stopAllEvent</a></li>
+            
+                <li data-name="Ycc.TouchLifeTracer#stopType"><a href="Ycc.TouchLifeTracer.html#stopType">stopType</a></li>
+            
+                <li data-name="Ycc.TouchLifeTracer#target"><a href="Ycc.TouchLifeTracer.html#target">target</a></li>
+            
+                <li data-name="Ycc.TouchLifeTracer#targetTouches"><a href="Ycc.TouchLifeTracer.html#targetTouches">targetTouches</a></li>
+            
+                <li data-name="Ycc.TouchLifeTracer#touches"><a href="Ycc.TouchLifeTracer.html#touches">touches</a></li>
+            
+            </ul>
+            <ul class="typedefs itemMembers">
+            
+            </ul>
+            <ul class="methods itemMembers">
+            
+            <span class="subtitle">Methods</span>
+            
+                <li data-name="Ycc.TouchLifeTracer#addLife"><a href="Ycc.TouchLifeTracer.html#addLife">addLife</a></li>
+            
+                <li data-name="Ycc.TouchLifeTracer#addListener"><a href="Ycc.TouchLifeTracer.html#addListener">addListener</a></li>
+            
+                <li data-name="Ycc.TouchLifeTracer#deleteCurrentLifeByTouchID"><a href="Ycc.TouchLifeTracer.html#deleteCurrentLifeByTouchID">deleteCurrentLifeByTouchID</a></li>
+            
+                <li data-name="Ycc.TouchLifeTracer#disableEvent"><a href="Ycc.TouchLifeTracer.html#disableEvent">disableEvent</a></li>
+            
+                <li data-name="Ycc.TouchLifeTracer#findCurrentLifeByTouchID"><a href="Ycc.TouchLifeTracer.html#findCurrentLifeByTouchID">findCurrentLifeByTouchID</a></li>
+            
+                <li data-name="Ycc.TouchLifeTracer#indexOfTouchFromMoveTouchEventList"><a href="Ycc.TouchLifeTracer.html#indexOfTouchFromMoveTouchEventList">indexOfTouchFromMoveTouchEventList</a></li>
+            
+                <li data-name="Ycc.TouchLifeTracer#init"><a href="Ycc.TouchLifeTracer.html#init">init</a></li>
+            
+                <li data-name="Ycc.TouchLifeTracer#removeListener"><a href="Ycc.TouchLifeTracer.html#removeListener">removeListener</a></li>
+            
+                <li data-name="Ycc.TouchLifeTracer#resumeEvent"><a href="Ycc.TouchLifeTracer.html#resumeEvent">resumeEvent</a></li>
+            
+                <li data-name="Ycc.TouchLifeTracer#stop"><a href="Ycc.TouchLifeTracer.html#stop">stop</a></li>
+            
+                <li data-name="Ycc.TouchLifeTracer#syncTouches"><a href="Ycc.TouchLifeTracer.html#syncTouches">syncTouches</a></li>
+            
+                <li data-name="Ycc.TouchLifeTracer#triggerListener"><a href="Ycc.TouchLifeTracer.html#triggerListener">triggerListener</a></li>
+            
+            </ul>
+            <ul class="events itemMembers">
+            
+            </ul>
+        </li>
+    
+        <li class="item" data-name="Ycc.Tree">
+            <span class="title">
+                <a href="Ycc.Tree.html">Ycc.Tree</a>
+                
+            </span>
+            <ul class="members itemMembers">
+            
+            <span class="subtitle">Members</span>
+            
+                <li data-name="Ycc.Tree#$id"><a href="Ycc.Tree.html#$id">$id</a></li>
+            
+                <li data-name="Ycc.Tree#$parentID"><a href="Ycc.Tree.html#$parentID">$parentID</a></li>
+            
+                <li data-name="Ycc.Tree#children"><a href="Ycc.Tree.html#children">children</a></li>
+            
+                <li data-name="Ycc.Tree#data"><a href="Ycc.Tree.html#data">data</a></li>
+            
+            </ul>
+            <ul class="typedefs itemMembers">
+            
+            </ul>
+            <ul class="methods itemMembers">
+            
+            <span class="subtitle">Methods</span>
+            
+                <li data-name="Ycc.Tree.createByJSON"><a href="Ycc.Tree.html#.createByJSON">createByJSON</a></li>
+            
+                <li data-name="Ycc.Tree.createByNodes"><a href="Ycc.Tree.html#.createByNodes">createByNodes</a></li>
+            
+                <li data-name="Ycc.Tree.getNodeMap"><a href="Ycc.Tree.html#.getNodeMap">getNodeMap</a></li>
+            
+                <li data-name="Ycc.Tree.release"><a href="Ycc.Tree.html#.release">release</a></li>
+            
+                <li data-name="Ycc.Tree#addChildTree"><a href="Ycc.Tree.html#addChildTree">addChildTree</a></li>
+            
+                <li data-name="Ycc.Tree#getBrotherList"><a href="Ycc.Tree.html#getBrotherList">getBrotherList</a></li>
+            
+                <li data-name="Ycc.Tree#getDepth"><a href="Ycc.Tree.html#getDepth">getDepth</a></li>
+            
+                <li data-name="Ycc.Tree#getNodeListGroupByLayer"><a href="Ycc.Tree.html#getNodeListGroupByLayer">getNodeListGroupByLayer</a></li>
+            
+                <li data-name="Ycc.Tree#getNodeMap"><a href="Ycc.Tree.html#getNodeMap">getNodeMap</a></li>
+            
+                <li data-name="Ycc.Tree#getParent"><a href="Ycc.Tree.html#getParent">getParent</a></li>
+            
+                <li data-name="Ycc.Tree#getParentList"><a href="Ycc.Tree.html#getParentList">getParentList</a></li>
+            
+                <li data-name="Ycc.Tree#itor"><a href="Ycc.Tree.html#itor">itor</a></li>
+            
+                <li data-name="Ycc.Tree#removeChildTree"><a href="Ycc.Tree.html#removeChildTree">removeChildTree</a></li>
+            
+                <li data-name="Ycc.Tree#toNodeList"><a href="Ycc.Tree.html#toNodeList">toNodeList</a></li>
+            
+            </ul>
+            <ul class="events itemMembers">
+            
+            </ul>
+        </li>
+    
+        <li class="item" data-name="Ycc.UI">
+            <span class="title">
+                <a href="Ycc.UI.html">Ycc.UI</a>
+                
+            </span>
+            <ul class="members itemMembers">
+            
+            <span class="subtitle">Members</span>
+            
+                <li data-name="Ycc.UI#_photos"><a href="Ycc.UI.html#_photos">_photos</a></li>
+            
+                <li data-name="Ycc.UI#ctx"><a href="Ycc.UI.html#ctx">ctx</a></li>
+            
+                <li data-name="Ycc.UI#ctxHeight"><a href="Ycc.UI.html#ctxHeight">ctxHeight</a></li>
+            
+                <li data-name="Ycc.UI#ctxWidth"><a href="Ycc.UI.html#ctxWidth">ctxWidth</a></li>
+            
+            </ul>
+            <ul class="typedefs itemMembers">
+            
+            </ul>
+            <ul class="methods itemMembers">
+            
+            <span class="subtitle">Methods</span>
+            
+                <li data-name="Ycc.UI.release"><a href="Ycc.UI.html#.release">release</a></li>
+            
+                <li data-name="Ycc.UI#_getMaxLenContent"><a href="Ycc.UI.html#_getMaxLenContent">_getMaxLenContent</a></li>
+            
+                <li data-name="Ycc.UI#circle"><a href="Ycc.UI.html#circle">circle</a></li>
+            
+                <li data-name="Ycc.UI#circleArc"><a href="Ycc.UI.html#circleArc">circleArc</a></li>
+            
+                <li data-name="Ycc.UI#clear"><a href="Ycc.UI.html#clear">clear</a></li>
+            
+                <li data-name="Ycc.UI#ellipse"><a href="Ycc.UI.html#ellipse">ellipse</a></li>
+            
+                <li data-name="Ycc.UI#foldLine"><a href="Ycc.UI.html#foldLine">foldLine</a></li>
+            
+                <li data-name="Ycc.UI#image"><a href="Ycc.UI.html#image">image</a></li>
+            
+                <li data-name="Ycc.UI#line"><a href="Ycc.UI.html#line">line</a></li>
+            
+                <li data-name="Ycc.UI#rect"><a href="Ycc.UI.html#rect">rect</a></li>
+            
+                <li data-name="Ycc.UI#scale"><a href="Ycc.UI.html#scale">scale</a></li>
+            
+                <li data-name="Ycc.UI#sector"><a href="Ycc.UI.html#sector">sector</a></li>
+            
+                <li data-name="Ycc.UI#text"><a href="Ycc.UI.html#text">text</a></li>
+            
+            </ul>
+            <ul class="events itemMembers">
+            
+            </ul>
+        </li>
+    
+        <li class="item" data-name="Ycc.UI.Base">
+            <span class="title">
+                <a href="Ycc.UI.Base.html">Ycc.UI.Base</a>
+                
+            </span>
+            <ul class="members itemMembers">
+            
+            <span class="subtitle">Members</span>
+            
+                <li data-name="Ycc.UI.Base#afterInit"><a href="Ycc.UI.Base.html#afterInit">afterInit</a></li>
+            
+                <li data-name="Ycc.UI.Base#anchorX"><a href="Ycc.UI.Base.html#anchorX">anchorX</a></li>
+            
+                <li data-name="Ycc.UI.Base#anchorY"><a href="Ycc.UI.Base.html#anchorY">anchorY</a></li>
+            
+                <li data-name="Ycc.UI.Base#baseUI"><a href="Ycc.UI.Base.html#baseUI">baseUI</a></li>
+            
+                <li data-name="Ycc.UI.Base#beforeInit"><a href="Ycc.UI.Base.html#beforeInit">beforeInit</a></li>
+            
+                <li data-name="Ycc.UI.Base#belongTo"><a href="Ycc.UI.Base.html#belongTo">belongTo</a></li>
+            
+                <li data-name="Ycc.UI.Base#ctx"><a href="Ycc.UI.Base.html#ctx">ctx</a></li>
+            
+                <li data-name="Ycc.UI.Base#disableType"><a href="Ycc.UI.Base.html#disableType">disableType</a></li>
+            
+                <li data-name="Ycc.UI.Base#fillStyle"><a href="Ycc.UI.Base.html#fillStyle">fillStyle</a></li>
+            
+                <li data-name="Ycc.UI.Base#id"><a href="Ycc.UI.Base.html#id">id</a></li>
+            
+                <li data-name="Ycc.UI.Base#lineWidth"><a href="Ycc.UI.Base.html#lineWidth">lineWidth</a></li>
+            
+                <li data-name="Ycc.UI.Base#listeners"><a href="Ycc.UI.Base.html#listeners">listeners</a></li>
+            
+                <li data-name="Ycc.UI.Base#name"><a href="Ycc.UI.Base.html#name">name</a></li>
+            
+                <li data-name="Ycc.UI.Base#onclick"><a href="Ycc.UI.Base.html#onclick">onclick</a></li>
+            
+                <li data-name="Ycc.UI.Base#oncomputeend"><a href="Ycc.UI.Base.html#oncomputeend">oncomputeend</a></li>
+            
+                <li data-name="Ycc.UI.Base#oncomputestart"><a href="Ycc.UI.Base.html#oncomputestart">oncomputestart</a></li>
+            
+                <li data-name="Ycc.UI.Base#ondragend"><a href="Ycc.UI.Base.html#ondragend">ondragend</a></li>
+            
+                <li data-name="Ycc.UI.Base#ondragging"><a href="Ycc.UI.Base.html#ondragging">ondragging</a></li>
+            
+                <li data-name="Ycc.UI.Base#ondragstart"><a href="Ycc.UI.Base.html#ondragstart">ondragstart</a></li>
+            
+                <li data-name="Ycc.UI.Base#onmousedown"><a href="Ycc.UI.Base.html#onmousedown">onmousedown</a></li>
+            
+                <li data-name="Ycc.UI.Base#onmousemove"><a href="Ycc.UI.Base.html#onmousemove">onmousemove</a></li>
+            
+                <li data-name="Ycc.UI.Base#onmouseout"><a href="Ycc.UI.Base.html#onmouseout">onmouseout</a></li>
+            
+                <li data-name="Ycc.UI.Base#onmouseover"><a href="Ycc.UI.Base.html#onmouseover">onmouseover</a></li>
+            
+                <li data-name="Ycc.UI.Base#onmouseup"><a href="Ycc.UI.Base.html#onmouseup">onmouseup</a></li>
+            
+                <li data-name="Ycc.UI.Base#onrenderend"><a href="Ycc.UI.Base.html#onrenderend">onrenderend</a></li>
+            
+                <li data-name="Ycc.UI.Base#onrenderstart"><a href="Ycc.UI.Base.html#onrenderstart">onrenderstart</a></li>
+            
+                <li data-name="Ycc.UI.Base#ontap"><a href="Ycc.UI.Base.html#ontap">ontap</a></li>
+            
+                <li data-name="Ycc.UI.Base#ontouchend"><a href="Ycc.UI.Base.html#ontouchend">ontouchend</a></li>
+            
+                <li data-name="Ycc.UI.Base#ontouchmove"><a href="Ycc.UI.Base.html#ontouchmove">ontouchmove</a></li>
+            
+                <li data-name="Ycc.UI.Base#ontouchstart"><a href="Ycc.UI.Base.html#ontouchstart">ontouchstart</a></li>
+            
+                <li data-name="Ycc.UI.Base#rect"><a href="Ycc.UI.Base.html#rect">rect</a></li>
+            
+                <li data-name="Ycc.UI.Base#rectBgColor"><a href="Ycc.UI.Base.html#rectBgColor">rectBgColor</a></li>
+            
+                <li data-name="Ycc.UI.Base#rectBorderColor"><a href="Ycc.UI.Base.html#rectBorderColor">rectBorderColor</a></li>
+            
+                <li data-name="Ycc.UI.Base#rectBorderWidth"><a href="Ycc.UI.Base.html#rectBorderWidth">rectBorderWidth</a></li>
+            
+                <li data-name="Ycc.UI.Base#rotation"><a href="Ycc.UI.Base.html#rotation">rotation</a></li>
+            
+                <li data-name="Ycc.UI.Base#scaleX"><a href="Ycc.UI.Base.html#scaleX">scaleX</a></li>
+            
+                <li data-name="Ycc.UI.Base#scaleY"><a href="Ycc.UI.Base.html#scaleY">scaleY</a></li>
+            
+                <li data-name="Ycc.UI.Base#show"><a href="Ycc.UI.Base.html#show">show</a></li>
+            
+                <li data-name="Ycc.UI.Base#stopAllEvent"><a href="Ycc.UI.Base.html#stopAllEvent">stopAllEvent</a></li>
+            
+                <li data-name="Ycc.UI.Base#stopEventBubbleUp"><a href="Ycc.UI.Base.html#stopEventBubbleUp">stopEventBubbleUp</a></li>
+            
+                <li data-name="Ycc.UI.Base#stopType"><a href="Ycc.UI.Base.html#stopType">stopType</a></li>
+            
+                <li data-name="Ycc.UI.Base#strokeStyle"><a href="Ycc.UI.Base.html#strokeStyle">strokeStyle</a></li>
+            
+                <li data-name="Ycc.UI.Base#userData"><a href="Ycc.UI.Base.html#userData">userData</a></li>
+            
+                <li data-name="Ycc.UI.Base#yccClass"><a href="Ycc.UI.Base.html#yccClass">yccClass</a></li>
+            
+            </ul>
+            <ul class="typedefs itemMembers">
+            
+            </ul>
+            <ul class="methods itemMembers">
+            
+            <span class="subtitle">Methods</span>
+            
+                <li data-name="Ycc.UI.Base#__render"><a href="Ycc.UI.Base.html#__render">__render</a></li>
+            
+                <li data-name="Ycc.UI.Base#_renderContainer"><a href="Ycc.UI.Base.html#_renderContainer">_renderContainer</a></li>
+            
+                <li data-name="Ycc.UI.Base#addChild"><a href="Ycc.UI.Base.html#addChild">addChild</a></li>
+            
+                <li data-name="Ycc.UI.Base#addListener"><a href="Ycc.UI.Base.html#addListener">addListener</a></li>
+            
+                <li data-name="Ycc.UI.Base#clone"><a href="Ycc.UI.Base.html#clone">clone</a></li>
+            
+                <li data-name="Ycc.UI.Base#computeUIProps"><a href="Ycc.UI.Base.html#computeUIProps">computeUIProps</a></li>
+            
+                <li data-name="Ycc.UI.Base#computeUIProps"><a href="Ycc.UI.Base.html#computeUIProps">computeUIProps</a></li>
+            
+                <li data-name="Ycc.UI.Base#disableEvent"><a href="Ycc.UI.Base.html#disableEvent">disableEvent</a></li>
+            
+                <li data-name="Ycc.UI.Base#extend"><a href="Ycc.UI.Base.html#extend">extend</a></li>
+            
+                <li data-name="Ycc.UI.Base#getAbsolutePosition"><a href="Ycc.UI.Base.html#getAbsolutePosition">getAbsolutePosition</a></li>
+            
+                <li data-name="Ycc.UI.Base#getMaxContentInWidth"><a href="Ycc.UI.Base.html#getMaxContentInWidth">getMaxContentInWidth</a></li>
+            
+                <li data-name="Ycc.UI.Base#init"><a href="Ycc.UI.Base.html#init">init</a></li>
+            
+                <li data-name="Ycc.UI.Base#isOutOfStage"><a href="Ycc.UI.Base.html#isOutOfStage">isOutOfStage</a></li>
+            
+                <li data-name="Ycc.UI.Base#removeChild"><a href="Ycc.UI.Base.html#removeChild">removeChild</a></li>
+            
+                <li data-name="Ycc.UI.Base#removeListener"><a href="Ycc.UI.Base.html#removeListener">removeListener</a></li>
+            
+                <li data-name="Ycc.UI.Base#removeSelf"><a href="Ycc.UI.Base.html#removeSelf">removeSelf</a></li>
+            
+                <li data-name="Ycc.UI.Base#render"><a href="Ycc.UI.Base.html#render">render</a></li>
+            
+                <li data-name="Ycc.UI.Base#renderRectBgColor"><a href="Ycc.UI.Base.html#renderRectBgColor">renderRectBgColor</a></li>
+            
+                <li data-name="Ycc.UI.Base#renderRectBorder"><a href="Ycc.UI.Base.html#renderRectBorder">renderRectBorder</a></li>
+            
+                <li data-name="Ycc.UI.Base#resumeEvent"><a href="Ycc.UI.Base.html#resumeEvent">resumeEvent</a></li>
+            
+                <li data-name="Ycc.UI.Base#scaleAndRotate"><a href="Ycc.UI.Base.html#scaleAndRotate">scaleAndRotate</a></li>
+            
+                <li data-name="Ycc.UI.Base#stop"><a href="Ycc.UI.Base.html#stop">stop</a></li>
+            
+                <li data-name="Ycc.UI.Base#transformToAbsolute"><a href="Ycc.UI.Base.html#transformToAbsolute">transformToAbsolute</a></li>
+            
+                <li data-name="Ycc.UI.Base#transformToLocal"><a href="Ycc.UI.Base.html#transformToLocal">transformToLocal</a></li>
+            
+                <li data-name="Ycc.UI.Base#triggerListener"><a href="Ycc.UI.Base.html#triggerListener">triggerListener</a></li>
+            
+            </ul>
+            <ul class="events itemMembers">
+            
+            </ul>
+        </li>
+    
+        <li class="item" data-name="Ycc.UI.BrokenLine">
+            <span class="title">
+                <a href="Ycc.UI.BrokenLine.html">Ycc.UI.BrokenLine</a>
+                
+            </span>
+            <ul class="members itemMembers">
+            
+            <span class="subtitle">Members</span>
+            
+                <li data-name="Ycc.UI.BrokenLine#afterInit"><a href="Ycc.UI.BrokenLine.html#afterInit">afterInit</a></li>
+            
+                <li data-name="Ycc.UI.BrokenLine#anchorX"><a href="Ycc.UI.BrokenLine.html#anchorX">anchorX</a></li>
+            
+                <li data-name="Ycc.UI.BrokenLine#anchorY"><a href="Ycc.UI.BrokenLine.html#anchorY">anchorY</a></li>
+            
+                <li data-name="Ycc.UI.BrokenLine#baseUI"><a href="Ycc.UI.BrokenLine.html#baseUI">baseUI</a></li>
+            
+                <li data-name="Ycc.UI.BrokenLine#beforeInit"><a href="Ycc.UI.BrokenLine.html#beforeInit">beforeInit</a></li>
+            
+                <li data-name="Ycc.UI.BrokenLine#belongTo"><a href="Ycc.UI.BrokenLine.html#belongTo">belongTo</a></li>
+            
+                <li data-name="Ycc.UI.BrokenLine#ctx"><a href="Ycc.UI.BrokenLine.html#ctx">ctx</a></li>
+            
+                <li data-name="Ycc.UI.BrokenLine#disableType"><a href="Ycc.UI.BrokenLine.html#disableType">disableType</a></li>
+            
+                <li data-name="Ycc.UI.BrokenLine#fillStyle"><a href="Ycc.UI.BrokenLine.html#fillStyle">fillStyle</a></li>
+            
+                <li data-name="Ycc.UI.BrokenLine#id"><a href="Ycc.UI.BrokenLine.html#id">id</a></li>
+            
+                <li data-name="Ycc.UI.BrokenLine#lineWidth"><a href="Ycc.UI.BrokenLine.html#lineWidth">lineWidth</a></li>
+            
+                <li data-name="Ycc.UI.BrokenLine#listeners"><a href="Ycc.UI.BrokenLine.html#listeners">listeners</a></li>
+            
+                <li data-name="Ycc.UI.BrokenLine#name"><a href="Ycc.UI.BrokenLine.html#name">name</a></li>
+            
+                <li data-name="Ycc.UI.BrokenLine#onclick"><a href="Ycc.UI.BrokenLine.html#onclick">onclick</a></li>
+            
+                <li data-name="Ycc.UI.BrokenLine#oncomputeend"><a href="Ycc.UI.BrokenLine.html#oncomputeend">oncomputeend</a></li>
+            
+                <li data-name="Ycc.UI.BrokenLine#oncomputestart"><a href="Ycc.UI.BrokenLine.html#oncomputestart">oncomputestart</a></li>
+            
+                <li data-name="Ycc.UI.BrokenLine#ondragend"><a href="Ycc.UI.BrokenLine.html#ondragend">ondragend</a></li>
+            
+                <li data-name="Ycc.UI.BrokenLine#ondragging"><a href="Ycc.UI.BrokenLine.html#ondragging">ondragging</a></li>
+            
+                <li data-name="Ycc.UI.BrokenLine#ondragstart"><a href="Ycc.UI.BrokenLine.html#ondragstart">ondragstart</a></li>
+            
+                <li data-name="Ycc.UI.BrokenLine#onmousedown"><a href="Ycc.UI.BrokenLine.html#onmousedown">onmousedown</a></li>
+            
+                <li data-name="Ycc.UI.BrokenLine#onmousemove"><a href="Ycc.UI.BrokenLine.html#onmousemove">onmousemove</a></li>
+            
+                <li data-name="Ycc.UI.BrokenLine#onmouseout"><a href="Ycc.UI.BrokenLine.html#onmouseout">onmouseout</a></li>
+            
+                <li data-name="Ycc.UI.BrokenLine#onmouseover"><a href="Ycc.UI.BrokenLine.html#onmouseover">onmouseover</a></li>
+            
+                <li data-name="Ycc.UI.BrokenLine#onmouseup"><a href="Ycc.UI.BrokenLine.html#onmouseup">onmouseup</a></li>
+            
+                <li data-name="Ycc.UI.BrokenLine#onrenderend"><a href="Ycc.UI.BrokenLine.html#onrenderend">onrenderend</a></li>
+            
+                <li data-name="Ycc.UI.BrokenLine#onrenderstart"><a href="Ycc.UI.BrokenLine.html#onrenderstart">onrenderstart</a></li>
+            
+                <li data-name="Ycc.UI.BrokenLine#ontap"><a href="Ycc.UI.BrokenLine.html#ontap">ontap</a></li>
+            
+                <li data-name="Ycc.UI.BrokenLine#ontouchend"><a href="Ycc.UI.BrokenLine.html#ontouchend">ontouchend</a></li>
+            
+                <li data-name="Ycc.UI.BrokenLine#ontouchmove"><a href="Ycc.UI.BrokenLine.html#ontouchmove">ontouchmove</a></li>
+            
+                <li data-name="Ycc.UI.BrokenLine#ontouchstart"><a href="Ycc.UI.BrokenLine.html#ontouchstart">ontouchstart</a></li>
+            
+                <li data-name="Ycc.UI.BrokenLine#rect"><a href="Ycc.UI.BrokenLine.html#rect">rect</a></li>
+            
+                <li data-name="Ycc.UI.BrokenLine#rectBgColor"><a href="Ycc.UI.BrokenLine.html#rectBgColor">rectBgColor</a></li>
+            
+                <li data-name="Ycc.UI.BrokenLine#rectBorderColor"><a href="Ycc.UI.BrokenLine.html#rectBorderColor">rectBorderColor</a></li>
+            
+                <li data-name="Ycc.UI.BrokenLine#rectBorderWidth"><a href="Ycc.UI.BrokenLine.html#rectBorderWidth">rectBorderWidth</a></li>
+            
+                <li data-name="Ycc.UI.BrokenLine#rotation"><a href="Ycc.UI.BrokenLine.html#rotation">rotation</a></li>
+            
+                <li data-name="Ycc.UI.BrokenLine#scaleX"><a href="Ycc.UI.BrokenLine.html#scaleX">scaleX</a></li>
+            
+                <li data-name="Ycc.UI.BrokenLine#scaleY"><a href="Ycc.UI.BrokenLine.html#scaleY">scaleY</a></li>
+            
+                <li data-name="Ycc.UI.BrokenLine#show"><a href="Ycc.UI.BrokenLine.html#show">show</a></li>
+            
+                <li data-name="Ycc.UI.BrokenLine#stopAllEvent"><a href="Ycc.UI.BrokenLine.html#stopAllEvent">stopAllEvent</a></li>
+            
+                <li data-name="Ycc.UI.BrokenLine#stopEventBubbleUp"><a href="Ycc.UI.BrokenLine.html#stopEventBubbleUp">stopEventBubbleUp</a></li>
+            
+                <li data-name="Ycc.UI.BrokenLine#stopType"><a href="Ycc.UI.BrokenLine.html#stopType">stopType</a></li>
+            
+                <li data-name="Ycc.UI.BrokenLine#strokeStyle"><a href="Ycc.UI.BrokenLine.html#strokeStyle">strokeStyle</a></li>
+            
+                <li data-name="Ycc.UI.BrokenLine#userData"><a href="Ycc.UI.BrokenLine.html#userData">userData</a></li>
+            
+                <li data-name="Ycc.UI.BrokenLine#yccClass"><a href="Ycc.UI.BrokenLine.html#yccClass">yccClass</a></li>
+            
+            </ul>
+            <ul class="typedefs itemMembers">
+            
+            </ul>
+            <ul class="methods itemMembers">
+            
+            <span class="subtitle">Methods</span>
+            
+                <li data-name="Ycc.UI.BrokenLine#__render"><a href="Ycc.UI.BrokenLine.html#__render">__render</a></li>
+            
+                <li data-name="Ycc.UI.BrokenLine#_renderContainer"><a href="Ycc.UI.BrokenLine.html#_renderContainer">_renderContainer</a></li>
+            
+                <li data-name="Ycc.UI.BrokenLine#addChild"><a href="Ycc.UI.BrokenLine.html#addChild">addChild</a></li>
+            
+                <li data-name="Ycc.UI.BrokenLine#addListener"><a href="Ycc.UI.BrokenLine.html#addListener">addListener</a></li>
+            
+                <li data-name="Ycc.UI.BrokenLine#clone"><a href="Ycc.UI.BrokenLine.html#clone">clone</a></li>
+            
+                <li data-name="Ycc.UI.BrokenLine#computeUIProps"><a href="Ycc.UI.BrokenLine.html#computeUIProps">computeUIProps</a></li>
+            
+                <li data-name="Ycc.UI.BrokenLine#disableEvent"><a href="Ycc.UI.BrokenLine.html#disableEvent">disableEvent</a></li>
+            
+                <li data-name="Ycc.UI.BrokenLine#extend"><a href="Ycc.UI.BrokenLine.html#extend">extend</a></li>
+            
+                <li data-name="Ycc.UI.BrokenLine#getAbsolutePosition"><a href="Ycc.UI.BrokenLine.html#getAbsolutePosition">getAbsolutePosition</a></li>
+            
+                <li data-name="Ycc.UI.BrokenLine#getMaxContentInWidth"><a href="Ycc.UI.BrokenLine.html#getMaxContentInWidth">getMaxContentInWidth</a></li>
+            
+                <li data-name="Ycc.UI.BrokenLine#init"><a href="Ycc.UI.BrokenLine.html#init">init</a></li>
+            
+                <li data-name="Ycc.UI.BrokenLine#isOutOfStage"><a href="Ycc.UI.BrokenLine.html#isOutOfStage">isOutOfStage</a></li>
+            
+                <li data-name="Ycc.UI.BrokenLine#removeChild"><a href="Ycc.UI.BrokenLine.html#removeChild">removeChild</a></li>
+            
+                <li data-name="Ycc.UI.BrokenLine#removeListener"><a href="Ycc.UI.BrokenLine.html#removeListener">removeListener</a></li>
+            
+                <li data-name="Ycc.UI.BrokenLine#removeSelf"><a href="Ycc.UI.BrokenLine.html#removeSelf">removeSelf</a></li>
+            
+                <li data-name="Ycc.UI.BrokenLine#render"><a href="Ycc.UI.BrokenLine.html#render">render</a></li>
+            
+                <li data-name="Ycc.UI.BrokenLine#renderRectBgColor"><a href="Ycc.UI.BrokenLine.html#renderRectBgColor">renderRectBgColor</a></li>
+            
+                <li data-name="Ycc.UI.BrokenLine#renderRectBorder"><a href="Ycc.UI.BrokenLine.html#renderRectBorder">renderRectBorder</a></li>
+            
+                <li data-name="Ycc.UI.BrokenLine#resumeEvent"><a href="Ycc.UI.BrokenLine.html#resumeEvent">resumeEvent</a></li>
+            
+                <li data-name="Ycc.UI.BrokenLine#scaleAndRotate"><a href="Ycc.UI.BrokenLine.html#scaleAndRotate">scaleAndRotate</a></li>
+            
+                <li data-name="Ycc.UI.BrokenLine#stop"><a href="Ycc.UI.BrokenLine.html#stop">stop</a></li>
+            
+                <li data-name="Ycc.UI.BrokenLine#transformToAbsolute"><a href="Ycc.UI.BrokenLine.html#transformToAbsolute">transformToAbsolute</a></li>
+            
+                <li data-name="Ycc.UI.BrokenLine#transformToLocal"><a href="Ycc.UI.BrokenLine.html#transformToLocal">transformToLocal</a></li>
+            
+                <li data-name="Ycc.UI.BrokenLine#triggerListener"><a href="Ycc.UI.BrokenLine.html#triggerListener">triggerListener</a></li>
+            
+            </ul>
+            <ul class="events itemMembers">
+            
+            </ul>
+        </li>
+    
+        <li class="item" data-name="Ycc.UI.Circle">
+            <span class="title">
+                <a href="Ycc.UI.Circle.html">Ycc.UI.Circle</a>
+                
+            </span>
+            <ul class="members itemMembers">
+            
+            <span class="subtitle">Members</span>
+            
+                <li data-name="Ycc.UI.Circle#afterInit"><a href="Ycc.UI.Circle.html#afterInit">afterInit</a></li>
+            
+                <li data-name="Ycc.UI.Circle#anchorX"><a href="Ycc.UI.Circle.html#anchorX">anchorX</a></li>
+            
+                <li data-name="Ycc.UI.Circle#anchorY"><a href="Ycc.UI.Circle.html#anchorY">anchorY</a></li>
+            
+                <li data-name="Ycc.UI.Circle#baseUI"><a href="Ycc.UI.Circle.html#baseUI">baseUI</a></li>
+            
+                <li data-name="Ycc.UI.Circle#beforeInit"><a href="Ycc.UI.Circle.html#beforeInit">beforeInit</a></li>
+            
+                <li data-name="Ycc.UI.Circle#belongTo"><a href="Ycc.UI.Circle.html#belongTo">belongTo</a></li>
+            
+                <li data-name="Ycc.UI.Circle#ctx"><a href="Ycc.UI.Circle.html#ctx">ctx</a></li>
+            
+                <li data-name="Ycc.UI.Circle#disableType"><a href="Ycc.UI.Circle.html#disableType">disableType</a></li>
+            
+                <li data-name="Ycc.UI.Circle#fillStyle"><a href="Ycc.UI.Circle.html#fillStyle">fillStyle</a></li>
+            
+                <li data-name="Ycc.UI.Circle#id"><a href="Ycc.UI.Circle.html#id">id</a></li>
+            
+                <li data-name="Ycc.UI.Circle#lineWidth"><a href="Ycc.UI.Circle.html#lineWidth">lineWidth</a></li>
+            
+                <li data-name="Ycc.UI.Circle#listeners"><a href="Ycc.UI.Circle.html#listeners">listeners</a></li>
+            
+                <li data-name="Ycc.UI.Circle#name"><a href="Ycc.UI.Circle.html#name">name</a></li>
+            
+                <li data-name="Ycc.UI.Circle#onclick"><a href="Ycc.UI.Circle.html#onclick">onclick</a></li>
+            
+                <li data-name="Ycc.UI.Circle#oncomputeend"><a href="Ycc.UI.Circle.html#oncomputeend">oncomputeend</a></li>
+            
+                <li data-name="Ycc.UI.Circle#oncomputestart"><a href="Ycc.UI.Circle.html#oncomputestart">oncomputestart</a></li>
+            
+                <li data-name="Ycc.UI.Circle#ondragend"><a href="Ycc.UI.Circle.html#ondragend">ondragend</a></li>
+            
+                <li data-name="Ycc.UI.Circle#ondragging"><a href="Ycc.UI.Circle.html#ondragging">ondragging</a></li>
+            
+                <li data-name="Ycc.UI.Circle#ondragstart"><a href="Ycc.UI.Circle.html#ondragstart">ondragstart</a></li>
+            
+                <li data-name="Ycc.UI.Circle#onmousedown"><a href="Ycc.UI.Circle.html#onmousedown">onmousedown</a></li>
+            
+                <li data-name="Ycc.UI.Circle#onmousemove"><a href="Ycc.UI.Circle.html#onmousemove">onmousemove</a></li>
+            
+                <li data-name="Ycc.UI.Circle#onmouseout"><a href="Ycc.UI.Circle.html#onmouseout">onmouseout</a></li>
+            
+                <li data-name="Ycc.UI.Circle#onmouseover"><a href="Ycc.UI.Circle.html#onmouseover">onmouseover</a></li>
+            
+                <li data-name="Ycc.UI.Circle#onmouseup"><a href="Ycc.UI.Circle.html#onmouseup">onmouseup</a></li>
+            
+                <li data-name="Ycc.UI.Circle#onrenderend"><a href="Ycc.UI.Circle.html#onrenderend">onrenderend</a></li>
+            
+                <li data-name="Ycc.UI.Circle#onrenderstart"><a href="Ycc.UI.Circle.html#onrenderstart">onrenderstart</a></li>
+            
+                <li data-name="Ycc.UI.Circle#ontap"><a href="Ycc.UI.Circle.html#ontap">ontap</a></li>
+            
+                <li data-name="Ycc.UI.Circle#ontouchend"><a href="Ycc.UI.Circle.html#ontouchend">ontouchend</a></li>
+            
+                <li data-name="Ycc.UI.Circle#ontouchmove"><a href="Ycc.UI.Circle.html#ontouchmove">ontouchmove</a></li>
+            
+                <li data-name="Ycc.UI.Circle#ontouchstart"><a href="Ycc.UI.Circle.html#ontouchstart">ontouchstart</a></li>
+            
+                <li data-name="Ycc.UI.Circle#rect"><a href="Ycc.UI.Circle.html#rect">rect</a></li>
+            
+                <li data-name="Ycc.UI.Circle#rectBgColor"><a href="Ycc.UI.Circle.html#rectBgColor">rectBgColor</a></li>
+            
+                <li data-name="Ycc.UI.Circle#rectBorderColor"><a href="Ycc.UI.Circle.html#rectBorderColor">rectBorderColor</a></li>
+            
+                <li data-name="Ycc.UI.Circle#rectBorderWidth"><a href="Ycc.UI.Circle.html#rectBorderWidth">rectBorderWidth</a></li>
+            
+                <li data-name="Ycc.UI.Circle#rotation"><a href="Ycc.UI.Circle.html#rotation">rotation</a></li>
+            
+                <li data-name="Ycc.UI.Circle#scaleX"><a href="Ycc.UI.Circle.html#scaleX">scaleX</a></li>
+            
+                <li data-name="Ycc.UI.Circle#scaleY"><a href="Ycc.UI.Circle.html#scaleY">scaleY</a></li>
+            
+                <li data-name="Ycc.UI.Circle#show"><a href="Ycc.UI.Circle.html#show">show</a></li>
+            
+                <li data-name="Ycc.UI.Circle#stopAllEvent"><a href="Ycc.UI.Circle.html#stopAllEvent">stopAllEvent</a></li>
+            
+                <li data-name="Ycc.UI.Circle#stopEventBubbleUp"><a href="Ycc.UI.Circle.html#stopEventBubbleUp">stopEventBubbleUp</a></li>
+            
+                <li data-name="Ycc.UI.Circle#stopType"><a href="Ycc.UI.Circle.html#stopType">stopType</a></li>
+            
+                <li data-name="Ycc.UI.Circle#strokeStyle"><a href="Ycc.UI.Circle.html#strokeStyle">strokeStyle</a></li>
+            
+                <li data-name="Ycc.UI.Circle#userData"><a href="Ycc.UI.Circle.html#userData">userData</a></li>
+            
+                <li data-name="Ycc.UI.Circle#yccClass"><a href="Ycc.UI.Circle.html#yccClass">yccClass</a></li>
+            
+            </ul>
+            <ul class="typedefs itemMembers">
+            
+            </ul>
+            <ul class="methods itemMembers">
+            
+            <span class="subtitle">Methods</span>
+            
+                <li data-name="Ycc.UI.Circle#__render"><a href="Ycc.UI.Circle.html#__render">__render</a></li>
+            
+                <li data-name="Ycc.UI.Circle#_renderContainer"><a href="Ycc.UI.Circle.html#_renderContainer">_renderContainer</a></li>
+            
+                <li data-name="Ycc.UI.Circle#addChild"><a href="Ycc.UI.Circle.html#addChild">addChild</a></li>
+            
+                <li data-name="Ycc.UI.Circle#addListener"><a href="Ycc.UI.Circle.html#addListener">addListener</a></li>
+            
+                <li data-name="Ycc.UI.Circle#clone"><a href="Ycc.UI.Circle.html#clone">clone</a></li>
+            
+                <li data-name="Ycc.UI.Circle#computeUIProps"><a href="Ycc.UI.Circle.html#computeUIProps">computeUIProps</a></li>
+            
+                <li data-name="Ycc.UI.Circle#disableEvent"><a href="Ycc.UI.Circle.html#disableEvent">disableEvent</a></li>
+            
+                <li data-name="Ycc.UI.Circle#extend"><a href="Ycc.UI.Circle.html#extend">extend</a></li>
+            
+                <li data-name="Ycc.UI.Circle#getAbsolutePosition"><a href="Ycc.UI.Circle.html#getAbsolutePosition">getAbsolutePosition</a></li>
+            
+                <li data-name="Ycc.UI.Circle#getMaxContentInWidth"><a href="Ycc.UI.Circle.html#getMaxContentInWidth">getMaxContentInWidth</a></li>
+            
+                <li data-name="Ycc.UI.Circle#init"><a href="Ycc.UI.Circle.html#init">init</a></li>
+            
+                <li data-name="Ycc.UI.Circle#isOutOfStage"><a href="Ycc.UI.Circle.html#isOutOfStage">isOutOfStage</a></li>
+            
+                <li data-name="Ycc.UI.Circle#removeChild"><a href="Ycc.UI.Circle.html#removeChild">removeChild</a></li>
+            
+                <li data-name="Ycc.UI.Circle#removeListener"><a href="Ycc.UI.Circle.html#removeListener">removeListener</a></li>
+            
+                <li data-name="Ycc.UI.Circle#removeSelf"><a href="Ycc.UI.Circle.html#removeSelf">removeSelf</a></li>
+            
+                <li data-name="Ycc.UI.Circle#render"><a href="Ycc.UI.Circle.html#render">render</a></li>
+            
+                <li data-name="Ycc.UI.Circle#renderRectBgColor"><a href="Ycc.UI.Circle.html#renderRectBgColor">renderRectBgColor</a></li>
+            
+                <li data-name="Ycc.UI.Circle#renderRectBorder"><a href="Ycc.UI.Circle.html#renderRectBorder">renderRectBorder</a></li>
+            
+                <li data-name="Ycc.UI.Circle#resumeEvent"><a href="Ycc.UI.Circle.html#resumeEvent">resumeEvent</a></li>
+            
+                <li data-name="Ycc.UI.Circle#scaleAndRotate"><a href="Ycc.UI.Circle.html#scaleAndRotate">scaleAndRotate</a></li>
+            
+                <li data-name="Ycc.UI.Circle#stop"><a href="Ycc.UI.Circle.html#stop">stop</a></li>
+            
+                <li data-name="Ycc.UI.Circle#transformToAbsolute"><a href="Ycc.UI.Circle.html#transformToAbsolute">transformToAbsolute</a></li>
+            
+                <li data-name="Ycc.UI.Circle#transformToLocal"><a href="Ycc.UI.Circle.html#transformToLocal">transformToLocal</a></li>
+            
+                <li data-name="Ycc.UI.Circle#triggerListener"><a href="Ycc.UI.Circle.html#triggerListener">triggerListener</a></li>
+            
+            </ul>
+            <ul class="events itemMembers">
+            
+            </ul>
+        </li>
+    
+        <li class="item" data-name="Ycc.UI.ComponentButton">
+            <span class="title">
+                <a href="Ycc.UI.ComponentButton.html">Ycc.UI.ComponentButton</a>
+                
+            </span>
+            <ul class="members itemMembers">
+            
+            <span class="subtitle">Members</span>
+            
+                <li data-name="Ycc.UI.ComponentButton#__bgUI"><a href="Ycc.UI.ComponentButton.html#__bgUI">__bgUI</a></li>
+            
+                <li data-name="Ycc.UI.ComponentButton#__textUI"><a href="Ycc.UI.ComponentButton.html#__textUI">__textUI</a></li>
+            
+                <li data-name="Ycc.UI.ComponentButton#backgroundImageRes"><a href="Ycc.UI.ComponentButton.html#backgroundImageRes">backgroundImageRes</a></li>
+            
+                <li data-name="Ycc.UI.ComponentButton#rectBorderColor"><a href="Ycc.UI.ComponentButton.html#rectBorderColor">rectBorderColor</a></li>
+            
+                <li data-name="Ycc.UI.ComponentButton#rectBorderWidth"><a href="Ycc.UI.ComponentButton.html#rectBorderWidth">rectBorderWidth</a></li>
+            
+                <li data-name="Ycc.UI.ComponentButton#text"><a href="Ycc.UI.ComponentButton.html#text">text</a></li>
+            
+                <li data-name="Ycc.UI.ComponentButton#textColor"><a href="Ycc.UI.ComponentButton.html#textColor">textColor</a></li>
+            
+            </ul>
+            <ul class="typedefs itemMembers">
+            
+            </ul>
+            <ul class="methods itemMembers">
+            
+            <span class="subtitle">Methods</span>
+            
+                <li data-name="Ycc.UI.ComponentButton#__componentInit"><a href="Ycc.UI.ComponentButton.html#__componentInit">__componentInit</a></li>
+            
+            </ul>
+            <ul class="events itemMembers">
+            
+            </ul>
+        </li>
+    
+        <li class="item" data-name="Ycc.UI.CropRect">
+            <span class="title">
+                <a href="Ycc.UI.CropRect.html">Ycc.UI.CropRect</a>
+                
+            </span>
+            <ul class="members itemMembers">
+            
+            <span class="subtitle">Members</span>
+            
+                <li data-name="Ycc.UI.CropRect#afterInit"><a href="Ycc.UI.CropRect.html#afterInit">afterInit</a></li>
+            
+                <li data-name="Ycc.UI.CropRect#anchorX"><a href="Ycc.UI.CropRect.html#anchorX">anchorX</a></li>
+            
+                <li data-name="Ycc.UI.CropRect#anchorY"><a href="Ycc.UI.CropRect.html#anchorY">anchorY</a></li>
+            
+                <li data-name="Ycc.UI.CropRect#baseUI"><a href="Ycc.UI.CropRect.html#baseUI">baseUI</a></li>
+            
+                <li data-name="Ycc.UI.CropRect#beforeInit"><a href="Ycc.UI.CropRect.html#beforeInit">beforeInit</a></li>
+            
+                <li data-name="Ycc.UI.CropRect#belongTo"><a href="Ycc.UI.CropRect.html#belongTo">belongTo</a></li>
+            
+                <li data-name="Ycc.UI.CropRect#btnHeight"><a href="Ycc.UI.CropRect.html#btnHeight">btnHeight</a></li>
+            
+                <li data-name="Ycc.UI.CropRect#btns"><a href="Ycc.UI.CropRect.html#btns">btns</a></li>
+            
+                <li data-name="Ycc.UI.CropRect#btnVerticalPadding"><a href="Ycc.UI.CropRect.html#btnVerticalPadding">btnVerticalPadding</a></li>
+            
+                <li data-name="Ycc.UI.CropRect#ctrlRect1"><a href="Ycc.UI.CropRect.html#ctrlRect1">ctrlRect1</a></li>
+            
+                <li data-name="Ycc.UI.CropRect#ctrlRect2"><a href="Ycc.UI.CropRect.html#ctrlRect2">ctrlRect2</a></li>
+            
+                <li data-name="Ycc.UI.CropRect#ctrlRect3"><a href="Ycc.UI.CropRect.html#ctrlRect3">ctrlRect3</a></li>
+            
+                <li data-name="Ycc.UI.CropRect#ctrlRect4"><a href="Ycc.UI.CropRect.html#ctrlRect4">ctrlRect4</a></li>
+            
+                <li data-name="Ycc.UI.CropRect#ctrlSize"><a href="Ycc.UI.CropRect.html#ctrlSize">ctrlSize</a></li>
+            
+                <li data-name="Ycc.UI.CropRect#ctx"><a href="Ycc.UI.CropRect.html#ctx">ctx</a></li>
+            
+                <li data-name="Ycc.UI.CropRect#disableType"><a href="Ycc.UI.CropRect.html#disableType">disableType</a></li>
+            
+                <li data-name="Ycc.UI.CropRect#enableDragOut"><a href="Ycc.UI.CropRect.html#enableDragOut">enableDragOut</a></li>
+            
+                <li data-name="Ycc.UI.CropRect#fill"><a href="Ycc.UI.CropRect.html#fill">fill</a></li>
+            
+                <li data-name="Ycc.UI.CropRect#fillStyle"><a href="Ycc.UI.CropRect.html#fillStyle">fillStyle</a></li>
+            
+                <li data-name="Ycc.UI.CropRect#id"><a href="Ycc.UI.CropRect.html#id">id</a></li>
+            
+                <li data-name="Ycc.UI.CropRect#lineWidth"><a href="Ycc.UI.CropRect.html#lineWidth">lineWidth</a></li>
+            
+                <li data-name="Ycc.UI.CropRect#listeners"><a href="Ycc.UI.CropRect.html#listeners">listeners</a></li>
+            
+                <li data-name="Ycc.UI.CropRect#name"><a href="Ycc.UI.CropRect.html#name">name</a></li>
+            
+                <li data-name="Ycc.UI.CropRect#onclick"><a href="Ycc.UI.CropRect.html#onclick">onclick</a></li>
+            
+                <li data-name="Ycc.UI.CropRect#oncomputeend"><a href="Ycc.UI.CropRect.html#oncomputeend">oncomputeend</a></li>
+            
+                <li data-name="Ycc.UI.CropRect#oncomputestart"><a href="Ycc.UI.CropRect.html#oncomputestart">oncomputestart</a></li>
+            
+                <li data-name="Ycc.UI.CropRect#ondragend"><a href="Ycc.UI.CropRect.html#ondragend">ondragend</a></li>
+            
+                <li data-name="Ycc.UI.CropRect#ondragging"><a href="Ycc.UI.CropRect.html#ondragging">ondragging</a></li>
+            
+                <li data-name="Ycc.UI.CropRect#ondragstart"><a href="Ycc.UI.CropRect.html#ondragstart">ondragstart</a></li>
+            
+                <li data-name="Ycc.UI.CropRect#onmousedown"><a href="Ycc.UI.CropRect.html#onmousedown">onmousedown</a></li>
+            
+                <li data-name="Ycc.UI.CropRect#onmousemove"><a href="Ycc.UI.CropRect.html#onmousemove">onmousemove</a></li>
+            
+                <li data-name="Ycc.UI.CropRect#onmouseout"><a href="Ycc.UI.CropRect.html#onmouseout">onmouseout</a></li>
+            
+                <li data-name="Ycc.UI.CropRect#onmouseover"><a href="Ycc.UI.CropRect.html#onmouseover">onmouseover</a></li>
+            
+                <li data-name="Ycc.UI.CropRect#onmouseup"><a href="Ycc.UI.CropRect.html#onmouseup">onmouseup</a></li>
+            
+                <li data-name="Ycc.UI.CropRect#onrenderend"><a href="Ycc.UI.CropRect.html#onrenderend">onrenderend</a></li>
+            
+                <li data-name="Ycc.UI.CropRect#onrenderstart"><a href="Ycc.UI.CropRect.html#onrenderstart">onrenderstart</a></li>
+            
+                <li data-name="Ycc.UI.CropRect#ontap"><a href="Ycc.UI.CropRect.html#ontap">ontap</a></li>
+            
+                <li data-name="Ycc.UI.CropRect#ontouchend"><a href="Ycc.UI.CropRect.html#ontouchend">ontouchend</a></li>
+            
+                <li data-name="Ycc.UI.CropRect#ontouchmove"><a href="Ycc.UI.CropRect.html#ontouchmove">ontouchmove</a></li>
+            
+                <li data-name="Ycc.UI.CropRect#ontouchstart"><a href="Ycc.UI.CropRect.html#ontouchstart">ontouchstart</a></li>
+            
+                <li data-name="Ycc.UI.CropRect#rect"><a href="Ycc.UI.CropRect.html#rect">rect</a></li>
+            
+                <li data-name="Ycc.UI.CropRect#rectBgColor"><a href="Ycc.UI.CropRect.html#rectBgColor">rectBgColor</a></li>
+            
+                <li data-name="Ycc.UI.CropRect#rectBorderColor"><a href="Ycc.UI.CropRect.html#rectBorderColor">rectBorderColor</a></li>
+            
+                <li data-name="Ycc.UI.CropRect#rectBorderWidth"><a href="Ycc.UI.CropRect.html#rectBorderWidth">rectBorderWidth</a></li>
+            
+                <li data-name="Ycc.UI.CropRect#rotation"><a href="Ycc.UI.CropRect.html#rotation">rotation</a></li>
+            
+                <li data-name="Ycc.UI.CropRect#scaleX"><a href="Ycc.UI.CropRect.html#scaleX">scaleX</a></li>
+            
+                <li data-name="Ycc.UI.CropRect#scaleY"><a href="Ycc.UI.CropRect.html#scaleY">scaleY</a></li>
+            
+                <li data-name="Ycc.UI.CropRect#show"><a href="Ycc.UI.CropRect.html#show">show</a></li>
+            
+                <li data-name="Ycc.UI.CropRect#showName"><a href="Ycc.UI.CropRect.html#showName">showName</a></li>
+            
+                <li data-name="Ycc.UI.CropRect#stopAllEvent"><a href="Ycc.UI.CropRect.html#stopAllEvent">stopAllEvent</a></li>
+            
+                <li data-name="Ycc.UI.CropRect#stopEventBubbleUp"><a href="Ycc.UI.CropRect.html#stopEventBubbleUp">stopEventBubbleUp</a></li>
+            
+                <li data-name="Ycc.UI.CropRect#stopType"><a href="Ycc.UI.CropRect.html#stopType">stopType</a></li>
+            
+                <li data-name="Ycc.UI.CropRect#strokeStyle"><a href="Ycc.UI.CropRect.html#strokeStyle">strokeStyle</a></li>
+            
+                <li data-name="Ycc.UI.CropRect#userData"><a href="Ycc.UI.CropRect.html#userData">userData</a></li>
+            
+                <li data-name="Ycc.UI.CropRect#yccClass"><a href="Ycc.UI.CropRect.html#yccClass">yccClass</a></li>
+            
+            </ul>
+            <ul class="typedefs itemMembers">
+            
+            </ul>
+            <ul class="methods itemMembers">
+            
+            <span class="subtitle">Methods</span>
+            
+                <li data-name="Ycc.UI.CropRect#__render"><a href="Ycc.UI.CropRect.html#__render">__render</a></li>
+            
+                <li data-name="Ycc.UI.CropRect#_initUI"><a href="Ycc.UI.CropRect.html#_initUI">_initUI</a></li>
+            
+                <li data-name="Ycc.UI.CropRect#_renderContainer"><a href="Ycc.UI.CropRect.html#_renderContainer">_renderContainer</a></li>
+            
+                <li data-name="Ycc.UI.CropRect#addChild"><a href="Ycc.UI.CropRect.html#addChild">addChild</a></li>
+            
+                <li data-name="Ycc.UI.CropRect#addListener"><a href="Ycc.UI.CropRect.html#addListener">addListener</a></li>
+            
+                <li data-name="Ycc.UI.CropRect#clone"><a href="Ycc.UI.CropRect.html#clone">clone</a></li>
+            
+                <li data-name="Ycc.UI.CropRect#computeUIProps"><a href="Ycc.UI.CropRect.html#computeUIProps">computeUIProps</a></li>
+            
+                <li data-name="Ycc.UI.CropRect#disableEvent"><a href="Ycc.UI.CropRect.html#disableEvent">disableEvent</a></li>
+            
+                <li data-name="Ycc.UI.CropRect#extend"><a href="Ycc.UI.CropRect.html#extend">extend</a></li>
+            
+                <li data-name="Ycc.UI.CropRect#getAbsolutePosition"><a href="Ycc.UI.CropRect.html#getAbsolutePosition">getAbsolutePosition</a></li>
+            
+                <li data-name="Ycc.UI.CropRect#getMaxContentInWidth"><a href="Ycc.UI.CropRect.html#getMaxContentInWidth">getMaxContentInWidth</a></li>
+            
+                <li data-name="Ycc.UI.CropRect#init"><a href="Ycc.UI.CropRect.html#init">init</a></li>
+            
+                <li data-name="Ycc.UI.CropRect#isOutOfStage"><a href="Ycc.UI.CropRect.html#isOutOfStage">isOutOfStage</a></li>
+            
+                <li data-name="Ycc.UI.CropRect#removeChild"><a href="Ycc.UI.CropRect.html#removeChild">removeChild</a></li>
+            
+                <li data-name="Ycc.UI.CropRect#removeListener"><a href="Ycc.UI.CropRect.html#removeListener">removeListener</a></li>
+            
+                <li data-name="Ycc.UI.CropRect#removeSelf"><a href="Ycc.UI.CropRect.html#removeSelf">removeSelf</a></li>
+            
+                <li data-name="Ycc.UI.CropRect#render"><a href="Ycc.UI.CropRect.html#render">render</a></li>
+            
+                <li data-name="Ycc.UI.CropRect#renderRectBgColor"><a href="Ycc.UI.CropRect.html#renderRectBgColor">renderRectBgColor</a></li>
+            
+                <li data-name="Ycc.UI.CropRect#renderRectBorder"><a href="Ycc.UI.CropRect.html#renderRectBorder">renderRectBorder</a></li>
+            
+                <li data-name="Ycc.UI.CropRect#resumeEvent"><a href="Ycc.UI.CropRect.html#resumeEvent">resumeEvent</a></li>
+            
+                <li data-name="Ycc.UI.CropRect#scaleAndRotate"><a href="Ycc.UI.CropRect.html#scaleAndRotate">scaleAndRotate</a></li>
+            
+                <li data-name="Ycc.UI.CropRect#setCtrlBtns"><a href="Ycc.UI.CropRect.html#setCtrlBtns">setCtrlBtns</a></li>
+            
+                <li data-name="Ycc.UI.CropRect#showBtns"><a href="Ycc.UI.CropRect.html#showBtns">showBtns</a></li>
+            
+                <li data-name="Ycc.UI.CropRect#stop"><a href="Ycc.UI.CropRect.html#stop">stop</a></li>
+            
+                <li data-name="Ycc.UI.CropRect#transformToAbsolute"><a href="Ycc.UI.CropRect.html#transformToAbsolute">transformToAbsolute</a></li>
+            
+                <li data-name="Ycc.UI.CropRect#transformToLocal"><a href="Ycc.UI.CropRect.html#transformToLocal">transformToLocal</a></li>
+            
+                <li data-name="Ycc.UI.CropRect#triggerListener"><a href="Ycc.UI.CropRect.html#triggerListener">triggerListener</a></li>
+            
+            </ul>
+            <ul class="events itemMembers">
+            
+            </ul>
+        </li>
+    
+        <li class="item" data-name="Ycc.UI.Ellipse">
+            <span class="title">
+                <a href="Ycc.UI.Ellipse.html">Ycc.UI.Ellipse</a>
+                
+            </span>
+            <ul class="members itemMembers">
+            
+            <span class="subtitle">Members</span>
+            
+                <li data-name="Ycc.UI.Ellipse#afterInit"><a href="Ycc.UI.Ellipse.html#afterInit">afterInit</a></li>
+            
+                <li data-name="Ycc.UI.Ellipse#anchorX"><a href="Ycc.UI.Ellipse.html#anchorX">anchorX</a></li>
+            
+                <li data-name="Ycc.UI.Ellipse#anchorY"><a href="Ycc.UI.Ellipse.html#anchorY">anchorY</a></li>
+            
+                <li data-name="Ycc.UI.Ellipse#baseUI"><a href="Ycc.UI.Ellipse.html#baseUI">baseUI</a></li>
+            
+                <li data-name="Ycc.UI.Ellipse#beforeInit"><a href="Ycc.UI.Ellipse.html#beforeInit">beforeInit</a></li>
+            
+                <li data-name="Ycc.UI.Ellipse#belongTo"><a href="Ycc.UI.Ellipse.html#belongTo">belongTo</a></li>
+            
+                <li data-name="Ycc.UI.Ellipse#ctx"><a href="Ycc.UI.Ellipse.html#ctx">ctx</a></li>
+            
+                <li data-name="Ycc.UI.Ellipse#disableType"><a href="Ycc.UI.Ellipse.html#disableType">disableType</a></li>
+            
+                <li data-name="Ycc.UI.Ellipse#fillStyle"><a href="Ycc.UI.Ellipse.html#fillStyle">fillStyle</a></li>
+            
+                <li data-name="Ycc.UI.Ellipse#id"><a href="Ycc.UI.Ellipse.html#id">id</a></li>
+            
+                <li data-name="Ycc.UI.Ellipse#lineWidth"><a href="Ycc.UI.Ellipse.html#lineWidth">lineWidth</a></li>
+            
+                <li data-name="Ycc.UI.Ellipse#listeners"><a href="Ycc.UI.Ellipse.html#listeners">listeners</a></li>
+            
+                <li data-name="Ycc.UI.Ellipse#name"><a href="Ycc.UI.Ellipse.html#name">name</a></li>
+            
+                <li data-name="Ycc.UI.Ellipse#onclick"><a href="Ycc.UI.Ellipse.html#onclick">onclick</a></li>
+            
+                <li data-name="Ycc.UI.Ellipse#oncomputeend"><a href="Ycc.UI.Ellipse.html#oncomputeend">oncomputeend</a></li>
+            
+                <li data-name="Ycc.UI.Ellipse#oncomputestart"><a href="Ycc.UI.Ellipse.html#oncomputestart">oncomputestart</a></li>
+            
+                <li data-name="Ycc.UI.Ellipse#ondragend"><a href="Ycc.UI.Ellipse.html#ondragend">ondragend</a></li>
+            
+                <li data-name="Ycc.UI.Ellipse#ondragging"><a href="Ycc.UI.Ellipse.html#ondragging">ondragging</a></li>
+            
+                <li data-name="Ycc.UI.Ellipse#ondragstart"><a href="Ycc.UI.Ellipse.html#ondragstart">ondragstart</a></li>
+            
+                <li data-name="Ycc.UI.Ellipse#onmousedown"><a href="Ycc.UI.Ellipse.html#onmousedown">onmousedown</a></li>
+            
+                <li data-name="Ycc.UI.Ellipse#onmousemove"><a href="Ycc.UI.Ellipse.html#onmousemove">onmousemove</a></li>
+            
+                <li data-name="Ycc.UI.Ellipse#onmouseout"><a href="Ycc.UI.Ellipse.html#onmouseout">onmouseout</a></li>
+            
+                <li data-name="Ycc.UI.Ellipse#onmouseover"><a href="Ycc.UI.Ellipse.html#onmouseover">onmouseover</a></li>
+            
+                <li data-name="Ycc.UI.Ellipse#onmouseup"><a href="Ycc.UI.Ellipse.html#onmouseup">onmouseup</a></li>
+            
+                <li data-name="Ycc.UI.Ellipse#onrenderend"><a href="Ycc.UI.Ellipse.html#onrenderend">onrenderend</a></li>
+            
+                <li data-name="Ycc.UI.Ellipse#onrenderstart"><a href="Ycc.UI.Ellipse.html#onrenderstart">onrenderstart</a></li>
+            
+                <li data-name="Ycc.UI.Ellipse#ontap"><a href="Ycc.UI.Ellipse.html#ontap">ontap</a></li>
+            
+                <li data-name="Ycc.UI.Ellipse#ontouchend"><a href="Ycc.UI.Ellipse.html#ontouchend">ontouchend</a></li>
+            
+                <li data-name="Ycc.UI.Ellipse#ontouchmove"><a href="Ycc.UI.Ellipse.html#ontouchmove">ontouchmove</a></li>
+            
+                <li data-name="Ycc.UI.Ellipse#ontouchstart"><a href="Ycc.UI.Ellipse.html#ontouchstart">ontouchstart</a></li>
+            
+                <li data-name="Ycc.UI.Ellipse#rect"><a href="Ycc.UI.Ellipse.html#rect">rect</a></li>
+            
+                <li data-name="Ycc.UI.Ellipse#rectBgColor"><a href="Ycc.UI.Ellipse.html#rectBgColor">rectBgColor</a></li>
+            
+                <li data-name="Ycc.UI.Ellipse#rectBorderColor"><a href="Ycc.UI.Ellipse.html#rectBorderColor">rectBorderColor</a></li>
+            
+                <li data-name="Ycc.UI.Ellipse#rectBorderWidth"><a href="Ycc.UI.Ellipse.html#rectBorderWidth">rectBorderWidth</a></li>
+            
+                <li data-name="Ycc.UI.Ellipse#rotation"><a href="Ycc.UI.Ellipse.html#rotation">rotation</a></li>
+            
+                <li data-name="Ycc.UI.Ellipse#scaleX"><a href="Ycc.UI.Ellipse.html#scaleX">scaleX</a></li>
+            
+                <li data-name="Ycc.UI.Ellipse#scaleY"><a href="Ycc.UI.Ellipse.html#scaleY">scaleY</a></li>
+            
+                <li data-name="Ycc.UI.Ellipse#show"><a href="Ycc.UI.Ellipse.html#show">show</a></li>
+            
+                <li data-name="Ycc.UI.Ellipse#stopAllEvent"><a href="Ycc.UI.Ellipse.html#stopAllEvent">stopAllEvent</a></li>
+            
+                <li data-name="Ycc.UI.Ellipse#stopEventBubbleUp"><a href="Ycc.UI.Ellipse.html#stopEventBubbleUp">stopEventBubbleUp</a></li>
+            
+                <li data-name="Ycc.UI.Ellipse#stopType"><a href="Ycc.UI.Ellipse.html#stopType">stopType</a></li>
+            
+                <li data-name="Ycc.UI.Ellipse#strokeStyle"><a href="Ycc.UI.Ellipse.html#strokeStyle">strokeStyle</a></li>
+            
+                <li data-name="Ycc.UI.Ellipse#userData"><a href="Ycc.UI.Ellipse.html#userData">userData</a></li>
+            
+                <li data-name="Ycc.UI.Ellipse#yccClass"><a href="Ycc.UI.Ellipse.html#yccClass">yccClass</a></li>
+            
+            </ul>
+            <ul class="typedefs itemMembers">
+            
+            </ul>
+            <ul class="methods itemMembers">
+            
+            <span class="subtitle">Methods</span>
+            
+                <li data-name="Ycc.UI.Ellipse#__render"><a href="Ycc.UI.Ellipse.html#__render">__render</a></li>
+            
+                <li data-name="Ycc.UI.Ellipse#_renderContainer"><a href="Ycc.UI.Ellipse.html#_renderContainer">_renderContainer</a></li>
+            
+                <li data-name="Ycc.UI.Ellipse#addChild"><a href="Ycc.UI.Ellipse.html#addChild">addChild</a></li>
+            
+                <li data-name="Ycc.UI.Ellipse#addListener"><a href="Ycc.UI.Ellipse.html#addListener">addListener</a></li>
+            
+                <li data-name="Ycc.UI.Ellipse#clone"><a href="Ycc.UI.Ellipse.html#clone">clone</a></li>
+            
+                <li data-name="Ycc.UI.Ellipse#computeUIProps"><a href="Ycc.UI.Ellipse.html#computeUIProps">computeUIProps</a></li>
+            
+                <li data-name="Ycc.UI.Ellipse#disableEvent"><a href="Ycc.UI.Ellipse.html#disableEvent">disableEvent</a></li>
+            
+                <li data-name="Ycc.UI.Ellipse#extend"><a href="Ycc.UI.Ellipse.html#extend">extend</a></li>
+            
+                <li data-name="Ycc.UI.Ellipse#getAbsolutePosition"><a href="Ycc.UI.Ellipse.html#getAbsolutePosition">getAbsolutePosition</a></li>
+            
+                <li data-name="Ycc.UI.Ellipse#getMaxContentInWidth"><a href="Ycc.UI.Ellipse.html#getMaxContentInWidth">getMaxContentInWidth</a></li>
+            
+                <li data-name="Ycc.UI.Ellipse#init"><a href="Ycc.UI.Ellipse.html#init">init</a></li>
+            
+                <li data-name="Ycc.UI.Ellipse#isOutOfStage"><a href="Ycc.UI.Ellipse.html#isOutOfStage">isOutOfStage</a></li>
+            
+                <li data-name="Ycc.UI.Ellipse#removeChild"><a href="Ycc.UI.Ellipse.html#removeChild">removeChild</a></li>
+            
+                <li data-name="Ycc.UI.Ellipse#removeListener"><a href="Ycc.UI.Ellipse.html#removeListener">removeListener</a></li>
+            
+                <li data-name="Ycc.UI.Ellipse#removeSelf"><a href="Ycc.UI.Ellipse.html#removeSelf">removeSelf</a></li>
+            
+                <li data-name="Ycc.UI.Ellipse#render"><a href="Ycc.UI.Ellipse.html#render">render</a></li>
+            
+                <li data-name="Ycc.UI.Ellipse#renderRectBgColor"><a href="Ycc.UI.Ellipse.html#renderRectBgColor">renderRectBgColor</a></li>
+            
+                <li data-name="Ycc.UI.Ellipse#renderRectBorder"><a href="Ycc.UI.Ellipse.html#renderRectBorder">renderRectBorder</a></li>
+            
+                <li data-name="Ycc.UI.Ellipse#resumeEvent"><a href="Ycc.UI.Ellipse.html#resumeEvent">resumeEvent</a></li>
+            
+                <li data-name="Ycc.UI.Ellipse#scaleAndRotate"><a href="Ycc.UI.Ellipse.html#scaleAndRotate">scaleAndRotate</a></li>
+            
+                <li data-name="Ycc.UI.Ellipse#stop"><a href="Ycc.UI.Ellipse.html#stop">stop</a></li>
+            
+                <li data-name="Ycc.UI.Ellipse#transformToAbsolute"><a href="Ycc.UI.Ellipse.html#transformToAbsolute">transformToAbsolute</a></li>
+            
+                <li data-name="Ycc.UI.Ellipse#transformToLocal"><a href="Ycc.UI.Ellipse.html#transformToLocal">transformToLocal</a></li>
+            
+                <li data-name="Ycc.UI.Ellipse#triggerListener"><a href="Ycc.UI.Ellipse.html#triggerListener">triggerListener</a></li>
+            
+            </ul>
+            <ul class="events itemMembers">
+            
+            </ul>
+        </li>
+    
+        <li class="item" data-name="Ycc.UI.Image">
+            <span class="title">
+                <a href="Ycc.UI.Image.html">Ycc.UI.Image</a>
+                
+            </span>
+            <ul class="members itemMembers">
+            
+            <span class="subtitle">Members</span>
+            
+                <li data-name="Ycc.UI.Image#afterInit"><a href="Ycc.UI.Image.html#afterInit">afterInit</a></li>
+            
+                <li data-name="Ycc.UI.Image#anchorX"><a href="Ycc.UI.Image.html#anchorX">anchorX</a></li>
+            
+                <li data-name="Ycc.UI.Image#anchorY"><a href="Ycc.UI.Image.html#anchorY">anchorY</a></li>
+            
+                <li data-name="Ycc.UI.Image#baseUI"><a href="Ycc.UI.Image.html#baseUI">baseUI</a></li>
+            
+                <li data-name="Ycc.UI.Image#beforeInit"><a href="Ycc.UI.Image.html#beforeInit">beforeInit</a></li>
+            
+                <li data-name="Ycc.UI.Image#belongTo"><a href="Ycc.UI.Image.html#belongTo">belongTo</a></li>
+            
+                <li data-name="Ycc.UI.Image#ctx"><a href="Ycc.UI.Image.html#ctx">ctx</a></li>
+            
+                <li data-name="Ycc.UI.Image#disableType"><a href="Ycc.UI.Image.html#disableType">disableType</a></li>
+            
+                <li data-name="Ycc.UI.Image#fillMode"><a href="Ycc.UI.Image.html#fillMode">fillMode</a></li>
+            
+                <li data-name="Ycc.UI.Image#fillStyle"><a href="Ycc.UI.Image.html#fillStyle">fillStyle</a></li>
+            
+                <li data-name="Ycc.UI.Image#id"><a href="Ycc.UI.Image.html#id">id</a></li>
+            
+                <li data-name="Ycc.UI.Image#lineWidth"><a href="Ycc.UI.Image.html#lineWidth">lineWidth</a></li>
+            
+                <li data-name="Ycc.UI.Image#listeners"><a href="Ycc.UI.Image.html#listeners">listeners</a></li>
+            
+                <li data-name="Ycc.UI.Image#mirror"><a href="Ycc.UI.Image.html#mirror">mirror</a></li>
+            
+                <li data-name="Ycc.UI.Image#name"><a href="Ycc.UI.Image.html#name">name</a></li>
+            
+                <li data-name="Ycc.UI.Image#onclick"><a href="Ycc.UI.Image.html#onclick">onclick</a></li>
+            
+                <li data-name="Ycc.UI.Image#oncomputeend"><a href="Ycc.UI.Image.html#oncomputeend">oncomputeend</a></li>
+            
+                <li data-name="Ycc.UI.Image#oncomputestart"><a href="Ycc.UI.Image.html#oncomputestart">oncomputestart</a></li>
+            
+                <li data-name="Ycc.UI.Image#ondragend"><a href="Ycc.UI.Image.html#ondragend">ondragend</a></li>
+            
+                <li data-name="Ycc.UI.Image#ondragging"><a href="Ycc.UI.Image.html#ondragging">ondragging</a></li>
+            
+                <li data-name="Ycc.UI.Image#ondragstart"><a href="Ycc.UI.Image.html#ondragstart">ondragstart</a></li>
+            
+                <li data-name="Ycc.UI.Image#onmousedown"><a href="Ycc.UI.Image.html#onmousedown">onmousedown</a></li>
+            
+                <li data-name="Ycc.UI.Image#onmousemove"><a href="Ycc.UI.Image.html#onmousemove">onmousemove</a></li>
+            
+                <li data-name="Ycc.UI.Image#onmouseout"><a href="Ycc.UI.Image.html#onmouseout">onmouseout</a></li>
+            
+                <li data-name="Ycc.UI.Image#onmouseover"><a href="Ycc.UI.Image.html#onmouseover">onmouseover</a></li>
+            
+                <li data-name="Ycc.UI.Image#onmouseup"><a href="Ycc.UI.Image.html#onmouseup">onmouseup</a></li>
+            
+                <li data-name="Ycc.UI.Image#onrenderend"><a href="Ycc.UI.Image.html#onrenderend">onrenderend</a></li>
+            
+                <li data-name="Ycc.UI.Image#onrenderstart"><a href="Ycc.UI.Image.html#onrenderstart">onrenderstart</a></li>
+            
+                <li data-name="Ycc.UI.Image#ontap"><a href="Ycc.UI.Image.html#ontap">ontap</a></li>
+            
+                <li data-name="Ycc.UI.Image#ontouchend"><a href="Ycc.UI.Image.html#ontouchend">ontouchend</a></li>
+            
+                <li data-name="Ycc.UI.Image#ontouchmove"><a href="Ycc.UI.Image.html#ontouchmove">ontouchmove</a></li>
+            
+                <li data-name="Ycc.UI.Image#ontouchstart"><a href="Ycc.UI.Image.html#ontouchstart">ontouchstart</a></li>
+            
+                <li data-name="Ycc.UI.Image#rect"><a href="Ycc.UI.Image.html#rect">rect</a></li>
+            
+                <li data-name="Ycc.UI.Image#rectBgColor"><a href="Ycc.UI.Image.html#rectBgColor">rectBgColor</a></li>
+            
+                <li data-name="Ycc.UI.Image#rectBorderColor"><a href="Ycc.UI.Image.html#rectBorderColor">rectBorderColor</a></li>
+            
+                <li data-name="Ycc.UI.Image#rectBorderWidth"><a href="Ycc.UI.Image.html#rectBorderWidth">rectBorderWidth</a></li>
+            
+                <li data-name="Ycc.UI.Image#res"><a href="Ycc.UI.Image.html#res">res</a></li>
+            
+                <li data-name="Ycc.UI.Image#rotation"><a href="Ycc.UI.Image.html#rotation">rotation</a></li>
+            
+                <li data-name="Ycc.UI.Image#scale9GridRect"><a href="Ycc.UI.Image.html#scale9GridRect">scale9GridRect</a></li>
+            
+                <li data-name="Ycc.UI.Image#scaleRepeatRect"><a href="Ycc.UI.Image.html#scaleRepeatRect">scaleRepeatRect</a></li>
+            
+                <li data-name="Ycc.UI.Image#scaleX"><a href="Ycc.UI.Image.html#scaleX">scaleX</a></li>
+            
+                <li data-name="Ycc.UI.Image#scaleY"><a href="Ycc.UI.Image.html#scaleY">scaleY</a></li>
+            
+                <li data-name="Ycc.UI.Image#show"><a href="Ycc.UI.Image.html#show">show</a></li>
+            
+                <li data-name="Ycc.UI.Image#stopAllEvent"><a href="Ycc.UI.Image.html#stopAllEvent">stopAllEvent</a></li>
+            
+                <li data-name="Ycc.UI.Image#stopEventBubbleUp"><a href="Ycc.UI.Image.html#stopEventBubbleUp">stopEventBubbleUp</a></li>
+            
+                <li data-name="Ycc.UI.Image#stopType"><a href="Ycc.UI.Image.html#stopType">stopType</a></li>
+            
+                <li data-name="Ycc.UI.Image#strokeStyle"><a href="Ycc.UI.Image.html#strokeStyle">strokeStyle</a></li>
+            
+                <li data-name="Ycc.UI.Image#userData"><a href="Ycc.UI.Image.html#userData">userData</a></li>
+            
+                <li data-name="Ycc.UI.Image#yccClass"><a href="Ycc.UI.Image.html#yccClass">yccClass</a></li>
+            
+            </ul>
+            <ul class="typedefs itemMembers">
+            
+            </ul>
+            <ul class="methods itemMembers">
+            
+            <span class="subtitle">Methods</span>
+            
+                <li data-name="Ycc.UI.Image#__render"><a href="Ycc.UI.Image.html#__render">__render</a></li>
+            
+                <li data-name="Ycc.UI.Image#_processMirror"><a href="Ycc.UI.Image.html#_processMirror">_processMirror</a></li>
+            
+                <li data-name="Ycc.UI.Image#_renderContainer"><a href="Ycc.UI.Image.html#_renderContainer">_renderContainer</a></li>
+            
+                <li data-name="Ycc.UI.Image#addChild"><a href="Ycc.UI.Image.html#addChild">addChild</a></li>
+            
+                <li data-name="Ycc.UI.Image#addListener"><a href="Ycc.UI.Image.html#addListener">addListener</a></li>
+            
+                <li data-name="Ycc.UI.Image#clone"><a href="Ycc.UI.Image.html#clone">clone</a></li>
+            
+                <li data-name="Ycc.UI.Image#computeUIProps"><a href="Ycc.UI.Image.html#computeUIProps">computeUIProps</a></li>
+            
+                <li data-name="Ycc.UI.Image#disableEvent"><a href="Ycc.UI.Image.html#disableEvent">disableEvent</a></li>
+            
+                <li data-name="Ycc.UI.Image#extend"><a href="Ycc.UI.Image.html#extend">extend</a></li>
+            
+                <li data-name="Ycc.UI.Image#getAbsolutePosition"><a href="Ycc.UI.Image.html#getAbsolutePosition">getAbsolutePosition</a></li>
+            
+                <li data-name="Ycc.UI.Image#getMaxContentInWidth"><a href="Ycc.UI.Image.html#getMaxContentInWidth">getMaxContentInWidth</a></li>
+            
+                <li data-name="Ycc.UI.Image#init"><a href="Ycc.UI.Image.html#init">init</a></li>
+            
+                <li data-name="Ycc.UI.Image#isOutOfStage"><a href="Ycc.UI.Image.html#isOutOfStage">isOutOfStage</a></li>
+            
+                <li data-name="Ycc.UI.Image#removeChild"><a href="Ycc.UI.Image.html#removeChild">removeChild</a></li>
+            
+                <li data-name="Ycc.UI.Image#removeListener"><a href="Ycc.UI.Image.html#removeListener">removeListener</a></li>
+            
+                <li data-name="Ycc.UI.Image#removeSelf"><a href="Ycc.UI.Image.html#removeSelf">removeSelf</a></li>
+            
+                <li data-name="Ycc.UI.Image#render"><a href="Ycc.UI.Image.html#render">render</a></li>
+            
+                <li data-name="Ycc.UI.Image#renderRectBgColor"><a href="Ycc.UI.Image.html#renderRectBgColor">renderRectBgColor</a></li>
+            
+                <li data-name="Ycc.UI.Image#renderRectBorder"><a href="Ycc.UI.Image.html#renderRectBorder">renderRectBorder</a></li>
+            
+                <li data-name="Ycc.UI.Image#resumeEvent"><a href="Ycc.UI.Image.html#resumeEvent">resumeEvent</a></li>
+            
+                <li data-name="Ycc.UI.Image#scaleAndRotate"><a href="Ycc.UI.Image.html#scaleAndRotate">scaleAndRotate</a></li>
+            
+                <li data-name="Ycc.UI.Image#stop"><a href="Ycc.UI.Image.html#stop">stop</a></li>
+            
+                <li data-name="Ycc.UI.Image#transformToAbsolute"><a href="Ycc.UI.Image.html#transformToAbsolute">transformToAbsolute</a></li>
+            
+                <li data-name="Ycc.UI.Image#transformToLocal"><a href="Ycc.UI.Image.html#transformToLocal">transformToLocal</a></li>
+            
+                <li data-name="Ycc.UI.Image#triggerListener"><a href="Ycc.UI.Image.html#triggerListener">triggerListener</a></li>
+            
+            </ul>
+            <ul class="events itemMembers">
+            
+            </ul>
+        </li>
+    
+        <li class="item" data-name="Ycc.UI.ImageFrameAnimation">
+            <span class="title">
+                <a href="Ycc.UI.ImageFrameAnimation.html">Ycc.UI.ImageFrameAnimation</a>
+                
+            </span>
+            <ul class="members itemMembers">
+            
+            <span class="subtitle">Members</span>
+            
+                <li data-name="Ycc.UI.ImageFrameAnimation#afterInit"><a href="Ycc.UI.ImageFrameAnimation.html#afterInit">afterInit</a></li>
+            
+                <li data-name="Ycc.UI.ImageFrameAnimation#anchorX"><a href="Ycc.UI.ImageFrameAnimation.html#anchorX">anchorX</a></li>
+            
+                <li data-name="Ycc.UI.ImageFrameAnimation#anchorY"><a href="Ycc.UI.ImageFrameAnimation.html#anchorY">anchorY</a></li>
+            
+                <li data-name="Ycc.UI.ImageFrameAnimation#autoplay"><a href="Ycc.UI.ImageFrameAnimation.html#autoplay">autoplay</a></li>
+            
+                <li data-name="Ycc.UI.ImageFrameAnimation#baseUI"><a href="Ycc.UI.ImageFrameAnimation.html#baseUI">baseUI</a></li>
+            
+                <li data-name="Ycc.UI.ImageFrameAnimation#beforeInit"><a href="Ycc.UI.ImageFrameAnimation.html#beforeInit">beforeInit</a></li>
+            
+                <li data-name="Ycc.UI.ImageFrameAnimation#belongTo"><a href="Ycc.UI.ImageFrameAnimation.html#belongTo">belongTo</a></li>
+            
+                <li data-name="Ycc.UI.ImageFrameAnimation#ctx"><a href="Ycc.UI.ImageFrameAnimation.html#ctx">ctx</a></li>
+            
+                <li data-name="Ycc.UI.ImageFrameAnimation#disableType"><a href="Ycc.UI.ImageFrameAnimation.html#disableType">disableType</a></li>
+            
+                <li data-name="Ycc.UI.ImageFrameAnimation#fillStyle"><a href="Ycc.UI.ImageFrameAnimation.html#fillStyle">fillStyle</a></li>
+            
+                <li data-name="Ycc.UI.ImageFrameAnimation#firstFrameRect"><a href="Ycc.UI.ImageFrameAnimation.html#firstFrameRect">firstFrameRect</a></li>
+            
+                <li data-name="Ycc.UI.ImageFrameAnimation#frameRectCount"><a href="Ycc.UI.ImageFrameAnimation.html#frameRectCount">frameRectCount</a></li>
+            
+                <li data-name="Ycc.UI.ImageFrameAnimation#frameSpace"><a href="Ycc.UI.ImageFrameAnimation.html#frameSpace">frameSpace</a></li>
+            
+                <li data-name="Ycc.UI.ImageFrameAnimation#id"><a href="Ycc.UI.ImageFrameAnimation.html#id">id</a></li>
+            
+                <li data-name="Ycc.UI.ImageFrameAnimation#isRunning"><a href="Ycc.UI.ImageFrameAnimation.html#isRunning">isRunning</a></li>
+            
+                <li data-name="Ycc.UI.ImageFrameAnimation#lineWidth"><a href="Ycc.UI.ImageFrameAnimation.html#lineWidth">lineWidth</a></li>
+            
+                <li data-name="Ycc.UI.ImageFrameAnimation#listeners"><a href="Ycc.UI.ImageFrameAnimation.html#listeners">listeners</a></li>
+            
+                <li data-name="Ycc.UI.ImageFrameAnimation#mirror"><a href="Ycc.UI.ImageFrameAnimation.html#mirror">mirror</a></li>
+            
+                <li data-name="Ycc.UI.ImageFrameAnimation#name"><a href="Ycc.UI.ImageFrameAnimation.html#name">name</a></li>
+            
+                <li data-name="Ycc.UI.ImageFrameAnimation#onclick"><a href="Ycc.UI.ImageFrameAnimation.html#onclick">onclick</a></li>
+            
+                <li data-name="Ycc.UI.ImageFrameAnimation#oncomputeend"><a href="Ycc.UI.ImageFrameAnimation.html#oncomputeend">oncomputeend</a></li>
+            
+                <li data-name="Ycc.UI.ImageFrameAnimation#oncomputestart"><a href="Ycc.UI.ImageFrameAnimation.html#oncomputestart">oncomputestart</a></li>
+            
+                <li data-name="Ycc.UI.ImageFrameAnimation#ondragend"><a href="Ycc.UI.ImageFrameAnimation.html#ondragend">ondragend</a></li>
+            
+                <li data-name="Ycc.UI.ImageFrameAnimation#ondragging"><a href="Ycc.UI.ImageFrameAnimation.html#ondragging">ondragging</a></li>
+            
+                <li data-name="Ycc.UI.ImageFrameAnimation#ondragstart"><a href="Ycc.UI.ImageFrameAnimation.html#ondragstart">ondragstart</a></li>
+            
+                <li data-name="Ycc.UI.ImageFrameAnimation#onmousedown"><a href="Ycc.UI.ImageFrameAnimation.html#onmousedown">onmousedown</a></li>
+            
+                <li data-name="Ycc.UI.ImageFrameAnimation#onmousemove"><a href="Ycc.UI.ImageFrameAnimation.html#onmousemove">onmousemove</a></li>
+            
+                <li data-name="Ycc.UI.ImageFrameAnimation#onmouseout"><a href="Ycc.UI.ImageFrameAnimation.html#onmouseout">onmouseout</a></li>
+            
+                <li data-name="Ycc.UI.ImageFrameAnimation#onmouseover"><a href="Ycc.UI.ImageFrameAnimation.html#onmouseover">onmouseover</a></li>
+            
+                <li data-name="Ycc.UI.ImageFrameAnimation#onmouseup"><a href="Ycc.UI.ImageFrameAnimation.html#onmouseup">onmouseup</a></li>
+            
+                <li data-name="Ycc.UI.ImageFrameAnimation#onrenderend"><a href="Ycc.UI.ImageFrameAnimation.html#onrenderend">onrenderend</a></li>
+            
+                <li data-name="Ycc.UI.ImageFrameAnimation#onrenderstart"><a href="Ycc.UI.ImageFrameAnimation.html#onrenderstart">onrenderstart</a></li>
+            
+                <li data-name="Ycc.UI.ImageFrameAnimation#ontap"><a href="Ycc.UI.ImageFrameAnimation.html#ontap">ontap</a></li>
+            
+                <li data-name="Ycc.UI.ImageFrameAnimation#ontouchend"><a href="Ycc.UI.ImageFrameAnimation.html#ontouchend">ontouchend</a></li>
+            
+                <li data-name="Ycc.UI.ImageFrameAnimation#ontouchmove"><a href="Ycc.UI.ImageFrameAnimation.html#ontouchmove">ontouchmove</a></li>
+            
+                <li data-name="Ycc.UI.ImageFrameAnimation#ontouchstart"><a href="Ycc.UI.ImageFrameAnimation.html#ontouchstart">ontouchstart</a></li>
+            
+                <li data-name="Ycc.UI.ImageFrameAnimation#rect"><a href="Ycc.UI.ImageFrameAnimation.html#rect">rect</a></li>
+            
+                <li data-name="Ycc.UI.ImageFrameAnimation#rectBgColor"><a href="Ycc.UI.ImageFrameAnimation.html#rectBgColor">rectBgColor</a></li>
+            
+                <li data-name="Ycc.UI.ImageFrameAnimation#rectBorderColor"><a href="Ycc.UI.ImageFrameAnimation.html#rectBorderColor">rectBorderColor</a></li>
+            
+                <li data-name="Ycc.UI.ImageFrameAnimation#rectBorderWidth"><a href="Ycc.UI.ImageFrameAnimation.html#rectBorderWidth">rectBorderWidth</a></li>
+            
+                <li data-name="Ycc.UI.ImageFrameAnimation#res"><a href="Ycc.UI.ImageFrameAnimation.html#res">res</a></li>
+            
+                <li data-name="Ycc.UI.ImageFrameAnimation#rotation"><a href="Ycc.UI.ImageFrameAnimation.html#rotation">rotation</a></li>
+            
+                <li data-name="Ycc.UI.ImageFrameAnimation#scaleX"><a href="Ycc.UI.ImageFrameAnimation.html#scaleX">scaleX</a></li>
+            
+                <li data-name="Ycc.UI.ImageFrameAnimation#scaleY"><a href="Ycc.UI.ImageFrameAnimation.html#scaleY">scaleY</a></li>
+            
+                <li data-name="Ycc.UI.ImageFrameAnimation#show"><a href="Ycc.UI.ImageFrameAnimation.html#show">show</a></li>
+            
+                <li data-name="Ycc.UI.ImageFrameAnimation#startFrameCount"><a href="Ycc.UI.ImageFrameAnimation.html#startFrameCount">startFrameCount</a></li>
+            
+                <li data-name="Ycc.UI.ImageFrameAnimation#stopAllEvent"><a href="Ycc.UI.ImageFrameAnimation.html#stopAllEvent">stopAllEvent</a></li>
+            
+                <li data-name="Ycc.UI.ImageFrameAnimation#stopEventBubbleUp"><a href="Ycc.UI.ImageFrameAnimation.html#stopEventBubbleUp">stopEventBubbleUp</a></li>
+            
+                <li data-name="Ycc.UI.ImageFrameAnimation#stopType"><a href="Ycc.UI.ImageFrameAnimation.html#stopType">stopType</a></li>
+            
+                <li data-name="Ycc.UI.ImageFrameAnimation#strokeStyle"><a href="Ycc.UI.ImageFrameAnimation.html#strokeStyle">strokeStyle</a></li>
+            
+                <li data-name="Ycc.UI.ImageFrameAnimation#userData"><a href="Ycc.UI.ImageFrameAnimation.html#userData">userData</a></li>
+            
+                <li data-name="Ycc.UI.ImageFrameAnimation#yccClass"><a href="Ycc.UI.ImageFrameAnimation.html#yccClass">yccClass</a></li>
+            
+            </ul>
+            <ul class="typedefs itemMembers">
+            
+            </ul>
+            <ul class="methods itemMembers">
+            
+            <span class="subtitle">Methods</span>
+            
+                <li data-name="Ycc.UI.ImageFrameAnimation#__render"><a href="Ycc.UI.ImageFrameAnimation.html#__render">__render</a></li>
+            
+                <li data-name="Ycc.UI.ImageFrameAnimation#_processMirror"><a href="Ycc.UI.ImageFrameAnimation.html#_processMirror">_processMirror</a></li>
+            
+                <li data-name="Ycc.UI.ImageFrameAnimation#_renderContainer"><a href="Ycc.UI.ImageFrameAnimation.html#_renderContainer">_renderContainer</a></li>
+            
+                <li data-name="Ycc.UI.ImageFrameAnimation#addChild"><a href="Ycc.UI.ImageFrameAnimation.html#addChild">addChild</a></li>
+            
+                <li data-name="Ycc.UI.ImageFrameAnimation#addListener"><a href="Ycc.UI.ImageFrameAnimation.html#addListener">addListener</a></li>
+            
+                <li data-name="Ycc.UI.ImageFrameAnimation#clone"><a href="Ycc.UI.ImageFrameAnimation.html#clone">clone</a></li>
+            
+                <li data-name="Ycc.UI.ImageFrameAnimation#computeUIProps"><a href="Ycc.UI.ImageFrameAnimation.html#computeUIProps">computeUIProps</a></li>
+            
+                <li data-name="Ycc.UI.ImageFrameAnimation#disableEvent"><a href="Ycc.UI.ImageFrameAnimation.html#disableEvent">disableEvent</a></li>
+            
+                <li data-name="Ycc.UI.ImageFrameAnimation#extend"><a href="Ycc.UI.ImageFrameAnimation.html#extend">extend</a></li>
+            
+                <li data-name="Ycc.UI.ImageFrameAnimation#getAbsolutePosition"><a href="Ycc.UI.ImageFrameAnimation.html#getAbsolutePosition">getAbsolutePosition</a></li>
+            
+                <li data-name="Ycc.UI.ImageFrameAnimation#getMaxContentInWidth"><a href="Ycc.UI.ImageFrameAnimation.html#getMaxContentInWidth">getMaxContentInWidth</a></li>
+            
+                <li data-name="Ycc.UI.ImageFrameAnimation#init"><a href="Ycc.UI.ImageFrameAnimation.html#init">init</a></li>
+            
+                <li data-name="Ycc.UI.ImageFrameAnimation#isOutOfStage"><a href="Ycc.UI.ImageFrameAnimation.html#isOutOfStage">isOutOfStage</a></li>
+            
+                <li data-name="Ycc.UI.ImageFrameAnimation#removeChild"><a href="Ycc.UI.ImageFrameAnimation.html#removeChild">removeChild</a></li>
+            
+                <li data-name="Ycc.UI.ImageFrameAnimation#removeListener"><a href="Ycc.UI.ImageFrameAnimation.html#removeListener">removeListener</a></li>
+            
+                <li data-name="Ycc.UI.ImageFrameAnimation#removeSelf"><a href="Ycc.UI.ImageFrameAnimation.html#removeSelf">removeSelf</a></li>
+            
+                <li data-name="Ycc.UI.ImageFrameAnimation#render"><a href="Ycc.UI.ImageFrameAnimation.html#render">render</a></li>
+            
+                <li data-name="Ycc.UI.ImageFrameAnimation#renderRectBgColor"><a href="Ycc.UI.ImageFrameAnimation.html#renderRectBgColor">renderRectBgColor</a></li>
+            
+                <li data-name="Ycc.UI.ImageFrameAnimation#renderRectBorder"><a href="Ycc.UI.ImageFrameAnimation.html#renderRectBorder">renderRectBorder</a></li>
+            
+                <li data-name="Ycc.UI.ImageFrameAnimation#resumeEvent"><a href="Ycc.UI.ImageFrameAnimation.html#resumeEvent">resumeEvent</a></li>
+            
+                <li data-name="Ycc.UI.ImageFrameAnimation#scaleAndRotate"><a href="Ycc.UI.ImageFrameAnimation.html#scaleAndRotate">scaleAndRotate</a></li>
+            
+                <li data-name="Ycc.UI.ImageFrameAnimation#start"><a href="Ycc.UI.ImageFrameAnimation.html#start">start</a></li>
+            
+                <li data-name="Ycc.UI.ImageFrameAnimation#stop"><a href="Ycc.UI.ImageFrameAnimation.html#stop">stop</a></li>
+            
+                <li data-name="Ycc.UI.ImageFrameAnimation#transformToAbsolute"><a href="Ycc.UI.ImageFrameAnimation.html#transformToAbsolute">transformToAbsolute</a></li>
+            
+                <li data-name="Ycc.UI.ImageFrameAnimation#transformToLocal"><a href="Ycc.UI.ImageFrameAnimation.html#transformToLocal">transformToLocal</a></li>
+            
+                <li data-name="Ycc.UI.ImageFrameAnimation#triggerListener"><a href="Ycc.UI.ImageFrameAnimation.html#triggerListener">triggerListener</a></li>
+            
+            </ul>
+            <ul class="events itemMembers">
+            
+            </ul>
+        </li>
+    
+        <li class="item" data-name="Ycc.UI.Line">
+            <span class="title">
+                <a href="Ycc.UI.Line.html">Ycc.UI.Line</a>
+                
+            </span>
+            <ul class="members itemMembers">
+            
+            <span class="subtitle">Members</span>
+            
+                <li data-name="Ycc.UI.Line#afterInit"><a href="Ycc.UI.Line.html#afterInit">afterInit</a></li>
+            
+                <li data-name="Ycc.UI.Line#anchorX"><a href="Ycc.UI.Line.html#anchorX">anchorX</a></li>
+            
+                <li data-name="Ycc.UI.Line#anchorY"><a href="Ycc.UI.Line.html#anchorY">anchorY</a></li>
+            
+                <li data-name="Ycc.UI.Line#baseUI"><a href="Ycc.UI.Line.html#baseUI">baseUI</a></li>
+            
+                <li data-name="Ycc.UI.Line#beforeInit"><a href="Ycc.UI.Line.html#beforeInit">beforeInit</a></li>
+            
+                <li data-name="Ycc.UI.Line#belongTo"><a href="Ycc.UI.Line.html#belongTo">belongTo</a></li>
+            
+                <li data-name="Ycc.UI.Line#ctx"><a href="Ycc.UI.Line.html#ctx">ctx</a></li>
+            
+                <li data-name="Ycc.UI.Line#disableType"><a href="Ycc.UI.Line.html#disableType">disableType</a></li>
+            
+                <li data-name="Ycc.UI.Line#fillStyle"><a href="Ycc.UI.Line.html#fillStyle">fillStyle</a></li>
+            
+                <li data-name="Ycc.UI.Line#id"><a href="Ycc.UI.Line.html#id">id</a></li>
+            
+                <li data-name="Ycc.UI.Line#lineWidth"><a href="Ycc.UI.Line.html#lineWidth">lineWidth</a></li>
+            
+                <li data-name="Ycc.UI.Line#listeners"><a href="Ycc.UI.Line.html#listeners">listeners</a></li>
+            
+                <li data-name="Ycc.UI.Line#name"><a href="Ycc.UI.Line.html#name">name</a></li>
+            
+                <li data-name="Ycc.UI.Line#onclick"><a href="Ycc.UI.Line.html#onclick">onclick</a></li>
+            
+                <li data-name="Ycc.UI.Line#oncomputeend"><a href="Ycc.UI.Line.html#oncomputeend">oncomputeend</a></li>
+            
+                <li data-name="Ycc.UI.Line#oncomputestart"><a href="Ycc.UI.Line.html#oncomputestart">oncomputestart</a></li>
+            
+                <li data-name="Ycc.UI.Line#ondragend"><a href="Ycc.UI.Line.html#ondragend">ondragend</a></li>
+            
+                <li data-name="Ycc.UI.Line#ondragging"><a href="Ycc.UI.Line.html#ondragging">ondragging</a></li>
+            
+                <li data-name="Ycc.UI.Line#ondragstart"><a href="Ycc.UI.Line.html#ondragstart">ondragstart</a></li>
+            
+                <li data-name="Ycc.UI.Line#onmousedown"><a href="Ycc.UI.Line.html#onmousedown">onmousedown</a></li>
+            
+                <li data-name="Ycc.UI.Line#onmousemove"><a href="Ycc.UI.Line.html#onmousemove">onmousemove</a></li>
+            
+                <li data-name="Ycc.UI.Line#onmouseout"><a href="Ycc.UI.Line.html#onmouseout">onmouseout</a></li>
+            
+                <li data-name="Ycc.UI.Line#onmouseover"><a href="Ycc.UI.Line.html#onmouseover">onmouseover</a></li>
+            
+                <li data-name="Ycc.UI.Line#onmouseup"><a href="Ycc.UI.Line.html#onmouseup">onmouseup</a></li>
+            
+                <li data-name="Ycc.UI.Line#onrenderend"><a href="Ycc.UI.Line.html#onrenderend">onrenderend</a></li>
+            
+                <li data-name="Ycc.UI.Line#onrenderstart"><a href="Ycc.UI.Line.html#onrenderstart">onrenderstart</a></li>
+            
+                <li data-name="Ycc.UI.Line#ontap"><a href="Ycc.UI.Line.html#ontap">ontap</a></li>
+            
+                <li data-name="Ycc.UI.Line#ontouchend"><a href="Ycc.UI.Line.html#ontouchend">ontouchend</a></li>
+            
+                <li data-name="Ycc.UI.Line#ontouchmove"><a href="Ycc.UI.Line.html#ontouchmove">ontouchmove</a></li>
+            
+                <li data-name="Ycc.UI.Line#ontouchstart"><a href="Ycc.UI.Line.html#ontouchstart">ontouchstart</a></li>
+            
+                <li data-name="Ycc.UI.Line#rect"><a href="Ycc.UI.Line.html#rect">rect</a></li>
+            
+                <li data-name="Ycc.UI.Line#rectBgColor"><a href="Ycc.UI.Line.html#rectBgColor">rectBgColor</a></li>
+            
+                <li data-name="Ycc.UI.Line#rectBorderColor"><a href="Ycc.UI.Line.html#rectBorderColor">rectBorderColor</a></li>
+            
+                <li data-name="Ycc.UI.Line#rectBorderWidth"><a href="Ycc.UI.Line.html#rectBorderWidth">rectBorderWidth</a></li>
+            
+                <li data-name="Ycc.UI.Line#rotation"><a href="Ycc.UI.Line.html#rotation">rotation</a></li>
+            
+                <li data-name="Ycc.UI.Line#scaleX"><a href="Ycc.UI.Line.html#scaleX">scaleX</a></li>
+            
+                <li data-name="Ycc.UI.Line#scaleY"><a href="Ycc.UI.Line.html#scaleY">scaleY</a></li>
+            
+                <li data-name="Ycc.UI.Line#show"><a href="Ycc.UI.Line.html#show">show</a></li>
+            
+                <li data-name="Ycc.UI.Line#stopAllEvent"><a href="Ycc.UI.Line.html#stopAllEvent">stopAllEvent</a></li>
+            
+                <li data-name="Ycc.UI.Line#stopEventBubbleUp"><a href="Ycc.UI.Line.html#stopEventBubbleUp">stopEventBubbleUp</a></li>
+            
+                <li data-name="Ycc.UI.Line#stopType"><a href="Ycc.UI.Line.html#stopType">stopType</a></li>
+            
+                <li data-name="Ycc.UI.Line#strokeStyle"><a href="Ycc.UI.Line.html#strokeStyle">strokeStyle</a></li>
+            
+                <li data-name="Ycc.UI.Line#userData"><a href="Ycc.UI.Line.html#userData">userData</a></li>
+            
+                <li data-name="Ycc.UI.Line#yccClass"><a href="Ycc.UI.Line.html#yccClass">yccClass</a></li>
+            
+            </ul>
+            <ul class="typedefs itemMembers">
+            
+            </ul>
+            <ul class="methods itemMembers">
+            
+            <span class="subtitle">Methods</span>
+            
+                <li data-name="Ycc.UI.Line#__render"><a href="Ycc.UI.Line.html#__render">__render</a></li>
+            
+                <li data-name="Ycc.UI.Line#_renderContainer"><a href="Ycc.UI.Line.html#_renderContainer">_renderContainer</a></li>
+            
+                <li data-name="Ycc.UI.Line#addChild"><a href="Ycc.UI.Line.html#addChild">addChild</a></li>
+            
+                <li data-name="Ycc.UI.Line#addListener"><a href="Ycc.UI.Line.html#addListener">addListener</a></li>
+            
+                <li data-name="Ycc.UI.Line#clone"><a href="Ycc.UI.Line.html#clone">clone</a></li>
+            
+                <li data-name="Ycc.UI.Line#computeUIProps"><a href="Ycc.UI.Line.html#computeUIProps">computeUIProps</a></li>
+            
+                <li data-name="Ycc.UI.Line#disableEvent"><a href="Ycc.UI.Line.html#disableEvent">disableEvent</a></li>
+            
+                <li data-name="Ycc.UI.Line#extend"><a href="Ycc.UI.Line.html#extend">extend</a></li>
+            
+                <li data-name="Ycc.UI.Line#getAbsolutePosition"><a href="Ycc.UI.Line.html#getAbsolutePosition">getAbsolutePosition</a></li>
+            
+                <li data-name="Ycc.UI.Line#getMaxContentInWidth"><a href="Ycc.UI.Line.html#getMaxContentInWidth">getMaxContentInWidth</a></li>
+            
+                <li data-name="Ycc.UI.Line#init"><a href="Ycc.UI.Line.html#init">init</a></li>
+            
+                <li data-name="Ycc.UI.Line#isOutOfStage"><a href="Ycc.UI.Line.html#isOutOfStage">isOutOfStage</a></li>
+            
+                <li data-name="Ycc.UI.Line#removeChild"><a href="Ycc.UI.Line.html#removeChild">removeChild</a></li>
+            
+                <li data-name="Ycc.UI.Line#removeListener"><a href="Ycc.UI.Line.html#removeListener">removeListener</a></li>
+            
+                <li data-name="Ycc.UI.Line#removeSelf"><a href="Ycc.UI.Line.html#removeSelf">removeSelf</a></li>
+            
+                <li data-name="Ycc.UI.Line#render"><a href="Ycc.UI.Line.html#render">render</a></li>
+            
+                <li data-name="Ycc.UI.Line#renderRectBgColor"><a href="Ycc.UI.Line.html#renderRectBgColor">renderRectBgColor</a></li>
+            
+                <li data-name="Ycc.UI.Line#renderRectBorder"><a href="Ycc.UI.Line.html#renderRectBorder">renderRectBorder</a></li>
+            
+                <li data-name="Ycc.UI.Line#resumeEvent"><a href="Ycc.UI.Line.html#resumeEvent">resumeEvent</a></li>
+            
+                <li data-name="Ycc.UI.Line#scaleAndRotate"><a href="Ycc.UI.Line.html#scaleAndRotate">scaleAndRotate</a></li>
+            
+                <li data-name="Ycc.UI.Line#stop"><a href="Ycc.UI.Line.html#stop">stop</a></li>
+            
+                <li data-name="Ycc.UI.Line#transformToAbsolute"><a href="Ycc.UI.Line.html#transformToAbsolute">transformToAbsolute</a></li>
+            
+                <li data-name="Ycc.UI.Line#transformToLocal"><a href="Ycc.UI.Line.html#transformToLocal">transformToLocal</a></li>
+            
+                <li data-name="Ycc.UI.Line#triggerListener"><a href="Ycc.UI.Line.html#triggerListener">triggerListener</a></li>
+            
+            </ul>
+            <ul class="events itemMembers">
+            
+            </ul>
+        </li>
+    
+        <li class="item" data-name="Ycc.UI.MultiLineText">
+            <span class="title">
+                <a href="Ycc.UI.MultiLineText.html">Ycc.UI.MultiLineText</a>
+                
+            </span>
+            <ul class="members itemMembers">
+            
+            <span class="subtitle">Members</span>
+            
+                <li data-name="Ycc.UI.MultiLineText#afterInit"><a href="Ycc.UI.MultiLineText.html#afterInit">afterInit</a></li>
+            
+                <li data-name="Ycc.UI.MultiLineText#anchorX"><a href="Ycc.UI.MultiLineText.html#anchorX">anchorX</a></li>
+            
+                <li data-name="Ycc.UI.MultiLineText#anchorY"><a href="Ycc.UI.MultiLineText.html#anchorY">anchorY</a></li>
+            
+                <li data-name="Ycc.UI.MultiLineText#baseUI"><a href="Ycc.UI.MultiLineText.html#baseUI">baseUI</a></li>
+            
+                <li data-name="Ycc.UI.MultiLineText#beforeInit"><a href="Ycc.UI.MultiLineText.html#beforeInit">beforeInit</a></li>
+            
+                <li data-name="Ycc.UI.MultiLineText#belongTo"><a href="Ycc.UI.MultiLineText.html#belongTo">belongTo</a></li>
+            
+                <li data-name="Ycc.UI.MultiLineText#ctx"><a href="Ycc.UI.MultiLineText.html#ctx">ctx</a></li>
+            
+                <li data-name="Ycc.UI.MultiLineText#disableType"><a href="Ycc.UI.MultiLineText.html#disableType">disableType</a></li>
+            
+                <li data-name="Ycc.UI.MultiLineText#displayLines"><a href="Ycc.UI.MultiLineText.html#displayLines">displayLines</a></li>
+            
+                <li data-name="Ycc.UI.MultiLineText#fillStyle"><a href="Ycc.UI.MultiLineText.html#fillStyle">fillStyle</a></li>
+            
+                <li data-name="Ycc.UI.MultiLineText#id"><a href="Ycc.UI.MultiLineText.html#id">id</a></li>
+            
+                <li data-name="Ycc.UI.MultiLineText#lineWidth"><a href="Ycc.UI.MultiLineText.html#lineWidth">lineWidth</a></li>
+            
+                <li data-name="Ycc.UI.MultiLineText#listeners"><a href="Ycc.UI.MultiLineText.html#listeners">listeners</a></li>
+            
+                <li data-name="Ycc.UI.MultiLineText#name"><a href="Ycc.UI.MultiLineText.html#name">name</a></li>
+            
+                <li data-name="Ycc.UI.MultiLineText#onclick"><a href="Ycc.UI.MultiLineText.html#onclick">onclick</a></li>
+            
+                <li data-name="Ycc.UI.MultiLineText#oncomputeend"><a href="Ycc.UI.MultiLineText.html#oncomputeend">oncomputeend</a></li>
+            
+                <li data-name="Ycc.UI.MultiLineText#oncomputestart"><a href="Ycc.UI.MultiLineText.html#oncomputestart">oncomputestart</a></li>
+            
+                <li data-name="Ycc.UI.MultiLineText#ondragend"><a href="Ycc.UI.MultiLineText.html#ondragend">ondragend</a></li>
+            
+                <li data-name="Ycc.UI.MultiLineText#ondragging"><a href="Ycc.UI.MultiLineText.html#ondragging">ondragging</a></li>
+            
+                <li data-name="Ycc.UI.MultiLineText#ondragstart"><a href="Ycc.UI.MultiLineText.html#ondragstart">ondragstart</a></li>
+            
+                <li data-name="Ycc.UI.MultiLineText#onmousedown"><a href="Ycc.UI.MultiLineText.html#onmousedown">onmousedown</a></li>
+            
+                <li data-name="Ycc.UI.MultiLineText#onmousemove"><a href="Ycc.UI.MultiLineText.html#onmousemove">onmousemove</a></li>
+            
+                <li data-name="Ycc.UI.MultiLineText#onmouseout"><a href="Ycc.UI.MultiLineText.html#onmouseout">onmouseout</a></li>
+            
+                <li data-name="Ycc.UI.MultiLineText#onmouseover"><a href="Ycc.UI.MultiLineText.html#onmouseover">onmouseover</a></li>
+            
+                <li data-name="Ycc.UI.MultiLineText#onmouseup"><a href="Ycc.UI.MultiLineText.html#onmouseup">onmouseup</a></li>
+            
+                <li data-name="Ycc.UI.MultiLineText#onrenderend"><a href="Ycc.UI.MultiLineText.html#onrenderend">onrenderend</a></li>
+            
+                <li data-name="Ycc.UI.MultiLineText#onrenderstart"><a href="Ycc.UI.MultiLineText.html#onrenderstart">onrenderstart</a></li>
+            
+                <li data-name="Ycc.UI.MultiLineText#ontap"><a href="Ycc.UI.MultiLineText.html#ontap">ontap</a></li>
+            
+                <li data-name="Ycc.UI.MultiLineText#ontouchend"><a href="Ycc.UI.MultiLineText.html#ontouchend">ontouchend</a></li>
+            
+                <li data-name="Ycc.UI.MultiLineText#ontouchmove"><a href="Ycc.UI.MultiLineText.html#ontouchmove">ontouchmove</a></li>
+            
+                <li data-name="Ycc.UI.MultiLineText#ontouchstart"><a href="Ycc.UI.MultiLineText.html#ontouchstart">ontouchstart</a></li>
+            
+                <li data-name="Ycc.UI.MultiLineText#rect"><a href="Ycc.UI.MultiLineText.html#rect">rect</a></li>
+            
+                <li data-name="Ycc.UI.MultiLineText#rectBgColor"><a href="Ycc.UI.MultiLineText.html#rectBgColor">rectBgColor</a></li>
+            
+                <li data-name="Ycc.UI.MultiLineText#rectBorderColor"><a href="Ycc.UI.MultiLineText.html#rectBorderColor">rectBorderColor</a></li>
+            
+                <li data-name="Ycc.UI.MultiLineText#rectBorderWidth"><a href="Ycc.UI.MultiLineText.html#rectBorderWidth">rectBorderWidth</a></li>
+            
+                <li data-name="Ycc.UI.MultiLineText#rotation"><a href="Ycc.UI.MultiLineText.html#rotation">rotation</a></li>
+            
+                <li data-name="Ycc.UI.MultiLineText#scaleX"><a href="Ycc.UI.MultiLineText.html#scaleX">scaleX</a></li>
+            
+                <li data-name="Ycc.UI.MultiLineText#scaleY"><a href="Ycc.UI.MultiLineText.html#scaleY">scaleY</a></li>
+            
+                <li data-name="Ycc.UI.MultiLineText#show"><a href="Ycc.UI.MultiLineText.html#show">show</a></li>
+            
+                <li data-name="Ycc.UI.MultiLineText#stopAllEvent"><a href="Ycc.UI.MultiLineText.html#stopAllEvent">stopAllEvent</a></li>
+            
+                <li data-name="Ycc.UI.MultiLineText#stopEventBubbleUp"><a href="Ycc.UI.MultiLineText.html#stopEventBubbleUp">stopEventBubbleUp</a></li>
+            
+                <li data-name="Ycc.UI.MultiLineText#stopType"><a href="Ycc.UI.MultiLineText.html#stopType">stopType</a></li>
+            
+                <li data-name="Ycc.UI.MultiLineText#strokeStyle"><a href="Ycc.UI.MultiLineText.html#strokeStyle">strokeStyle</a></li>
+            
+                <li data-name="Ycc.UI.MultiLineText#userData"><a href="Ycc.UI.MultiLineText.html#userData">userData</a></li>
+            
+                <li data-name="Ycc.UI.MultiLineText#yccClass"><a href="Ycc.UI.MultiLineText.html#yccClass">yccClass</a></li>
+            
+            </ul>
+            <ul class="typedefs itemMembers">
+            
+            </ul>
+            <ul class="methods itemMembers">
+            
+            <span class="subtitle">Methods</span>
+            
+                <li data-name="Ycc.UI.MultiLineText#__render"><a href="Ycc.UI.MultiLineText.html#__render">__render</a></li>
+            
+                <li data-name="Ycc.UI.MultiLineText#_renderContainer"><a href="Ycc.UI.MultiLineText.html#_renderContainer">_renderContainer</a></li>
+            
+                <li data-name="Ycc.UI.MultiLineText#addChild"><a href="Ycc.UI.MultiLineText.html#addChild">addChild</a></li>
+            
+                <li data-name="Ycc.UI.MultiLineText#addListener"><a href="Ycc.UI.MultiLineText.html#addListener">addListener</a></li>
+            
+                <li data-name="Ycc.UI.MultiLineText#clone"><a href="Ycc.UI.MultiLineText.html#clone">clone</a></li>
+            
+                <li data-name="Ycc.UI.MultiLineText#computeUIProps"><a href="Ycc.UI.MultiLineText.html#computeUIProps">computeUIProps</a></li>
+            
+                <li data-name="Ycc.UI.MultiLineText#disableEvent"><a href="Ycc.UI.MultiLineText.html#disableEvent">disableEvent</a></li>
+            
+                <li data-name="Ycc.UI.MultiLineText#extend"><a href="Ycc.UI.MultiLineText.html#extend">extend</a></li>
+            
+                <li data-name="Ycc.UI.MultiLineText#getAbsolutePosition"><a href="Ycc.UI.MultiLineText.html#getAbsolutePosition">getAbsolutePosition</a></li>
+            
+                <li data-name="Ycc.UI.MultiLineText#getMaxContentInWidth"><a href="Ycc.UI.MultiLineText.html#getMaxContentInWidth">getMaxContentInWidth</a></li>
+            
+                <li data-name="Ycc.UI.MultiLineText#init"><a href="Ycc.UI.MultiLineText.html#init">init</a></li>
+            
+                <li data-name="Ycc.UI.MultiLineText#isOutOfStage"><a href="Ycc.UI.MultiLineText.html#isOutOfStage">isOutOfStage</a></li>
+            
+                <li data-name="Ycc.UI.MultiLineText#removeChild"><a href="Ycc.UI.MultiLineText.html#removeChild">removeChild</a></li>
+            
+                <li data-name="Ycc.UI.MultiLineText#removeListener"><a href="Ycc.UI.MultiLineText.html#removeListener">removeListener</a></li>
+            
+                <li data-name="Ycc.UI.MultiLineText#removeSelf"><a href="Ycc.UI.MultiLineText.html#removeSelf">removeSelf</a></li>
+            
+                <li data-name="Ycc.UI.MultiLineText#render"><a href="Ycc.UI.MultiLineText.html#render">render</a></li>
+            
+                <li data-name="Ycc.UI.MultiLineText#renderRectBgColor"><a href="Ycc.UI.MultiLineText.html#renderRectBgColor">renderRectBgColor</a></li>
+            
+                <li data-name="Ycc.UI.MultiLineText#renderRectBorder"><a href="Ycc.UI.MultiLineText.html#renderRectBorder">renderRectBorder</a></li>
+            
+                <li data-name="Ycc.UI.MultiLineText#resumeEvent"><a href="Ycc.UI.MultiLineText.html#resumeEvent">resumeEvent</a></li>
+            
+                <li data-name="Ycc.UI.MultiLineText#scaleAndRotate"><a href="Ycc.UI.MultiLineText.html#scaleAndRotate">scaleAndRotate</a></li>
+            
+                <li data-name="Ycc.UI.MultiLineText#stop"><a href="Ycc.UI.MultiLineText.html#stop">stop</a></li>
+            
+                <li data-name="Ycc.UI.MultiLineText#transformToAbsolute"><a href="Ycc.UI.MultiLineText.html#transformToAbsolute">transformToAbsolute</a></li>
+            
+                <li data-name="Ycc.UI.MultiLineText#transformToLocal"><a href="Ycc.UI.MultiLineText.html#transformToLocal">transformToLocal</a></li>
+            
+                <li data-name="Ycc.UI.MultiLineText#triggerListener"><a href="Ycc.UI.MultiLineText.html#triggerListener">triggerListener</a></li>
+            
+            </ul>
+            <ul class="events itemMembers">
+            
+            </ul>
+        </li>
+    
+        <li class="item" data-name="Ycc.UI.Rect">
+            <span class="title">
+                <a href="Ycc.UI.Rect.html">Ycc.UI.Rect</a>
+                
+            </span>
+            <ul class="members itemMembers">
+            
+            <span class="subtitle">Members</span>
+            
+                <li data-name="Ycc.UI.Rect#afterInit"><a href="Ycc.UI.Rect.html#afterInit">afterInit</a></li>
+            
+                <li data-name="Ycc.UI.Rect#anchorX"><a href="Ycc.UI.Rect.html#anchorX">anchorX</a></li>
+            
+                <li data-name="Ycc.UI.Rect#anchorY"><a href="Ycc.UI.Rect.html#anchorY">anchorY</a></li>
+            
+                <li data-name="Ycc.UI.Rect#baseUI"><a href="Ycc.UI.Rect.html#baseUI">baseUI</a></li>
+            
+                <li data-name="Ycc.UI.Rect#beforeInit"><a href="Ycc.UI.Rect.html#beforeInit">beforeInit</a></li>
+            
+                <li data-name="Ycc.UI.Rect#belongTo"><a href="Ycc.UI.Rect.html#belongTo">belongTo</a></li>
+            
+                <li data-name="Ycc.UI.Rect#ctx"><a href="Ycc.UI.Rect.html#ctx">ctx</a></li>
+            
+                <li data-name="Ycc.UI.Rect#disableType"><a href="Ycc.UI.Rect.html#disableType">disableType</a></li>
+            
+                <li data-name="Ycc.UI.Rect#fill"><a href="Ycc.UI.Rect.html#fill">fill</a></li>
+            
+                <li data-name="Ycc.UI.Rect#fillStyle"><a href="Ycc.UI.Rect.html#fillStyle">fillStyle</a></li>
+            
+                <li data-name="Ycc.UI.Rect#id"><a href="Ycc.UI.Rect.html#id">id</a></li>
+            
+                <li data-name="Ycc.UI.Rect#lineWidth"><a href="Ycc.UI.Rect.html#lineWidth">lineWidth</a></li>
+            
+                <li data-name="Ycc.UI.Rect#listeners"><a href="Ycc.UI.Rect.html#listeners">listeners</a></li>
+            
+                <li data-name="Ycc.UI.Rect#name"><a href="Ycc.UI.Rect.html#name">name</a></li>
+            
+                <li data-name="Ycc.UI.Rect#onclick"><a href="Ycc.UI.Rect.html#onclick">onclick</a></li>
+            
+                <li data-name="Ycc.UI.Rect#oncomputeend"><a href="Ycc.UI.Rect.html#oncomputeend">oncomputeend</a></li>
+            
+                <li data-name="Ycc.UI.Rect#oncomputestart"><a href="Ycc.UI.Rect.html#oncomputestart">oncomputestart</a></li>
+            
+                <li data-name="Ycc.UI.Rect#ondragend"><a href="Ycc.UI.Rect.html#ondragend">ondragend</a></li>
+            
+                <li data-name="Ycc.UI.Rect#ondragging"><a href="Ycc.UI.Rect.html#ondragging">ondragging</a></li>
+            
+                <li data-name="Ycc.UI.Rect#ondragstart"><a href="Ycc.UI.Rect.html#ondragstart">ondragstart</a></li>
+            
+                <li data-name="Ycc.UI.Rect#onmousedown"><a href="Ycc.UI.Rect.html#onmousedown">onmousedown</a></li>
+            
+                <li data-name="Ycc.UI.Rect#onmousemove"><a href="Ycc.UI.Rect.html#onmousemove">onmousemove</a></li>
+            
+                <li data-name="Ycc.UI.Rect#onmouseout"><a href="Ycc.UI.Rect.html#onmouseout">onmouseout</a></li>
+            
+                <li data-name="Ycc.UI.Rect#onmouseover"><a href="Ycc.UI.Rect.html#onmouseover">onmouseover</a></li>
+            
+                <li data-name="Ycc.UI.Rect#onmouseup"><a href="Ycc.UI.Rect.html#onmouseup">onmouseup</a></li>
+            
+                <li data-name="Ycc.UI.Rect#onrenderend"><a href="Ycc.UI.Rect.html#onrenderend">onrenderend</a></li>
+            
+                <li data-name="Ycc.UI.Rect#onrenderstart"><a href="Ycc.UI.Rect.html#onrenderstart">onrenderstart</a></li>
+            
+                <li data-name="Ycc.UI.Rect#ontap"><a href="Ycc.UI.Rect.html#ontap">ontap</a></li>
+            
+                <li data-name="Ycc.UI.Rect#ontouchend"><a href="Ycc.UI.Rect.html#ontouchend">ontouchend</a></li>
+            
+                <li data-name="Ycc.UI.Rect#ontouchmove"><a href="Ycc.UI.Rect.html#ontouchmove">ontouchmove</a></li>
+            
+                <li data-name="Ycc.UI.Rect#ontouchstart"><a href="Ycc.UI.Rect.html#ontouchstart">ontouchstart</a></li>
+            
+                <li data-name="Ycc.UI.Rect#rect"><a href="Ycc.UI.Rect.html#rect">rect</a></li>
+            
+                <li data-name="Ycc.UI.Rect#rectBgColor"><a href="Ycc.UI.Rect.html#rectBgColor">rectBgColor</a></li>
+            
+                <li data-name="Ycc.UI.Rect#rectBorderColor"><a href="Ycc.UI.Rect.html#rectBorderColor">rectBorderColor</a></li>
+            
+                <li data-name="Ycc.UI.Rect#rectBorderWidth"><a href="Ycc.UI.Rect.html#rectBorderWidth">rectBorderWidth</a></li>
+            
+                <li data-name="Ycc.UI.Rect#rotation"><a href="Ycc.UI.Rect.html#rotation">rotation</a></li>
+            
+                <li data-name="Ycc.UI.Rect#scaleX"><a href="Ycc.UI.Rect.html#scaleX">scaleX</a></li>
+            
+                <li data-name="Ycc.UI.Rect#scaleY"><a href="Ycc.UI.Rect.html#scaleY">scaleY</a></li>
+            
+                <li data-name="Ycc.UI.Rect#show"><a href="Ycc.UI.Rect.html#show">show</a></li>
+            
+                <li data-name="Ycc.UI.Rect#stopAllEvent"><a href="Ycc.UI.Rect.html#stopAllEvent">stopAllEvent</a></li>
+            
+                <li data-name="Ycc.UI.Rect#stopEventBubbleUp"><a href="Ycc.UI.Rect.html#stopEventBubbleUp">stopEventBubbleUp</a></li>
+            
+                <li data-name="Ycc.UI.Rect#stopType"><a href="Ycc.UI.Rect.html#stopType">stopType</a></li>
+            
+                <li data-name="Ycc.UI.Rect#strokeStyle"><a href="Ycc.UI.Rect.html#strokeStyle">strokeStyle</a></li>
+            
+                <li data-name="Ycc.UI.Rect#userData"><a href="Ycc.UI.Rect.html#userData">userData</a></li>
+            
+                <li data-name="Ycc.UI.Rect#yccClass"><a href="Ycc.UI.Rect.html#yccClass">yccClass</a></li>
+            
+            </ul>
+            <ul class="typedefs itemMembers">
+            
+            </ul>
+            <ul class="methods itemMembers">
+            
+            <span class="subtitle">Methods</span>
+            
+                <li data-name="Ycc.UI.Rect#__render"><a href="Ycc.UI.Rect.html#__render">__render</a></li>
+            
+                <li data-name="Ycc.UI.Rect#_renderContainer"><a href="Ycc.UI.Rect.html#_renderContainer">_renderContainer</a></li>
+            
+                <li data-name="Ycc.UI.Rect#addChild"><a href="Ycc.UI.Rect.html#addChild">addChild</a></li>
+            
+                <li data-name="Ycc.UI.Rect#addListener"><a href="Ycc.UI.Rect.html#addListener">addListener</a></li>
+            
+                <li data-name="Ycc.UI.Rect#clone"><a href="Ycc.UI.Rect.html#clone">clone</a></li>
+            
+                <li data-name="Ycc.UI.Rect#computeUIProps"><a href="Ycc.UI.Rect.html#computeUIProps">computeUIProps</a></li>
+            
+                <li data-name="Ycc.UI.Rect#disableEvent"><a href="Ycc.UI.Rect.html#disableEvent">disableEvent</a></li>
+            
+                <li data-name="Ycc.UI.Rect#extend"><a href="Ycc.UI.Rect.html#extend">extend</a></li>
+            
+                <li data-name="Ycc.UI.Rect#getAbsolutePosition"><a href="Ycc.UI.Rect.html#getAbsolutePosition">getAbsolutePosition</a></li>
+            
+                <li data-name="Ycc.UI.Rect#getMaxContentInWidth"><a href="Ycc.UI.Rect.html#getMaxContentInWidth">getMaxContentInWidth</a></li>
+            
+                <li data-name="Ycc.UI.Rect#init"><a href="Ycc.UI.Rect.html#init">init</a></li>
+            
+                <li data-name="Ycc.UI.Rect#isOutOfStage"><a href="Ycc.UI.Rect.html#isOutOfStage">isOutOfStage</a></li>
+            
+                <li data-name="Ycc.UI.Rect#removeChild"><a href="Ycc.UI.Rect.html#removeChild">removeChild</a></li>
+            
+                <li data-name="Ycc.UI.Rect#removeListener"><a href="Ycc.UI.Rect.html#removeListener">removeListener</a></li>
+            
+                <li data-name="Ycc.UI.Rect#removeSelf"><a href="Ycc.UI.Rect.html#removeSelf">removeSelf</a></li>
+            
+                <li data-name="Ycc.UI.Rect#render"><a href="Ycc.UI.Rect.html#render">render</a></li>
+            
+                <li data-name="Ycc.UI.Rect#renderRectBgColor"><a href="Ycc.UI.Rect.html#renderRectBgColor">renderRectBgColor</a></li>
+            
+                <li data-name="Ycc.UI.Rect#renderRectBorder"><a href="Ycc.UI.Rect.html#renderRectBorder">renderRectBorder</a></li>
+            
+                <li data-name="Ycc.UI.Rect#resumeEvent"><a href="Ycc.UI.Rect.html#resumeEvent">resumeEvent</a></li>
+            
+                <li data-name="Ycc.UI.Rect#scaleAndRotate"><a href="Ycc.UI.Rect.html#scaleAndRotate">scaleAndRotate</a></li>
+            
+                <li data-name="Ycc.UI.Rect#stop"><a href="Ycc.UI.Rect.html#stop">stop</a></li>
+            
+                <li data-name="Ycc.UI.Rect#transformToAbsolute"><a href="Ycc.UI.Rect.html#transformToAbsolute">transformToAbsolute</a></li>
+            
+                <li data-name="Ycc.UI.Rect#transformToLocal"><a href="Ycc.UI.Rect.html#transformToLocal">transformToLocal</a></li>
+            
+                <li data-name="Ycc.UI.Rect#triggerListener"><a href="Ycc.UI.Rect.html#triggerListener">triggerListener</a></li>
+            
+            </ul>
+            <ul class="events itemMembers">
+            
+            </ul>
+        </li>
+    
+        <li class="item" data-name="Ycc.UI.SingleLineText">
+            <span class="title">
+                <a href="Ycc.UI.SingleLineText.html">Ycc.UI.SingleLineText</a>
+                
+            </span>
+            <ul class="members itemMembers">
+            
+            <span class="subtitle">Members</span>
+            
+                <li data-name="Ycc.UI.SingleLineText#afterInit"><a href="Ycc.UI.SingleLineText.html#afterInit">afterInit</a></li>
+            
+                <li data-name="Ycc.UI.SingleLineText#anchorX"><a href="Ycc.UI.SingleLineText.html#anchorX">anchorX</a></li>
+            
+                <li data-name="Ycc.UI.SingleLineText#anchorY"><a href="Ycc.UI.SingleLineText.html#anchorY">anchorY</a></li>
+            
+                <li data-name="Ycc.UI.SingleLineText#baseUI"><a href="Ycc.UI.SingleLineText.html#baseUI">baseUI</a></li>
+            
+                <li data-name="Ycc.UI.SingleLineText#beforeInit"><a href="Ycc.UI.SingleLineText.html#beforeInit">beforeInit</a></li>
+            
+                <li data-name="Ycc.UI.SingleLineText#belongTo"><a href="Ycc.UI.SingleLineText.html#belongTo">belongTo</a></li>
+            
+                <li data-name="Ycc.UI.SingleLineText#color"><a href="Ycc.UI.SingleLineText.html#color">color</a></li>
+            
+                <li data-name="Ycc.UI.SingleLineText#content"><a href="Ycc.UI.SingleLineText.html#content">content</a></li>
+            
+                <li data-name="Ycc.UI.SingleLineText#ctx"><a href="Ycc.UI.SingleLineText.html#ctx">ctx</a></li>
+            
+                <li data-name="Ycc.UI.SingleLineText#disableType"><a href="Ycc.UI.SingleLineText.html#disableType">disableType</a></li>
+            
+                <li data-name="Ycc.UI.SingleLineText#displayContent"><a href="Ycc.UI.SingleLineText.html#displayContent">displayContent</a></li>
+            
+                <li data-name="Ycc.UI.SingleLineText#fill"><a href="Ycc.UI.SingleLineText.html#fill">fill</a></li>
+            
+                <li data-name="Ycc.UI.SingleLineText#fillStyle"><a href="Ycc.UI.SingleLineText.html#fillStyle">fillStyle</a></li>
+            
+                <li data-name="Ycc.UI.SingleLineText#fontSize"><a href="Ycc.UI.SingleLineText.html#fontSize">fontSize</a></li>
+            
+                <li data-name="Ycc.UI.SingleLineText#id"><a href="Ycc.UI.SingleLineText.html#id">id</a></li>
+            
+                <li data-name="Ycc.UI.SingleLineText#lineWidth"><a href="Ycc.UI.SingleLineText.html#lineWidth">lineWidth</a></li>
+            
+                <li data-name="Ycc.UI.SingleLineText#listeners"><a href="Ycc.UI.SingleLineText.html#listeners">listeners</a></li>
+            
+                <li data-name="Ycc.UI.SingleLineText#name"><a href="Ycc.UI.SingleLineText.html#name">name</a></li>
+            
+                <li data-name="Ycc.UI.SingleLineText#onclick"><a href="Ycc.UI.SingleLineText.html#onclick">onclick</a></li>
+            
+                <li data-name="Ycc.UI.SingleLineText#oncomputeend"><a href="Ycc.UI.SingleLineText.html#oncomputeend">oncomputeend</a></li>
+            
+                <li data-name="Ycc.UI.SingleLineText#oncomputestart"><a href="Ycc.UI.SingleLineText.html#oncomputestart">oncomputestart</a></li>
+            
+                <li data-name="Ycc.UI.SingleLineText#ondragend"><a href="Ycc.UI.SingleLineText.html#ondragend">ondragend</a></li>
+            
+                <li data-name="Ycc.UI.SingleLineText#ondragging"><a href="Ycc.UI.SingleLineText.html#ondragging">ondragging</a></li>
+            
+                <li data-name="Ycc.UI.SingleLineText#ondragstart"><a href="Ycc.UI.SingleLineText.html#ondragstart">ondragstart</a></li>
+            
+                <li data-name="Ycc.UI.SingleLineText#onmousedown"><a href="Ycc.UI.SingleLineText.html#onmousedown">onmousedown</a></li>
+            
+                <li data-name="Ycc.UI.SingleLineText#onmousemove"><a href="Ycc.UI.SingleLineText.html#onmousemove">onmousemove</a></li>
+            
+                <li data-name="Ycc.UI.SingleLineText#onmouseout"><a href="Ycc.UI.SingleLineText.html#onmouseout">onmouseout</a></li>
+            
+                <li data-name="Ycc.UI.SingleLineText#onmouseover"><a href="Ycc.UI.SingleLineText.html#onmouseover">onmouseover</a></li>
+            
+                <li data-name="Ycc.UI.SingleLineText#onmouseup"><a href="Ycc.UI.SingleLineText.html#onmouseup">onmouseup</a></li>
+            
+                <li data-name="Ycc.UI.SingleLineText#onrenderend"><a href="Ycc.UI.SingleLineText.html#onrenderend">onrenderend</a></li>
+            
+                <li data-name="Ycc.UI.SingleLineText#onrenderstart"><a href="Ycc.UI.SingleLineText.html#onrenderstart">onrenderstart</a></li>
+            
+                <li data-name="Ycc.UI.SingleLineText#ontap"><a href="Ycc.UI.SingleLineText.html#ontap">ontap</a></li>
+            
+                <li data-name="Ycc.UI.SingleLineText#ontouchend"><a href="Ycc.UI.SingleLineText.html#ontouchend">ontouchend</a></li>
+            
+                <li data-name="Ycc.UI.SingleLineText#ontouchmove"><a href="Ycc.UI.SingleLineText.html#ontouchmove">ontouchmove</a></li>
+            
+                <li data-name="Ycc.UI.SingleLineText#ontouchstart"><a href="Ycc.UI.SingleLineText.html#ontouchstart">ontouchstart</a></li>
+            
+                <li data-name="Ycc.UI.SingleLineText#overflow"><a href="Ycc.UI.SingleLineText.html#overflow">overflow</a></li>
+            
+                <li data-name="Ycc.UI.SingleLineText#rect"><a href="Ycc.UI.SingleLineText.html#rect">rect</a></li>
+            
+                <li data-name="Ycc.UI.SingleLineText#rectBgColor"><a href="Ycc.UI.SingleLineText.html#rectBgColor">rectBgColor</a></li>
+            
+                <li data-name="Ycc.UI.SingleLineText#rectBorderColor"><a href="Ycc.UI.SingleLineText.html#rectBorderColor">rectBorderColor</a></li>
+            
+                <li data-name="Ycc.UI.SingleLineText#rectBorderWidth"><a href="Ycc.UI.SingleLineText.html#rectBorderWidth">rectBorderWidth</a></li>
+            
+                <li data-name="Ycc.UI.SingleLineText#rotation"><a href="Ycc.UI.SingleLineText.html#rotation">rotation</a></li>
+            
+                <li data-name="Ycc.UI.SingleLineText#scaleX"><a href="Ycc.UI.SingleLineText.html#scaleX">scaleX</a></li>
+            
+                <li data-name="Ycc.UI.SingleLineText#scaleY"><a href="Ycc.UI.SingleLineText.html#scaleY">scaleY</a></li>
+            
+                <li data-name="Ycc.UI.SingleLineText#show"><a href="Ycc.UI.SingleLineText.html#show">show</a></li>
+            
+                <li data-name="Ycc.UI.SingleLineText#stopAllEvent"><a href="Ycc.UI.SingleLineText.html#stopAllEvent">stopAllEvent</a></li>
+            
+                <li data-name="Ycc.UI.SingleLineText#stopEventBubbleUp"><a href="Ycc.UI.SingleLineText.html#stopEventBubbleUp">stopEventBubbleUp</a></li>
+            
+                <li data-name="Ycc.UI.SingleLineText#stopType"><a href="Ycc.UI.SingleLineText.html#stopType">stopType</a></li>
+            
+                <li data-name="Ycc.UI.SingleLineText#strokeStyle"><a href="Ycc.UI.SingleLineText.html#strokeStyle">strokeStyle</a></li>
+            
+                <li data-name="Ycc.UI.SingleLineText#userData"><a href="Ycc.UI.SingleLineText.html#userData">userData</a></li>
+            
+                <li data-name="Ycc.UI.SingleLineText#xAlign"><a href="Ycc.UI.SingleLineText.html#xAlign">xAlign</a></li>
+            
+                <li data-name="Ycc.UI.SingleLineText#yAlign"><a href="Ycc.UI.SingleLineText.html#yAlign">yAlign</a></li>
+            
+                <li data-name="Ycc.UI.SingleLineText#yccClass"><a href="Ycc.UI.SingleLineText.html#yccClass">yccClass</a></li>
+            
+            </ul>
+            <ul class="typedefs itemMembers">
+            
+            </ul>
+            <ul class="methods itemMembers">
+            
+            <span class="subtitle">Methods</span>
+            
+                <li data-name="Ycc.UI.SingleLineText#__render"><a href="Ycc.UI.SingleLineText.html#__render">__render</a></li>
+            
+                <li data-name="Ycc.UI.SingleLineText#_renderContainer"><a href="Ycc.UI.SingleLineText.html#_renderContainer">_renderContainer</a></li>
+            
+                <li data-name="Ycc.UI.SingleLineText#addChild"><a href="Ycc.UI.SingleLineText.html#addChild">addChild</a></li>
+            
+                <li data-name="Ycc.UI.SingleLineText#addListener"><a href="Ycc.UI.SingleLineText.html#addListener">addListener</a></li>
+            
+                <li data-name="Ycc.UI.SingleLineText#clone"><a href="Ycc.UI.SingleLineText.html#clone">clone</a></li>
+            
+                <li data-name="Ycc.UI.SingleLineText#computeUIProps"><a href="Ycc.UI.SingleLineText.html#computeUIProps">computeUIProps</a></li>
+            
+                <li data-name="Ycc.UI.SingleLineText#disableEvent"><a href="Ycc.UI.SingleLineText.html#disableEvent">disableEvent</a></li>
+            
+                <li data-name="Ycc.UI.SingleLineText#extend"><a href="Ycc.UI.SingleLineText.html#extend">extend</a></li>
+            
+                <li data-name="Ycc.UI.SingleLineText#getAbsolutePosition"><a href="Ycc.UI.SingleLineText.html#getAbsolutePosition">getAbsolutePosition</a></li>
+            
+                <li data-name="Ycc.UI.SingleLineText#getMaxContentInWidth"><a href="Ycc.UI.SingleLineText.html#getMaxContentInWidth">getMaxContentInWidth</a></li>
+            
+                <li data-name="Ycc.UI.SingleLineText#init"><a href="Ycc.UI.SingleLineText.html#init">init</a></li>
+            
+                <li data-name="Ycc.UI.SingleLineText#isOutOfStage"><a href="Ycc.UI.SingleLineText.html#isOutOfStage">isOutOfStage</a></li>
+            
+                <li data-name="Ycc.UI.SingleLineText#removeChild"><a href="Ycc.UI.SingleLineText.html#removeChild">removeChild</a></li>
+            
+                <li data-name="Ycc.UI.SingleLineText#removeListener"><a href="Ycc.UI.SingleLineText.html#removeListener">removeListener</a></li>
+            
+                <li data-name="Ycc.UI.SingleLineText#removeSelf"><a href="Ycc.UI.SingleLineText.html#removeSelf">removeSelf</a></li>
+            
+                <li data-name="Ycc.UI.SingleLineText#render"><a href="Ycc.UI.SingleLineText.html#render">render</a></li>
+            
+                <li data-name="Ycc.UI.SingleLineText#renderRectBgColor"><a href="Ycc.UI.SingleLineText.html#renderRectBgColor">renderRectBgColor</a></li>
+            
+                <li data-name="Ycc.UI.SingleLineText#renderRectBorder"><a href="Ycc.UI.SingleLineText.html#renderRectBorder">renderRectBorder</a></li>
+            
+                <li data-name="Ycc.UI.SingleLineText#resumeEvent"><a href="Ycc.UI.SingleLineText.html#resumeEvent">resumeEvent</a></li>
+            
+                <li data-name="Ycc.UI.SingleLineText#scaleAndRotate"><a href="Ycc.UI.SingleLineText.html#scaleAndRotate">scaleAndRotate</a></li>
+            
+                <li data-name="Ycc.UI.SingleLineText#stop"><a href="Ycc.UI.SingleLineText.html#stop">stop</a></li>
+            
+                <li data-name="Ycc.UI.SingleLineText#transformToAbsolute"><a href="Ycc.UI.SingleLineText.html#transformToAbsolute">transformToAbsolute</a></li>
+            
+                <li data-name="Ycc.UI.SingleLineText#transformToLocal"><a href="Ycc.UI.SingleLineText.html#transformToLocal">transformToLocal</a></li>
+            
+                <li data-name="Ycc.UI.SingleLineText#triggerListener"><a href="Ycc.UI.SingleLineText.html#triggerListener">triggerListener</a></li>
+            
+            </ul>
+            <ul class="events itemMembers">
+            
+            </ul>
+        </li>
+    
+    </ul>
+</div>
+    <div class="main">
+        <h1 class="page-title" data-filename="Ycc.Layer.class.js.html">Source: Ycc.Layer.class.js</h1>
+        
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source "><code>/**
+ * @file    Ycc.Layer.class.js
+ * @author  xiaohei
+ * @date    2017/11/16
+ * @description  Ycc.Layer.class文件
+ * @requires Ycc.Listener
+ */
+
+
+
+(function (Ycc) {
+	
+	
+	var layerIndex = 0;
+	
+	/**
+	 * 图层类。
+	 * 每新建一个图层，都会新建一个canvas元素。
+	 * 每个图层都跟这个canvas元素绑定。
+	 * @param yccInstance	{Ycc} ycc实例
+	 * @param option		{object} 配置项
+	 * @param option.enableEventManager		{boolean} 是否监听舞台事件
+	 *
+	 * @constructor
+	 * @extends Ycc.Listener
+	 */
+	Ycc.Layer = function(yccInstance,option){
+	 	Ycc.Listener.call(this);
+
+	 	option = option || {};
+		
+		/**
+		 * 类型
+		 */
+	 	this.yccClass = Ycc.Layer;
+	 	
+		/**
+		 * 存储图层中的所有UI。UI的顺序，即为图层中的渲染顺序。
+		 * @type {Ycc.UI[]}
+		 */
+		this.uiList = [];
+		
+		/**
+		 * 该图层ui的总数（只在渲染之后赋值）
+		 * @type {number}
+		 */
+		this.uiCountRecursion = 0;
+		
+		/**
+		 * ycc实例的引用
+		 */
+		this.yccInstance = yccInstance;
+		
+		/**
+		 * 当前图层的绘图环境
+		 * @type {CanvasRenderingContext2D}
+		 */
+		this.ctx = null;
+		
+		/**
+		 * 图层id
+		 */
+		this.id = layerIndex++;
+		
+		/**
+		 * 图层类型。
+		 * `ui`表示用于绘图的图层。`tool`表示辅助的工具图层。`text`表示文字图层。
+		 * 默认为`ui`。
+		 */
+		this.type = "ui";
+		
+		/**
+		 * 图层中的文字。仅当图层type为text时有值。
+		 * @type {string}
+		 */
+		this.textValue = "";
+		
+		/**
+		 * 图层名称
+		 * @type {string}
+		 */
+		this.name = option.name?option.name:"图层_"+this.type+"_"+this.id;
+		
+		/**
+		 * 图层位置的x坐标。默认与舞台左上角重合
+		 * @type {number}
+		 */
+		this.x = 0;
+		
+		/**
+		 * 图层位置的Y坐标。默认与舞台左上角重合
+		 * @type {number}
+		 */
+		this.y = 0;
+		
+		/**
+		 * 图层宽
+		 * @type {number}
+		 */
+		this.width = yccInstance.getStageWidth();
+		/**
+		 * 图层高
+		 * @type {number}
+		 */
+		this.height = yccInstance.getStageHeight();
+		
+		/**
+		 * 图层是否显示
+		 */
+		this.show = true;
+		
+		/**
+		 * 是否监听舞台的事件。用于控制舞台事件是否广播至图层。默认关闭
+		 * @type {boolean}
+		 */
+		this.enableEventManager = false;
+		
+		/**
+		 * 是否接收每帧更新的通知。默认为false
+		 * @type {boolean}
+		 */
+		this.enableFrameEvent = false;
+		
+		/**
+		 * 若接收通知，此函数为接收通知的回调函数。当且仅当enableFrameEvent为true时生效
+		 * @type {function}
+		 */
+		this.onFrameComing = function () {};
+		
+		
+		
+		// 覆盖参数
+		Ycc.utils.extend(this,option);
+		// 初始化
+		this.init();
+	};
+	Ycc.Layer.prototype = new Ycc.Listener();
+	Ycc.Layer.prototype.constructor = Ycc.Layer;
+	
+	
+	/**
+	 * 释放layer的内存，等待GC
+	 * 将所有引用属性置为null
+	 * @param layer
+	 */
+	Ycc.Layer.release = function (layer) {
+		Ycc.Listener.release(layer);
+		
+		/**
+		 * 类型
+		 */
+		layer.yccClass = null;
+		
+		/**
+		 * 存储图层中的所有UI。UI的顺序，即为图层中的渲染顺序。
+		 * @type {Ycc.UI[]}
+		 */
+		layer.uiList = null;
+		
+		/**
+		 * ycc实例的引用
+		 */
+		layer.yccInstance = null;
+		/**
+		 * 图层是否显示
+		 */
+		layer.show = false;
+		
+		/**
+		 * 是否监听舞台的事件。用于控制舞台事件是否广播至图层。默认关闭
+		 * @type {boolean}
+		 */
+		layer.enableEventManager = false;
+		
+		/**
+		 * 是否接收每帧更新的通知。默认为false
+		 * @type {boolean}
+		 */
+		layer.enableFrameEvent = false;
+		
+		/**
+		 * 若接收通知，此函数为接收通知的回调函数。当且仅当enableFrameEvent为true时生效
+		 * @type {function}
+		 */
+		layer.onFrameComing = null;
+	};
+	
+	
+	
+	
+	
+	
+	
+	
+	/**
+	 * 初始化
+	 * @return {null}
+	 */
+	Ycc.Layer.prototype.init = function () {
+		var self = this;
+		
+		// 初始化图层属性
+		this.ctx = this.yccInstance.ctx;
+		
+		// 初始化画布属性
+		self._setCtxProps();
+		// 初始化图层事件
+		// self._initEvent();
+	};
+	
+	/**
+	 * 事件的初始化。此方法已废弃，改由舞台转发事件
+	 * &lt;br> 注：如果鼠标按下与抬起的位置有变动，默认不会触发click事件。
+	 * @private
+	 */
+	Ycc.Layer.prototype._initEvent = function () {
+		var self = this;
+		// 记录鼠标按下的事件
+		var mouseDownYccEvent = null;
+		// 记录鼠标抬起的事件
+		var mouseUpYccEvent = null;
+		// 鼠标是否已经移动
+		var mouseHasMove = false;
+		// 是否有拖拽事件触发的标志位
+		var dragFlag = false;
+		
+		this.addListener("click",function (e) {
+			// 如果鼠标已经改变了位置，那么click事件不触发
+			if(mouseHasMove) return;
+			defaultMouseListener(e);
+		});
+		
+		this.addListener("mousedown",function (e) {
+			mouseHasMove = false;
+			dragFlag = false;
+			mouseDownYccEvent = e;
+			defaultMouseListener(e);
+		});
+
+		this.addListener("mouseup",function (e) {
+			if(dragFlag){
+				var dragendEvent = new Ycc.Event({
+					type:"dragend",
+					x:e.x,
+					y:e.y,
+					mouseDownYccEvent:mouseDownYccEvent
+				});
+				self.triggerListener("dragend",dragendEvent);
+				if(mouseDownYccEvent&amp;&amp;mouseDownYccEvent.target){
+					self.target = mouseDownYccEvent.target;
+					self.target.triggerListener("dragend",dragendEvent);
+				}
+			}
+			e.mouseDownYccEvent = mouseDownYccEvent = null;
+			mouseUpYccEvent = e;
+			
+			defaultMouseListener(e);
+		});
+		
+		this.addListener("mousemove",mouseMoveListener);
+		
+		
+		/**
+		 * 图层中鼠标移动的监听器
+		 * @param e	{Ycc.Event}
+		 */
+		function mouseMoveListener(e) {
+			// 判断事件是否已经被阻止
+			if(e.stop) return;
+			// 判断是否真的移动
+			if(mouseDownYccEvent &amp;&amp; e.x===mouseDownYccEvent.x&amp;&amp;e.y===mouseDownYccEvent.y) return;
+			// 解决webkit内核mouseup自动触发mousemove的BUG
+			if(mouseUpYccEvent &amp;&amp; e.x===mouseUpYccEvent.x&amp;&amp;e.y===mouseUpYccEvent.y) {
+				return;
+			}
+
+			// 设置已经移动的标志位
+			mouseHasMove = true;
+			
+			// 如果鼠标已经按下，则表示拖拽事件。
+			if(mouseDownYccEvent){
+				// 1.拖拽之前，触发一次dragstart事件
+				if(!dragFlag){
+					var dragStartEvent = new Ycc.Event({
+						type:"dragstart",
+						x:mouseDownYccEvent.x,
+						y:mouseDownYccEvent.y,
+						mouseDownYccEvent:mouseDownYccEvent
+					});
+					
+					// 先触发图层的拖拽事件，该事件没有target属性
+					self.triggerListener(dragStartEvent.type,dragStartEvent);
+					if(mouseDownYccEvent.target){
+						dragStartEvent.target = mouseDownYccEvent.target;
+						dragStartEvent.target.triggerListener(dragStartEvent.type,dragStartEvent);
+					}
+				}
+
+				// 2.修改拖拽已经发生的标志位
+				dragFlag = true;
+				// 3.触发dragging事件
+				var draggingEvent = new Ycc.Event({
+					type:"dragging",
+					x:e.x,
+					y:e.y,
+					mouseDownYccEvent:mouseDownYccEvent
+				});
+				// 先触发图层的拖拽事件，该事件没有target属性
+				self.triggerListener(draggingEvent.type,draggingEvent);
+				if(mouseDownYccEvent.target){
+					draggingEvent.target = mouseDownYccEvent.target;
+					draggingEvent.target.triggerListener(draggingEvent.type,draggingEvent);
+				}
+				// 触发拖拽事件时，不再触发鼠标的移动事件，所以此处直接返回
+				return null;
+			}
+			
+			// 下面处理普通的鼠标移动事件
+			for(var i = self.uiList.length-1;i>=0;i--){
+				var ui = self.uiList[i];
+				// 图层内部UI的相对坐标
+				var dot = new Ycc.Math.Dot(e.x - ui.belongTo.x,e.y - ui.belongTo.y);
+				// 如果位于rect内，触发事件,并阻止继续传递
+				if(dot.isInRect(ui.rect)){
+					e.stop = true;
+					e.mouseDownYccEvent = mouseDownYccEvent;
+					e.mouseUpYccEvent = mouseUpYccEvent;
+					e.target = ui;
+					ui.triggerListener(e.type,e);
+					break;
+				}
+			}
+		}
+		
+		
+		/**
+		 * 默认的事件监听器。默认鼠标事件触发点位于rect内，事件才转发给UI。
+		 * @todo 其他事件需要考虑图层坐标
+		 * @param e	{Ycc.Event}	ycc事件，e中的坐标值x、y为绝对坐标
+		 */
+		function defaultMouseListener(e) {
+			if(e.stop) return;
+			for(var i = self.uiList.length-1;i>=0;i--){
+				var ui = self.uiList[i];
+				var dot = new Ycc.Math.Dot(e.x,e.y);
+				// 如果位于rect内，并且事件未被阻止，触发事件,并阻止继续传递
+				if(ui.rect &amp;&amp; dot.isInRect(ui.getAbsolutePosition()) &amp;&amp; e.stop===false){
+					e.stop = true;
+					e.mouseDownYccEvent = mouseDownYccEvent;
+					e.mouseUpYccEvent = mouseUpYccEvent;
+					e.target = ui;
+					e.targetDeltaPosition = new Ycc.Math.Dot(e.x-ui.getAbsolutePosition().x,e.y-ui.getAbsolutePosition().y);
+					ui.triggerListener(e.type,e);
+					break;
+				}
+			}
+		}
+		
+		/**
+		 * 直接将事件转发给UI。不做任何处理。
+		 * @param e
+		 */
+		function broadcastDirect(e) {
+			e.mouseDownYccEvent = mouseDownYccEvent;
+			for(var i = 0;i&lt;self.uiList.length;i++){
+				var ui = self.uiList[i];
+				ui.triggerListener(e.type,e);
+			}
+		}
+		
+	};
+	
+	/**
+	 * 设置画布所有的属性
+	 */
+	Ycc.Layer.prototype._setCtxProps = function (props) {
+		var self = this;
+		var ctxConfig = {
+			fontStyle:"normal",
+			fontVariant:"normal",
+			fontWeight:"normal",
+			fontSize:"16px",
+			fontFamily:"微软雅黑",
+			font:"16px 微软雅黑",
+			textBaseline:"hanging",
+			fillStyle:"red",
+			strokeStyle:"blue"
+		};
+		ctxConfig = Ycc.utils.extend(ctxConfig,props);
+		
+		ctxConfig.font = [ctxConfig.fontStyle,ctxConfig.fontVariant,ctxConfig.fontWeight,ctxConfig.fontSize,ctxConfig.fontFamily].join(" ");
+		for(var key in ctxConfig){
+			if(!ctxConfig.hasOwnProperty(key)) continue;
+			self.ctx[key] = ctxConfig[key];
+		}
+	};
+	
+	
+	/**
+	 * 清除图层
+	 */
+	Ycc.Layer.prototype.clear = function () {
+		this.ctx.clearRect(0,0,this.width,this.height);
+	};
+	
+	
+	/**
+	 * 清空图层内的所有UI
+	 */
+	Ycc.Layer.prototype.removeAllUI = function () {
+		this.uiList.forEach(function (ui) {
+			Ycc.UI.release(ui);
+		});
+		this.uiList.length=0;
+	};
+	
+	
+	/**
+	 * 删除自身
+	 */
+	Ycc.Layer.prototype.removeSelf = function () {
+		this.removeAllUI();
+		this.yccInstance.layerManager.deleteLayer(this);
+		Ycc.Layer.release(this);
+	};
+	
+	
+	/**
+	 * 渲染图层至舞台
+	 */
+	Ycc.Layer.prototype.renderToStage = function () {
+		if(this.show)
+			this.yccInstance.ctx.drawImage(this.ctx.canvas,0,0,this.width,this.height);
+	};
+	
+	/**
+	 * 添加一个UI图形至图层，如果设置了beforUI，该UI会被添加至该UI之前
+	 * @param ui {Ycc.UI}	UI图形
+	 * @param beforeUI {Ycc.UI|null}	UI图形
+	 */
+	Ycc.Layer.prototype.addUI = function (ui,beforeUI) {
+		var self = this;
+		// 遍历所有节点，初始化
+		ui.itor().each(function (child) {
+			child.init(self);
+		});
+		if(!beforeUI)
+			return this.uiList.push(ui);
+		var index = this.uiList.indexOf(beforeUI);
+		if(index===-1)
+			return this.uiList.push(ui);
+		this.uiList.splice(index,0,ui);
+	};
+	
+	/**
+	 * 删除图层内的某个UI图形，及其子UI
+	 * @param ui
+	 */
+	Ycc.Layer.prototype.removeUI = function (ui) {
+		if(!ui) return false;
+		var index = this.uiList.indexOf(ui);
+		if(index===-1) return false;
+		
+		Ycc.UI.release(ui);
+		this.uiList[index]=null;
+		this.uiList.splice(index,1);
+		return true;
+	};
+	
+	/**
+	 * 渲染Layer。
+	 * &lt;br>注意：并没有渲染至舞台。
+	 */
+	Ycc.Layer.prototype.render = function () {
+		for(var i=0;i&lt;this.uiList.length;i++){
+			if(!this.uiList[i].show) continue;
+			this.uiList[i].render();
+		}
+	};
+	
+	/**
+	 * 重绘图层。
+	 * &lt;br>注意：并没有渲染至舞台。
+	 */
+	Ycc.Layer.prototype.reRender = function () {
+		// this.clear();
+		var self = this;
+		self.uiCountRecursion=0;
+		for(var i=0;i&lt;this.uiList.length;i++){
+			if(!this.uiList[i].show) continue;
+			//this.uiList[i].__render();
+			// 按树的层次向下渲染
+			this.uiList[i].itor().depthDown(function (ui, level) {
+				//console.log(level,ui);
+				self.uiCountRecursion++;
+				if(ui.show)
+					ui.__render();
+				else
+					return -1;
+			});
+		}
+		// 兼容wx端，wx端多一个draw API
+		self.ctx.draw &amp;&amp; self.ctx.draw();
+	};
+	
+	/**
+	 * 获取图层中某个点所对应的最上层UI，最上层UI根据层级向下遍历，取层级最深的可见UI。
+	 * @param dot {Ycc.Math.Dot}	点坐标，为舞台的绝对坐标
+	 * @param uiIsShow {Boolean}	是否只获取显示在舞台上的UI，默认为true
+	 * @return {UI}
+	 */
+	Ycc.Layer.prototype.getUIFromPointer = function (dot,uiIsShow) {
+		uiIsShow = Ycc.utils.isBoolean(uiIsShow)?uiIsShow:true;
+		var self = this;
+		var temp = null;
+		/*for(var i =self.uiList.length-1;i>=0;i--){
+			var ui = self.uiList[i];
+			if(uiIsShow&amp;&amp;!ui.show) continue;
+			// 右子树优先寻找
+			ui.itor().rightChildFirst(function (child) {
+				console.log(child);
+				// 跳过不可见的UI
+				if(uiIsShow&amp;&amp;!child.show) return false;
+				
+				// 如果位于rect内，此处根据绝对坐标比较
+				if(dot.isInRect(child.getAbsolutePosition())){
+					console.log(child,222);
+					temp = child;
+					return true;
+				}
+			});
+		}*/
+		
+		
+		var tempLevel = 0;
+		for(var i=0;i&lt;this.uiList.length;i++){
+			var ui = self.uiList[i];
+			if(uiIsShow&amp;&amp;!ui.show) continue;
+			//this.uiList[i].__render();
+			// 按树的层次向下遍历
+			this.uiList[i].itor().depthDown(function (child, level) {
+				// 跳过不可见的UI，返回-1阻止继续遍历其子UI
+				if(uiIsShow&amp;&amp;!child.show) return -1;
+
+				// 如果位于rect内，并且层级更深，则暂存，此处根据绝对坐标比较
+				if(dot.isInRect(child.getAbsolutePosition()) &amp;&amp; level>=tempLevel){
+					temp = child;
+					tempLevel=level;
+				}
+			});
+		}
+		return temp;
+	};
+	
+	
+	/**
+	 * 根据图层坐标，将图层内某个点的相对坐标（相对于图层），转换为舞台的绝对坐标
+	 * @param dotOrArr	{Ycc.Math.Dot | Ycc.Math.Dot[]}
+	 * @return {Ycc.Math.Dot | Ycc.Math.Dot[]}
+	 */
+	Ycc.Layer.prototype.transformToAbsolute = function (dotOrArr) {
+		var res = null;
+		if(Ycc.utils.isArray(dotOrArr)){
+			res = [];
+			for(var i=0;i&lt;dotOrArr.length;i++){
+				var resDot = new Ycc.Math.Dot(0,0);
+				var dot = dotOrArr[i];
+				resDot.x=this.x+dot.x;
+				resDot.y=this.y+dot.y;
+				res.push(resDot);
+			}
+			return res;
+		}
+		res = new Ycc.Math.Dot(0,0);
+		res.x = this.x+(dotOrArr.x);
+		res.y = this.y+(dotOrArr.y);
+		return res;
+	};
+	
+	/**
+	 * 根据图层坐标，将某个点的绝对坐标，转换为图层内的相对坐标
+	 * @param dotOrArr	{Ycc.Math.Dot | Ycc.Math.Dot[]}
+	 * @return {Ycc.Math.Dot | Ycc.Math.Dot[]}
+	 */
+	Ycc.Layer.prototype.transformToLocal = function (dotOrArr) {
+		var res = null;
+		if(Ycc.utils.isArray(dotOrArr)){
+			res = [];
+			for(var i=0;i&lt;dotOrArr.length;i++){
+				var resDot = new Ycc.Math.Dot(0,0);
+				var dot = dotOrArr[i];
+				resDot.x=dot.x-this.x;
+				resDot.y=dot.y-this.y;
+				res.push(resDot);
+			}
+			return res;
+		}
+		res = new Ycc.Math.Dot(0,0);
+		res.x = (dotOrArr.x)-this.x;
+		res.y = (dotOrArr.y)-this.y;
+		return res;
+	};
+	
+})(Ycc);</code></pre>
+        </article>
+    </section>
+
+
+
+
+
+
+        
+
+        <footer>
+            Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Wed Dec 12 2018 15:45:45 GMT+0800 (中国标准时间)
+        </footer>
+    </div>
+</div>
+<script>prettyPrint();</script>
+<script src="scripts/linenumber.js"></script>
+<script src="scripts/main.js"></script>
+</body>
+</html>
