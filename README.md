@@ -69,8 +69,9 @@ ycc.layerManager.reRenderAllLayerToStage();
 
 在运行如上代码前，请确认页面已经引入了`ycc.js`文件。
 
-访问更多的示例，直接点击[查看线上示例](http://www.lizhiqianduan.com/products/ycc/examples/)，或者下载Ycc模块后点击查看`/ycc/examples/index.html`。
+#### 示例
 
+访问更多的示例，你可以直接点击[查看线上示例](http://www.lizhiqianduan.com/products/ycc/examples/)，或者下载Ycc模块后点击查看`/ycc/examples/index.html`。
 
 #### 文档
 
