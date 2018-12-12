@@ -15,12 +15,18 @@
 	 * @param option	{object}		所有可配置的配置项
 	 * @param option.rect	{Ycc.Math.Rect}	容纳区。会根据属性设置动态修改。
 	 * @param option.fillMode=none {string} 填充方式
-	 * 		<br> none -- 无填充方式。左上角对齐，超出隐藏，不修改rect大小。
-	 * 		<br> repeat -- 重复。左上角对齐，重复平铺图片，不修改rect大小，超出隐藏。
-	 * 		<br> scale -- 缩放。左上角对齐，缩放至整个rect区域，不修改rect大小。
-	 * 		<br> auto -- 自动。左上角对齐，rect大小自动适配图片。若图片超出rect，会动态修改rect大小。
-	 * 		<br> scale9Grid -- 9宫格模式填充。左上角对齐，中间区域将拉伸，不允许图片超出rect区域大小，不会修改rect大小。
-	 * @param option.res	{Image}	需要填充的图片资源。注：必须已加载完成。
+	 * 		<br> none 			-- 无填充方式。左上角对齐，超出隐藏，不修改rect大小。
+	 * 		<br> repeat 		-- 重复。左上角对齐，重复平铺图片，不修改rect大小，超出隐藏。
+	 * 		<br> scale 			-- 缩放。左上角对齐，缩放至整个rect区域，不修改rect大小。
+	 * 		<br> scaleRepeat 	-- 先缩放再重复。左上角对齐，缩放至某个rect区域，再重复填充整个rect区域，不修改rect大小。
+	 * 		<br> auto 			-- 自动。左上角对齐，rect大小自动适配图片。若图片超出rect，会动态修改rect大小。
+	 * 		<br> scale9Grid 	-- 9宫格模式填充。左上角对齐，中间区域将拉伸，不允许图片超出rect区域大小，不会修改rect大小。
+	 * @param option.res	{Image}		需要填充的图片资源。注：必须已加载完成。
+	 * @param option.mirror	{Number}	将图片镜像绘制方式
+	 * 		<br> 0		--		无
+	 * 		<br> 1		--		上下颠倒
+	 * 		<br> 2		--		左右翻转
+	 * 		<br> 3		--		上下左右颠倒
 	 * @param option.scale9GridRect	{Ycc.Math.Rect}	9宫格相对于res图片的中间区域，当且仅当fillMode为scale9Grid有效。
 	 * @constructor
 	 * @extends Ycc.UI.Base
@@ -45,17 +51,34 @@
 		 * @type {Image}
 		 */
 		this.res = null;
-
+		
+		/**
+		 * 图片颠倒方式
+		 * 		<br> 0		--		无
+		 * 		<br> 1		--		左右颠倒
+		 * 		<br> 2		--		上下翻转
+		 * 		<br> 3		--		上下左右颠倒
+		 * @type {number}
+		 */
+		this.mirror = 0;
+		
 		/**
 		 * 9宫格相对于res图片的中间区域，当且仅当fillMode为scale9Grid有效。
 		 * @type {Ycc.Math.Rect}
 		 */
 		this.scale9GridRect=null;
 		
+		/**
+		 * 缩放重复模式下，原始图片的缩放区域，当且仅当fillMode为scaleRepeat有效。
+		 * @type {null}
+		 */
+		this.scaleRepeatRect = null;
+		
 
 		this.extend(option);
 	};
-	Ycc.UI.Image.prototype = new Ycc.UI.Base();
+	// 继承prototype
+	Ycc.utils.mergeObject(Ycc.UI.Image.prototype,Ycc.UI.Base.prototype);
 	Ycc.UI.Image.prototype.constructor = Ycc.UI.Image;
 	
 	
@@ -71,6 +94,26 @@
 		}
 	};
 	
+	/**
+	 * 处理镜像
+	 * @param rect {Ycc.Math.Rect} 计算之后的图片容纳区
+	 * @private
+	 */
+	Ycc.UI.Image.prototype._processMirror = function (rect) {
+		if(this.mirror===1){
+			this.ctx.scale(-1, 1);
+			this.ctx.translate(-rect.x*2-rect.width,0);
+		}
+		if(this.mirror===2){
+			this.ctx.scale(1, -1);
+			this.ctx.translate(0,-rect.y*2-rect.height);
+		}
+		if(this.mirror===3){
+			this.ctx.scale(-1, -1);
+			this.ctx.translate(-rect.x*2-rect.width,-rect.y*2-rect.height);
+		}
+		
+	};
 	
 	/**
 	 * 绘制
@@ -81,16 +124,10 @@
 		
 		var rect = this.getAbsolutePosition();//this.rect;
 		var img = this.res;
-		// this.ctx.save();
-		// this.ctx.beginPath();
-		// this.ctx.rect(rect.x,rect.y,rect.width,rect.height);
-		// this.ctx.closePath();
-		// this.ctx.fillStyle = this.rectBgColor;
-		// this.ctx.fill();
-		// this.ctx.restore();
-
+		// 局部变量
+		var i,j,wCount,hCount,xRest,yRest;
 		
-
+		this._processMirror(rect);
 		if(this.fillMode === "none")
 			this.ctx.drawImage(this.res,0,0,rect.width,rect.height,rect.x,rect.y,rect.width,rect.height);
 		else if(this.fillMode === "scale")
@@ -99,13 +136,13 @@
 			this.ctx.drawImage(this.res,0,0,img.width,img.height,rect.x,rect.y,rect.width,rect.height);
 		}else if(this.fillMode === "repeat"){
 			// x,y方向能容纳的img个数
-			var wCount = parseInt(rect.width/img.width)+1;
-			var hCount = parseInt(rect.height/img.height)+1;
+			wCount = parseInt(rect.width/img.width)+1;
+			hCount = parseInt(rect.height/img.height)+1;
 
-			for(var i=0;i<wCount;i++){
-				for(var j=0;j<hCount;j++){
-					var xRest = img.width;
-					var yRest = img.height;
+			for(i=0;i<wCount;i++){
+				for(j=0;j<hCount;j++){
+					xRest = img.width;
+					yRest = img.height;
 					if(i===wCount-1)
 						xRest = rect.width-i*img.width;
 					if(j===hCount-1)
@@ -114,6 +151,26 @@
 						0,0,
 						xRest,yRest,
 						rect.x+img.width*i,rect.y+img.height*j,
+						xRest,yRest);
+				}
+			}
+		}else if(this.fillMode === "scaleRepeat"){
+			// x,y方向能容纳的img个数
+			wCount = parseInt(rect.width/this.scaleRepeatRect.width)+1;
+			hCount = parseInt(rect.height/this.scaleRepeatRect.height)+1;
+			
+			for(i=0;i<wCount;i++){
+				for(j=0;j<hCount;j++){
+					xRest = this.scaleRepeatRect.width;
+					yRest = this.scaleRepeatRect.height;
+					if(i===wCount-1)
+						xRest = rect.width-i*this.scaleRepeatRect.width;
+					if(j===hCount-1)
+						yRest = rect.height-j*this.scaleRepeatRect.height;
+					this.ctx.drawImage(this.res,
+						0,0,
+						img.width,img.height,
+						rect.x+this.scaleRepeatRect.width*i,rect.y+this.scaleRepeatRect.height*j,
 						xRest,yRest);
 				}
 			}
@@ -192,4 +249,4 @@
 	
 	
 	
-})(window.Ycc);
+})(Ycc);

@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
 	<meta charset="UTF-8">
+	<meta name=viewport content="width=device-width,initial-scale=1,user-scalable=0,viewport-fit=cover">
 	<title>游戏-别踩白块</title>
 	<link rel="stylesheet" href="../style.css">
 	<style>
@@ -22,8 +23,10 @@
 
 
 <script>
-	if(!Ycc.utils.isMobile())
-		alert("此示例在移动端查看效果更佳！");
+	if(!Ycc.utils.isMobile()){
+		document.body.innerHTML='<img src="./images/qr.png"/>';
+		throw new Error('PC端请扫码进入！');
+	}
 
 	var canvas = document.createElement('canvas');
 	console.log(document.documentElement.clientWidth,document.documentElement.clientHeight);
@@ -87,10 +90,12 @@
 		this.layer = ycc.layerManager.newLayer({enableEventManager:true});
 
 		this.layer.addUI(new Ycc.UI.Image({
-			rect:new Ycc.Math.Rect(stageW/2-images.start.naturalWidth/2,stageH/2-images.start.naturalHeight/2,images.start.naturalWidth,images.start.naturalHeight),
+			rect:new Ycc.Math.Rect(stageW/2-200/2,stageH/2-60/2,200,60),
+			fillMode:"scale",
 			res:images.start,
 			ontap:function (e) {
 				self.delSelf();
+				ycc.layerManager.deleteAllLayer();
 				currentScene = new GameScene();
 			}
 		}));
@@ -121,10 +126,10 @@
 		this.offsetY = 0;
 
 		// 每帧Y轴的步长
-		this.spaceY = 20;
+		this.spaceY = 5;
 		
 		// 最大速度
-		this.maxSpaceY = 50;
+		this.maxSpaceY = 20;
 
 		// 方框宽度
 		this.rectW = parseInt(stageW/this.col);
@@ -237,7 +242,7 @@
             rect:new Ycc.Math.Rect(0,10,stageW,50),
 			xAlign:"center",
             content:"SCORE:   "+this.score +"  "+"SPEED:"+this.spaceY,
-            fontSize:"30px",
+            fontSize:"16px",
             color:"green"
         });
         this.layer.addUI(this.scoreText);
@@ -252,18 +257,19 @@
 			color:"rgba(0,0,0,0.7)"
 		}));
 		
-		var fontSize = "50px";
+		var fontSize = "20px";
+		var lineHeight = 30;
 		this.overLayer.addUI(new Ycc.UI.SingleLineText({
 			content:"游戏结束",
 			xAlign:"center",
-			rect:new Ycc.Math.Rect(0,stageH/2-160,stageW,50),
+			rect:new Ycc.Math.Rect(0,stageH/2+lineHeight*-2,stageW,lineHeight),
 			color:"red",
 			fontSize:fontSize
 		}));
 		this.finalScoreText = new Ycc.UI.SingleLineText({
 			content:"您最终得了"+this.score+"分",
 			xAlign:"center",
-			rect:new Ycc.Math.Rect(0,stageH/2-80,stageW,50),
+			rect:new Ycc.Math.Rect(0,stageH/2+lineHeight*-1,stageW,lineHeight),
 			color:"red",
 			fontSize:fontSize
 		})
@@ -271,28 +277,30 @@
 		this.finalTipText = new Ycc.UI.SingleLineText({
 			content:"手速超过了99%的单身狗！",
 			xAlign:"center",
-			rect:new Ycc.Math.Rect(0,stageH/2,stageW,50),
+			rect:new Ycc.Math.Rect(0,stageH/2,stageW,lineHeight),
 			color:"red",
 			fontSize:fontSize
 		});
 		this.overLayer.addUI(this.finalTipText);
 		
-		var imgW = images.restart.naturalWidth,
-			imgH = images.restart.naturalHeight;
+		var imgW = 200,
+			imgH = 60;
 		this.overLayer.addUI(new Ycc.UI.Image({
-			rect:new Ycc.Math.Rect(stageW/2-imgW/2,stageH/2+80,imgW,imgH),
+			rect:new Ycc.Math.Rect(stageW/2-imgW/2,stageH/2+lineHeight,imgW,imgH),
+			fillMode:"scale",
 			res:images.restart,
 			ontap:function (e) {
 				//self.delSelf();
+				ycc.layerManager.deleteAllLayer();
 				currentScene = new GameScene();
 			}
 		}));
 
 		this.overLayer.addUI(new Ycc.UI.SingleLineText({
 			content:"项目地址",
-			rect:new Ycc.Math.Rect((stageW-300)/2-20,stageH/2+130+imgH,160,80),
+			rect:new Ycc.Math.Rect(stageW/2-10,stageH/2+lineHeight+10+imgH,-14*4,20),
 			color:"#308eef",
-			fontSize:"36px",
+			fontSize:"14px",
 			ontap:function (e) {
 				window.location.href="https://github.com/lizhiqianduan/ycc/tree/develop";
 			}
@@ -300,9 +308,9 @@
 
 		this.overLayer.addUI(new Ycc.UI.SingleLineText({
 			content:"作者博客",
-			rect:new Ycc.Math.Rect((stageW-300)/2+150+20,stageH/2+130+imgH,160,80),
+			rect:new Ycc.Math.Rect((stageW)/2+10,stageH/2+lineHeight+10+imgH,14*4,20),
 			color:"#308eef",
-			fontSize:"36px",
+			fontSize:"14px",
 			ontap:function (e) {
 				window.location.href="http://www.lizhiqianduan.com/blog";
 			}
@@ -340,7 +348,7 @@
 
 			// 每3行速度就增加2个像素
 			if(this.offsetNumber%3===2 && this.spaceY<this.rectH-20 && this.spaceY<this.maxSpaceY)
-				this.spaceY+=2;
+				this.spaceY+=1;
 				
 			// 所有横线减去一个方块的偏移量
 			for(j=0;j<this.rowLines.length;j++){
@@ -359,6 +367,7 @@
 
 				// 存在未点击的白块，游戏结束
 				if(rect.color==="white") {
+					console.log('游戏结束');
 					this.overLayer.show = true;
 					this.finalScoreText.content = "您最终得了"+this.score+"分";
 					if(this.score<50)

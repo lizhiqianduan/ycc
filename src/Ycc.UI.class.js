@@ -30,12 +30,12 @@
 
 	/**
 	 * UI类，提供绘图基本的原子图形和组合图形。
-	 * 每个UI类的对象都跟一个canvas绑定。
+	 * 每个UI类的对象都跟一个Ycc绑定。
 	 *
-	 * @param canvasDom	{HTMLElement}
+	 * @param yccInstance	{Ycc}
 	 * @constructor
 	 */
-	Ycc.UI = function(canvasDom){
+	Ycc.UI = function(yccInstance){
 		this.yccClass = Ycc.UI;
 
 		/**
@@ -49,17 +49,17 @@
 		/**
 		 * 当前绘图环境
 		 */
-		this.ctx = canvasDom.getContext('2d');
+		this.ctx = yccInstance.ctx;
 		
 		/**
 		 * 当前绘图环境的宽
 		 */
-		this.ctxWidth = canvasDom.width;
+		this.ctxWidth = yccInstance.getStageWidth();
 
 		/**
 		 * 当前绘图环境的高
 		 */
-		this.ctxHeight = canvasDom.height;
+		this.ctxHeight = yccInstance.getStageHeight();
 		
 	};
 
@@ -335,4 +335,4 @@
 
 
 
-})(window.Ycc);
+})(Ycc);

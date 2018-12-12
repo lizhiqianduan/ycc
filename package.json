@@ -1,17 +1,18 @@
 {
-  "name": "ycc",
-  "version": "0.0.0",
+  "name": "ycc-engine",
+  "version": "0.0.2",
   "description": "\"# ycc\"",
-  "main": "ycc.js",
+  "main": "./build/ycc.min.js",
   "scripts": {
     "start": "grunt",
     "build": "grunt build",
+    "build:game_super_mario":"grunt build:game_super_mario",
     "doc": "grunt jsdoc",
     "clean": "grunt clean",
     "min": "grunt uglify",
     "concat": "grunt concat",
     "release": "grunt release",
-    "example":"start http://localhost:7777/examples/index.html & http-server -p 7777"
+    "example": "start http://localhost:7777/examples/index.html & http-server -p 7777"
   },
   "repository": {
     "type": "git",
@@ -32,6 +33,7 @@
     "grunt-contrib-uglify": "^1.0.1",
     "grunt-contrib-watch": "^1.0.0",
     "grunt-jsdoc": "^2.1.1",
+    "matter-js": "^0.14.2",
     "http-server": "^0.11.1"
   }
 }

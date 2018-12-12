@@ -87,22 +87,34 @@
 		
 		
 		/**
-		 * 区域的背景色
+		 * 容纳区的背景色
 		 * @type {string}
 		 */
-		this.rectBgColor = "transparent";
-
+		this.rectBgColor = "rgba(0,0,0,0)";
+		
 		/**
-		 * 背景色的透明度。默认不透明
+		 * 容纳区的边框宽度
 		 * @type {number}
 		 */
-		this.rectBgAlpha = 1;
+		this.rectBorderWidth = 0;
+		
+		/**
+		 * 容纳区边框颜色
+		 * @type {string}
+		 */
+		this.rectBorderColor = "#000";
 		
 		/**
 		 * 是否显示
 		 * @type {boolean}
 		 */
 		this.show = true;
+		
+		/**
+		 * 默认情况下，UI阻止事件冒泡，但不会阻止事件传播给图层
+		 * @type {boolean}
+		 */
+		this.stopEventBubbleUp = true;
 		
 		/**
 		 * 线条宽度
@@ -193,7 +205,6 @@
 		Ycc.utils.isFn(this.beforeInit) && this.beforeInit();
 		this.belongTo = layer;
 		this.ctx = layer.ctx;
-		this.baseUI = new Ycc.UI(layer.canvasDom);
 
 		// 初始化时计算一次属性
 		this.computeUIProps();
@@ -210,19 +221,41 @@
 	};
 	
 	/**
-	 * 渲染rect的背景
+	 * 渲染容纳区rect的背景色
+	 * @param absoluteRect	{Ycc.Math.Rect}	容纳区的绝对位置
 	 */
-	Ycc.UI.Base.prototype.renderRectBgColor = function () {
-		var rect = this.getAbsolutePosition();
+	Ycc.UI.Base.prototype.renderRectBgColor = function (absoluteRect) {
+		var rect = absoluteRect;
 		this.ctx.save();
-		this.ctx.globalAlpha = this.rectBgAlpha;
 		this.ctx.fillStyle = this.rectBgColor;
 		this.ctx.beginPath();
 		this.ctx.rect(rect.x,rect.y,rect.width,rect.height);
 		this.ctx.closePath();
 		this.ctx.fill();
 		this.ctx.restore();
+		rect = null;
 	};
+	
+	/**
+	 * 渲染容纳区rect的边框
+	 * @param absoluteRect	{Ycc.Math.Rect}	容纳区的绝对位置
+	 */
+	Ycc.UI.Base.prototype.renderRectBorder = function (absoluteRect) {
+		// 边框宽度为0，不渲染
+		if(this.rectBorderWidth<=0) return;
+
+		var rect = absoluteRect;
+		this.ctx.save();
+		this.ctx.strokeStyle = this.rectBorderColor;
+		this.ctx.strokeWidth = this.rectBorderWidth;
+		this.ctx.beginPath();
+		this.ctx.rect(rect.x,rect.y,rect.width,rect.height);
+		this.ctx.closePath();
+		this.ctx.stroke();
+		this.ctx.restore();
+		rect = null;
+	};
+	
 	
 	/**
 	 * 删除自身。
@@ -247,6 +280,16 @@
 	};
 	
 	/**
+	 * 删除子ui
+	 * @param ui
+	 */
+	Ycc.UI.Base.prototype.removeChild = function (ui) {
+		this.removeChildTree(ui);
+		Ycc.UI.release(ui);
+		return this;
+	};
+	
+	/**
 	 * 坐标系的缩放和旋转。
 	 * 先缩放、再旋转。
 	 * @todo 子类渲染前需要调用此方法
@@ -254,13 +297,122 @@
 	Ycc.UI.Base.prototype.scaleAndRotate = function () {
 		// 坐标系缩放
 		this.ctx.scale(this.scaleX,this.scaleY);
-		
+		var rect = this.getAbsolutePosition();
 		// 坐标系旋转
-		this.ctx.translate(this.anchorX+this.rect.x,this.anchorY+this.rect.y);
+		this.ctx.translate(this.anchorX+rect.x,this.anchorY+rect.y);
 		this.ctx.rotate(this.rotation*Math.PI/180);
-		this.ctx.translate(-this.anchorX-this.rect.x,-this.anchorY-this.rect.y);
+		this.ctx.translate(-this.anchorX-rect.x,-this.anchorY-rect.y);
 	};
 	
+	
+	/**
+	 * 判断ui是否存在于舞台之外，渲染时可以不予渲染
+	 * 在compute之后使用，判断更准确
+	 * @return {boolean}
+	 */
+	Ycc.UI.Base.prototype.isOutOfStage = function () {
+		var stageW = this.belongTo.yccInstance.getStageWidth();
+		var stageH = this.belongTo.yccInstance.getStageHeight();
+		var absolute = this.getAbsolutePosition();
+		return absolute.x>stageW
+			|| (absolute.x+absolute.width<0)
+			|| absolute.y>stageH
+			|| (absolute.y+absolute.height<0);
+	};
+	
+	
+	/**
+	 * 递归释放内存，等待GC
+	 * 将所有引用属性设为null
+	 * @param uiNode	ui节点
+	 */
+	Ycc.UI.release = function (uiNode) {
+		
+		uiNode.itor().leftChildFirst(function (ui) {
+			
+			// console.log('release '+(!!ui.yccClass?ui.yccClass.name:''),ui);
+			
+			if(ui.yccClass===Ycc.UI.Image || ui.yccClass===Ycc.UI.ImageFrameAnimation)
+				ui.res=null;
+			
+			// 释放Tree的内存
+			Ycc.Tree.release(ui);
+			// 释放listener内存
+			Ycc.Listener.release(ui);
+
+			/////////////// 释放UI内存
+			ui.yccInstance=null;
+			
+			/**
+			 * 构造器的引用，Ycc中的每个类都有此属性
+			 */
+			ui.yccClass = null;
+			
+			/**
+			 * 绘图环境
+			 * @type {null}
+			 */
+			ui.ctx = null;
+			
+			/**
+			 * UI所属的图层
+			 * @type {Ycc.Layer}
+			 */
+			ui.belongTo = null;
+			
+			/**
+			 * 用户自定义的数据
+			 * @type {null}
+			 */
+			ui.userData = null;
+			
+			/**
+			 * 基础绘图UI
+			 * @type {Ycc.UI}
+			 */
+			ui.baseUI = null;
+			
+			/**
+			 * 初始化之前的hook
+			 * @type {function}
+			 */
+			ui.beforeInit = null;
+			
+			/**
+			 * 初始化之后的hook
+			 * @type {function}
+			 */
+			ui.afterInit = null;
+			
+			/**
+			 * 计算属性前的hook
+			 * @type {function}
+			 */
+			ui.oncomputestart = null;
+			
+			/**
+			 * 计算属性后的hook
+			 * @type {function}
+			 */
+			ui.oncomputeend = null;
+			
+			/**
+			 * 渲染前的hook
+			 * @type {function}
+			 */
+			ui.onrenderstart = null;
+			
+			/**
+			 * 渲染后的hook
+			 * @type {function}
+			 */
+			ui.onrenderend = null;
+		});
+		
+		
+		
+		
+	};
 
 	/**
 	 * 渲染至绘图环境。
@@ -274,10 +426,11 @@
 	
 	/**
 	 * 绘制UI的容器（红色小方框）
+	 * @param absoluteRect {Ycc.Math.Rect}	UI的绝对坐标
 	 * @private
 	 */
-	Ycc.UI.Base.prototype._renderContainer = function () {
-		var rect = this.rect;
+	Ycc.UI.Base.prototype._renderContainer = function (absoluteRect) {
+		var rect = absoluteRect;
 		this.ctx.save();
 		this.ctx.beginPath();
 		this.ctx.strokeStyle = "#ff0000";
@@ -285,6 +438,7 @@
 		this.ctx.closePath();
 		this.ctx.stroke();
 		this.ctx.restore();
+		rect=null;
 	};
 	
 	/**
@@ -298,13 +452,18 @@
 		this.triggerListener('computestart',new Ycc.Event("computestart"));
 		this.computeUIProps();
 		this.triggerListener('computeend',new Ycc.Event("computeend"));
-		
-		// 绘制UI的背景，rectBgColor、rectBgAlpha
-		this.renderRectBgColor();
+		// 超出舞台时，不予渲染
+		if(this.isOutOfStage())
+			return;
+		var absolutePosition = this.getAbsolutePosition();
+		// 绘制UI的背景，rectBgColor
+		this.renderRectBgColor(absolutePosition);
+		// 绘制容纳区的边框
+		this.renderRectBorder(absolutePosition);
 		
 		// 全局UI配置项，是否绘制UI的容器
 		if(this.belongTo.yccInstance.config.debug.drawContainer){
-			this._renderContainer();
+			this._renderContainer(absolutePosition);
 		}
 		
 		
@@ -439,4 +598,4 @@
 	};
 
 
-})(window.Ycc);
+})(Ycc);

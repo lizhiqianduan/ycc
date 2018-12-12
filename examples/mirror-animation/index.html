@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Title</title>
+</head>
+<body>
+
+</body>
+</html>
+
+
+<!-- Ycc库 -->
+<script src="../../build/ycc.js"></script>
+
+<script>
+
+
+	///////////////////////////// 全局变量
+	var ycc = null;
+	var stageW = 0;
+	var stageH = 0;
+	var layer;
+	var ui;
+
+	// 所有的图片资源
+	var images = null;
+	//////
+
+
+	// 创建canvas
+	var canvas = document.createElement('canvas');
+	canvas.width=document.documentElement.clientWidth;
+	canvas.height=document.documentElement.clientHeight;
+	document.body.appendChild(canvas);
+
+	// 初始化全局变量
+	ycc = new Ycc().bindCanvas(canvas);
+	layer = ycc.layerManager.newLayer();
+	stageW = ycc.getStageWidth();
+	stageH = ycc.getStageHeight();
+
+
+	ycc.loader.loadResOneByOne([
+		{name:"btn",url:"./btn.jpg"}
+	],function (arr,imgs) {
+		images=imgs;
+		onReady();
+	});
+
+
+	function onReady() {
+		console.log(images);
+		ui = new Ycc.UI.Image({
+			fillMode:'scale',
+			res:images.btn,
+			mirror:1,
+			rect:new Ycc.Math.Rect(100,100,100,100)
+		});
+		layer.addUI(ui);
+
+		layer.addUI(new Ycc.UI.Line({
+			start:new Ycc.Math.Dot(150,100),
+			end:new Ycc.Math.Dot(150,200)
+		}));
+		ycc.layerManager.reRenderAllLayerToStage();
+	}
+
+	ycc.ticker.start();
+	ycc.ticker.addFrameListener(function () {
+
+		ui.mirrorCount=ui.mirrorCount || 0;
+		ui.zoomOut=!!ui.zoomOut;
+
+		if(ui.rect.width===0){
+			ui.zoomOut = true;
+			ui.mirrorCount++;
+		}
+
+		if(ui.rect.width===100)
+			ui.zoomOut = false;
+
+		if(ui.mirrorCount%2===0)
+			ui.mirror=0;
+		else
+			ui.mirror=1;
+
+		if(ui.zoomOut){
+			ui.rect.x-=1;
+			ui.rect.width+=2;
+		}else{
+			ui.rect.x+=1;
+			ui.rect.width-=2;
+		}
+
+
+//		if(ui.scaleX===-1)
+//			zoomOut = true;
+//
+//		if(ui.scaleX===1)
+//			zoomOut = false;
+//
+//		if(zoomOut)
+//			ui.scaleX -= 0.1;
+//		else
+//			ui.scaleX += 0.1;
+
+
+		if(ui.rect.width)
+		ycc.layerManager.reRenderAllLayerToStage();
+	});
+
+
+
+</script>

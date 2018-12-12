@@ -61,7 +61,9 @@
 
 		this.extend(option);
 	};
-	Ycc.UI.MultiLineText.prototype = new Ycc.UI.Base();
+
+	// 继承prototype
+	Ycc.utils.mergeObject(Ycc.UI.MultiLineText.prototype,Ycc.UI.Base.prototype);
 	Ycc.UI.MultiLineText.prototype.constructor = Ycc.UI.MultiLineText;
 	
 	
@@ -233,11 +235,11 @@
 			if(y+config.lineHeight>rect.y+rect.height){
 				break;
 			}
-			this.baseUI.text([x,y],self.displayLines[i],config.fill);
+			this.belongTo.yccInstance.baseUI.text([x,y],self.displayLines[i],config.fill);
 		}
 		this.ctx.restore();
 	};
 	
 	
 	
-})(window.Ycc);
+})(Ycc);

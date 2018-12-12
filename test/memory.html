@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>内存测试</title>
+</head>
+<body>
+
+</body>
+</html>
+
+
+<!--<script>
+
+
+	function TestClass(){
+		this.a=1;
+		this.b=2;
+	}
+
+	function TestClassB(){
+		this.a=1;
+		this.b=2;
+	}
+
+	// 模拟频繁刷新
+	setInterval(function () {
+		var a = new TestClass();
+		var b = new TestClassB();
+		a.b=b;
+		b.a=a;
+	},1);
+
+	/*
+	* interval执行结束a、b都被释放
+	* */
+
+</script>-->
+
+
+<!--
+
+<script>
+
+
+	function TestClass(){
+		this.a=1;
+		this.b=2;
+	}
+
+	function TestClassB(){
+		this.a=1;
+		this.b=2;
+	}
+
+
+	var g=null;
+
+	// 模拟频繁刷新
+	setInterval(function () {
+		var a = new TestClass();
+		var b = new TestClassB();
+		a.b=b;
+		b.a=a;
+		g=a;
+	},1);
+
+	/*
+	* interval执行结束a、b都被释放
+	* g没被释放，一直存在
+	* g.a和g.a.b也存在
+	* 只会保留最后给g赋值的a和b
+	* */
+
+</script>
+-->
+
+
+<!--
+
+<script>
+
+
+	function TestClass(){
+		this.a=1;
+		this.b=2;
+	}
+
+	function TestClassB(){
+		this.a=1;
+		this.b=2;
+	}
+
+
+	var g=[];
+
+	// 模拟频繁刷新
+	setInterval(function () {
+		var a = new TestClass();
+		var b = new TestClassB();
+		g.push(a);
+		g.push(b);
+	},1);
+
+	/*
+	* interval执行结束a、b都被释放
+	* g没被释放，一直存在
+	* 所有都会存在
+	* */
+
+</script>
+-->
+
+
+<!--
+
+<script>
+
+
+	var i=0;
+	// 模拟频繁刷新
+	setInterval(function () {
+		i++;
+		window.onclick = function () {
+			console.log(i);
+		}
+	},1);
+
+	/*
+	interval执行结束，之前的匿名函数被释放
+	只会存在最后一个被赋值的匿名函数
+	*/
+
+</script>
+
+-->
+
+
+

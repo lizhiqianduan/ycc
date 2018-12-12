@@ -185,7 +185,11 @@
 				for(var i=0;i<touches.length;i++){
 					var touch = touches[i];
 					var life = self.findCurrentLifeByTouchID(touch.identifier);
-					life.moveTouchEventList.push(touch);
+					var index = self.indexOfTouchFromMoveTouchEventList(life.moveTouchEventList,touch);
+					if(index===-1)
+						life.moveTouchEventList.push(touch);
+					else
+						life.moveTouchEventList[index]=touch;
 					// self.onlifechange && self.onlifechange(life);
 					self.triggerListener('lifechange',life);
 				}
@@ -206,7 +210,8 @@
 		this.init();
 	};
 	
-	Ycc.TouchLifeTracer.prototype = new Ycc.Listener();
+	// 继承prototype
+	Ycc.utils.mergeObject(Ycc.TouchLifeTracer.prototype,Ycc.Listener.prototype);
 	
 	/**
 	 * 同步当前HTML元素的touches
@@ -232,4 +237,15 @@
 		}
 	};
 	
-})(window.Ycc);
+	/**
+	 * 寻找移动过的接触点
+	 */
+	Ycc.TouchLifeTracer.prototype.indexOfTouchFromMoveTouchEventList = function (moveTouchEventList,touch) {
+		for(var i=0;i<moveTouchEventList.length;i++){
+			if(touch.identifier===moveTouchEventList[i].identifier)
+				return i;
+		}
+		return -1;
+	};
+	
+})(Ycc);

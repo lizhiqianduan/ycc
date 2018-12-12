@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name=viewport content="width=device-width,initial-scale=1,user-scalable=0,viewport-fit=cover">
+	<title>关卡编辑器</title>
+	<link rel="stylesheet" href="../../style.css">
+	<link rel="stylesheet" href="./css.css">
+	<style>
+
+	</style>
+</head>
+<body>
+
+<div id="log">
+	<div><button onclick="document.getElementById('log-con').innerHTML=''">清空</button></div>
+	<div id="log-con">
+
+	</div>
+</div>
+
+<div id="canvas">
+
+</div>
+
+<div id="wrap">
+	<div id="start">
+		<div class="item">
+			<span>背景:</span>
+			<select name="" id="bgName" value="bg01" onchange="onBgNameChange(this)">
+				<option value="bg01">bg01</option>
+				<option value="bg02">bg02</option>
+				<option value="bg03">bg03</option>
+				<option value="bg04">bg04</option>
+				<option value="bg05">bg05</option>
+			</select>
+		</div>
+		<div class="item">
+			<span>界面x:</span>
+			<input type="number" id="layerX" value="0" step="10" onchange="onLayerXChange()">
+		</div>
+		<button onclick="createJs()">生成JS</button>
+		<button onclick="debugStart(this)">调试</button>
+	</div>
+	<hr>
+	<div class="tool-wrap">
+		<div id="tools">
+			<div class="panel" id="live-ui-panel">
+				<div class="panel-title">
+					已新增UI：
+				</div>
+
+				<div id="live-ui">
+					<!--<div>newGround <span>点击删除</span></div>-->
+				</div>
+
+			</div>
+
+			<div id="tool-list" class="panel">
+				<div class="panel-title">新增UI： </div>
+				<div><button onclick="newGround(this)">地面</button></div>
+				<div><button onclick="newWall(this)">墙体</button></div>
+				<div><button onclick="newCoin(this)">金币</button></div>
+				<div><button onclick="newGirl(this)">公主</button></div>
+				<div><button onclick="newMissile(this)">导弹</button></div>
+				<div><button onclick="newMushroom(this)">蘑菇</button></div>
+				<div><button onclick="newBucket(this)">桶</button></div>
+			</div>
+
+			<div id="props" class="panel">
+				<div class="panel-title">更改属性： </div>
+
+				<!-- 地面 -->
+				<div id="ground-prop" class="tool-prop">
+					<div>startX: <input type="number" id="ground-prop-startX" value="0" onchange="onPropChange()"></div>
+					<div>height: <input type="number" id="ground-prop-height" value="0" onchange="onPropChange()"></div>
+					<div>width: <input type="number" id="ground-prop-width" value="0" onchange="onPropChange()"></div>
+				</div>
+
+				<!-- 墙体 -->
+				<div id="wall-prop" class="tool-prop">
+					<div>startX: <input type="number" id="wall-prop-startX" value="0" onchange="onPropChange()"></div>
+					<div>marginBottom: <input type="number" id="wall-prop-marginBottom" value="0" onchange="onPropChange()"></div>
+					<div>row: <input type="number" id="wall-prop-row" value="0" onchange="onPropChange()"></div>
+					<div>col: <input type="number" id="wall-prop-col" value="0" onchange="onPropChange()"></div>
+					<div>special: <input type="text" id="wall-prop-special" value="[]" onchange="onPropChange()"></div>
+				</div>
+
+				<!-- 金币 -->
+				<div id="coin-prop" class="tool-prop">
+					<div>startX: <input type="number" id="coin-prop-startX" value="0" onchange="onPropChange()"></div>
+					<div>height: <input type="number" id="coin-prop-height" value="0" onchange="onPropChange()"></div>
+					<div>row: <input type="number" id="coin-prop-row" value="0" onchange="onPropChange()"></div>
+					<div>col: <input type="number" id="coin-prop-col" value="0" onchange="onPropChange()"></div>
+				</div>
+
+				<!-- 女神 -->
+				<div id="girl-prop" class="tool-prop">
+					<div>startX: <input type="number" id="girl-prop-startX" value="0" onchange="onPropChange()"></div>
+					<div>marginBottom: <input type="number" id="girl-prop-marginBottom" value="0" onchange="onPropChange()"></div>
+				</div>
+
+				<div id="missile-prop" class="tool-prop">
+					<div>startX: <input type="number" id="missile-prop-startX" value="0" onchange="onPropChange()"></div>
+					<div>marginBottom: <input type="number" id="missile-prop-marginBottom" value="0" onchange="onPropChange()"></div>
+				</div>
+
+				<div id="mushroom-prop" class="tool-prop">
+					<div>startX: <input type="number" id="mushroom-prop-startX" value="0" onchange="onPropChange()"></div>
+					<div>marginBottom: <input type="number" id="mushroom-prop-marginBottom" value="0" onchange="onPropChange()"></div>
+				</div>
+
+				<div id="bucket-prop" class="tool-prop">
+					<div>startX: <input type="number" id="bucket-prop-startX" value="0" onchange="onPropChange()"></div>
+					<div>marginBottom: <input type="number" id="bucket-prop-marginBottom" value="0" onchange="onPropChange()"></div>
+					<div>direction: <input type="number" id="bucket-prop-direction" value="0" onchange="onPropChange()"></div>
+					<div>bucketWidth: <input type="number" id="bucket-prop-bucketWidth" value="0" onchange="onPropChange()"></div>
+					<div>bucketHeight: <input type="number" id="bucket-prop-bucketHeight" value="0" onchange="onPropChange()"></div>
+				</div>
+
+				<div class="prop-ctrl-btn">
+					<button onclick="sureOnclick()">新增</button>
+					<button onclick="cancelOnclick()">取消</button>
+				</div>
+			</div>
+
+
+		</div>
+	</div>
+
+
+</div>
+
+<div id="js">
+
+</div>
+
+
+
+</body>
+</html>
+
+<!-- 公用模块 -->
+<script src="../../common.js"></script>
+
+<!-- Ycc库 -->
+<script src="../../../build/ycc.js"></script>
+
+<!-- 物理引擎库matter -->
+<script src="../lib/matter-js/matter.js"></script>
+
+
+
+<script src="../Loading.js"></script>
+<script src="../GameScene.js"></script>
+<script src="../GameScene.ui.js"></script>
+
+<!--关卡-->
+<!--<script src="../level_1_1.js"></script>-->
+<!--<script src="../level_1_2.js"></script>-->
+<!--<script src="../level_1_3.js"></script>-->
+
+
+
+
+<script src="./main.js"></script>
+
+<script src="./uiCreator.js"></script>

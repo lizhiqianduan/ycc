@@ -36,13 +36,37 @@
 		 * 启动时间戳
 		 * @type {number}
 		 */
-		this.startTime = Date.now();
+		this.startTime = performance.now();
 		
 		/**
 		 * 上一帧刷新的时间戳
 		 * @type {number}
 		 */
-		this.lastFrameTime = 0;
+		this.lastFrameTime = this.startTime;
+		
+		/**
+		 * 当前帧与上一帧的刷新的时间差
+		 * @type {number}
+		 */
+		this.deltaTime = 0;
+		
+		/**
+		 * 当前帧与上一帧时间差的期望值（根据帧率计算而来的）
+		 * @type {number}
+		 */
+		this.deltaTimeExpect = 0;
+		
+		/**
+		 * 实际帧间隔与期望帧间隔的时间比
+		 * @type {number}
+		 */
+		this.deltaTimeRatio = 1;
+		
+		/**
+		 * 所有帧时间差的总和
+		 * @type {number}
+		 */
+		this.deltaTimeTotalValue = 0;
 		
 		/**
 		 * 所有自定义的帧监听函数列表
@@ -56,12 +80,12 @@
 		 */
 		this.defaultFrameRate = 60;
 		
-		
 		/**
-		 * 实时帧率
+		 * 默认帧间隔
 		 * @type {number}
 		 */
-		this.realTimeFrameRate = this.defaultFrameRate;
+		this.defaultDeltaTime = 1e3/this.defaultFrameRate;
+		
 		
 		/**
 		 * 总帧数
@@ -105,22 +129,23 @@
 		frameRate = frameRate?frameRate:self.defaultFrameRate;
 		
 		// 每帧理论的间隔时间
-		var frameDeltaTime = 1000/frameRate;
+		self.deltaTimeExpect = 1000/frameRate;
 		
-		var timer = window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame || window.oRequestAnimationFrame || window.msRequestAnimationFrame;
+		var timer = requestAnimationFrame || webkitRequestAnimationFrame || mozRequestAnimationFrame || oRequestAnimationFrame || msRequestAnimationFrame;
 		
 		// 初始帧数量设为0
 		self.frameAllCount = 0;
 
 		// timer兼容
 		timer || (timer = function(e) {
-				return window.setTimeout(e, 1e3 / 60);
+				return setTimeout(e, 1e3 / 60);
 			}
 		);
 		// 启动时间
-		self.startTime = Date.now();
+		self.startTime = performance.now();
 		// 启动心跳
-		self._timerId = timer.call(window, cb);
+		// self._timerId = timer.call(window, cb);
+		self._timerId = timer(cb);
 		self._isRunning = true;
 		
 		
@@ -128,7 +153,7 @@
 		function cb() {
 			
 			// 当前时间
-			var curTime = self.timerTickCount===0?self.startTime:Date.now();
+			var curTime = self.timerTickCount===0?self.startTime:performance.now();
 
 			// 总的心跳数加1
 			self.timerTickCount++;
@@ -137,29 +162,34 @@
 			var tickTime = curTime - self.startTime;
 			
 			// 所有帧刷新总时间，理论值
-			var frameTime = self.frameAllCount * frameDeltaTime;
+			var frameTime = self.frameAllCount * self.deltaTimeExpect;
 
 			// 当总帧数*每帧的理论时间小于总心跳时间，触发帧的回调
-			if(tickTime > frameTime){
+			if(tickTime > frameTime || "undefined"!==typeof wx){
 				// 总帧数加1
 				self.frameAllCount++;
-				// 设置实时帧率
-				self.realTimeFrameRate = self.frameAllCount*1000/(curTime-self.startTime);
 				// 执行所有自定义的帧监听函数
 				self.broadcastFrameEvent();
 				// 执行所有图层的帧监听函数
 				self.broadcastToLayer();
+				// 两帧的时间差
+				self.deltaTime = performance.now()-self.lastFrameTime;
+				// 帧间隔缩放比
+				self.deltaTimeRatio = self.deltaTime/self.deltaTimeExpect;
+				// 帧时间差的总和（忽略第一帧）
+				self.frameAllCount>1&&(self.deltaTimeTotalValue +=self.deltaTime);
 				
-				if((Date.now()-self.lastFrameTime)/frameDeltaTime>3){
+				if(self.deltaTime/self.deltaTimeExpect>3){
 					console.warn("第%d帧：",self.frameAllCount);
-					console.warn("该帧率已低于正常值的1/3！若相邻帧持续警告，请适当降低帧率，或者提升刷新效率！","正常值：",frameRate," 当前值：",1000/(Date.now()-self.lastFrameTime));
+					console.warn("该帧率已低于正常值的1/3！若相邻帧持续警告，请适当降低帧率，或者提升刷新效率！","正常值：",frameRate," 当前值：",1000/self.deltaTime);
 				}
 				// 设置上一帧刷新时间
-				self.lastFrameTime = Date.now();
+				self.lastFrameTime += self.deltaTime;
 			}
 			
 			// 递归调用心跳函数
-			self._timerId = timer.call(window,cb);
+			// self._timerId = timer.call(window,cb);
+			self._timerId = timer(cb);
 		}
 		
 	};
@@ -168,9 +198,9 @@
 	 * 停止心跳
 	 */
 	Ycc.Ticker.prototype.stop = function () {
-		var stop = window.cancelAnimationFrame || window.webkitCancelAnimationFrame || window.mozCancelAnimationFrame || window.oCancelAnimationFrame;
+		var stop = cancelAnimationFrame || webkitCancelAnimationFrame || mozCancelAnimationFrame || oCancelAnimationFrame;
 		stop || (stop = function (id) {
-			return window.clearTimeout(id);
+			return clearTimeout(id);
 		});
 		stop(this._timerId);
 		this._isRunning = false;
@@ -184,6 +214,16 @@
 	 */
 	Ycc.Ticker.prototype.addFrameListener = function (listener) {
 		this.frameListenerList.push(listener);
+	};
+	
+	/**
+	 * 移除某个监听函数
+	 * @param listener
+	 */
+	Ycc.Ticker.prototype.removeFrameListener = function (listener) {
+		var index = this.frameListenerList.indexOf(listener);
+		if(index!==-1)
+			this.frameListenerList.splice(index,1);
 	};
 	
 	
@@ -212,4 +252,4 @@
 	
 	
 	
-})(window.Ycc);
+})(Ycc);

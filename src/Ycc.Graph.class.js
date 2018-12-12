@@ -165,8 +165,8 @@
 	/**
 	 * 创建一个有向图
 	 * @static
-	 * @param vArr {[{id,data,...}]} 顶点列表
-	 * @param eArr {[{fromId,toId,data,...}]}	边列表
+	 * @param vArr {Array} 顶点列表，示例：[{id,data,...}]
+	 * @param eArr {Array}	边列表，示例：[{fromId,toId,data,...}]
 	 */
 	Ycc.Graph.createDirectedGraph  = function (vArr,eArr) {
 		var graph = new Ycc.Graph(1);
@@ -312,8 +312,8 @@
 	/**
 	 * 创建一个无向图
 	 * @static
-	 * @param vArr {[{id,data,...}]} 顶点列表
-	 * @param eArr {[{ids,data,...}]}	边列表，ids为边关联的两个顶点id列表，长度为2
+	 * @param vArr {Array} 顶点列表，示例：[{id,data,...}]
+	 * @param eArr {Array}	边列表，ids为边关联的两个顶点id列表，长度为2，示例：[{ids,data,...}]
 	 */
 	Ycc.Graph.createUnDirectedGraph  = function (vArr,eArr) {
 		var graph = new Ycc.Graph(2);
@@ -446,4 +446,4 @@
 
 
 
-})(window.Ycc);
+})(Ycc);

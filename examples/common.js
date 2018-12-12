@@ -14,3 +14,14 @@ var _hmt = _hmt || [];
 	var s = document.getElementsByTagName("script")[0];
 	s.parentNode.insertBefore(hm, s);
 })();
+
+
+function logger(){
+	var args = [];
+	for(var i=0;i<arguments.length;i++){
+		args.push(''+arguments[i]+'');
+	}
+	var text = args.join(',');
+	console.log('logger--> '+text);
+	document.getElementById('log-con').innerHTML+=text+'<br>';
+}

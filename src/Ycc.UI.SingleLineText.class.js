@@ -78,7 +78,9 @@
 
 		this.extend(option);
 	};
-	Ycc.UI.SingleLineText.prototype = new Ycc.UI.Base();
+
+	// 继承prototype
+	Ycc.utils.mergeObject(Ycc.UI.SingleLineText.prototype,Ycc.UI.Base.prototype);
 	Ycc.UI.SingleLineText.prototype.constructor = Ycc.UI.SingleLineText;
 	
 	
@@ -177,4 +179,4 @@
 	
 	
 	
-})(window.Ycc);
+})(Ycc);

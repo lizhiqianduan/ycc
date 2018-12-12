@@ -30,7 +30,8 @@
 		this.color = "black";
 		this.extend(option);
 	};
-	Ycc.UI.BrokenLine.prototype = new Ycc.UI.Base();
+	// 继承prototype
+	Ycc.utils.mergeObject(Ycc.UI.BrokenLine.prototype,Ycc.UI.Base.prototype);
 	
 	/**
 	 * 计算UI的各种属性。此操作必须在绘制之前调用。
@@ -93,4 +94,4 @@
 	
 	
 	
-})(window.Ycc);
+})(Ycc);

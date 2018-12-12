@@ -16,6 +16,17 @@
 	Ycc.Loader = function () {
 		this.yccClass = Ycc.Loader;
 		
+		/**
+		 * 异步模块
+		 * @type {Ycc.Ajax}
+		 */
+		this.ajax = new Ycc.Ajax();
+		
+		/**
+		 * 基础地址，末尾必须有斜线'/'
+		 * @type {string}
+		 */
+		this.basePath = '';
 	};
 	
 	/**
@@ -96,31 +107,82 @@
 		var errorEvent = "error";
 		curRes.type = curRes.type || 'image';
 		
+		
+		var timerId = 0;
+
 		if(curRes.type==='image'){
 			curRes.res = new Image();
-			curRes.res.src = curRes.url;
-		}
-		if(curRes.type==='audio'){
-			successEvent = 'loadedmetadata';
-			curRes.res = new Audio();
-			curRes.res.src = curRes.url;
-			curRes.res.preload = "load";
+			curRes.res.src = self.basePath + curRes.url;
+
+			curRes.res.addEventListener(successEvent,onSuccess);
+			curRes.res.addEventListener(errorEvent,onError);
+
+			// 超时提示只针对图片
+			timerId = setTimeout(function () {
+				curRes.res.removeEventListener(successEvent,onSuccess);
+				curRes.res.removeEventListener(errorEvent,onSuccess);
+				onError({message:"获取资源超时！"});
+			},curRes.timeout||10000);
+			
+		}else if(curRes.type==='audio'){
+			// 兼容wx端
+			if("undefined"!==typeof wx){
+				curRes.res = new Audio();
+				curRes.res.src = self.basePath + curRes.url;
+				successEvent = 'loadedmetadata';
+				errorEvent = 'error';
+				curRes.res.addEventListener(successEvent,onSuccess);
+				curRes.res.addEventListener(errorEvent,onError);
+				return;
+			}
+			
+			
+			curRes.res = new AudioPolyfill();
+			if(!curRes.res.context){
+				onError({message:"浏览器不支持AudioContext！"});
+				return;
+			}
+			console.log(self.basePath + curRes.url);
+			self.ajax.get(self.basePath + curRes.url,(function (curRes) {
+				return function (arrayBuffer) {
+					curRes.res.context.decodeAudioData(arrayBuffer, function(buf) {
+						curRes.res.buf=buf;
+						onSuccess();
+					}, onError);
+				}
+			})(curRes),onError,'arraybuffer');
 		}
 		
 		
-		curRes.res.addEventListener(successEvent,function () {
+		
+		function onSuccess() {
+			console.log('loader:',curRes.name,'success');
+			clearTimeout(timerId);
+			if(curRes.type==='image' || ("undefined"!==typeof wx && curRes.type==='audio' )){
+				curRes.res.removeEventListener(successEvent,onSuccess);
+				curRes.res.removeEventListener(errorEvent,onError);
+			}
+
 			endResArr.push(curRes);
 			if(typeof curRes.name!=='undefined') endResMap[curRes.name] = curRes.res;
 
-			Ycc.utils.isFn(progressCb) && progressCb(curRes,true,index);
+			Ycc.utils.isFn(progressCb) && progressCb(curRes,null,index);
 			self.loadResOneByOne(resArr,endCb,progressCb,endResArr,endResMap);
-		});
-		curRes.res.addEventListener(errorEvent,function () {
+		}
+		function onError(e) {
+			console.log('loader:',curRes.name,'error');
+			clearTimeout(timerId);
+			if(curRes.type==='image' || ("undefined"!==typeof wx && curRes.type==='audio' )){
+				curRes.res.removeEventListener(successEvent,onSuccess);
+				curRes.res.removeEventListener(errorEvent,onError);
+			}
+
 			endResArr.push(curRes);
 			if(typeof curRes.name!=='undefined') endResMap[curRes.name] = curRes.res;
-			Ycc.utils.isFn(progressCb) && progressCb(curRes,true,index);
+
+			Ycc.utils.isFn(progressCb) && progressCb(curRes,e,index);
 			self.loadResOneByOne(resArr,endCb,progressCb,endResArr,endResMap);
-		});
+		}
 
 		
 	};
@@ -139,4 +201,64 @@
 	};
 	
 	
-})(window.Ycc);
+	/**
+	 * audio元素的垫片，此类是私有类
+	 * @constructor
+	 */
+	function AudioPolyfill(){
+		this.currentTime = 0;
+		
+		/**
+		 * 播放器
+		 * @type {null}
+		 */
+		this.source = null;
+		
+		/**
+		 * 是否正在播放
+		 * @type {boolean}
+		 */
+		this.running = false;
+	}
+	
+	/**
+	 * audio api环境
+	 * 公用属性
+	 * @readonly
+	 */
+	AudioPolyfill.prototype.context = ("undefined"!==typeof AudioContext || "undefined"!==typeof webkitAudioContext) && new (AudioContext || webkitAudioContext)();
+	
+	
+	/**
+	 * 播放音效
+	 * 根据currentTime播放
+	 */
+	AudioPolyfill.prototype.play = function () {
+		var context = this.context;
+		if(!context) return;
+
+		this.running = true;
+		// 先stop
+		this.source && this.source.stop();
+		var source = context.createBufferSource();
+		source.buffer = this.buf;
+		source.connect(context.destination);
+		source.start(this.currentTime);
+		
+		this.source = source;
+	};
+	
+	/**
+	 * 暂停音效
+	 */
+	AudioPolyfill.prototype.pause = function () {
+		var context = this.context;
+		if(!context) return;
+
+		this.running = false;
+		this.source.stop();
+		this.source = null;
+	};
+	
+	
+})(Ycc);

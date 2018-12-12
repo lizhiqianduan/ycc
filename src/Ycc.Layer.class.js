@@ -41,14 +41,15 @@
 		this.uiList = [];
 		
 		/**
+		 * 该图层ui的总数（只在渲染之后赋值）
+		 * @type {number}
+		 */
+		this.uiCountRecursion = 0;
+		
+		/**
 		 * ycc实例的引用
 		 */
 		this.yccInstance = yccInstance;
-		/**
-		 * 虚拟canvas元素的引用
-		 * @type {Element}
-		 */
-		this.canvasDom = null;
 		
 		/**
 		 * 当前图层的绘图环境
@@ -136,20 +137,70 @@
 	Ycc.Layer.prototype = new Ycc.Listener();
 	Ycc.Layer.prototype.constructor = Ycc.Layer;
 	
+	
+	/**
+	 * 释放layer的内存，等待GC
+	 * 将所有引用属性置为null
+	 * @param layer
+	 */
+	Ycc.Layer.release = function (layer) {
+		Ycc.Listener.release(layer);
+		
+		/**
+		 * 类型
+		 */
+		layer.yccClass = null;
+		
+		/**
+		 * 存储图层中的所有UI。UI的顺序，即为图层中的渲染顺序。
+		 * @type {Ycc.UI[]}
+		 */
+		layer.uiList = null;
+		
+		/**
+		 * ycc实例的引用
+		 */
+		layer.yccInstance = null;
+		/**
+		 * 图层是否显示
+		 */
+		layer.show = false;
+		
+		/**
+		 * 是否监听舞台的事件。用于控制舞台事件是否广播至图层。默认关闭
+		 * @type {boolean}
+		 */
+		layer.enableEventManager = false;
+		
+		/**
+		 * 是否接收每帧更新的通知。默认为false
+		 * @type {boolean}
+		 */
+		layer.enableFrameEvent = false;
+		
+		/**
+		 * 若接收通知，此函数为接收通知的回调函数。当且仅当enableFrameEvent为true时生效
+		 * @type {function}
+		 */
+		layer.onFrameComing = null;
+	};
+	
+	
+	
+	
+	
+	
+	
+	
 	/**
 	 * 初始化
 	 * @return {null}
 	 */
 	Ycc.Layer.prototype.init = function () {
 		var self = this;
-		var canvasDom = this.yccInstance.canvasDom;
-		// var canvasDom = document.createElement("canvas");
-		// canvasDom.width = this.width;
-		// canvasDom.height = this.height;
 		
 		// 初始化图层属性
-		this.ctx = canvasDom.getContext('2d');
-		this.canvasDom = canvasDom;
+		this.ctx = this.yccInstance.ctx;
 		
 		// 初始化画布属性
 		self._setCtxProps();
@@ -358,11 +409,19 @@
 	 */
 	Ycc.Layer.prototype.removeAllUI = function () {
 		this.uiList.forEach(function (ui) {
-			ui.itor().each(function (child) {
-				child = null;
-			});
+			Ycc.UI.release(ui);
 		});
-		this.uiList=[];
+		this.uiList.length=0;
+	};
+	
+	
+	/**
+	 * 删除自身
+	 */
+	Ycc.Layer.prototype.removeSelf = function () {
+		this.removeAllUI();
+		this.yccInstance.layerManager.deleteLayer(this);
+		Ycc.Layer.release(this);
 	};
 	
 	
@@ -394,14 +453,18 @@
 	};
 	
 	/**
-	 * 删除图层内的某个UI图形
+	 * 删除图层内的某个UI图形，及其子UI
 	 * @param ui
 	 */
 	Ycc.Layer.prototype.removeUI = function (ui) {
+		if(!ui) return false;
 		var index = this.uiList.indexOf(ui);
-		if(index!==-1){
-			this.uiList.splice(index,1);
-		}
+		if(index===-1) return false;
+		
+		Ycc.UI.release(ui);
+		this.uiList[index]=null;
+		this.uiList.splice(index,1);
+		return true;
 	};
 	
 	/**
@@ -421,34 +484,72 @@
 	 */
 	Ycc.Layer.prototype.reRender = function () {
 		// this.clear();
+		var self = this;
+		self.uiCountRecursion=0;
 		for(var i=0;i<this.uiList.length;i++){
 			if(!this.uiList[i].show) continue;
 			//this.uiList[i].__render();
-
 			// 按树的层次向下渲染
 			this.uiList[i].itor().depthDown(function (ui, level) {
 				//console.log(level,ui);
-				ui.__render();
+				self.uiCountRecursion++;
+				if(ui.show)
+					ui.__render();
+				else
+					return -1;
 			});
 		}
+		// 兼容wx端，wx端多一个draw API
+		self.ctx.draw && self.ctx.draw();
 	};
 	
 	/**
-	 * 获取图层中某个点所对应的最上层UI。
-	 *
+	 * 获取图层中某个点所对应的最上层UI，最上层UI根据层级向下遍历，取层级最深的可见UI。
 	 * @param dot {Ycc.Math.Dot}	点坐标，为舞台的绝对坐标
+	 * @param uiIsShow {Boolean}	是否只获取显示在舞台上的UI，默认为true
 	 * @return {UI}
 	 */
-	Ycc.Layer.prototype.getUIFromPointer = function (dot) {
+	Ycc.Layer.prototype.getUIFromPointer = function (dot,uiIsShow) {
+		uiIsShow = Ycc.utils.isBoolean(uiIsShow)?uiIsShow:true;
 		var self = this;
-		for(var i =self.uiList.length-1;i>=0;i--){
+		var temp = null;
+		/*for(var i =self.uiList.length-1;i>=0;i--){
 			var ui = self.uiList[i];
-			// 如果位于rect内，此处应该根据绝对坐标比较
-			if(dot.isInRect(ui.getAbsolutePosition())){
-				return ui;
-			}
+			if(uiIsShow&&!ui.show) continue;
+			// 右子树优先寻找
+			ui.itor().rightChildFirst(function (child) {
+				console.log(child);
+				// 跳过不可见的UI
+				if(uiIsShow&&!child.show) return false;
+				
+				// 如果位于rect内，此处根据绝对坐标比较
+				if(dot.isInRect(child.getAbsolutePosition())){
+					console.log(child,222);
+					temp = child;
+					return true;
+				}
+			});
+		}*/
+		
+		
+		var tempLevel = 0;
+		for(var i=0;i<this.uiList.length;i++){
+			var ui = self.uiList[i];
+			if(uiIsShow&&!ui.show) continue;
+			//this.uiList[i].__render();
+			// 按树的层次向下遍历
+			this.uiList[i].itor().depthDown(function (child, level) {
+				// 跳过不可见的UI，返回-1阻止继续遍历其子UI
+				if(uiIsShow&&!child.show) return -1;
+
+				// 如果位于rect内，并且层级更深，则暂存，此处根据绝对坐标比较
+				if(dot.isInRect(child.getAbsolutePosition()) && level>=tempLevel){
+					temp = child;
+					tempLevel=level;
+				}
+			});
 		}
-		return null;
+		return temp;
 	};
 	
 	
@@ -500,4 +601,4 @@
 		return res;
 	};
 	
-})(window.Ycc);
+})(Ycc);

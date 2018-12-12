@@ -35,8 +35,8 @@
 		this.color = "black";
 		this.extend(option);
 	};
-	Ycc.UI.Rect.prototype = new Ycc.UI.Base();
-	Ycc.UI.Rect.prototype.constructor = Ycc.UI.Rect;
+	// 继承prototype
+	Ycc.utils.mergeObject(Ycc.UI.Rect.prototype,Ycc.UI.Base.prototype);
 	
 	/**
 	 * 绘制
@@ -61,4 +61,4 @@
 	
 	
 	
-})(window.Ycc);
+})(Ycc);

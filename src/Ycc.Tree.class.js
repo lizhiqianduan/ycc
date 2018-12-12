@@ -60,7 +60,45 @@
 		nodeMap[this.$id] = this;
 	};
 	
+	/**
+	 * 释放当前节点的内存，非递归
+	 * @param treeNode
+	 */
+	Ycc.Tree.release = function (treeNode) {
+		
+		// 删除父级children的引用
+		var pa = treeNode.getParent();
+		if(pa){
+			var children = pa.children;
+			var index = children.indexOf(treeNode);
+			if(index!==-1)
+				children[index]=null;
+		}
+		
+		// 删除nodeMap引用
+		delete nodeMap[treeNode.$id];
+		
+		/**
+		 * 节点的子节点列表
+		 * @type {Array}
+		 */
+		treeNode.children.length = 0;
+		
+		/**
+		 * 节点所携带的数据
+		 * @type {any}
+		 */
+		treeNode.data = null;
+	};
 	
+	/**
+	 * 获取nodeMap表
+	 * @return {{}}
+	 */
+	Ycc.Tree.getNodeMap = function () {
+		return nodeMap;
+	};
+
 	/**
 	 * 获取nodeMap表
 	 * @return {{}}
@@ -90,6 +128,19 @@
 		this.children.push(tree);
 		return this;
 	};
+	
+	/**
+	 * 删除一颗子树，只能删除直接子节点
+	 * @param tree
+	 * @return {*}
+	 */
+	Ycc.Tree.prototype.removeChildTree = function (tree) {
+		var index = this.children.indexOf(tree);
+		if(index===-1) return this;
+		this.children.splice(index,1);
+		return this;
+	};
+	
 	
 	/**
 	 * 获取树的深度
@@ -187,7 +238,7 @@
 		 * @param nodes {Ycc.Tree[]}
 		 * @param cb(node,layer)
 		 * @param [layer]	{number} 当前nodes列表所在的层级，可选参数
-		 * @return {boolean}
+		 * @return {boolean|number}
 		 */
 		function depthDownByNodes(nodes,cb,layer){
 			if(nodes.length===0)
@@ -198,11 +249,14 @@
 			// 是否停止遍历下一层的标志位
 			var breakFlag = false;
 			for(var i=0;i<nodes.length;i++) {
+				var rvl = cb.call(self, nodes[i], layer);
 				// 如果返回为true，则表示停止遍历下一层
-				if (cb.call(self, nodes[i], layer)) {
+				// 如果返回为-1，则表示当前节点的所有子孙节点不再遍历
+				if (rvl===true) {
 					breakFlag = true;
 					break;
-				}
+				}else if(rvl===-1)
+					continue;
 				nextNodes = nextNodes.concat(nodes[i].children);
 			}
 			if(breakFlag){
@@ -286,7 +340,7 @@
 	 * 若节点有子节点必须包含children字段，且为数组
 	 * 只关注data和children字段，其他字段将忽略
 	 *
-	 * @param json{data,children} {object} json对象
+	 * @param json {object} json对象，示例：{data,children}
 	 * @return {Ycc.Tree}
 	 */
 	Ycc.Tree.createByJSON = function (json) {
@@ -372,4 +426,4 @@
 	
 	
 	
-})(window.Ycc);
+})(Ycc);

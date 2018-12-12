@@ -180,9 +180,30 @@
 			else
 				return txt;
 		});
-	}
+	};
 	
-
-
+	
+	/**
+	 * 释放obj内存 只清空字段
+	 * @param obj
+	 */
+	Ycc.utils.releaseObject = function (obj) {
+		for(var key in obj){
+			if(!obj.hasOwnProperty(key)) continue;
+			delete obj[key];
+		}
+	};
+	
+	/**
+	 * 释放arr内存 只清空元素
+	 * @param arr
+	 */
+	Ycc.utils.releaseArray = function (arr) {
+		arr.length = 0;
+	};
+	
+	
+	
+	
 })(Ycc);
 
