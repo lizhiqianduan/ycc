@@ -49,7 +49,7 @@ npm install ycc-engine
 var canvas = document.createElement("canvas");
 canvas.width = 300;
 canvas.height = 300;
-document.appendChild(canvas);
+document.body.appendChild(canvas);
 
 // 新建ycc实例
 var ycc = new Ycc().bindCanvas(canvas);
