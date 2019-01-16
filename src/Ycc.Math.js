@@ -59,6 +59,33 @@
 		return this.x>=rect.x&&this.x<=rect.x+rect.width  && this.y>=rect.y && this.y<=rect.y+rect.height;
 	};
 	
+	/**
+	 * 判读两点位置是否相同
+	 * @param dot
+	 * @return {boolean}
+	 */
+	Ycc.Math.Dot.prototype.isEqual = function (dot) {
+		return this.x===dot.x && this.y===dot.y;
+	};
+	
+	/**
+	 * 判断三点是否共线
+	 * @param dot1
+	 * @param dot2
+	 * @param dot3
+	 */
+	Ycc.Math.Dot.threeDotIsOnLine = function (dot1,dot2,dot3) {
+		// 存在位置相同点肯定共线
+		if(dot1.isEqual(dot2) || dot1.isEqual(dot3) || dot2.isEqual(dot3))
+			return true;
+		// 三个点x一样
+		if(dot1.x===dot2.x&&dot2.x===dot3.x)
+			return true;
+		var k1 = Math.abs(dot1.y-dot2.y)/Math.abs(dot1.x-dot2.x);
+		var k2 = Math.abs(dot1.y-dot3.y)/Math.abs(dot1.x-dot3.x);
+		return k1===k2;
+	};
+	
 	
 	
 	
