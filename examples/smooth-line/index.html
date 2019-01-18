@@ -14,8 +14,9 @@
 <div class="tip">
 	<h3>示例说明：</h3>
 	<div>
-		1、这个示例展示系统的UI，每个UI都绘制了红色的容纳区。<br>
-		2、这些UI包括：单行文本、多行文本、图片、矩形、椭圆、线条、九宫格等。<br>
+		1、这个示例展示系统的折线UI。<br>
+		2、折线可以通过设置smooth属性来让折线变为曲线。<br>
+		3、下图白色曲线为平滑后的曲线。<br>
 	</div>
 	<br><br>
 </div>
@@ -46,16 +47,21 @@
 	var layer = ycc.layerManager.newLayer({enableEventManager:true});
 	// 设置UI属性
 	var config,ui;
+
+	var data = [
+		new Ycc.Math.Dot(40,10),
+		new Ycc.Math.Dot(80,30),
+		new Ycc.Math.Dot(120,80),
+		new Ycc.Math.Dot(160,20),
+		new Ycc.Math.Dot(200,230),
+		new Ycc.Math.Dot(240,130),
+		new Ycc.Math.Dot(280,330),
+		new Ycc.Math.Dot(320,120),
+	];
+
+
 	config = {
-		pointList:[
-			new Ycc.Math.Dot(40,10),
-			new Ycc.Math.Dot(80,30),
-			new Ycc.Math.Dot(120,80),
-			new Ycc.Math.Dot(160,20),
-			new Ycc.Math.Dot(200,110),
-			new Ycc.Math.Dot(240,230),
-			new Ycc.Math.Dot(280,430),
-		],
+		pointList:data,
 		smooth:true,
 		color:'white',
 		rectBgColor:'blue'
@@ -65,15 +71,7 @@
 
 
 	layer.addUI(new Ycc.UI.BrokenLine({
-		pointList:[
-			new Ycc.Math.Dot(40,10),
-			new Ycc.Math.Dot(80,30),
-			new Ycc.Math.Dot(120,80),
-			new Ycc.Math.Dot(160,20),
-			new Ycc.Math.Dot(200,110),
-			new Ycc.Math.Dot(240,230),
-			new Ycc.Math.Dot(280,430),
-		],
+		pointList:data,
 		smooth:false,
 		color:'red',
 	}));
