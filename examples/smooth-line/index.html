@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>折线平滑</title>
+	<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<div class="return-btn">
+	<a href="../">
+		返回首页
+	</a>
+</div>
+<div class="tip">
+	<h3>示例说明：</h3>
+	<div>
+		1、这个示例展示系统的UI，每个UI都绘制了红色的容纳区。<br>
+		2、这些UI包括：单行文本、多行文本、图片、矩形、椭圆、线条、九宫格等。<br>
+	</div>
+	<br><br>
+</div>
+
+
+<div id="canvas">
+
+</div>
+
+</body>
+</html>
+
+<script src="http://localhost:9000/livereload.js"></script>
+<script src="../common.js"></script>
+<script src="../../build/ycc.js"></script>
+
+<script>
+
+	var canvas = document.createElement("canvas");
+	canvas.width = 300;
+	canvas.height = 600;
+	document.getElementById("canvas").appendChild(canvas);
+
+
+	var ycc = new Ycc();
+	ycc.bindCanvas(canvas);
+	// 新建图层
+	var layer = ycc.layerManager.newLayer({enableEventManager:true});
+	// 设置UI属性
+	var config,ui;
+	config = {
+		pointList:[
+			new Ycc.Math.Dot(40,10),
+			new Ycc.Math.Dot(80,30),
+			new Ycc.Math.Dot(120,80),
+			new Ycc.Math.Dot(160,20),
+			new Ycc.Math.Dot(200,110),
+			new Ycc.Math.Dot(240,230),
+			new Ycc.Math.Dot(280,430),
+		],
+		smooth:true,
+		color:'white',
+		rectBgColor:'blue'
+	};
+	ui = new Ycc.UI.BrokenLine(config);
+	layer.addUI(ui);
+
+
+	layer.addUI(new Ycc.UI.BrokenLine({
+		pointList:[
+			new Ycc.Math.Dot(40,10),
+			new Ycc.Math.Dot(80,30),
+			new Ycc.Math.Dot(120,80),
+			new Ycc.Math.Dot(160,20),
+			new Ycc.Math.Dot(200,110),
+			new Ycc.Math.Dot(240,230),
+			new Ycc.Math.Dot(280,430),
+		],
+		smooth:false,
+		color:'red',
+	}));
+
+
+
+	ycc.layerManager.reRenderAllLayerToStage();
+
+
+
+</script>
