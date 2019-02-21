@@ -167,11 +167,52 @@
 	 * 原理：
 	 * 1、顶点两端的控制点连线始终经过顶点
 	 * 2、控制点连线始终垂直于两向量的夹角平分线
-	 * @todo 待做
+	 * 3、两个控制点距离顶点的长度，根据顶点的相邻顶点在x轴方向上的距离乘以某个系数来确定
+	 * 4、这两个控制点分属于不同的两条曲线，分别是起点的控制点和终点的控制点
+	 * 5、第一个顶点和最后一个顶点只有一个控制点
 	 * @param pointList	{Ycc.Math.Dot[]}	经过转换后的舞台绝对坐标点列表
 	 */
 	Ycc.UI.BrokenLine.prototype._smoothLineRender02 = function (pointList) {
-	
+		
+		
+		
+		
+		
+		/**
+		 * 获取曲线的绘制列表，N个顶点可以得到N-1条曲线
+		 * @return {Array}
+		 */
+		function getCurveList() {
+			var lenParam = 1/3;
+			var curveList = [];
+			// 第一段曲线控制点1为其本身
+			curveList.push({
+				start:pointList[0],
+				end:pointList[1],
+				dot1:pointList[0],
+				dot2:null
+			});
+			for(var i=1;i<pointList.length-1;i++){
+				var cur = pointList[i];
+				var next = pointList[i+1];
+				var pre = pointList[i-1];
+				// 上一段曲线的控制点2
+				var p1 = new Ycc.Math.Dot(cur.x-lenParam*(Math.abs(cur.x-pre.x)),cur.y);
+				// 当前曲线的控制点1
+				var p2 = new Ycc.Math.Dot(cur.x+lenParam*(Math.abs(cur.x-next.x)),cur.y);
+				// 上一段曲线的控制点2
+				curveList[i-1].dot2 = p1;
+				curveList.push({
+					start:cur,
+					end:next,
+					dot1:p2,
+					dot2:null
+				});
+			}
+			// 最后一段曲线的控制点2为其本身
+			curveList[curveList.length-1].dot2=pointList[pointList.length-1];
+			return curveList;
+		}
 	};
 	
 	
