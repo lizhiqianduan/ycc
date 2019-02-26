@@ -115,7 +115,9 @@
 	 * @param pointList	{Ycc.Math.Dot[]}	经过转换后的舞台绝对坐标点列表
 	 */
 	Ycc.UI.BrokenLine.prototype._smoothLineRender = function (pointList) {
-		var list = getCurveList();
+		// 获取生成曲线的两个控制点和两个顶点，N个顶点可以得到N-1条曲线
+		var list = getCurveList(pointList);
+		// 调用canvas三次贝塞尔方法bezierCurveTo逐一绘制
 		this.ctx.beginPath();
 		for(var i=0;i<list.length;i++){
 			this.ctx.moveTo(list[i].start.x,list[i].start.y);
@@ -128,8 +130,10 @@
 		 * 获取曲线的绘制列表，N个顶点可以得到N-1条曲线
 		 * @return {Array}
 		 */
-		function getCurveList() {
+		function getCurveList(pointList) {
+			// 长度比例系数
 			var lenParam = 1/3;
+			// 存储曲线列表
 			var curveList = [];
 			// 第一段曲线控制点1为其本身
 			curveList.push({
