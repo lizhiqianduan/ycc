@@ -7,6 +7,6 @@
  * 导出兼容文件，兼容npm模块的加载模式
  */
 
-;if("undefined"!== typeof module) {
-	exports = module.exports = Ycc;
+;if("undefined"!== typeof module && "undefined" !== typeof window) {
+	window.Ycc = Ycc;
 }

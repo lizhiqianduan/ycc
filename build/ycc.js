@@ -7320,5 +7320,5 @@ if("undefined"!== typeof wx){
  */
 
 ;if("undefined"!== typeof module) {
-	exports = module.exports = Ycc;
+	window.Ycc = Ycc;
 }
