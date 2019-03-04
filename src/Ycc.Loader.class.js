@@ -226,7 +226,9 @@
 	 * 公用属性
 	 * @readonly
 	 */
-	AudioPolyfill.prototype.context = ("undefined"!==typeof AudioContext || "undefined"!==typeof webkitAudioContext) && new (AudioContext || webkitAudioContext)();
+	AudioPolyfill.prototype.context = (("undefined"!==typeof AudioContext)&&new AudioContext()) ||
+		(("undefined"!==typeof webkitAudioContext)&&new webkitAudioContext());
+		///("undefined"!==typeof AudioContext || "undefined"!==typeof webkitAudioContext) && new (AudioContext || webkitAudioContext)();
 	
 	
 	/**
