@@ -462,7 +462,7 @@
 		this.renderRectBorder(absolutePosition);
 		
 		// 全局UI配置项，是否绘制UI的容器
-		if(this.belongTo.yccInstance.config.debug.drawContainer){
+		if(this.belongTo.yccInstance.config.debugDrawContainer){
 			this._renderContainer(absolutePosition);
 		}
 		
