@@ -10,7 +10,8 @@
  * 应用启动入口类，每个实例都与一个canvas绑定。
  * 该canvas元素会被添加至HTML结构中，作为应用的显示舞台。
  * @param config {Object} 整个ycc的配置项
- * @param config.debug.drawContainer {Boolean} 是否显示所有UI的容纳区域
+ * @param config.debugDrawContainer {Boolean} 是否显示所有UI的容纳区域
+ * @param config.useGesture {Boolean} 是否启用系统的手势库，默认启用
  * @constructor
  */
 var Ycc = function Ycc(config){
@@ -79,9 +80,8 @@ var Ycc = function Ycc(config){
 	 * @type {*|{}}
 	 */
 	this.config = config || {
-		debug:{
-			drawContainer:false
-		}
+		debugDrawContainer:false,
+		useGesture:true
 	};
 	
 	/**
@@ -141,8 +141,8 @@ Ycc.prototype.bindCanvas = function (canvas) {
  * 类初始化
  */
 Ycc.prototype.init = function () {
-	
-	this._initStageGestureEvent();
+	if(true===typeof this.config.useGesture)
+		this._initStageGestureEvent();
 };
 
 /**
@@ -2405,7 +2405,9 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 	 * 公用属性
 	 * @readonly
 	 */
-	AudioPolyfill.prototype.context = ("undefined"!==typeof AudioContext || "undefined"!==typeof webkitAudioContext) && new (AudioContext || webkitAudioContext)();
+	AudioPolyfill.prototype.context = (("undefined"!==typeof AudioContext)&&new AudioContext()) ||
+		(("undefined"!==typeof webkitAudioContext)&&new webkitAudioContext());
+		///("undefined"!==typeof AudioContext || "undefined"!==typeof webkitAudioContext) && new (AudioContext || webkitAudioContext)();
 	
 	
 	/**
@@ -5249,7 +5251,7 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 		this.renderRectBorder(absolutePosition);
 		
 		// 全局UI配置项，是否绘制UI的容器
-		if(this.belongTo.yccInstance.config.debug.drawContainer){
+		if(this.belongTo.yccInstance.config.debugDrawContainer){
 			this._renderContainer(absolutePosition);
 		}
 		
@@ -6187,7 +6189,9 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 	 * @param pointList	{Ycc.Math.Dot[]}	经过转换后的舞台绝对坐标点列表
 	 */
 	Ycc.UI.BrokenLine.prototype._smoothLineRender = function (pointList) {
-		var list = getCurveList();
+		// 获取生成曲线的两个控制点和两个顶点，N个顶点可以得到N-1条曲线
+		var list = getCurveList(pointList);
+		// 调用canvas三次贝塞尔方法bezierCurveTo逐一绘制
 		this.ctx.beginPath();
 		for(var i=0;i<list.length;i++){
 			this.ctx.moveTo(list[i].start.x,list[i].start.y);
@@ -6200,8 +6204,10 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 		 * 获取曲线的绘制列表，N个顶点可以得到N-1条曲线
 		 * @return {Array}
 		 */
-		function getCurveList() {
+		function getCurveList(pointList) {
+			// 长度比例系数
 			var lenParam = 1/3;
+			// 存储曲线列表
 			var curveList = [];
 			// 第一段曲线控制点1为其本身
 			curveList.push({
@@ -7319,6 +7325,6 @@ if("undefined"!== typeof wx){
  * 导出兼容文件，兼容npm模块的加载模式
  */
 
-;if("undefined"!== typeof module) {
+;if("undefined"!== typeof module && "undefined" !== typeof window) {
 	window.Ycc = Ycc;
 }

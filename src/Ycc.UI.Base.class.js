@@ -596,6 +596,17 @@
 		res.y = dotOrArr.y-(absoluteRect.y);
 		return res;
 	};
+	
+
+	/**
+	 * 判断某个点是否在UI组件内
+	 * 默认根据ui的容纳区rect字段进行判断，子UI可以覆盖此方法
+	 * @param dot	{Ycc.Math.Dot}	某个点的绝对坐标
+	 * @return {boolean}
+	 */
+	Ycc.UI.Base.prototype.containDot = function (dot) {
+		return dot.isInRect(this.getAbsolutePosition());
+	};
 
 
 })(Ycc);
