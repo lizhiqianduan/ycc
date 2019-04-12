@@ -292,7 +292,7 @@
 				if(preTap && curTap.createTime-preTap.createTime<300 && Math.abs(preTap.pageX-curTap.pageX)<10&& Math.abs(preTap.pageY-curTap.pageY)<10){
 					self.triggerListener('doubletap',self._createEventData(curTap,'doubletap'));
 					self.triggerListener('log','doubletap triggered');
-					preLife = null;
+					preTap = null;
 					return this;
 				}
 				preTap=curTap;

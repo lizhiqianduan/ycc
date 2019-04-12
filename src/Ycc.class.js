@@ -141,7 +141,7 @@ Ycc.prototype.bindCanvas = function (canvas) {
  * 类初始化
  */
 Ycc.prototype.init = function () {
-	if(true===typeof this.config.useGesture)
+	if(true===this.config.useGesture)
 		this._initStageGestureEvent();
 };
 
