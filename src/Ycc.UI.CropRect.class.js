@@ -121,7 +121,7 @@
 					content:"",
 					rectBgColor:"#666",
 					color:"#fff",
-					onclick:function () {}
+					ontap:function () {}
 				},config);
 				var btn = new Ycc.UI.SingleLineText(config);
 				btn.addListener("mouseover",function () {
