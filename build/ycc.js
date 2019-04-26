@@ -141,7 +141,7 @@ Ycc.prototype.bindCanvas = function (canvas) {
  * 类初始化
  */
 Ycc.prototype.init = function () {
-	if(true===typeof this.config.useGesture)
+	if(true===this.config.useGesture)
 		this._initStageGestureEvent();
 };
 
@@ -3461,7 +3461,7 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 				if(preTap && curTap.createTime-preTap.createTime<300 && Math.abs(preTap.pageX-curTap.pageX)<10&& Math.abs(preTap.pageY-curTap.pageY)<10){
 					self.triggerListener('doubletap',self._createEventData(curTap,'doubletap'));
 					self.triggerListener('log','doubletap triggered');
-					preLife = null;
+					preTap = null;
 					return this;
 				}
 				preTap=curTap;
@@ -5385,6 +5385,17 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 		res.y = dotOrArr.y-(absoluteRect.y);
 		return res;
 	};
+	
+
+	/**
+	 * 判断某个点是否在UI组件内
+	 * 默认根据ui的容纳区rect字段进行判断，子UI可以覆盖此方法
+	 * @param dot	{Ycc.Math.Dot}	某个点的绝对坐标
+	 * @return {boolean}
+	 */
+	Ycc.UI.Base.prototype.containDot = function (dot) {
+		return dot.isInRect(this.getAbsolutePosition());
+	};
 
 
 })(Ycc);;/**
@@ -6727,7 +6738,7 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 					content:"",
 					rectBgColor:"#666",
 					color:"#fff",
-					onclick:function () {}
+					ontap:function () {}
 				},config);
 				var btn = new Ycc.UI.SingleLineText(config);
 				btn.addListener("mouseover",function () {

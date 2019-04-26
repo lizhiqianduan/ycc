@@ -92,19 +92,19 @@
 					rectBgAlpha:0.2
 				});
 				this.addUI(cropRect);
-				/*cropRect.setCtrlBtns([
+				cropRect.setCtrlBtns([
 					{
 						content:"保存",
-						onclick:function () {
+						ontap:function () {
 							console.log(this);
 						}
 					},
-					{content:"增宽"},
+					{content:"增宽",ontap:function (e) {
+						console.log(this);
+					}},
 					{content:"变窄"},
-					{content:"查看当前框图"},
-					{content:"查看所有框图"},
 					{content:"删除"}
-				]);*/
+				]);
 
 
 			},
