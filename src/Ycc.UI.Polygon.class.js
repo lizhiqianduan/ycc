@@ -84,38 +84,62 @@
 	 * 方法二：某个点始终位于多边形逆时针向量的左侧、或者顺时针方向的右侧即可判断，算法名忘记了
 	 * 此方法采用方法一，并假设该射线平行于x轴，方向为x轴正方向
 	 * @param dot {Ycc.Math.Dot} 需要判断的点
+	 * @param noneZeroMode {Number} 是否noneZeroMode 1--启用 2--关闭 默认启用
+	 * 		从这个点引出一根“射线”，与多边形的任意若干条边相交，计数初始化为0，若相交处被多边形的边从左到右切过，计数+1，若相交处被多边形的边从右到左切过，计数-1，最后检查计数，如果是0，点在多边形外，如果非0，点在多边形内
 	 * @return {boolean}
 	 */
-	Ycc.UI.Polygon.prototype.containDot = function (dot) {
+	Ycc.UI.Polygon.prototype.containDot = function (dot,noneZeroMode) {
+		// 默认启动none zero mode
+		noneZeroMode=noneZeroMode||1;
 		var x = dot.x,y=dot.y;
 		var crossNum = 0;
+		// 点在线段的左侧数目
+		var leftCount = 0;
+		// 点在线段的右侧数目
+		var rightCount = 0;
 		for(var i=0;i<this.coordinates.length-1;i++){
 			var start = this.coordinates[i];
 			var end = this.coordinates[i+1];
+			
+			// 起点、终点斜率不存在的情况
 			if(start.x===end.x) {
 				// 因为射线向右水平，此处说明不相交
 				if(x>start.x) continue;
-				
-				// console.log('竖线直接比较y');
-				if((end.y>start.y&&y>=start.y && y<=end.y)  || (end.y<start.y&&y>=end.y && y<=start.y)) {
+				if((end.y>start.y&&y>=start.y && y<=end.y)){
+					leftCount++;
+					// console.log('++1');
+					crossNum++;
+				}
+				if((end.y<start.y&&y>=end.y && y<=start.y)) {
+					rightCount++;
 					// console.log('++1');
 					crossNum++;
 				}
 				continue;
 			}
+			// 斜率存在的情况，计算斜率
 			var k=(end.y-start.y)/(end.x-start.x);
 			// 交点的x坐标
 			var x0 = (y-start.y)/k+start.x;
 			// 因为射线向右水平，此处说明不相交
 			if(x>x0) continue;
 			
-			if((end.x>start.x&&x0>=start.x && x0<=end.x) || (end.x<start.x&&x0>=end.x && x0<=start.x)) {
+			if((end.x>start.x&&x0>=start.x && x0<=end.x)){
 				// console.log('++2');
 				crossNum++;
+				if(k>=0) leftCount++;
+				else rightCount++;
+			}
+			if((end.x<start.x&&x0>=end.x && x0<=start.x)) {
+				// console.log('++2');
+				crossNum++;
+				if(k>=0) rightCount++;
+				else leftCount++;
 			}
 		}
-		// console.log('polygon',dot,crossNum,crossNum%2);
-		return crossNum%2===1;
+		
+		// console.log('polygon',dot,noneZeroMode,crossNum,crossNum%2,leftCount,rightCount);
+		return noneZeroMode===1?leftCount-rightCount!==0:crossNum%2===1;
 	};
 	
 	
