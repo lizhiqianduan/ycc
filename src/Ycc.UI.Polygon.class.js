@@ -105,11 +105,14 @@
 			if(start.x===end.x) {
 				// 因为射线向右水平，此处说明不相交
 				if(x>start.x) continue;
+				
+				// 从左侧贯穿
 				if((end.y>start.y&&y>=start.y && y<=end.y)){
 					leftCount++;
 					// console.log('++1');
 					crossNum++;
 				}
+				// 从右侧贯穿
 				if((end.y<start.y&&y>=end.y && y<=start.y)) {
 					rightCount++;
 					// console.log('++1');
