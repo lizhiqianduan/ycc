@@ -34,6 +34,15 @@
 
 <script>
 
+	var coordinates = [
+		{x:50,y:100},
+		{x:250,y:100},
+		{x:100,y:150},
+		{x:150,y:50},
+		{x:200,y:150},
+		{x:50,y:100},
+	];
+
 	var canvas = document.createElement("canvas");
 	canvas.width = 300;
 	canvas.height = 280;
@@ -46,19 +55,27 @@
 	var layer = ycc.layerManager.newLayer({enableEventManager:true});
 
 	layer.addUI(new Ycc.UI.Polygon({
-		coordinates:[
-			{x:50,y:100},
-			{x:250,y:100},
-			{x:100,y:150},
-			{x:150,y:50},
-			{x:200,y:150},
-			{x:50,y:100},
-		],
+		coordinates:coordinates,
 		ontap:function (e) {
-			console.log('点中了图形 ',e);
+			alert('点中了图形！');
 		},
 	}));
 
+	coordinates.forEach(function (dot,i) {
+		if(i===coordinates.length-1) return;
+		layer.addUI(new Ycc.UI.Rect({
+			rect:new Ycc.Math.Rect(dot.x-5,dot.y-5,10,10),
+			fill:true,
+			color:'#666',
+			ondragging:function (e) {
+				dot.x=e.x;
+				dot.y=e.y;
+				this.rect.x = e.x-5;
+				this.rect.y = e.y-5;
+				ycc.layerManager.reRenderAllLayerToStage();
+			}
+		}));
+	});
 	/*layer.addUI(new Ycc.UI.Rect({
 		rect:new Ycc.Math.Rect(200,200,100,100),
 		fill:true,
