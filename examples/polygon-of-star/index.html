@@ -15,7 +15,9 @@
 	<h3>示例说明：</h3>
 	<div>
 		1、这个示例展示系统的多边形功能。<br>
-		2、下面是用多边形来绘制一个中国地图。<br>
+		2、下面是用多边形来绘制一个五角星。<br>
+		3、可以通过五角星的控制点来变换多边形的形状。<br>
+		4、还可以点击图形区域触发点击事件，区域内判断采用光线投射原理noneZeroMode。<br>
 	</div>
 	<br><br>
 </div>
@@ -76,14 +78,6 @@
 			}
 		}));
 	});
-	/*layer.addUI(new Ycc.UI.Rect({
-		rect:new Ycc.Math.Rect(200,200,100,100),
-		fill:true,
-		ontap:function (e) {
-			console.log(e);
-		},
-	}));*/
-
 	ycc.layerManager.reRenderAllLayerToStage();
 
 
