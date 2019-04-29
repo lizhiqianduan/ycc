@@ -176,6 +176,9 @@ Ycc.prototype._initStageGestureEvent = function () {
 	gesture.addListener('dragging',draggingListener);
 	gesture.addListener('dragend',dragendListener);
 	
+	// PC端专属事件
+	gesture.addListener('mousemove',gestureListener);
+	
 	
 	function dragstartListener(e) {
 		// 在canvas中的绝对位置
@@ -3388,7 +3391,8 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 		 * 6、如果move时，鼠标为按下状态，触发 鼠标按下时UI 的dragging事件
 		 * */
 		this.option.target.addEventListener('mousemove',function (e) {
-			// console.log(e.type,'...');
+			// console.log(e.type,'....',self);
+			self.triggerListener('mousemove',self._createEventData(e,'mousemove'));
 			
 			// 如果鼠标正处于按下状态，则模拟触发dragging事件
 			if(mouseDownEvent){
@@ -7250,7 +7254,7 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 			ctx.lineTo(dot.x,dot.y);
 		}
 		ctx.closePath();
-		ctx.fill();
+		this.fill?ctx.fill():ctx.stroke();
 		ctx.restore();
 		
 	};

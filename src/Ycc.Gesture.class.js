@@ -219,7 +219,8 @@
 		 * 6、如果move时，鼠标为按下状态，触发 鼠标按下时UI 的dragging事件
 		 * */
 		this.option.target.addEventListener('mousemove',function (e) {
-			// console.log(e.type,'...');
+			// console.log(e.type,'....',self);
+			self.triggerListener('mousemove',self._createEventData(e,'mousemove'));
 			
 			// 如果鼠标正处于按下状态，则模拟触发dragging事件
 			if(mouseDownEvent){

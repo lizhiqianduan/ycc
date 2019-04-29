@@ -176,6 +176,9 @@ Ycc.prototype._initStageGestureEvent = function () {
 	gesture.addListener('dragging',draggingListener);
 	gesture.addListener('dragend',dragendListener);
 	
+	// PC端专属事件
+	gesture.addListener('mousemove',gestureListener);
+	
 	
 	function dragstartListener(e) {
 		// 在canvas中的绝对位置

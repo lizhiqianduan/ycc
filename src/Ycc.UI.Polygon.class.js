@@ -72,7 +72,7 @@
 			ctx.lineTo(dot.x,dot.y);
 		}
 		ctx.closePath();
-		ctx.fill();
+		this.fill?ctx.fill():ctx.stroke();
 		ctx.restore();
 		
 	};
