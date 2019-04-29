@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 	<meta charset="UTF-8">
-	<title>中国地图</title>
+	<title>多边形示例</title>
 	<link rel="stylesheet" href="../style.css">
 </head>
 <body>
@@ -61,6 +61,9 @@
 		ontap:function (e) {
 			alert('点中了图形！');
 		},
+		onmousemove:function (e) {
+			console.log(e);
+		}
 	}));
 
 	coordinates.forEach(function (dot,i) {
