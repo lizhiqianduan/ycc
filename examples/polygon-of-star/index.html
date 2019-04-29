@@ -55,16 +55,21 @@
 	ycc.bindCanvas(canvas);
 	// 新建图层
 	var layer = ycc.layerManager.newLayer({enableEventManager:true});
-
-	layer.addUI(new Ycc.UI.Polygon({
+	var polygon = new Ycc.UI.Polygon({
 		coordinates:coordinates,
+		fill:true,
+		fillStyle:"red",
 		ontap:function (e) {
 			alert('点中了图形！');
-		},
-		onmousemove:function (e) {
-			console.log(e,this);
 		}
-	}));
+	});
+	layer.addUI(polygon);
+
+	layer.onmousemove = function (e) {
+		if(ycc.getUIFromPointer(new Ycc.Math.Dot(e),true)===polygon) polygon.fillStyle="blue";
+		else polygon.fillStyle="red";
+		ycc.layerManager.reRenderAllLayerToStage();
+	};
 
 	coordinates.forEach(function (dot,i) {
 		if(i===coordinates.length-1) return;

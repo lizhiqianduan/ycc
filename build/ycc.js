@@ -7208,6 +7208,12 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 		this.fill = true;
 		
 		/**
+		 * 颜色
+		 * @type {string}
+		 */
+		this.fillStyle = "blue";
+		
+		/**
 		 * 多边形点坐标的数组，为保证图形能够闭合，起点和终点必须相等
 		 * @type {null}
 		 */
@@ -7247,6 +7253,10 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 		console.log('render');
 		
 		ctx.save();
+		
+		ctx.fillStyle = this.fillStyle;
+		ctx.strokeStyle = this.strokeStyle;
+		
 		ctx.beginPath();
 		ctx.moveTo(start.x,start.y);
 		for(var i=0;i<this.coordinates.length-1;i++){
