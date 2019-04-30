@@ -7214,6 +7214,12 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 		this.fillStyle = "blue";
 		
 		/**
+		 * 光线投射模式 1-升级模式 2-普通模式
+		 * @type {number}
+		 */
+		this.noneZeroMode = 1;
+		
+		/**
 		 * 多边形点坐标的数组，为保证图形能够闭合，起点和终点必须相等
 		 * @type {null}
 		 */
@@ -7250,7 +7256,7 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 		var coordinates = this.coordinates;
 		var start = coordinates[0];
 		
-		console.log('render');
+		// console.log('render');
 		
 		ctx.save();
 		
@@ -7282,7 +7288,7 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 	 */
 	Ycc.UI.Polygon.prototype.containDot = function (dot,noneZeroMode) {
 		// 默认启动none zero mode
-		noneZeroMode=noneZeroMode||1;
+		noneZeroMode=noneZeroMode||this.noneZeroMode;
 		var x = dot.x,y=dot.y;
 		var crossNum = 0;
 		// 点在线段的左侧数目

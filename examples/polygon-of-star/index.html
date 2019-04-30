@@ -16,9 +16,11 @@
 	<h3>示例说明：</h3>
 	<div>
 		1、这个示例展示系统的多边形功能。<br>
-		2、下面是用多边形来绘制一个五角星。<br>
+		2、下面是用多边形来绘制的五角星。<br>
 		3、可以通过五角星的控制点来变换多边形的形状。<br>
-		4、还可以点击图形区域触发点击事件，区域内判断采用光线投射原理noneZeroMode。<br>
+		4、还可以点击图形区域触发点击事件，区域内判断采用光线投射原理<br>
+		5、若未采用noneZeroMode，只能点击五角星的各个角落，并不能点击五角星内部的五边形<br>
+		6、第一个五角星未采用noneZeroMode<br>
 	</div>
 	<br><br>
 </div>
@@ -45,10 +47,17 @@
 		{x:200,y:150},
 		{x:50,y:100},
 	];
-
+	var coordinates2 = [
+		{x:50,y:300},
+		{x:250,y:300},
+		{x:100,y:350},
+		{x:150,y:250},
+		{x:200,y:350},
+		{x:50,y:300},
+	];
 	var canvas = document.createElement("canvas");
 	canvas.width = 300;
-	canvas.height = 280;
+	canvas.height = 480;
 	document.getElementById("canvas").appendChild(canvas);
 
 
@@ -58,19 +67,15 @@
 	var layer = ycc.layerManager.newLayer({enableEventManager:true});
 	var polygon = new Ycc.UI.Polygon({
 		coordinates:coordinates,
-		fill:true,
+		fill:false,
 		fillStyle:"red",
+		noneZeroMode:2,
+		strokeStyle:"blue",
 		ontap:function (e) {
-			alert('点中了图形！');
+			alert('点中了图形！只能点击角落');
 		}
 	});
 	layer.addUI(polygon);
-
-	layer.onmousemove = function (e) {
-		if(ycc.getUIFromPointer(new Ycc.Math.Dot(e),true)===polygon) polygon.fillStyle="blue";
-		else polygon.fillStyle="red";
-		ycc.layerManager.reRenderAllLayerToStage();
-	};
 
 	coordinates.forEach(function (dot,i) {
 		if(i===coordinates.length-1) return;
@@ -87,6 +92,48 @@
 			}
 		}));
 	});
+
+
+
+	var polygon2 = new Ycc.UI.Polygon({
+		coordinates:coordinates2,
+		fill:true,
+		fillStyle:"red",
+		noneZeroMode:1,
+		strokeStyle:"blue",
+		ontap:function (e) {
+			alert('点中了图形！');
+		}
+	});
+	layer.addUI(polygon2);
+
+	coordinates2.forEach(function (dot,i) {
+		if(i===coordinates2.length-1) return;
+		layer.addUI(new Ycc.UI.Rect({
+			rect:new Ycc.Math.Rect(dot.x-5,dot.y-5,10,10),
+			fill:true,
+			color:'#666',
+			ondragging:function (e) {
+				dot.x=e.x;
+				dot.y=e.y;
+				this.rect.x = e.x-5;
+				this.rect.y = e.y-5;
+				ycc.layerManager.reRenderAllLayerToStage();
+			}
+		}));
+	});
+
+
+
+
+
+
+	layer.onmousemove = function (e) {
+		if(ycc.getUIFromPointer(new Ycc.Math.Dot(e),true)===polygon2) polygon2.fillStyle="blue";
+		else polygon2.fillStyle="red";
+		ycc.layerManager.reRenderAllLayerToStage();
+	};
+
 	ycc.layerManager.reRenderAllLayerToStage();
 
 
