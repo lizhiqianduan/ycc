@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name=viewport content="width=device-width,initial-scale=1,user-scalable=0,viewport-fit=cover">
+	<title>多边形示例</title>
+	<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<div class="return-btn">
+	<a href="../">
+		返回首页
+	</a>
+</div>
+<div class="tip">
+	<h3>示例说明：</h3>
+	<div>
+		1、这个示例使用底层提供的多边形绘制一个中国地图。<br>
+	</div>
+	<br><br>
+</div>
+
+
+<div id="canvas">
+
+</div>
+
+</body>
+</html>
+
+<script src="http://localhost:9000/livereload.js"></script>
+<script src="../common.js"></script>
+<script src="../../build/ycc.js"></script>
+
+<script>
+
+	var canvas = document.createElement("canvas");
+	canvas.width = 1200;
+	canvas.height = 380;
+	document.getElementById("canvas").appendChild(canvas);
+
+
+	var ycc = new Ycc();
+	ycc.bindCanvas(canvas);
+	// 新建图层
+	var layer = ycc.layerManager.newLayer({enableEventManager:true});
+	var scale=5;
+
+	ycc.ajax.get('./china.json',function (data) {
+		data = JSON.parse(data);
+		console.log(data.features);
+		data.features.forEach(function (item) {
+			var dots = item.geometry.coordinates[0].map(function (dot) {
+				return new Ycc.Math.Dot(dot[0]*scale,dot[1]*scale);
+			});
+			console.log(dots);
+			var polygon = new Ycc.UI.Polygon({
+				coordinates:dots,
+				fill:false,
+				fillStyle:"red",
+				noneZeroMode:2,
+				userData:{area:item},
+				strokeStyle:"blue",
+				rotation:180,
+				ontap:function (e) {
+					console.log(this);
+					this.belongTo.uiList.forEach(function (t) {
+						t.fill=false;
+					});
+					this.fill=true;
+					ycc.layerManager.reRenderAllLayerToStage();
+//					alert('点中了图形！只能点击角落');
+				}
+			});
+			layer.addUI(polygon);
+			ycc.layerManager.reRenderAllLayerToStage();
+		});
+	});
+//	var polygon = new Ycc.UI.Polygon({
+//		coordinates:coordinates,
+//		fill:false,
+//		fillStyle:"red",
+//		noneZeroMode:2,
+//		strokeStyle:"blue",
+//		ontap:function (e) {
+//			alert('点中了图形！只能点击角落');
+//		}
+//	});
+//	layer.addUI(polygon);
+//
+
+
+</script>
