@@ -3,7 +3,7 @@
 <head>
 	<meta charset="UTF-8">
 	<meta name=viewport content="width=device-width,initial-scale=1,user-scalable=0,viewport-fit=cover">
-	<title>多边形示例</title>
+	<title>多边形-中国地图</title>
 	<link rel="stylesheet" href="../style.css">
 </head>
 <body>
@@ -16,12 +16,16 @@
 	<h3>示例说明：</h3>
 	<div>
 		1、这个示例使用底层提供的多边形绘制一个中国地图。<br>
+		2、地图的各个区域都是可以点击的。<br>
 	</div>
 	<br><br>
 </div>
 
 
 <div id="canvas">
+
+</div>
+<div id="area">
 
 </div>
 
@@ -35,59 +39,71 @@
 <script>
 
 	var canvas = document.createElement("canvas");
-	canvas.width = 1200;
-	canvas.height = 380;
+	canvas.width = 350;
+	canvas.height = 250;
 	document.getElementById("canvas").appendChild(canvas);
 
+	// 地图的偏移量
+	var offsetX = 70; // 临界值为minX
+	var offsetY = 60; // 临界值为maxY
+	// 缩放倍数
+	var scale=5;
 
 	var ycc = new Ycc();
 	ycc.bindCanvas(canvas);
 	// 新建图层
 	var layer = ycc.layerManager.newLayer({enableEventManager:true});
-	var scale=5;
 
 	ycc.ajax.get('./china.json',function (data) {
 		data = JSON.parse(data);
 		console.log(data.features);
+		var minX=9999;
+		var maxY=0;
 		data.features.forEach(function (item) {
-			var dots = item.geometry.coordinates[0].map(function (dot) {
-				return new Ycc.Math.Dot(dot[0]*scale,dot[1]*scale);
+			// 河北等省为MultiPolygon，取第一个
+			var provinceDots = item.geometry.type==="MultiPolygon"?item.geometry.coordinates[0][0]:item.geometry.coordinates[0];
+			var dots = provinceDots.map(function (dot) {
+				if(dot[0]<minX) minX=dot[0];
+				if(dot[1]>maxY) maxY=dot[1];
+				//x坐标去除偏移量，y坐标加上偏移量，并做镜像处理
+				return new Ycc.Math.Dot((dot[0]-offsetX)*scale,(offsetY-dot[1])*scale);
 			});
-			console.log(dots);
+			//console.log(dots);
 			var polygon = new Ycc.UI.Polygon({
 				coordinates:dots,
 				fill:false,
-				fillStyle:"red",
+				fillStyle:"rgb(0,88,160)",
 				noneZeroMode:2,
 				userData:{area:item},
-				strokeStyle:"blue",
-				rotation:180,
+				strokeStyle:"rgb(0,88,160)",
+				rotation:0,
+				anchorX:175,
+				anchorY:200,
 				ontap:function (e) {
-					console.log(this);
+					console.log(this,e);
 					this.belongTo.uiList.forEach(function (t) {
 						t.fill=false;
 					});
 					this.fill=true;
 					ycc.layerManager.reRenderAllLayerToStage();
-//					alert('点中了图形！只能点击角落');
-				}
+					document.getElementById('area').innerHTML=this.userData.area.properties.name;
+				},
+				onmousemove:function (e) {
+					//console.log(this,e);
+					this.belongTo.uiList.forEach(function (t) {
+						t.fill=false;
+					});
+					this.fill=true;
+					ycc.layerManager.reRenderAllLayerToStage();
+					document.getElementById('area').innerHTML=this.userData.area.properties.name;
+				},
 			});
 			layer.addUI(polygon);
 			ycc.layerManager.reRenderAllLayerToStage();
 		});
+		console.log('minX',minX);
+		console.log('maxY',maxY);
 	});
-//	var polygon = new Ycc.UI.Polygon({
-//		coordinates:coordinates,
-//		fill:false,
-//		fillStyle:"red",
-//		noneZeroMode:2,
-//		strokeStyle:"blue",
-//		ontap:function (e) {
-//			alert('点中了图形！只能点击角落');
-//		}
-//	});
-//	layer.addUI(polygon);
-//
 
 
 </script>
