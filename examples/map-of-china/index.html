@@ -17,6 +17,7 @@
 	<div>
 		1、这个示例使用底层提供的多边形绘制一个中国地图。<br>
 		2、地图的各个区域都是可以点击的。<br>
+		3、此地图支持移动端和PC端。<br>
 	</div>
 	<br><br>
 </div>
@@ -44,8 +45,8 @@
 	document.getElementById("canvas").appendChild(canvas);
 
 	// 地图的偏移量
-	var offsetX = 70; // 临界值为minX
-	var offsetY = 60; // 临界值为maxY
+	var offsetX = 70; // 临界值为 73.4766
+	var offsetY = 60; // 临界值为 53.5693
 	// 缩放倍数
 	var scale=5;
 
@@ -56,19 +57,13 @@
 
 	ycc.ajax.get('./china.json',function (data) {
 		data = JSON.parse(data);
-		console.log(data.features);
-		var minX=9999;
-		var maxY=0;
 		data.features.forEach(function (item) {
-			// 河北等省为MultiPolygon，取第一个
+			// 河北等省为MultiPolygon，取第一个多边形直接绘制
 			var provinceDots = item.geometry.type==="MultiPolygon"?item.geometry.coordinates[0][0]:item.geometry.coordinates[0];
 			var dots = provinceDots.map(function (dot) {
-				if(dot[0]<minX) minX=dot[0];
-				if(dot[1]>maxY) maxY=dot[1];
 				//x坐标去除偏移量，y坐标加上偏移量，并做镜像处理
 				return new Ycc.Math.Dot((dot[0]-offsetX)*scale,(offsetY-dot[1])*scale);
 			});
-			//console.log(dots);
 			var polygon = new Ycc.UI.Polygon({
 				coordinates:dots,
 				fill:false,
@@ -76,33 +71,23 @@
 				noneZeroMode:2,
 				userData:{area:item},
 				strokeStyle:"rgb(0,88,160)",
-				rotation:0,
-				anchorX:175,
-				anchorY:200,
-				ontap:function (e) {
-					console.log(this,e);
-					this.belongTo.uiList.forEach(function (t) {
-						t.fill=false;
-					});
-					this.fill=true;
-					ycc.layerManager.reRenderAllLayerToStage();
-					document.getElementById('area').innerHTML=this.userData.area.properties.name;
-				},
-				onmousemove:function (e) {
-					//console.log(this,e);
-					this.belongTo.uiList.forEach(function (t) {
-						t.fill=false;
-					});
-					this.fill=true;
-					ycc.layerManager.reRenderAllLayerToStage();
-					document.getElementById('area').innerHTML=this.userData.area.properties.name;
-				},
+				ontap:onEvent,
+				onmousemove:onEvent,
 			});
 			layer.addUI(polygon);
 			ycc.layerManager.reRenderAllLayerToStage();
+
+			// 事件处理：填充选中的省份
+			function onEvent(e) {
+				this.belongTo.uiList.forEach(function (t) {
+					t.fill=false;
+				});
+				this.fill=true;
+				ycc.layerManager.reRenderAllLayerToStage();
+				document.getElementById('area').innerHTML=this.userData.area.properties.name;
+
+			}
 		});
-		console.log('minX',minX);
-		console.log('maxY',maxY);
 	});
 
 
