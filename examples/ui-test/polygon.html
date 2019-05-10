@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>多边形测试示例</title>
+	<link rel="stylesheet" href="../style.css">
+	<meta name=viewport content="width=device-width,initial-scale=1,user-scalable=0,viewport-fit=cover">
+</head>
+<body>
+<div class="tip">
+	<h3>示例说明：</h3>
+	<div>
+		1、这个示例展示系统的多边形UI。<br>
+		2、<br>
+	</div>
+	<br><br>
+</div>
+
+<div id="canvas"></div>
+
+
+</body>
+</html>
+
+<script src="http://localhost:9000/livereload.js"></script>
+<script src="../common.js"></script>
+<script src="../../build/ycc.js"></script>
+
+<script>
+	var canvas = document.createElement("canvas");
+	canvas.width = 300;
+	canvas.height = 800;
+	canvas.height = 800;
+	document.getElementById("canvas").appendChild(canvas);
+	var ycc = new Ycc();
+	ycc.bindCanvas(canvas);
+
+	// 新建图层
+	var layer = ycc.layerManager.newLayer({enableEventManager:true});
+
+	layer.addUI(new Ycc.UI.Polygon({
+		fill:true,
+		fillStyle:'blue',
+		isDrawIndex:true,
+		coordinates:[
+			{x:150,y:150},
+			{x:100,y:10},
+			{x:222,y:100},
+			{x:150,y:150},
+		]
+	}));
+	ycc.layerManager.reRenderAllLayerToStage();
+
+</script>

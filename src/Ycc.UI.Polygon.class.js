@@ -38,6 +38,12 @@
 		this.noneZeroMode = 1;
 		
 		/**
+		 * 是否绘制点的下标
+		 * @type {boolean}
+		 */
+		this.isDrawIndex = false;
+		
+		/**
 		 * 多边形点坐标的数组，为保证图形能够闭合，起点和终点必须相等
 		 * @type {null}
 		 */
@@ -85,6 +91,7 @@
 		ctx.moveTo(start.x,start.y);
 		for(var i=0;i<this.coordinates.length-1;i++){
 			var dot = this.coordinates[i];
+			if(this.isDrawIndex) ctx.fillText(i+'',dot.x-10,dot.y+10);
 			ctx.lineTo(dot.x,dot.y);
 		}
 		ctx.closePath();
