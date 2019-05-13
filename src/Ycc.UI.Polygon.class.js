@@ -44,10 +44,10 @@
 		this.isDrawIndex = false;
 		
 		/**
-		 * 是否显示旋转缩放之前的位置
+		 * 是否显示缩放之前的位置
 		 * @type {boolean}
 		 */
-		this.isShowScaleRotateBeforeUI = false;
+		this.isShowRotateBeforeUI = false;
 		
 		/**
 		 * 多边形点坐标的数组，为保证图形能够闭合，起点和终点必须相等
@@ -89,7 +89,7 @@
 		// console.log('render');
 		
 		// 绘制旋转缩放之前的UI
-		if(this.isShowScaleRotateBeforeUI) this.__renderBeforeUI(ctx);
+		if(this.isShowRotateBeforeUI) this.__renderBeforeUI(ctx);
 
 		ctx.save();
 		
