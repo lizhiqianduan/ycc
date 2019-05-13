@@ -84,7 +84,7 @@
 			return;
 		}
 		var coordinates = this.coordinates;
-		var start = this.transformByScaleRotate(coordinates[0]);
+		var start = this.transformByRotate(coordinates[0]);
 		
 		// console.log('render');
 		
@@ -99,7 +99,7 @@
 		ctx.beginPath();
 		ctx.moveTo(start.x,start.y);
 		for(var i=0;i<this.coordinates.length-1;i++){
-			var dot = this.transformByScaleRotate(this.coordinates[i]);
+			var dot = this.transformByRotate(this.coordinates[i]);
 			if(this.isDrawIndex) ctx.fillText(i+'',dot.x-10,dot.y+10);
 			ctx.lineTo(dot.x,dot.y);
 		}
@@ -167,7 +167,7 @@
 	 * 方法一：经过该点的水平射线与多边形的焦点数，即Ray-casting Algorithm
 	 * 方法二：某个点始终位于多边形逆时针向量的左侧、或者顺时针方向的右侧即可判断，算法名忘记了
 	 * 此方法采用方法一，并假设该射线平行于x轴，方向为x轴正方向
-	 * @param dot {Ycc.Math.Dot} 需要判断的点
+	 * @param dot {Ycc.Math.Dot} 需要判断的点，绝对坐标
 	 * @param noneZeroMode {Number} 是否noneZeroMode 1--启用 2--关闭 默认启用
 	 * 		从这个点引出一根“射线”，与多边形的任意若干条边相交，计数初始化为0，若相交处被多边形的边从左到右切过，计数+1，若相交处被多边形的边从右到左切过，计数-1，最后检查计数，如果是0，点在多边形外，如果非0，点在多边形内
 	 * @return {boolean}
@@ -175,8 +175,7 @@
 	Ycc.UI.Polygon.prototype.containDot = function (dot,noneZeroMode) {
 		// 默认启动none zero mode
 		noneZeroMode=noneZeroMode||this.noneZeroMode;
-		// 由于coordinates为相对坐标，此处将dot转化为相对坐标
-		var _dot = this.transformToLocal(dot);
+		var _dot = dot;
 		
 		var x = _dot.x,y=_dot.y;
 		var crossNum = 0;
@@ -185,8 +184,8 @@
 		// 点在线段的右侧数目
 		var rightCount = 0;
 		for(var i=0;i<this.coordinates.length-1;i++){
-			var start = this.transformByScaleRotate(this.coordinates[i]);
-			var end = this.transformByScaleRotate(this.coordinates[i+1]);
+			var start = this.transformByRotate(this.coordinates[i]);
+			var end = this.transformByRotate(this.coordinates[i+1]);
 			
 			// 起点、终点斜率不存在的情况
 			if(start.x===end.x) {

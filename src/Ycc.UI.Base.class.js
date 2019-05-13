@@ -80,18 +80,6 @@
 		this.anchorY = 0;
 		
 		/**
-		 * x方向的缩放比例
-		 * @type {number}
-		 */
-		this.scaleX = 1;
-
-		/**
-		 * y方向的缩放比例
-		 * @type {number}
-		 */
-		this.scaleY = 1;
-		
-		/**
 		 * 相对于锚点的旋转角度
 		 * @type {number}
 		 */
@@ -595,22 +583,22 @@
 	 */
 	Ycc.UI.Base.prototype.transformToLocal = function (dotOrArr) {
 		var res = null;
-		var absoluteRect = this.getAbsolutePosition();
+		var absolutePos = this.getAbsolutePosition();
 		if(Ycc.utils.isArray(dotOrArr)){
 			res = [];
 			for(var i=0;i<dotOrArr.length;i++){
 				var resDot = new Ycc.Math.Dot(0,0);
 				var dot = dotOrArr[i];
-				resDot.x=dot.x-(absoluteRect.x)+this.x;
-				resDot.y=dot.y-(absoluteRect.y)+this.y;
+				resDot.x=dot.x-(absolutePos.x)+this.x;
+				resDot.y=dot.y-(absolutePos.y)+this.y;
 				res.push(resDot);
 			}
 			return res;
 		}
 		res = new Ycc.Math.Dot(0,0);
 		// 本地坐标需加上当前的x、y
-		res.x = dotOrArr.x-(absoluteRect.x)+this.x;
-		res.y = dotOrArr.y-(absoluteRect.y)+this.y;
+		res.x = dotOrArr.x-(absolutePos.x)+this.x;
+		res.y = dotOrArr.y-(absolutePos.y)+this.y;
 		return res;
 	};
 	
@@ -626,17 +614,17 @@
 	};
 	
 	/**
-	 * 根据当前的锚点、缩放比例、旋转角度获取某个点的转换之后的坐标
+	 * 根据当前的锚点、旋转角度获取某个点的转换之后的坐标
 	 * @param dot {Ycc.Math.Dot}	需要转换的点，该点为相对坐标，相对于当前UI的父级
 	 * @return {Ycc.Math.Dot}		转换后的点，该点为绝对坐标
 	 */
-	Ycc.UI.Base.prototype.transformByScaleRotate = function (dot) {
+	Ycc.UI.Base.prototype.transformByRotate = function (dot) {
 		var res = new Ycc.Math.Dot();
 		// 位置的绝对坐标
 		var pos = this.getAbsolutePosition();
-		// 坐标缩放
-		var dotX = (this.scaleX)*(-this.anchorX+dot.x)+this.anchorX;
-		var dotY = (this.scaleY)*(-this.anchorY+dot.y)+this.anchorY;
+		
+		var dotX = dot.x;
+		var dotY = dot.y;
 		
 		// 坐标旋转
 		var dx = (dotX - this.anchorX)*Math.cos(this.rotation/180*Math.PI) - (dotY - this.anchorY)*Math.sin(this.rotation/180*Math.PI)+this.anchorX;
