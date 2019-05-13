@@ -69,6 +69,14 @@
 	};
 	
 	/**
+	 * 点的加法/点的偏移量
+	 * @param dot {Ycc.Math.Dot} 加的点
+	 * @return {Ycc.Math.Dot} 返回一个新的点
+	 */
+	Ycc.Math.Dot.prototype.plus = function (dot) {
+		return new Ycc.Math.Dot(this.x+dot.x,this.y+dot.y);
+	};
+	/**
 	 * 判断三点是否共线
 	 * @param dot1
 	 * @param dot2

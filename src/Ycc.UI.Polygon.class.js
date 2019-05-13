@@ -192,6 +192,7 @@
 			ctx.lineTo(dot.x+paPos.x,dot.y+paPos.y);
 		}
 		ctx.closePath();
+		ctx.strokeStyle = this.color || this.strokeStyle;
 		ctx.stroke();
 		ctx.restore();
 	};
