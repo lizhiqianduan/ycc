@@ -69,6 +69,14 @@ ycc.layerManager.reRenderAllLayerToStage();
 
 在运行如上代码前，请确认页面已经引入了`ycc.js`文件。
 
+#### 重要原则
+
+1、UI在舞台的真实属性，只能先绘制后再获取。
+
+2、所有UI都必须继承多边形类Polygon，而Polygon类继承自基类Base（v0.2及其之前的版本全都继承自Base，改版进行中），必要时UI可以覆盖父类的方法。
+
+3、UI的锚点坐标表示UI的位置，但其值为相对坐标，可以通过方法获取其绝对坐标。
+
 #### 示例
 
 访问更多的示例，你可以直接点击[查看线上示例](http://www.lizhiqianduan.com/products/ycc/examples/)，或者下载Ycc模块后点击查看`/ycc/examples/index.html`。
