@@ -5540,10 +5540,23 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 		if(this.isShowRotateBeforeUI) this.renderDashBeforeUI(ctx);
 
 		ctx.save();
-		
 		ctx.fillStyle = this.fillStyle;
 		ctx.strokeStyle = this.strokeStyle;
+		this.renderPath();
+		this.fill?ctx.fill():ctx.stroke();
+		ctx.restore();
+	
+	};
+	
+	/**
+	 * 根据coordinates绘制路径
+	 * 只绘制路径，不填充、不描边
+	 */
+	Ycc.UI.Polygon.prototype.renderPath = function (ctx) {
+		var self = this;
+		ctx = ctx || self.ctx;
 		
+		var start = this.transformByRotate(this.coordinates[0]);
 		ctx.beginPath();
 		ctx.moveTo(start.x,start.y);
 		for(var i=0;i<this.coordinates.length-1;i++){
@@ -5552,12 +5565,7 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 			ctx.lineTo(dot.x,dot.y);
 		}
 		ctx.closePath();
-		this.fill?ctx.fill():ctx.stroke();
-		ctx.restore();
 	
-	
-	
-		
 	};
 	
 	
@@ -6933,19 +6941,13 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 			return;
 		}
 		
-		var rect = this.getAbsolutePositionRect();
-
-		this.ctx.save();
-		this.ctx.beginPath();
-		this.ctx.fillStyle = this.color;
-		this.ctx.strokeStyle = this.color;
-		this.ctx.rect(rect.x,rect.y,rect.width,rect.height);
-		this.ctx.closePath();
-		if(!this.fill)
-			this.ctx.stroke();
-		else
-			this.ctx.fill();
-		this.ctx.restore();
+		
+		ctx.save();
+		ctx.fillStyle = this.color;
+		ctx.strokeStyle = this.color;
+		this.renderPath();
+		this.fill?ctx.fill():ctx.stroke();
+		ctx.restore();
 
 		// 绘制旋转缩放之前的UI
 		if(this.isShowRotateBeforeUI) this.renderDashBeforeUI(ctx);

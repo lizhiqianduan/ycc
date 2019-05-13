@@ -67,19 +67,13 @@
 			return;
 		}
 		
-		var rect = this.getAbsolutePositionRect();
-
-		this.ctx.save();
-		this.ctx.beginPath();
-		this.ctx.fillStyle = this.color;
-		this.ctx.strokeStyle = this.color;
-		this.ctx.rect(rect.x,rect.y,rect.width,rect.height);
-		this.ctx.closePath();
-		if(!this.fill)
-			this.ctx.stroke();
-		else
-			this.ctx.fill();
-		this.ctx.restore();
+		
+		ctx.save();
+		ctx.fillStyle = this.color;
+		ctx.strokeStyle = this.color;
+		this.renderPath();
+		this.fill?ctx.fill():ctx.stroke();
+		ctx.restore();
 
 		// 绘制旋转缩放之前的UI
 		if(this.isShowRotateBeforeUI) this.renderDashBeforeUI(ctx);
