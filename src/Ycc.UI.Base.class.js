@@ -601,15 +601,16 @@
 			for(var i=0;i<dotOrArr.length;i++){
 				var resDot = new Ycc.Math.Dot(0,0);
 				var dot = dotOrArr[i];
-				resDot.x=dot.x-(absoluteRect.x);
-				resDot.y=dot.y-(absoluteRect.y);
+				resDot.x=dot.x-(absoluteRect.x)+this.x;
+				resDot.y=dot.y-(absoluteRect.y)+this.y;
 				res.push(resDot);
 			}
 			return res;
 		}
 		res = new Ycc.Math.Dot(0,0);
-		res.x = dotOrArr.x-(absoluteRect.x);
-		res.y = dotOrArr.y-(absoluteRect.y);
+		// 本地坐标需加上当前的x、y
+		res.x = dotOrArr.x-(absoluteRect.x)+this.x;
+		res.y = dotOrArr.y-(absoluteRect.y)+this.y;
 		return res;
 	};
 	
