@@ -44,6 +44,12 @@
 		this.isDrawIndex = false;
 		
 		/**
+		 * 是否显示旋转缩放之前的位置
+		 * @type {boolean}
+		 */
+		this.isShowScaleRotateBeforeUI = false;
+		
+		/**
 		 * 多边形点坐标的数组，为保证图形能够闭合，起点和终点必须相等
 		 * @type {null}
 		 */
@@ -63,7 +69,10 @@
 	 * @override
 	 */
 	Ycc.UI.Polygon.prototype.computeUIProps = function () {
-	
+		if(!this.coordinates[0]) return new Ycc.Debugger.Error('error in property `coordinates`');
+		// 锚点坐标默认取坐标点的第一个坐标
+		this.anchorX = this.anchorX||this.coordinates[0].x;
+		this.anchorY = this.anchorY||this.coordinates[0].y;
 	};
 	
 	/**
@@ -84,6 +93,8 @@
 		
 		ctx.save();
 		
+		this.scaleAndRotate();
+		
 		ctx.fillStyle = this.fillStyle;
 		ctx.strokeStyle = this.strokeStyle;
 		
@@ -97,8 +108,35 @@
 		ctx.closePath();
 		this.fill?ctx.fill():ctx.stroke();
 		ctx.restore();
+	
+	
+	
+		// 绘制旋转缩放之前的UI
+		if(this.isShowScaleRotateBeforeUI) this.__renderBeforeUI(ctx);
 		
 	};
+	
+	/**
+	 * 绘制旋转缩放之前的UI
+	 * @private
+	 */
+	Ycc.UI.Polygon.prototype.__renderBeforeUI = function (ctx) {
+		var self = this;
+		var start = this.coordinates[0];
+		ctx.save();
+		// 虚线
+		ctx.setLineDash([10]);
+		ctx.beginPath();
+		ctx.moveTo(start.x,start.y);
+		for(var i=0;i<self.coordinates.length-1;i++){
+			var dot = self.coordinates[i];
+			ctx.lineTo(dot.x,dot.y);
+		}
+		ctx.closePath();
+		ctx.stroke();
+		ctx.restore();
+	};
+
 	
 	/**
 	 * 重载基类的包含某个点的函数，用于点击事件等的响应
