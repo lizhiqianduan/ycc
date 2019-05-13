@@ -450,8 +450,11 @@
 	 */
 	Ycc.UI.Base.prototype.__render = function (ctx) {
 		this.triggerListener('computestart',new Ycc.Event("computestart"));
-		this.computeUIProps();
+		var error = this.computeUIProps();
 		this.triggerListener('computeend',new Ycc.Event("computeend"));
+		
+		if(error) return console.error(error.message);
+		
 		// 超出舞台时，不予渲染
 		if(this.isOutOfStage())
 			return;
