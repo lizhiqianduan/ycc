@@ -54,6 +54,18 @@
 		this.rect = new Ycc.Math.Rect();
 		
 		/**
+		 * x相对父级的位置
+		 * @type {number}
+		 */
+		this.x = 0;
+		
+		/**
+		 * y相对父级的位置
+		 * @type {number}
+		 */
+		this.y = 0;
+		
+		/**
 		 * UI对象的锚点坐标。相对坐标。相对于rect的x
 		 * 锚点坐标主要用于图形的旋转、平移、缩放
 		 * @type {number}
