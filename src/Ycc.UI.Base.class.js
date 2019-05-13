@@ -622,6 +622,22 @@
 	Ycc.UI.Base.prototype.containDot = function (dot) {
 		return dot.isInRect(this.getAbsolutePosition());
 	};
+	
+	/**
+	 * 根据当前的锚点、缩放比例、旋转角度获取某个点的转换之后的坐标
+	 * @param dot {Ycc.Math.Dot}	需要转换的点，该点为相对坐标，相对于当前UI的父级
+	 * @return {Ycc.Math.Dot}		转换后的点，该点为相对坐标，相对于当前UI的父级
+	 */
+	Ycc.UI.Base.prototype.getScaleRotateDot = function (dot) {
+		var res = new Ycc.Math.Dot();
+		var dotX = dot.x*this.scaleX;
+		var dotY = dot.y*this.scaleY;
+		var dx = (dotY - this.anchorY)*Math.cos(this.rotation/180*Math.PI) - (dotX - this.anchorX)*Math.sin(this.rotation/180*Math.PI) + this.anchorX;
+		var dy = (dotX - this.anchorX)*Math.cos(this.rotation/180*Math.PI) + (dotY - this.anchorY)*Math.sin(this.rotation/180*Math.PI) + this.anchorY;
+		res.x=dx;
+		res.y=dy;
+		return res;
+	};
 
 
 })(Ycc);
