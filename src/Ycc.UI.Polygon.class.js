@@ -121,7 +121,7 @@
 	 * @override
 	 */
 	Ycc.UI.Polygon.prototype.getAbsolutePosition = function(pos){
-		pos = pos || new Ycc.Math.Dot();
+		pos = pos || new Ycc.Math.Dot(this.x,this.y);
 		var pa = this.getParent();
 		
 		if(!pa){
@@ -129,7 +129,7 @@
 			pos.x = this.x+this.belongTo.x;
 			pos.y = this.y+this.belongTo.y;
 		}else{
-			var paPos = pa.getAbsolutePosition(pos);
+			var paPos = pa.getAbsolutePosition();
 			pos.x += paPos.x;
 			pos.y += paPos.y;
 		}
