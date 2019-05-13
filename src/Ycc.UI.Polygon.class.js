@@ -137,6 +137,29 @@
 	};
 	
 	/**
+	 * 获取能容纳当前UI的最小方形区域
+	 * @return {Ycc.Math.Rect}
+	 */
+	Ycc.UI.Polygon.prototype.getAbsolutePositionRect = function () {
+		var rect = new Ycc.Math.Rect();
+		var pos = this.getAbsolutePosition();
+		var minx=0,miny=0,maxx=0,maxy=0;
+		for(var i=0;i<this.coordinates.length-1;i++){
+			var dot = this.coordinates[i];
+			if(dot.x<minx) minx=dot.x;
+			if(dot.x>maxx) maxx=dot.x;
+			if(dot.y<miny) miny=dot.y;
+			if(dot.y>maxy) maxy=dot.y;
+		}
+		rect.x=minx+pos.x;
+		rect.y=miny+pos.y;
+		rect.width=maxx-minx;
+		rect.height=maxy-miny;
+		return rect;
+	};
+	
+	
+	/**
 	 * 绘制旋转缩放之前的UI
 	 * @private
 	 */

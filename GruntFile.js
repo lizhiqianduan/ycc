@@ -35,6 +35,7 @@ module.exports = function(grunt){
 					'src/Ycc.UI.Base.class.js',
 			
 					// ui
+					'src/Ycc.UI.Polygon.class.js',
 					'src/Ycc.UI.Ellipse.class.js',
 					'src/Ycc.UI.Circle.class.js',
 					'src/Ycc.UI.Image.class.js',
@@ -45,7 +46,6 @@ module.exports = function(grunt){
 					'src/Ycc.UI.Rect.class.js',
 					'src/Ycc.UI.CropRect.class.js',
 					'src/Ycc.UI.SingleLineText.class.js',
-					'src/Ycc.UI.Polygon.class.js',
 					
 					// 组件
 					'src/Ycc.UI.ComponentButton.class.js',
