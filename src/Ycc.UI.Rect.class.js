@@ -59,7 +59,13 @@
 	/**
 	 * 绘制
 	 */
-	Ycc.UI.Rect.prototype.render = function () {
+	Ycc.UI.Rect.prototype.render = function (ctx) {
+		var self = this;
+		ctx = ctx || self.ctx;
+		if(!self.ctx){
+			console.error("[Ycc error]:","ctx is null !");
+			return;
+		}
 		
 		var rect = this.getAbsolutePositionRect();
 
@@ -74,6 +80,9 @@
 		else
 			this.ctx.fill();
 		this.ctx.restore();
+
+		// 绘制旋转缩放之前的UI
+		if(this.isShowRotateBeforeUI) this.renderDashBeforeUI(ctx);
 	};
 	
 	

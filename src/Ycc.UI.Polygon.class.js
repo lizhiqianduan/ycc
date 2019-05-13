@@ -89,7 +89,7 @@
 		// console.log('render');
 		
 		// 绘制旋转缩放之前的UI
-		if(this.isShowRotateBeforeUI) this.__renderBeforeUI(ctx);
+		if(this.isShowRotateBeforeUI) this.renderDashBeforeUI(ctx);
 
 		ctx.save();
 		
@@ -141,29 +141,34 @@
 	 * @return {Ycc.Math.Rect}
 	 */
 	Ycc.UI.Polygon.prototype.getAbsolutePositionRect = function () {
+		if(!this.coordinates[0]) return console.log(new Ycc.Debugger.Error('need compute prop coordinates').message);
+
 		var rect = new Ycc.Math.Rect();
 		var pos = this.getAbsolutePosition();
-		var minx=0,miny=0,maxx=0,maxy=0;
+		
+		var start = this.coordinates[0];
+		var minx=start.x,miny=start.y,maxx=start.x,maxy=start.y;
+		
 		for(var i=0;i<this.coordinates.length-1;i++){
 			var dot = this.coordinates[i];
 			if(dot.x<minx) minx=dot.x;
-			if(dot.x>maxx) maxx=dot.x;
+			if(dot.x>=maxx) maxx=dot.x;
 			if(dot.y<miny) miny=dot.y;
-			if(dot.y>maxy) maxy=dot.y;
+			if(dot.y>=maxy) maxy=dot.y;
 		}
 		rect.x=minx+pos.x;
 		rect.y=miny+pos.y;
 		rect.width=maxx-minx;
 		rect.height=maxy-miny;
+		console.log(minx,miny,maxx,maxy);
 		return rect;
 	};
 	
 	
 	/**
 	 * 绘制旋转缩放之前的UI
-	 * @private
 	 */
-	Ycc.UI.Polygon.prototype.__renderBeforeUI = function (ctx) {
+	Ycc.UI.Polygon.prototype.renderDashBeforeUI = function (ctx) {
 		var self = this;
 		var pa = this.getParent();
 		var paPos =pa? pa.getAbsolutePosition():new Ycc.Math.Dot();
