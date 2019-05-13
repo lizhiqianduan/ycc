@@ -11,7 +11,8 @@
 	<h3>示例说明：</h3>
 	<div>
 		1、这个示例展示系统的多边形UI。<br>
-		2、<br>
+		2、蓝色多边形为经过了旋转，其旋转中心通过anchorX、anchorY。<br>
+		3、UI的x、y值可以理解为UI的偏移量，虚线标注了UI旋转、平移之前的位置。<br>
 	</div>
 	<br><br>
 </div>
@@ -29,19 +30,43 @@
 <script>
 	var canvas = document.createElement("canvas");
 	canvas.width = 300;
-	canvas.height = 800;
-	canvas.height = 800;
+	canvas.height = 400;
 	document.getElementById("canvas").appendChild(canvas);
 	var ycc = new Ycc();
 	ycc.bindCanvas(canvas);
 
 	// 新建图层
 	var layer = ycc.layerManager.newLayer({enableEventManager:true});
-	var ui = new Ycc.UI.Polygon({
+	var pa = new Ycc.UI.Polygon({
+		name:"parent",
 		fill:true,
 		fillStyle:'blue',
 		isDrawIndex:true,
-		isShowScaleRotateBeforeUI:true,
+		isShowRotateBeforeUI:true,
+		coordinates:[
+			{x:10,y:10},
+			{x:80,y:0},
+			{x:100,y:100},
+			{x:0,y:50},
+			{x:10,y:10},
+		],
+		anchorX:10,
+		anchorY:10,
+		rotation:45,
+		x:20,
+		y:20,
+		ontap:function (e) {
+			console.log(e);
+		}
+	});
+	layer.addUI(pa);
+
+	var son = new Ycc.UI.Polygon({
+		name:"son",
+		fill:true,
+		fillStyle:'red',
+		isDrawIndex:true,
+		isShowRotateBeforeUI:true,
 		coordinates:[
 			{x:100,y:100},
 			{x:200,y:100},
@@ -49,16 +74,29 @@
 			{x:100,y:180},
 			{x:100,y:100},
 		],
-		rotation:45,
 		anchorX:200,
 		anchorY:180,
-		scaleX:0.2,
-		scaleY:0.5,
+		x:50,
+		y:50,
 		ontap:function (e) {
 			console.log(e);
 		}
 	});
-	layer.addUI(ui);
+	pa.addChild(son);
 	ycc.layerManager.reRenderAllLayerToStage();
+
+
+	layer.onmousemove=function (e) {
+		/*console.log(e);
+		pa.fillStyle="blue";
+		son.fillStyle="red";
+		if(pa.containDot(e)) pa.fillStyle="yellow";
+		if(son.containDot(e)) son.fillStyle="yellow";
+		ycc.layerManager.reRenderAllLayerToStage();*/
+	};
+
+	layer.ontap = function (e) {
+		console.log('layer -> ',e);
+	};
 
 </script>

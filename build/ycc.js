@@ -4890,18 +4890,6 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 		this.anchorY = 0;
 		
 		/**
-		 * x方向的缩放比例
-		 * @type {number}
-		 */
-		this.scaleX = 1;
-
-		/**
-		 * y方向的缩放比例
-		 * @type {number}
-		 */
-		this.scaleY = 1;
-		
-		/**
 		 * 相对于锚点的旋转角度
 		 * @type {number}
 		 */
@@ -5405,21 +5393,22 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 	 */
 	Ycc.UI.Base.prototype.transformToLocal = function (dotOrArr) {
 		var res = null;
-		var absoluteRect = this.getAbsolutePosition();
+		var absolutePos = this.getAbsolutePosition();
 		if(Ycc.utils.isArray(dotOrArr)){
 			res = [];
 			for(var i=0;i<dotOrArr.length;i++){
 				var resDot = new Ycc.Math.Dot(0,0);
 				var dot = dotOrArr[i];
-				resDot.x=dot.x-(absoluteRect.x);
-				resDot.y=dot.y-(absoluteRect.y);
+				resDot.x=dot.x-(absolutePos.x)+this.x;
+				resDot.y=dot.y-(absolutePos.y)+this.y;
 				res.push(resDot);
 			}
 			return res;
 		}
 		res = new Ycc.Math.Dot(0,0);
-		res.x = dotOrArr.x-(absoluteRect.x);
-		res.y = dotOrArr.y-(absoluteRect.y);
+		// 本地坐标需加上当前的x、y
+		res.x = dotOrArr.x-(absolutePos.x)+this.x;
+		res.y = dotOrArr.y-(absolutePos.y)+this.y;
 		return res;
 	};
 	
@@ -5435,17 +5424,17 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 	};
 	
 	/**
-	 * 根据当前的锚点、缩放比例、旋转角度获取某个点的转换之后的坐标
+	 * 根据当前的锚点、旋转角度获取某个点的转换之后的坐标
 	 * @param dot {Ycc.Math.Dot}	需要转换的点，该点为相对坐标，相对于当前UI的父级
 	 * @return {Ycc.Math.Dot}		转换后的点，该点为绝对坐标
 	 */
-	Ycc.UI.Base.prototype.transformByScaleRotate = function (dot) {
+	Ycc.UI.Base.prototype.transformByRotate = function (dot) {
 		var res = new Ycc.Math.Dot();
 		// 位置的绝对坐标
 		var pos = this.getAbsolutePosition();
-		// 坐标缩放
-		var dotX = (this.scaleX)*(-this.anchorX+dot.x)+this.anchorX;
-		var dotY = (this.scaleY)*(-this.anchorY+dot.y)+this.anchorY;
+		
+		var dotX = dot.x;
+		var dotY = dot.y;
 		
 		// 坐标旋转
 		var dx = (dotX - this.anchorX)*Math.cos(this.rotation/180*Math.PI) - (dotY - this.anchorY)*Math.sin(this.rotation/180*Math.PI)+this.anchorX;
@@ -7281,10 +7270,10 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 		this.isDrawIndex = false;
 		
 		/**
-		 * 是否显示旋转缩放之前的位置
+		 * 是否显示缩放之前的位置
 		 * @type {boolean}
 		 */
-		this.isShowScaleRotateBeforeUI = false;
+		this.isShowRotateBeforeUI = false;
 		
 		/**
 		 * 多边形点坐标的数组，为保证图形能够闭合，起点和终点必须相等
@@ -7321,12 +7310,12 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 			return;
 		}
 		var coordinates = this.coordinates;
-		var start = this.transformByScaleRotate(coordinates[0]);
+		var start = this.transformByRotate(coordinates[0]);
 		
 		// console.log('render');
 		
 		// 绘制旋转缩放之前的UI
-		if(this.isShowScaleRotateBeforeUI) this.__renderBeforeUI(ctx);
+		if(this.isShowRotateBeforeUI) this.__renderBeforeUI(ctx);
 
 		ctx.save();
 		
@@ -7336,7 +7325,7 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 		ctx.beginPath();
 		ctx.moveTo(start.x,start.y);
 		for(var i=0;i<this.coordinates.length-1;i++){
-			var dot = this.transformByScaleRotate(this.coordinates[i]);
+			var dot = this.transformByRotate(this.coordinates[i]);
 			if(this.isDrawIndex) ctx.fillText(i+'',dot.x-10,dot.y+10);
 			ctx.lineTo(dot.x,dot.y);
 		}
@@ -7358,7 +7347,7 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 	 * @override
 	 */
 	Ycc.UI.Polygon.prototype.getAbsolutePosition = function(pos){
-		pos = pos || new Ycc.Math.Dot();
+		pos = pos || new Ycc.Math.Dot(this.x,this.y);
 		var pa = this.getParent();
 		
 		if(!pa){
@@ -7366,7 +7355,7 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 			pos.x = this.x+this.belongTo.x;
 			pos.y = this.y+this.belongTo.y;
 		}else{
-			var paPos = pa.getAbsolutePosition(pos);
+			var paPos = pa.getAbsolutePosition();
 			pos.x += paPos.x;
 			pos.y += paPos.y;
 		}
@@ -7379,7 +7368,10 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 	 */
 	Ycc.UI.Polygon.prototype.__renderBeforeUI = function (ctx) {
 		var self = this;
-		var start = this.coordinates[0];
+		var pa = this.getParent();
+		var paPos =pa? pa.getAbsolutePosition():new Ycc.Math.Dot();
+		var start = new Ycc.Math.Dot(this.coordinates[0].x+paPos.x,this.coordinates[0].y+paPos.y);
+		
 		ctx.save();
 		// 虚线
 		ctx.setLineDash([10]);
@@ -7387,7 +7379,7 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 		ctx.moveTo(start.x,start.y);
 		for(var i=0;i<self.coordinates.length-1;i++){
 			var dot = self.coordinates[i];
-			ctx.lineTo(dot.x,dot.y);
+			ctx.lineTo(dot.x+paPos.x,dot.y+paPos.y);
 		}
 		ctx.closePath();
 		ctx.stroke();
@@ -7401,7 +7393,7 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 	 * 方法一：经过该点的水平射线与多边形的焦点数，即Ray-casting Algorithm
 	 * 方法二：某个点始终位于多边形逆时针向量的左侧、或者顺时针方向的右侧即可判断，算法名忘记了
 	 * 此方法采用方法一，并假设该射线平行于x轴，方向为x轴正方向
-	 * @param dot {Ycc.Math.Dot} 需要判断的点
+	 * @param dot {Ycc.Math.Dot} 需要判断的点，绝对坐标
 	 * @param noneZeroMode {Number} 是否noneZeroMode 1--启用 2--关闭 默认启用
 	 * 		从这个点引出一根“射线”，与多边形的任意若干条边相交，计数初始化为0，若相交处被多边形的边从左到右切过，计数+1，若相交处被多边形的边从右到左切过，计数-1，最后检查计数，如果是0，点在多边形外，如果非0，点在多边形内
 	 * @return {boolean}
@@ -7409,8 +7401,7 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 	Ycc.UI.Polygon.prototype.containDot = function (dot,noneZeroMode) {
 		// 默认启动none zero mode
 		noneZeroMode=noneZeroMode||this.noneZeroMode;
-		// 由于coordinates为相对坐标，此处将dot转化为相对坐标
-		var _dot = this.transformToLocal(dot);
+		var _dot = dot;
 		
 		var x = _dot.x,y=_dot.y;
 		var crossNum = 0;
@@ -7419,8 +7410,8 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 		// 点在线段的右侧数目
 		var rightCount = 0;
 		for(var i=0;i<this.coordinates.length-1;i++){
-			var start = this.transformByScaleRotate(this.coordinates[i]);
-			var end = this.transformByScaleRotate(this.coordinates[i+1]);
+			var start = this.transformByRotate(this.coordinates[i]);
+			var end = this.transformByRotate(this.coordinates[i+1]);
 			
 			// 起点、终点斜率不存在的情况
 			if(start.x===end.x) {
