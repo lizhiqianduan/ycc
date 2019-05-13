@@ -142,7 +142,10 @@
 	 */
 	Ycc.UI.Polygon.prototype.__renderBeforeUI = function (ctx) {
 		var self = this;
-		var start = this.coordinates[0];
+		var pa = this.getParent();
+		var paPos =pa? pa.getAbsolutePosition():new Ycc.Math.Dot();
+		var start = new Ycc.Math.Dot(this.coordinates[0].x+paPos.x,this.coordinates[0].y+paPos.y);
+		
 		ctx.save();
 		// 虚线
 		ctx.setLineDash([10]);
@@ -150,7 +153,7 @@
 		ctx.moveTo(start.x,start.y);
 		for(var i=0;i<self.coordinates.length-1;i++){
 			var dot = self.coordinates[i];
-			ctx.lineTo(dot.x,dot.y);
+			ctx.lineTo(dot.x+paPos.x,dot.y+paPos.y);
 		}
 		ctx.closePath();
 		ctx.stroke();
