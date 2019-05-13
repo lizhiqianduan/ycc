@@ -173,6 +173,23 @@
 	};
 	
 	
+	/**
+	 * 调试日志信息类
+	 * @param message
+	 * @constructor
+	 */
+	Ycc.Debugger.Log = function (message) {
+		this.message = '[Ycc logger]=> '+message;
+	};
+	/**
+	 * 调试错误信息类
+	 * @param message
+	 * @constructor
+	 */
+	Ycc.Debugger.Error = function (message) {
+		this.message = '[Ycc  error]=> '+message;
+	};
+	
 	
 	
 	
