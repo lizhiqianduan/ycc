@@ -2177,6 +2177,23 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 	};
 	
 	
+	/**
+	 * 调试日志信息类
+	 * @param message
+	 * @constructor
+	 */
+	Ycc.Debugger.Log = function (message) {
+		this.message = '[Ycc logger]=> '+message;
+	};
+	/**
+	 * 调试错误信息类
+	 * @param message
+	 * @constructor
+	 */
+	Ycc.Debugger.Error = function (message) {
+		this.message = '[Ycc  error]=> '+message;
+	};
+	
 	
 	
 	
@@ -4847,6 +4864,18 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 		this.rect = new Ycc.Math.Rect();
 		
 		/**
+		 * x相对父级的位置
+		 * @type {number}
+		 */
+		this.x = 0;
+		
+		/**
+		 * y相对父级的位置
+		 * @type {number}
+		 */
+		this.y = 0;
+		
+		/**
 		 * UI对象的锚点坐标。相对坐标。相对于rect的x
 		 * 锚点坐标主要用于图形的旋转、平移、缩放
 		 * @type {number}
@@ -5086,6 +5115,7 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 	 * 坐标系的缩放和旋转。
 	 * 先缩放、再旋转。
 	 * @todo 子类渲染前需要调用此方法
+	 * @todo 多边形替换rect后，此方法废弃，不再调用
 	 */
 	Ycc.UI.Base.prototype.scaleAndRotate = function () {
 		// 坐标系缩放
@@ -5243,8 +5273,11 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 	 */
 	Ycc.UI.Base.prototype.__render = function (ctx) {
 		this.triggerListener('computestart',new Ycc.Event("computestart"));
-		this.computeUIProps();
+		var error = this.computeUIProps();
 		this.triggerListener('computeend',new Ycc.Event("computeend"));
+		
+		if(error) return console.error(error.message);
+		
 		// 超出舞台时，不予渲染
 		if(this.isOutOfStage())
 			return;
@@ -5399,6 +5432,28 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 	 */
 	Ycc.UI.Base.prototype.containDot = function (dot) {
 		return dot.isInRect(this.getAbsolutePosition());
+	};
+	
+	/**
+	 * 根据当前的锚点、缩放比例、旋转角度获取某个点的转换之后的坐标
+	 * @param dot {Ycc.Math.Dot}	需要转换的点，该点为相对坐标，相对于当前UI的父级
+	 * @return {Ycc.Math.Dot}		转换后的点，该点为绝对坐标
+	 */
+	Ycc.UI.Base.prototype.transformByScaleRotate = function (dot) {
+		var res = new Ycc.Math.Dot();
+		// 位置的绝对坐标
+		var pos = this.getAbsolutePosition();
+		// 坐标缩放
+		var dotX = (this.scaleX)*(-this.anchorX+dot.x)+this.anchorX;
+		var dotY = (this.scaleY)*(-this.anchorY+dot.y)+this.anchorY;
+		
+		// 坐标旋转
+		var dx = (dotX - this.anchorX)*Math.cos(this.rotation/180*Math.PI) - (dotY - this.anchorY)*Math.sin(this.rotation/180*Math.PI)+this.anchorX;
+		var dy = (dotY - this.anchorY)*Math.cos(this.rotation/180*Math.PI) + (dotX - this.anchorX)*Math.sin(this.rotation/180*Math.PI)+this.anchorY;
+		res.x=dx+pos.x;
+		res.y=dy+pos.y;
+
+		return res;
 	};
 
 
@@ -7195,7 +7250,7 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 	 * @extends Ycc.UI.Base
 	 * @param option    			{object}        	所有可配置的配置项
 	 * @param option.fill 			{boolean}			是否填充绘制，false表示描边绘制
-	 * @param option.coordinates  	{Ycc.Math.Dot[]}    多边形点坐标的数组，为保证图形能够闭合，起点和终点必须相等
+	 * @param option.coordinates  	{Ycc.Math.Dot[]}    多边形点坐标的数组，为保证图形能够闭合，起点和终点必须相等。注意：点列表的坐标为相对坐标
 	 */
 	Ycc.UI.Polygon = function Polygon(option) {
 		Ycc.UI.Base.call(this, option);
@@ -7224,6 +7279,12 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 		 * @type {boolean}
 		 */
 		this.isDrawIndex = false;
+		
+		/**
+		 * 是否显示旋转缩放之前的位置
+		 * @type {boolean}
+		 */
+		this.isShowScaleRotateBeforeUI = false;
 		
 		/**
 		 * 多边形点坐标的数组，为保证图形能够闭合，起点和终点必须相等
@@ -7260,10 +7321,13 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 			return;
 		}
 		var coordinates = this.coordinates;
-		var start = coordinates[0];
+		var start = this.transformByScaleRotate(coordinates[0]);
 		
 		// console.log('render');
 		
+		// 绘制旋转缩放之前的UI
+		if(this.isShowScaleRotateBeforeUI) this.__renderBeforeUI(ctx);
+
 		ctx.save();
 		
 		ctx.fillStyle = this.fillStyle;
@@ -7272,15 +7336,64 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 		ctx.beginPath();
 		ctx.moveTo(start.x,start.y);
 		for(var i=0;i<this.coordinates.length-1;i++){
-			var dot = this.coordinates[i];
+			var dot = this.transformByScaleRotate(this.coordinates[i]);
 			if(this.isDrawIndex) ctx.fillText(i+'',dot.x-10,dot.y+10);
 			ctx.lineTo(dot.x,dot.y);
 		}
 		ctx.closePath();
 		this.fill?ctx.fill():ctx.stroke();
 		ctx.restore();
+	
+	
+	
 		
 	};
+	
+	
+	/**
+	 * 获取UI的绝对坐标，只计算图层坐标和UI的位置坐标x、y
+	 * 不考虑UI的缩放和旋转，缩放旋转可通过其他方法转换
+	 * @param [pos] {Ycc.Math.Dot}	获取到的位置对象，非必传
+	 * @return {Ycc.Math.Dot}
+	 * @override
+	 */
+	Ycc.UI.Polygon.prototype.getAbsolutePosition = function(pos){
+		pos = pos || new Ycc.Math.Dot();
+		var pa = this.getParent();
+		
+		if(!pa){
+			// 最顶层的UI需要加上图层的坐标
+			pos.x = this.x+this.belongTo.x;
+			pos.y = this.y+this.belongTo.y;
+		}else{
+			var paPos = pa.getAbsolutePosition(pos);
+			pos.x += paPos.x;
+			pos.y += paPos.y;
+		}
+		return pos;
+	};
+	
+	/**
+	 * 绘制旋转缩放之前的UI
+	 * @private
+	 */
+	Ycc.UI.Polygon.prototype.__renderBeforeUI = function (ctx) {
+		var self = this;
+		var start = this.coordinates[0];
+		ctx.save();
+		// 虚线
+		ctx.setLineDash([10]);
+		ctx.beginPath();
+		ctx.moveTo(start.x,start.y);
+		for(var i=0;i<self.coordinates.length-1;i++){
+			var dot = self.coordinates[i];
+			ctx.lineTo(dot.x,dot.y);
+		}
+		ctx.closePath();
+		ctx.stroke();
+		ctx.restore();
+	};
+
 	
 	/**
 	 * 重载基类的包含某个点的函数，用于点击事件等的响应
@@ -7296,15 +7409,18 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 	Ycc.UI.Polygon.prototype.containDot = function (dot,noneZeroMode) {
 		// 默认启动none zero mode
 		noneZeroMode=noneZeroMode||this.noneZeroMode;
-		var x = dot.x,y=dot.y;
+		// 由于coordinates为相对坐标，此处将dot转化为相对坐标
+		var _dot = this.transformToLocal(dot);
+		
+		var x = _dot.x,y=_dot.y;
 		var crossNum = 0;
 		// 点在线段的左侧数目
 		var leftCount = 0;
 		// 点在线段的右侧数目
 		var rightCount = 0;
 		for(var i=0;i<this.coordinates.length-1;i++){
-			var start = this.coordinates[i];
-			var end = this.coordinates[i+1];
+			var start = this.transformByScaleRotate(this.coordinates[i]);
+			var end = this.transformByScaleRotate(this.coordinates[i+1]);
 			
 			// 起点、终点斜率不存在的情况
 			if(start.x===end.x) {

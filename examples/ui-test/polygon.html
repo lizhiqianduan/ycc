@@ -37,18 +37,28 @@
 
 	// 新建图层
 	var layer = ycc.layerManager.newLayer({enableEventManager:true});
-
-	layer.addUI(new Ycc.UI.Polygon({
+	var ui = new Ycc.UI.Polygon({
 		fill:true,
 		fillStyle:'blue',
 		isDrawIndex:true,
+		isShowScaleRotateBeforeUI:true,
 		coordinates:[
-			{x:150,y:150},
-			{x:100,y:10},
-			{x:222,y:100},
-			{x:150,y:150},
-		]
-	}));
+			{x:100,y:100},
+			{x:200,y:100},
+			{x:200,y:180},
+			{x:100,y:180},
+			{x:100,y:100},
+		],
+		rotation:45,
+		anchorX:200,
+		anchorY:180,
+		scaleX:0.2,
+		scaleY:0.5,
+		ontap:function (e) {
+			console.log(e);
+		}
+	});
+	layer.addUI(ui);
 	ycc.layerManager.reRenderAllLayerToStage();
 
 </script>

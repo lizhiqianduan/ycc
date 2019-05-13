@@ -13,7 +13,7 @@
 	 * @extends Ycc.UI.Base
 	 * @param option    			{object}        	所有可配置的配置项
 	 * @param option.fill 			{boolean}			是否填充绘制，false表示描边绘制
-	 * @param option.coordinates  	{Ycc.Math.Dot[]}    多边形点坐标的数组，为保证图形能够闭合，起点和终点必须相等
+	 * @param option.coordinates  	{Ycc.Math.Dot[]}    多边形点坐标的数组，为保证图形能够闭合，起点和终点必须相等。注意：点列表的坐标为相对坐标
 	 */
 	Ycc.UI.Polygon = function Polygon(option) {
 		Ycc.UI.Base.call(this, option);
@@ -69,10 +69,7 @@
 	 * @override
 	 */
 	Ycc.UI.Polygon.prototype.computeUIProps = function () {
-		if(!this.coordinates[0]) return new Ycc.Debugger.Error('error in property `coordinates`');
-		// 锚点坐标默认取坐标点的第一个坐标
-		this.anchorX = this.anchorX||this.coordinates[0].x;
-		this.anchorY = this.anchorY||this.coordinates[0].y;
+	
 	};
 	
 	/**
@@ -87,13 +84,14 @@
 			return;
 		}
 		var coordinates = this.coordinates;
-		var start = coordinates[0];
+		var start = this.transformByScaleRotate(coordinates[0]);
 		
 		// console.log('render');
 		
+		// 绘制旋转缩放之前的UI
+		if(this.isShowScaleRotateBeforeUI) this.__renderBeforeUI(ctx);
+
 		ctx.save();
-		
-		this.scaleAndRotate();
 		
 		ctx.fillStyle = this.fillStyle;
 		ctx.strokeStyle = this.strokeStyle;
@@ -101,7 +99,7 @@
 		ctx.beginPath();
 		ctx.moveTo(start.x,start.y);
 		for(var i=0;i<this.coordinates.length-1;i++){
-			var dot = this.coordinates[i];
+			var dot = this.transformByScaleRotate(this.coordinates[i]);
 			if(this.isDrawIndex) ctx.fillText(i+'',dot.x-10,dot.y+10);
 			ctx.lineTo(dot.x,dot.y);
 		}
@@ -111,9 +109,31 @@
 	
 	
 	
-		// 绘制旋转缩放之前的UI
-		if(this.isShowScaleRotateBeforeUI) this.__renderBeforeUI(ctx);
 		
+	};
+	
+	
+	/**
+	 * 获取UI的绝对坐标，只计算图层坐标和UI的位置坐标x、y
+	 * 不考虑UI的缩放和旋转，缩放旋转可通过其他方法转换
+	 * @param [pos] {Ycc.Math.Dot}	获取到的位置对象，非必传
+	 * @return {Ycc.Math.Dot}
+	 * @override
+	 */
+	Ycc.UI.Polygon.prototype.getAbsolutePosition = function(pos){
+		pos = pos || new Ycc.Math.Dot();
+		var pa = this.getParent();
+		
+		if(!pa){
+			// 最顶层的UI需要加上图层的坐标
+			pos.x = this.x+this.belongTo.x;
+			pos.y = this.y+this.belongTo.y;
+		}else{
+			var paPos = pa.getAbsolutePosition(pos);
+			pos.x += paPos.x;
+			pos.y += paPos.y;
+		}
+		return pos;
 	};
 	
 	/**
@@ -152,15 +172,18 @@
 	Ycc.UI.Polygon.prototype.containDot = function (dot,noneZeroMode) {
 		// 默认启动none zero mode
 		noneZeroMode=noneZeroMode||this.noneZeroMode;
-		var x = dot.x,y=dot.y;
+		// 由于coordinates为相对坐标，此处将dot转化为相对坐标
+		var _dot = this.transformToLocal(dot);
+		
+		var x = _dot.x,y=_dot.y;
 		var crossNum = 0;
 		// 点在线段的左侧数目
 		var leftCount = 0;
 		// 点在线段的右侧数目
 		var rightCount = 0;
 		for(var i=0;i<this.coordinates.length-1;i++){
-			var start = this.coordinates[i];
-			var end = this.coordinates[i+1];
+			var start = this.transformByScaleRotate(this.coordinates[i]);
+			var end = this.transformByScaleRotate(this.coordinates[i+1]);
 			
 			// 起点、终点斜率不存在的情况
 			if(start.x===end.x) {

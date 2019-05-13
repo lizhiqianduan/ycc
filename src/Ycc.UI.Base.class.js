@@ -305,6 +305,7 @@
 	 * 坐标系的缩放和旋转。
 	 * 先缩放、再旋转。
 	 * @todo 子类渲染前需要调用此方法
+	 * @todo 多边形替换rect后，此方法废弃，不再调用
 	 */
 	Ycc.UI.Base.prototype.scaleAndRotate = function () {
 		// 坐标系缩放
@@ -626,16 +627,22 @@
 	/**
 	 * 根据当前的锚点、缩放比例、旋转角度获取某个点的转换之后的坐标
 	 * @param dot {Ycc.Math.Dot}	需要转换的点，该点为相对坐标，相对于当前UI的父级
-	 * @return {Ycc.Math.Dot}		转换后的点，该点为相对坐标，相对于当前UI的父级
+	 * @return {Ycc.Math.Dot}		转换后的点，该点为绝对坐标
 	 */
-	Ycc.UI.Base.prototype.getScaleRotateDot = function (dot) {
+	Ycc.UI.Base.prototype.transformByScaleRotate = function (dot) {
 		var res = new Ycc.Math.Dot();
-		var dotX = dot.x*this.scaleX;
-		var dotY = dot.y*this.scaleY;
-		var dx = (dotY - this.anchorY)*Math.cos(this.rotation/180*Math.PI) - (dotX - this.anchorX)*Math.sin(this.rotation/180*Math.PI) + this.anchorX;
-		var dy = (dotX - this.anchorX)*Math.cos(this.rotation/180*Math.PI) + (dotY - this.anchorY)*Math.sin(this.rotation/180*Math.PI) + this.anchorY;
-		res.x=dx;
-		res.y=dy;
+		// 位置的绝对坐标
+		var pos = this.getAbsolutePosition();
+		// 坐标缩放
+		var dotX = (this.scaleX)*(-this.anchorX+dot.x)+this.anchorX;
+		var dotY = (this.scaleY)*(-this.anchorY+dot.y)+this.anchorY;
+		
+		// 坐标旋转
+		var dx = (dotX - this.anchorX)*Math.cos(this.rotation/180*Math.PI) - (dotY - this.anchorY)*Math.sin(this.rotation/180*Math.PI)+this.anchorX;
+		var dy = (dotY - this.anchorY)*Math.cos(this.rotation/180*Math.PI) + (dotX - this.anchorX)*Math.sin(this.rotation/180*Math.PI)+this.anchorY;
+		res.x=dx+pos.x;
+		res.y=dy+pos.y;
+
 		return res;
 	};
 
