@@ -147,6 +147,12 @@
 		this.userData = null;
 		
 		/**
+		 * 是否显示缩放之前的位置
+		 * @type {boolean}
+		 */
+		this.isShowRotateBeforeUI = false;
+		
+		/**
 		 * 基础绘图UI
 		 * @type {Ycc.UI}
 		 */
@@ -254,6 +260,15 @@
 		this.ctx.stroke();
 		this.ctx.restore();
 		rect = null;
+	};
+	
+	/**
+	 * 绘制UI平移、旋转之前的位置，用虚线绘制
+	 * 需要子UI重载
+	 * @param [ctx]	绘图环境，非必传
+	 */
+	Ycc.UI.Base.prototype.renderDashBeforeUI = function (ctx) {
+	
 	};
 	
 	
@@ -464,6 +479,8 @@
 		this.renderRectBgColor(absolutePosition);
 		// 绘制容纳区的边框
 		this.renderRectBorder(absolutePosition);
+		// 绘制旋转平移之前的UI
+		this.renderDashBeforeUI();
 		
 		// 全局UI配置项，是否绘制UI的容器
 		if(this.belongTo.yccInstance.config.debugDrawContainer){

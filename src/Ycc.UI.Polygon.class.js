@@ -44,12 +44,6 @@
 		this.isDrawIndex = false;
 		
 		/**
-		 * 是否显示缩放之前的位置
-		 * @type {boolean}
-		 */
-		this.isShowRotateBeforeUI = false;
-		
-		/**
 		 * 多边形点坐标的数组，为保证图形能够闭合，起点和终点必须相等
 		 * @type {null}
 		 */
@@ -89,7 +83,6 @@
 		// console.log('render');
 		
 		// 绘制旋转缩放之前的UI
-		if(this.isShowRotateBeforeUI) this.renderDashBeforeUI(ctx);
 
 		ctx.save();
 		ctx.fillStyle = this.fillStyle;
@@ -97,7 +90,6 @@
 		this.renderPath();
 		this.fill?ctx.fill():ctx.stroke();
 		ctx.restore();
-	
 	};
 	
 	/**
@@ -175,9 +167,13 @@
 	
 	/**
 	 * 绘制旋转缩放之前的UI
+	 * @override
 	 */
 	Ycc.UI.Polygon.prototype.renderDashBeforeUI = function (ctx) {
+		if(!this.isShowRotateBeforeUI || this.coordinates.length===0) return;
+		
 		var self = this;
+		ctx = ctx || self.ctx;
 		var pa = this.getParent();
 		var paPos =pa? pa.getAbsolutePosition():new Ycc.Math.Dot();
 		var start = new Ycc.Math.Dot(this.coordinates[0].x+paPos.x,this.coordinates[0].y+paPos.y);
