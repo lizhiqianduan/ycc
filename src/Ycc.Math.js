@@ -76,6 +76,21 @@
 	Ycc.Math.Dot.prototype.plus = function (dot) {
 		return new Ycc.Math.Dot(this.x+dot.x,this.y+dot.y);
 	};
+	
+	/**
+	 * 将当前点绕另外一个点旋转一定度数
+	 * @param rotation	旋转角度
+	 * @param anchorDot	锚点坐标
+	 * @return 旋转后的点
+	 */
+	Ycc.Math.Dot.prototype.rotate = function (rotation,anchorDot) {
+		anchorDot=anchorDot||new Ycc.Math.Dot(0,0);
+		var dotX = this.x,dotY=this.y,anchorX=anchorDot.x,anchorY=anchorDot.y;
+		var dx = (dotX - anchorX)*Math.cos(rotation/180*Math.PI) - (dotY - anchorY)*Math.sin(rotation/180*Math.PI)+anchorX;
+		var dy = (dotY - anchorY)*Math.cos(rotation/180*Math.PI) + (dotX - anchorX)*Math.sin(rotation/180*Math.PI)+anchorY;
+		return new Ycc.Math.Dot(dx,dy);
+	};
+	
 	/**
 	 * 判断三点是否共线
 	 * @param dot1
