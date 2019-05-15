@@ -74,9 +74,6 @@
 		this.renderPath();
 		this.fill?ctx.fill():ctx.stroke();
 		ctx.restore();
-
-		// 绘制旋转缩放之前的UI
-		if(this.isShowRotateBeforeUI) this.renderDashBeforeUI(ctx);
 	};
 	
 	
