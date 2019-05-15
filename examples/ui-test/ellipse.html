@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>椭圆Ellipse测试示例</title>
+	<link rel="stylesheet" href="../style.css">
+	<meta name=viewport content="width=device-width,initial-scale=1,user-scalable=0,viewport-fit=cover">
+</head>
+<body>
+<div class="tip">
+	<h3>示例说明：</h3>
+	<div>
+		1、这个示例展示系统的圆UI。<br>
+		2、蓝色椭圆绕其中心旋转了90度，理解为自转。<br>
+		3、红色绕0,0旋转了45度，理解为公转。<br>
+		4、请结合地球和太阳的关系理解自转和公转。<br>
+	</div>
+	<br><br>
+</div>
+
+<div id="canvas"></div>
+
+
+</body>
+</html>
+
+<script src="http://localhost:9000/livereload.js"></script>
+<script src="../common.js"></script>
+<script src="../../build/ycc.js"></script>
+
+<script>
+	var canvas = document.createElement("canvas");
+	canvas.width = 300;
+	canvas.height = 400;
+	document.getElementById("canvas").appendChild(canvas);
+	var ycc = new Ycc();
+	ycc.bindCanvas(canvas);
+
+	// 新建图层
+	var layer = ycc.layerManager.newLayer({enableEventManager:true});
+	var pa = new Ycc.UI.Ellipse({
+		name:"parent",
+		fill:true,
+		fillStyle:'blue',
+		isDrawIndex:true,
+		isShowRotateBeforeUI:true,
+		point:new Ycc.Math.Dot(100,100),
+		width:100,
+		height:60,
+		color:'blue',
+		anchorX:0,
+		anchorY:0,
+//		rotation:30,
+		angle:90,
+//		x:20,
+//		y:20,
+		ontap:function (e) {
+			console.log(e);
+		}
+	});
+	layer.addUI(pa);
+
+	var son = new Ycc.UI.Ellipse({
+		name:"son",
+		fill:true,
+		isDrawIndex:true,
+		isShowRotateBeforeUI:true,
+		point:new Ycc.Math.Dot(200,200),
+		width:80,
+		height:40,
+		color:'red',
+		rotation:45,
+		ontap:function (e) {
+			console.log(e);
+		}
+	});
+	pa.addChild(son);
+	ycc.layerManager.reRenderAllLayerToStage();
+
+
+	layer.onmousemove=function (e) {
+		/*console.log(e);
+		pa.fillStyle="blue";
+		son.fillStyle="red";
+		if(pa.containDot(e)) pa.fillStyle="yellow";
+		if(son.containDot(e)) son.fillStyle="yellow";
+		ycc.layerManager.reRenderAllLayerToStage();*/
+	};
+
+//	layer.ontap = function (e) {
+//		console.log('layer -> ',e);
+//	};
+
+</script>

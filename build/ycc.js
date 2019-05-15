@@ -625,6 +625,21 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 	Ycc.Math.Dot.prototype.plus = function (dot) {
 		return new Ycc.Math.Dot(this.x+dot.x,this.y+dot.y);
 	};
+	
+	/**
+	 * 将当前点绕另外一个点旋转一定度数
+	 * @param rotation	旋转角度
+	 * @param anchorDot	锚点坐标
+	 * @return 旋转后的点
+	 */
+	Ycc.Math.Dot.prototype.rotate = function (rotation,anchorDot) {
+		anchorDot=anchorDot||new Ycc.Math.Dot(0,0);
+		var dotX = this.x,dotY=this.y,anchorX=anchorDot.x,anchorY=anchorDot.y;
+		var dx = (dotX - anchorX)*Math.cos(rotation/180*Math.PI) - (dotY - anchorY)*Math.sin(rotation/180*Math.PI)+anchorX;
+		var dy = (dotY - anchorY)*Math.cos(rotation/180*Math.PI) + (dotX - anchorX)*Math.sin(rotation/180*Math.PI)+anchorY;
+		return new Ycc.Math.Dot(dx,dy);
+	};
+	
 	/**
 	 * 判断三点是否共线
 	 * @param dot1
@@ -4965,6 +4980,12 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 		this.userData = null;
 		
 		/**
+		 * 是否显示缩放之前的位置
+		 * @type {boolean}
+		 */
+		this.isShowRotateBeforeUI = false;
+		
+		/**
 		 * 基础绘图UI
 		 * @type {Ycc.UI}
 		 */
@@ -5072,6 +5093,15 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 		this.ctx.stroke();
 		this.ctx.restore();
 		rect = null;
+	};
+	
+	/**
+	 * 绘制UI平移、旋转之前的位置，用虚线绘制
+	 * 需要子UI重载
+	 * @param [ctx]	绘图环境，非必传
+	 */
+	Ycc.UI.Base.prototype.renderDashBeforeUI = function (ctx) {
+	
 	};
 	
 	
@@ -5282,6 +5312,8 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 		this.renderRectBgColor(absolutePosition);
 		// 绘制容纳区的边框
 		this.renderRectBorder(absolutePosition);
+		// 绘制旋转平移之前的UI
+		this.renderDashBeforeUI();
 		
 		// 全局UI配置项，是否绘制UI的容器
 		if(this.belongTo.yccInstance.config.debugDrawContainer){
@@ -5500,12 +5532,6 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 		this.isDrawIndex = false;
 		
 		/**
-		 * 是否显示缩放之前的位置
-		 * @type {boolean}
-		 */
-		this.isShowRotateBeforeUI = false;
-		
-		/**
 		 * 多边形点坐标的数组，为保证图形能够闭合，起点和终点必须相等
 		 * @type {null}
 		 */
@@ -5545,7 +5571,6 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 		// console.log('render');
 		
 		// 绘制旋转缩放之前的UI
-		if(this.isShowRotateBeforeUI) this.renderDashBeforeUI(ctx);
 
 		ctx.save();
 		ctx.fillStyle = this.fillStyle;
@@ -5553,14 +5578,16 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 		this.renderPath();
 		this.fill?ctx.fill():ctx.stroke();
 		ctx.restore();
-	
 	};
 	
 	/**
 	 * 根据coordinates绘制路径
 	 * 只绘制路径，不填充、不描边
+	 * 继承的子类若不是多边形，需要重载此方法
 	 */
 	Ycc.UI.Polygon.prototype.renderPath = function (ctx) {
+		if(this.coordinates.length===0) return;
+		
 		var self = this;
 		ctx = ctx || self.ctx;
 		
@@ -5631,9 +5658,13 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 	
 	/**
 	 * 绘制旋转缩放之前的UI
+	 * @override
 	 */
 	Ycc.UI.Polygon.prototype.renderDashBeforeUI = function (ctx) {
+		if(!this.isShowRotateBeforeUI || this.coordinates.length===0) return;
+		
 		var self = this;
+		ctx = ctx || self.ctx;
 		var pa = this.getParent();
 		var paPos =pa? pa.getAbsolutePosition():new Ycc.Math.Dot();
 		var start = new Ycc.Math.Dot(this.coordinates[0].x+paPos.x,this.coordinates[0].y+paPos.y);
@@ -5747,16 +5778,24 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 	 * @param option.point {Ycc.Math.Dot} 圆心位置
 	 * @param option.width=20 {number} 长轴
 	 * @param option.height=10 {number} 短轴
+	 * @param option.angle=0	{number} 椭圆绕其中心的自转角度
+	 * 		注：通过rotation设置的旋转角度只会旋转椭圆的中心点，此处的angle是将椭圆本身围绕中心点旋转。
+	 * 		此处的理解，可以结合地球绕太阳旋转，angle表示自转角度，rotation表示公转角度。
 	 * @constructor
-	 * @extends Ycc.UI.Base
+	 * @extends Ycc.UI.Polygon
 	 */
 	Ycc.UI.Ellipse = function Ellipse(option) {
-		Ycc.UI.Base.call(this,option);
+		Ycc.UI.Polygon.call(this,option);
 		this.yccClass = Ycc.UI.Ellipse;
 		
 		this.point = new Ycc.Math.Dot();
 		this.width = 20;
 		this.height = 10;
+		
+		/**
+		 * 椭圆自转角度
+		 * @type {number}
+		 */
 		this.angle = 0;
 		
 		// centrePoint,width,height,rotateAngle,fill
@@ -5767,7 +5806,7 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 		this.extend(option);
 	};
 	// 继承prototype
-	Ycc.utils.mergeObject(Ycc.UI.Ellipse.prototype,Ycc.UI.Base.prototype);
+	Ycc.utils.mergeObject(Ycc.UI.Ellipse.prototype,Ycc.UI.Polygon.prototype);
 	Ycc.UI.Ellipse.prototype.constructor = Ycc.UI.Ellipse;
 	
 	
@@ -5776,7 +5815,6 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 	 * 计算UI的各种属性。此操作必须在绘制之前调用。
 	 * <br> 计算与绘制分离的好处是，在绘制UI之前就可以提前确定元素的各种信息，从而判断是否需要绘制。
 	 * @override
-	 * @todo 计算容纳区域
 	 */
 	Ycc.UI.Ellipse.prototype.computeUIProps = function () {
 		var x=this.point.x,
@@ -5806,8 +5844,7 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 			rotateAngle=this.angle,
 			height=this.height;
 		
-		var pa = this.getParent();
-		var point = pa?pa.transformToAbsolute(this.point):this.point;
+		var point = this.transformByRotate(this.point);
 		
 		this.ctx.save();
 		var r = (width > height) ? width : height;
@@ -5830,13 +5867,54 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 			this.ctx.stroke();
 		else
 			this.ctx.fill();
-		
+			
 		this.ctx.restore();
 	};
 	
 	
+	/**
+	 * 判断是否在椭圆内
+	 * @param dot	绝对坐标
+	 * @param noneZeroMode
+	 * @override
+	 */
+	Ycc.UI.Ellipse.prototype.containDot = function (dot,noneZeroMode) {
+		var point = this.transformByRotate(this.point);
+		// 椭圆自转角度
+		dot = new Ycc.Math.Dot(dot).rotate(-this.angle,point);
+		return Math.pow((dot.x-point.x)/this.width*2,2)+Math.pow((dot.y-point.y)/this.height*2,2)<=1;
+	};
 	
-	
+	/**
+	 * 渲染旋转平移之前的位置
+	 * @param ctx
+	 * @override
+	 */
+	Ycc.UI.Ellipse.prototype.renderDashBeforeUI=function (ctx) {
+		var width = this.width,
+			rotateAngle=this.angle,
+			height=this.height;
+		
+		var pa = this.getParent();
+		var point = pa?pa.transformToAbsolute(this.point):this.point;
+		
+		this.ctx.save();
+		var r = (width > height) ? width : height;
+		// 计算压缩比例
+		var ratioX = width / r;
+		var ratioY = height / r;
+		this.ctx.scale(ratioX, ratioY);
+		this.ctx.beginPath();
+		this.ctx.arc(point.x / ratioX,  point.y/ ratioY, r/2, 0, 2 * Math.PI, false);
+		this.ctx.closePath();
+		
+		this.ctx.strokeStyle = this.color;
+		this.ctx.setLineDash([10]);
+
+		this.ctx.stroke();
+		
+		this.ctx.restore();
+	}
 	
 })(Ycc);;/**
  * @file    Ycc.UI.Circle.class.js
@@ -5918,8 +5996,6 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 		else
 			this.ctx.fill();
 		this.ctx.restore();
-		
-		if(this.isShowRotateBeforeUI) this.renderDashBeforeUI(this.ctx);
 	};
 	
 	/**
@@ -5928,6 +6004,7 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 	 */
 	Ycc.UI.Circle.prototype.renderDashBeforeUI = function (ctx) {
 		var self = this;
+		ctx = this.ctx;
 		var pa = this.getParent();
 		var point = pa?pa.transformToAbsolute(this.point):this.point;
 		
@@ -6997,9 +7074,6 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 		this.renderPath();
 		this.fill?ctx.fill():ctx.stroke();
 		ctx.restore();
-
-		// 绘制旋转缩放之前的UI
-		if(this.isShowRotateBeforeUI) this.renderDashBeforeUI(ctx);
 	};
 	
 	
