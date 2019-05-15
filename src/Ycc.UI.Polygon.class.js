@@ -95,8 +95,11 @@
 	/**
 	 * 根据coordinates绘制路径
 	 * 只绘制路径，不填充、不描边
+	 * 继承的子类若不是多边形，需要重载此方法
 	 */
 	Ycc.UI.Polygon.prototype.renderPath = function (ctx) {
+		if(this.coordinates.length===0) return;
+		
 		var self = this;
 		ctx = ctx || self.ctx;
 		
