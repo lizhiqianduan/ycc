@@ -78,8 +78,6 @@
 		else
 			this.ctx.fill();
 		this.ctx.restore();
-		
-		if(this.isShowRotateBeforeUI) this.renderDashBeforeUI(this.ctx);
 	};
 	
 	/**
@@ -88,6 +86,7 @@
 	 */
 	Ycc.UI.Circle.prototype.renderDashBeforeUI = function (ctx) {
 		var self = this;
+		ctx = this.ctx;
 		var pa = this.getParent();
 		var point = pa?pa.transformToAbsolute(this.point):this.point;
 		
