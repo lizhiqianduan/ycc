@@ -16,10 +16,10 @@
 	 * @param option.width=1	{number}	线条宽度
 	 * @param option.color="black"	{string}	线条颜色
 	 * @constructor
-	 * @extends Ycc.UI.Base
+	 * @extends Ycc.UI.Polygon
 	 */
 	Ycc.UI.Line = function Line(option) {
-		Ycc.UI.Base.call(this,option);
+		Ycc.UI.Polygon.call(this,option);
 		this.yccClass = Ycc.UI.Line;
 		
 		this.start = new Ycc.Math.Dot(0,0);
@@ -30,7 +30,7 @@
 		this.extend(option);
 	};
 	// 继承prototype
-	Ycc.utils.mergeObject(Ycc.UI.Line.prototype,Ycc.UI.Base.prototype);
+	Ycc.utils.mergeObject(Ycc.UI.Line.prototype,Ycc.UI.Polygon.prototype);
 	Ycc.UI.Line.prototype.constructor = Ycc.UI.Line;
 
 	/**
@@ -43,26 +43,61 @@
 		this.rect.y = this.start.y<this.end.y?this.start.y:this.end.y;
 		this.rect.width = Math.abs(this.start.x-this.end.x);
 		this.rect.height = Math.abs(this.start.y-this.end.y);
+		
+		
+		// 计算多边形坐标
+		var x1=this.start.x,y1=this.start.y,x2=this.end.x,y2=this.end.y;
+		// 垂直线段的斜率
+		var k = -(x2-x1)/(y2-y1);
+		if(y2-y1===0) {
+			this.coordinates=[
+				{x:this.start.x,y:this.start.y-this.width/2},
+				{x:this.start.x,y:this.start.y+this.width/2},
+				{x:this.end.x,y:this.end.y+this.width/2},
+				{x:this.end.x,y:this.end.y-this.width/2},
+				{x:this.start.x,y:this.start.y-this.width/2},
+			];
+		}else {
+			var cx1 = x1-Math.pow(Math.pow(this.width/2,2)/(k*k+1),0.5);
+			var cx2 = x1+Math.pow(Math.pow(this.width/2,2)/(k*k+1),0.5);
+			var cx3 = x2+Math.pow(Math.pow(this.width/2,2)/(k*k+1),0.5);
+			var cx4 = x2-Math.pow(Math.pow(this.width/2,2)/(k*k+1),0.5);
+			
+			var cy1 = k*(cx1-x1)+y1;
+			var cy2 = k*(cx2-x1)+y1;
+			var cy3 = k*(cx3-x2)+y2;
+			var cy4 = k*(cx4-x2)+y2;
+			
+			
+			// 计算多边形坐标
+			this.coordinates=[
+				{x:cx1,y:cy1},
+				{x:cx2,y:cy2},
+				{x:cx3,y:cy3},
+				{x:cx4,y:cy4},
+				{x:cx1,y:cy1},
+			];
+		}
 	};
 	/**
-	 * 绘制
+	 * 绘制函数与Polygon相同
 	 */
-	Ycc.UI.Line.prototype.render = function () {
-		
-		var pa = this.getParent();
-		var start = pa?pa.transformToAbsolute(this.start):this.start;
-		var end = pa?pa.transformToAbsolute(this.end):this.end;
-		this.ctx.save();
-		this.ctx.strokeStyle = this.color;
-		this.ctx.strokeWidth = this.width;
-		
-		this.ctx.beginPath();
-		this.ctx.moveTo(start.x, start.y);
-		this.ctx.lineTo(end.x, end.y);
-		this.ctx.stroke();
-		this.ctx.closePath();
-		this.ctx.restore();
-	};
+	// Ycc.UI.Line.prototype.render = function () {
+	//
+	// 	var pa = this.getParent();
+	// 	var start = pa?pa.transformToAbsolute(this.start):this.start;
+	// 	var end = pa?pa.transformToAbsolute(this.end):this.end;
+	// 	this.ctx.save();
+	// 	this.ctx.strokeStyle = this.color;
+	// 	this.ctx.lineWidth = this.width;
+	//
+	// 	this.ctx.beginPath();
+	// 	this.ctx.moveTo(start.x, start.y);
+	// 	this.ctx.lineTo(end.x, end.y);
+	// 	this.ctx.stroke();
+	// 	this.ctx.closePath();
+	// 	this.ctx.restore();
+	// };
 	
 	
 	

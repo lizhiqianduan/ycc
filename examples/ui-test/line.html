@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>线段Line测试示例</title>
+	<link rel="stylesheet" href="../style.css">
+	<meta name=viewport content="width=device-width,initial-scale=1,user-scalable=0,viewport-fit=cover">
+</head>
+<body>
+<div class="tip">
+	<h3>示例说明：</h3>
+	<div>
+		1、这个示例展示系统的线段UI。<br>
+		2、线段实质上也是多边形，只要宽度足够。<br>
+		3、下面绘制了一个线段宽度为3的线段<br>
+	</div>
+	<br><br>
+</div>
+
+<div id="canvas"></div>
+
+
+</body>
+</html>
+
+<script src="http://localhost:9000/livereload.js"></script>
+<script src="../common.js"></script>
+<script src="../../build/ycc.js"></script>
+
+<script>
+	var canvas = document.createElement("canvas");
+	canvas.width = 300;
+	canvas.height = 400;
+	document.getElementById("canvas").appendChild(canvas);
+	var ycc = new Ycc();
+	ycc.bindCanvas(canvas);
+
+	// 新建图层
+	var layer = ycc.layerManager.newLayer({enableEventManager:true});
+	var pa = new Ycc.UI.Line({
+		name:"parent",
+		fill:true,
+		fillStyle:'blue',
+		strokeStyle:'blue',
+		isShowRotateBeforeUI:true,
+		start:new Ycc.Math.Dot(22,50),
+		end:new Ycc.Math.Dot(100,100),
+		width:3,
+		x:20,
+		y:20,
+		ontap:function (e) {
+			console.log(e);
+		}
+	});
+
+	/*pa.addChild(new Ycc.UI.Line({
+		name:"son",
+		fill:true,
+		fillStyle:'yellow',
+		isDrawIndex:true,
+		isShowRotateBeforeUI:true,
+		x:10,
+		y:10,
+		color:'blue',
+		anchorX:100,
+		anchorY:120,
+		rotation:45,
+		rect:new Ycc.Math.Rect(100,120,50,80),
+
+		ontap:function (e) {
+			console.log(e);
+		}
+	}));*/
+	layer.addUI(pa);
+
+	ycc.layerManager.reRenderAllLayerToStage();
+
+
+	layer.ontap = function (e) {
+		console.log('layer -> ',e);
+	};
+
+</script>
