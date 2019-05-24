@@ -115,6 +115,17 @@
 	
 	};
 	
+	/**
+	 * 获取当前UI平移、旋转之后位置的多边形区域
+	 * @return {Ycc.Math.Dot[]} 返回多边形点的坐标数组
+	 * @override
+	 */
+	Ycc.UI.Polygon.prototype.getAbsolutePositionPolygon = function () {
+		var self = this;
+		return this.coordinates.map(function (point) {
+			return self.transformByRotate(point);
+		});
+	};
 	
 	/**
 	 * 获取UI的绝对坐标，只计算图层坐标和UI的位置坐标x、y

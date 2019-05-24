@@ -232,10 +232,15 @@
 	 */
 	Ycc.UI.Base.prototype.renderRectBgColor = function (absoluteRect) {
 		var rect = absoluteRect;
+		var dots = this.getAbsolutePositionPolygon();
+		console.log(dots,'dots');
 		this.ctx.save();
 		this.ctx.fillStyle = this.rectBgColor;
 		this.ctx.beginPath();
-		this.ctx.rect(rect.x,rect.y,rect.width,rect.height);
+		this.ctx.moveTo(dots[0].x,dots[0].y);
+		for(var i=1;i<dots.length-1;i++)
+			this.ctx.lineTo(dots[i].x,dots[i].y);
+		// this.ctx.rect(rect.x,rect.y,rect.width,rect.height);
 		this.ctx.closePath();
 		this.ctx.fill();
 		this.ctx.restore();
@@ -312,8 +317,8 @@
 	 */
 	Ycc.UI.Base.prototype.scaleAndRotate = function () {
 		// 坐标系缩放
-		this.ctx.scale(this.scaleX,this.scaleY);
-		var rect = this.getAbsolutePosition();
+		// this.ctx.scale(this.scaleX,this.scaleY);
+		var rect = this.getAbsolutePositionRect();
 		// 坐标系旋转
 		this.ctx.translate(this.anchorX+rect.x,this.anchorY+rect.y);
 		this.ctx.rotate(this.rotation*Math.PI/180);
@@ -474,7 +479,7 @@
 		// 超出舞台时，不予渲染
 		if(this.isOutOfStage())
 			return;
-		var absolutePosition = this.getAbsolutePosition();
+		var absolutePosition = this.getAbsolutePositionRect();
 		// 绘制UI的背景，rectBgColor
 		this.renderRectBgColor(absolutePosition);
 		// 绘制容纳区的边框
@@ -544,7 +549,23 @@
 	};
 	
 	/**
+	 * 获取UI平移、旋转之后位置的多边形区域，子UI需覆盖此方法
+	 */
+	Ycc.UI.Base.prototype.getAbsolutePositionPolygon = function () {};
+	
+	/**
+	 * 获取容纳UI的矩形区域，子UI可以覆盖此方法
+	 * 注：此区域未经过旋转
+	 * @return {Ycc.Math.Rect}
+	 */
+	Ycc.UI.Base.prototype.getAbsolutePositionRect = function () {
+		var pos = this.getAbsolutePosition();
+		return new Ycc.Math.Rect(pos.x,pos.y,this.rect.width,this.rect.height);
+	};
+	
+	/**
 	 * 获取UI的绝对坐标，主要考虑图层坐标
+	 * 注：此区域未经过旋转
 	 * @return {Ycc.Math.Rect}
 	 */
 	Ycc.UI.Base.prototype.getAbsolutePosition = function(){

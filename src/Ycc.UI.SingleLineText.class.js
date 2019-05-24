@@ -25,7 +25,7 @@
 	 */
 
 	Ycc.UI.SingleLineText = function SingleLineText(option) {
-		Ycc.UI.Base.call(this,option);
+		Ycc.UI.Polygon.call(this,option);
 		this.yccClass = Ycc.UI.SingleLineText;
 		
 		/**
@@ -80,7 +80,7 @@
 	};
 
 	// 继承prototype
-	Ycc.utils.mergeObject(Ycc.UI.SingleLineText.prototype,Ycc.UI.Base.prototype);
+	Ycc.utils.mergeObject(Ycc.UI.SingleLineText.prototype,Ycc.UI.Polygon.prototype);
 	Ycc.UI.SingleLineText.prototype.constructor = Ycc.UI.SingleLineText;
 	
 	
@@ -119,8 +119,16 @@
 			if(parseInt(this.fontSize)>this.rect.height){
 				this.rect.height = parseInt(this.fontSize);
 			}
-			
 		}
+		
+		// 计算多边形坐标
+		this.coordinates=[
+			{x:this.rect.x,y:this.rect.y},
+			{x:this.rect.x+this.rect.width,y:this.rect.y},
+			{x:this.rect.x+this.rect.width,y:this.rect.y+this.rect.height},
+			{x:this.rect.x,y:this.rect.y+this.rect.height},
+			{x:this.rect.x,y:this.rect.y},
+		];
 	};
 	/**
 	 * 渲染至ctx
@@ -128,7 +136,7 @@
 	 */
 	Ycc.UI.SingleLineText.prototype.render = function (ctx) {
 		var self = this;
-		
+		console.log('single ui render');
 		// 设置画布属性再计算，否则计算内容长度会有偏差
 		self.belongTo._setCtxProps(self);
 
@@ -148,7 +156,7 @@
 		// 配置项
 		var option = this;
 		// 绝对坐标
-		var rect = this.getAbsolutePosition();
+		var rect = this.getAbsolutePositionRect();
 		x = rect.x;
 		
 		var textWidth = this.ctx.measureText(this.displayContent).width;
@@ -169,7 +177,14 @@
 			y = y+rect.height/2-fontSize/2;
 		}
 		
+		var absoluteAnchor = this.transformToAbsolute({x:this.anchorX,y:this.anchorY});
 		this.ctx.save();
+		// this.scaleAndRotate();
+		// 坐标系旋转
+		this.ctx.translate(absoluteAnchor.x,absoluteAnchor.y);
+		this.ctx.rotate(this.rotation*Math.PI/180);
+		this.ctx.translate(-absoluteAnchor.x,-absoluteAnchor.y);
+		
 		this.ctx.fillStyle = option.color;
 		this.ctx.strokeStyle = option.color;
 		// this.baseUI.text([x,y],self.displayContent,option.fill);
