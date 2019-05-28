@@ -28,7 +28,7 @@
 	 * 		<br> `auto`	-- 修改rect大小，完全显示
 	 */
 	Ycc.UI.MultiLineText = function MultiLineText(option) {
-		Ycc.UI.Base.call(this,option);
+		Ycc.UI.Polygon.call(this,option);
 		this.yccClass = Ycc.UI.MultiLineText;
 		
 		// /**
@@ -63,7 +63,7 @@
 	};
 
 	// 继承prototype
-	Ycc.utils.mergeObject(Ycc.UI.MultiLineText.prototype,Ycc.UI.Base.prototype);
+	Ycc.utils.mergeObject(Ycc.UI.MultiLineText.prototype,Ycc.UI.Polygon.prototype);
 	Ycc.UI.MultiLineText.prototype.constructor = Ycc.UI.MultiLineText;
 	
 	
@@ -83,6 +83,9 @@
 		if(config.overflow === "auto"){
 			config.rect.height = config.lineHeight*this.displayLines.length;
 		}
+		
+		// 计算多边形顶点坐标
+		this.coordinates= this.rect.getVertices();
 		
 		/**
 		 * 获取需要实际绘制的文本行数组
@@ -222,12 +225,17 @@
 		// 引用
 		var config = this;
 		// 绝对坐标的rect
-		var rect = this.getAbsolutePosition();
+		var rect = this.getAbsolutePositionRect();
 		
 		this.ctx.save();
 		this.ctx.fillStyle = config.color;
 		this.ctx.strokeStyle = config.color;
 		
+		var absoluteAnchor = this.transformToAbsolute({x:this.anchorX,y:this.anchorY});
+		// 坐标系旋转
+		this.ctx.translate(absoluteAnchor.x,absoluteAnchor.y);
+		this.ctx.rotate(this.rotation*Math.PI/180);
+		this.ctx.translate(-absoluteAnchor.x,-absoluteAnchor.y);
 		// 绘制
 		for(var i = 0;i<self.displayLines.length;i++){
 			var x = rect.x;
@@ -235,7 +243,7 @@
 			if(y+config.lineHeight>rect.y+rect.height){
 				break;
 			}
-			this.belongTo.yccInstance.baseUI.text([x,y],self.displayLines[i],config.fill);
+			this.ctx.fillText(self.displayLines[i],x,y);
 		}
 		this.ctx.restore();
 	};

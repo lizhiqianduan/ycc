@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>多行文本</title>
+	<link rel="stylesheet" href="../style.css">
+	<meta name=viewport content="width=device-width,initial-scale=1,user-scalable=0,viewport-fit=cover">
+</head>
+<body>
+<div class="tip">
+	<h3>示例说明：</h3>
+	<div>
+		1、这个示例展示系统的多行文本UI。<br>
+		2、多行文本继承自多边形UI，同样支持旋转，虚线标注了UI旋转、平移之前的位置。<br>
+		3、多行文本采用\r\n换行。<br>
+	</div>
+	<br><br>
+</div>
+
+<div id="canvas"></div>
+
+
+</body>
+</html>
+
+<script src="http://localhost:9000/livereload.js"></script>
+<script src="../common.js"></script>
+<script src="../../build/ycc.js"></script>
+
+<script>
+	var canvas = document.createElement("canvas");
+	canvas.width = 300;
+	canvas.height = 400;
+	document.getElementById("canvas").appendChild(canvas);
+	var ycc = new Ycc();
+	ycc.bindCanvas(canvas);
+
+	// 新建图层
+	var layer = ycc.layerManager.newLayer({enableEventManager:true});
+	var pa = new Ycc.UI.MultiLineText({
+		name:"parent",
+		fill:true,
+		fillStyle:'blue',
+		isDrawIndex:true,
+		isShowRotateBeforeUI:true,
+		rectBgColor:'green',
+//		x:20,
+//		y:20,
+		color:'red',
+		rect:new Ycc.Math.Rect(20,20,100,80),
+		content:'第1行\r\n第2行\r\n第3行',
+		overflow:'auto',
+		anchorX:20,
+		anchorY:20,
+		rotation:45,
+
+		ontap:function (e) {
+			console.log(e);
+		}
+	});
+
+	pa.addChild(new Ycc.UI.Rect({
+		name:"son",
+		fill:true,
+		fillStyle:'yellow',
+		isDrawIndex:true,
+		isShowRotateBeforeUI:true,
+		x:10,
+		y:10,
+		color:'blue',
+		anchorX:100,
+		anchorY:120,
+		rotation:45,
+		rect:new Ycc.Math.Rect(100,120,50,80),
+
+		ontap:function (e) {
+			console.log(e);
+		}
+	}));
+	layer.addUI(pa);
+
+	ycc.layerManager.reRenderAllLayerToStage();
+
+
+	layer.ontap = function (e) {
+		console.log('layer -> ',e);
+	};
+
+</script>

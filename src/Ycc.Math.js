@@ -207,9 +207,9 @@
 			new Ycc.Math.Dot(this.x,this.y),
 			new Ycc.Math.Dot(this.x+this.width,this.y),
 			new Ycc.Math.Dot(this.x+this.width,this.y+this.height),
-			new Ycc.Math.Dot(this.x,this.y+this.height)
+			new Ycc.Math.Dot(this.x,this.y+this.height),
+			new Ycc.Math.Dot(this.x,this.y)
 		];
-
 	};
 	
 	/**
