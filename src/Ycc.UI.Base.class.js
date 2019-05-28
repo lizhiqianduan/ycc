@@ -235,7 +235,6 @@
 		var dots = this.getAbsolutePositionPolygon();
 		if(!dots||dots.length===0) return console.log(new Ycc.Debugger.Log("no polygon coordirates!").message);
 		
-		console.log(dots,'dots');
 		this.ctx.save();
 		this.ctx.fillStyle = this.rectBgColor;
 		this.ctx.beginPath();

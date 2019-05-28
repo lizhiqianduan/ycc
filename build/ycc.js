@@ -5068,7 +5068,6 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 		var dots = this.getAbsolutePositionPolygon();
 		if(!dots||dots.length===0) return console.log(new Ycc.Debugger.Log("no polygon coordirates!").message);
 		
-		console.log(dots,'dots');
 		this.ctx.save();
 		this.ctx.fillStyle = this.rectBgColor;
 		this.ctx.beginPath();
@@ -5693,7 +5692,7 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 		rect.y=miny+pos.y;
 		rect.width=maxx-minx;
 		rect.height=maxy-miny;
-		console.log(minx,miny,maxx,maxy);
+		// console.log(minx,miny,maxx,maxy);
 		return rect;
 	};
 	
@@ -6111,10 +6110,10 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 	 * 		<br> 3		--		上下左右颠倒
 	 * @param option.scale9GridRect	{Ycc.Math.Rect}	9宫格相对于res图片的中间区域，当且仅当fillMode为scale9Grid有效。
 	 * @constructor
-	 * @extends Ycc.UI.Base
+	 * @extends Ycc.UI.Polygon
 	 */
 	Ycc.UI.Image = function Image(option) {
-		Ycc.UI.Base.call(this,option);
+		Ycc.UI.Polygon.call(this,option);
 		this.yccClass = Ycc.UI.Image;
 		
 		/**
@@ -6160,7 +6159,7 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 		this.extend(option);
 	};
 	// 继承prototype
-	Ycc.utils.mergeObject(Ycc.UI.Image.prototype,Ycc.UI.Base.prototype);
+	Ycc.utils.mergeObject(Ycc.UI.Image.prototype,Ycc.UI.Polygon.prototype);
 	Ycc.UI.Image.prototype.constructor = Ycc.UI.Image;
 	
 	
@@ -6174,6 +6173,7 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 			this.rect.width = this.res.width;
 			this.rect.height = this.res.height;
 		}
+		this.coordinates = this.rect.getVertices();
 	};
 	
 	/**
@@ -6355,10 +6355,10 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 	 * 		<br> 2		--		左右翻转
 	 * 		<br> 3		--		上下左右颠倒
 	 * @constructor
-	 * @extends Ycc.UI.Base
+	 * @extends Ycc.UI.Polygon
 	 */
 	Ycc.UI.ImageFrameAnimation = function ImageFrameAnimation(option) {
-		Ycc.UI.Base.call(this,option);
+		Ycc.UI.Polygon.call(this,option);
 		this.yccClass = Ycc.UI.ImageFrameAnimation;
 		
 		
@@ -6422,7 +6422,7 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 		this.isRunning = this.autoplay;
 	};
 	// 继承prototype
-	Ycc.utils.mergeObject(Ycc.UI.ImageFrameAnimation.prototype,Ycc.UI.Base.prototype);
+	Ycc.utils.mergeObject(Ycc.UI.ImageFrameAnimation.prototype,Ycc.UI.Polygon.prototype);
 	Ycc.UI.ImageFrameAnimation.prototype.constructor = Ycc.UI.ImageFrameAnimation;
 	
 	
@@ -6432,7 +6432,7 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 	 * @override
 	 */
 	Ycc.UI.ImageFrameAnimation.prototype.computeUIProps = function () {
-	
+		this.coordinates = this.rect.getVertices();
 	};
 	
 	/**
@@ -6462,7 +6462,7 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 	Ycc.UI.ImageFrameAnimation.prototype.render = function () {
 		
 		// 绝对坐标
-		var rect = this.getAbsolutePosition();
+		var rect = this.getAbsolutePositionRect();
 		// 获取当前显示第几个序列图，由于默认播放第一帧图片，这里直接渲染第二帧图片
 		var index = parseInt((this.belongTo.yccInstance.ticker.frameAllCount-this.startFrameCount)/this.frameSpace)%this.frameRectCount+1;
 		// 若没开始播放，默认只绘制第一个序列帧
@@ -7689,7 +7689,6 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 	 */
 	Ycc.UI.SingleLineText.prototype.render = function (ctx) {
 		var self = this;
-		console.log('single ui render');
 		// 设置画布属性再计算，否则计算内容长度会有偏差
 		self.belongTo._setCtxProps(self);
 
@@ -7730,10 +7729,13 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 			y = y+rect.height/2-fontSize/2;
 		}
 		
-		var absoluteAnchor = this.transformToAbsolute({x:this.anchorX,y:this.anchorY});
+		var parent = this.getParent();
+		var absoluteDot = parent?parent.transformByRotate({x:x,y:y}):this;
+		x=absoluteDot.x,y=absoluteDot.y;
 		this.ctx.save();
 		// this.scaleAndRotate();
 		// 坐标系旋转
+		var absoluteAnchor = this.transformToAbsolute({x:this.anchorX,y:this.anchorY});
 		this.ctx.translate(absoluteAnchor.x,absoluteAnchor.y);
 		this.ctx.rotate(this.rotation*Math.PI/180);
 		this.ctx.translate(-absoluteAnchor.x,-absoluteAnchor.y);

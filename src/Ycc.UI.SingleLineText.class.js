@@ -136,7 +136,6 @@
 	 */
 	Ycc.UI.SingleLineText.prototype.render = function (ctx) {
 		var self = this;
-		console.log('single ui render');
 		// 设置画布属性再计算，否则计算内容长度会有偏差
 		self.belongTo._setCtxProps(self);
 
@@ -177,10 +176,13 @@
 			y = y+rect.height/2-fontSize/2;
 		}
 		
-		var absoluteAnchor = this.transformToAbsolute({x:this.anchorX,y:this.anchorY});
+		var parent = this.getParent();
+		var absoluteDot = parent?parent.transformByRotate({x:x,y:y}):this;
+		x=absoluteDot.x,y=absoluteDot.y;
 		this.ctx.save();
 		// this.scaleAndRotate();
 		// 坐标系旋转
+		var absoluteAnchor = this.transformToAbsolute({x:this.anchorX,y:this.anchorY});
 		this.ctx.translate(absoluteAnchor.x,absoluteAnchor.y);
 		this.ctx.rotate(this.rotation*Math.PI/180);
 		this.ctx.translate(-absoluteAnchor.x,-absoluteAnchor.y);

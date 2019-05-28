@@ -22,10 +22,10 @@
 	 * 		<br> 2		--		左右翻转
 	 * 		<br> 3		--		上下左右颠倒
 	 * @constructor
-	 * @extends Ycc.UI.Base
+	 * @extends Ycc.UI.Polygon
 	 */
 	Ycc.UI.ImageFrameAnimation = function ImageFrameAnimation(option) {
-		Ycc.UI.Base.call(this,option);
+		Ycc.UI.Polygon.call(this,option);
 		this.yccClass = Ycc.UI.ImageFrameAnimation;
 		
 		
@@ -89,7 +89,7 @@
 		this.isRunning = this.autoplay;
 	};
 	// 继承prototype
-	Ycc.utils.mergeObject(Ycc.UI.ImageFrameAnimation.prototype,Ycc.UI.Base.prototype);
+	Ycc.utils.mergeObject(Ycc.UI.ImageFrameAnimation.prototype,Ycc.UI.Polygon.prototype);
 	Ycc.UI.ImageFrameAnimation.prototype.constructor = Ycc.UI.ImageFrameAnimation;
 	
 	
@@ -99,7 +99,7 @@
 	 * @override
 	 */
 	Ycc.UI.ImageFrameAnimation.prototype.computeUIProps = function () {
-	
+		this.coordinates = this.rect.getVertices();
 	};
 	
 	/**
@@ -129,7 +129,7 @@
 	Ycc.UI.ImageFrameAnimation.prototype.render = function () {
 		
 		// 绝对坐标
-		var rect = this.getAbsolutePosition();
+		var rect = this.getAbsolutePositionRect();
 		// 获取当前显示第几个序列图，由于默认播放第一帧图片，这里直接渲染第二帧图片
 		var index = parseInt((this.belongTo.yccInstance.ticker.frameAllCount-this.startFrameCount)/this.frameSpace)%this.frameRectCount+1;
 		// 若没开始播放，默认只绘制第一个序列帧

@@ -29,10 +29,10 @@
 	 * 		<br> 3		--		上下左右颠倒
 	 * @param option.scale9GridRect	{Ycc.Math.Rect}	9宫格相对于res图片的中间区域，当且仅当fillMode为scale9Grid有效。
 	 * @constructor
-	 * @extends Ycc.UI.Base
+	 * @extends Ycc.UI.Polygon
 	 */
 	Ycc.UI.Image = function Image(option) {
-		Ycc.UI.Base.call(this,option);
+		Ycc.UI.Polygon.call(this,option);
 		this.yccClass = Ycc.UI.Image;
 		
 		/**
@@ -78,7 +78,7 @@
 		this.extend(option);
 	};
 	// 继承prototype
-	Ycc.utils.mergeObject(Ycc.UI.Image.prototype,Ycc.UI.Base.prototype);
+	Ycc.utils.mergeObject(Ycc.UI.Image.prototype,Ycc.UI.Polygon.prototype);
 	Ycc.UI.Image.prototype.constructor = Ycc.UI.Image;
 	
 	
@@ -92,6 +92,7 @@
 			this.rect.width = this.res.width;
 			this.rect.height = this.res.height;
 		}
+		this.coordinates = this.rect.getVertices();
 	};
 	
 	/**

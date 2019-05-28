@@ -174,7 +174,7 @@
 		rect.y=miny+pos.y;
 		rect.width=maxx-minx;
 		rect.height=maxy-miny;
-		console.log(minx,miny,maxx,maxy);
+		// console.log(minx,miny,maxx,maxy);
 		return rect;
 	};
 	
