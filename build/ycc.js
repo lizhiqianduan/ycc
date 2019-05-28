@@ -6694,11 +6694,6 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 		// 因为直接操作舞台，所以绘制之前需要转换成舞台绝对坐标
 		// var pointList = pa?pa.transformToAbsolute(this.pointList):this.pointList;
 		var pointList = this.transformByRotate(this.pointList);
-		// 坐标系旋转
-		// var absoluteAnchor = this.transformToAbsolute({x:this.anchorX,y:this.anchorY});
-		// this.ctx.translate(absoluteAnchor.x,absoluteAnchor.y);
-		// this.ctx.rotate(this.rotation*Math.PI/180);
-		// this.ctx.translate(-absoluteAnchor.x,-absoluteAnchor.y);
 		
 		if(this.smooth)
 			this._smoothLineRender(pointList);
@@ -7192,10 +7187,10 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 	 * @param option.rect	{Ycc.Math.Rect}	容纳区。会根据属性设置动态修改。
 	 * @param option.fill=true {boolean}	填充or描边
 	 * @constructor
-	 * @extends Ycc.UI.Base
+	 * @extends Ycc.UI.Polygon
 	 */
 	Ycc.UI.CropRect = function CropRect(option) {
-		Ycc.UI.Base.call(this,option);
+		Ycc.UI.Polygon.call(this,option);
 		this.yccClass = Ycc.UI.CropRect;
 		
 		/**
@@ -7266,7 +7261,7 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 		this._initUI();
 	};
 	// 继承prototype
-	Ycc.utils.mergeObject(Ycc.UI.CropRect.prototype,Ycc.UI.Base.prototype);
+	Ycc.utils.mergeObject(Ycc.UI.CropRect.prototype,Ycc.UI.Polygon.prototype);
 	
 	
 	/**
@@ -7369,8 +7364,8 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 			tempW += ui.rect.width+1;
 		}
 		
-		
-		
+		// 计算顶点坐标
+		this.coordinates = this.rect.getVertices();
 		
 	};
 	
@@ -7387,6 +7382,7 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 		
 		this.userData = this.userData?this.userData:{};
 		this.addListener("dragstart",function (e) {
+			console.log('dragstart',e);
 			// self.showBtns(false);
 			// 标识第几个变换控制点
 			this.userData.ctrlStart = 0;
