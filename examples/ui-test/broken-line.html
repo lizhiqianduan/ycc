@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>折线BrokenLine测试示例</title>
+	<link rel="stylesheet" href="../style.css">
+	<meta name=viewport content="width=device-width,initial-scale=1,user-scalable=0,viewport-fit=cover">
+</head>
+<body>
+<div class="tip">
+	<h3>示例说明：</h3>
+	<div>
+		1、这个示例展示系统的折线UI。<br>
+		2、折线UI继承自多边形，背景、旋转、坐标转换等方法都是可用的。<br>
+	</div>
+	<br><br>
+</div>
+
+<div id="canvas"></div>
+
+
+</body>
+</html>
+
+<script src="http://localhost:9000/livereload.js"></script>
+<script src="../common.js"></script>
+<script src="../../build/ycc.js"></script>
+
+<script>
+	var canvas = document.createElement("canvas");
+	canvas.width = 300;
+	canvas.height = 400;
+	document.getElementById("canvas").appendChild(canvas);
+	var ycc = new Ycc();
+	ycc.bindCanvas(canvas);
+
+	// 新建图层
+	var layer = ycc.layerManager.newLayer({enableEventManager:true});
+	var pa = new Ycc.UI.BrokenLine({
+		name:"parent",
+		fill:true,
+		fillStyle:'blue',
+		strokeStyle:'blue',
+		isShowRotateBeforeUI:true,
+		rectBgColor:'green',
+		pointList:[
+			{x:20,y:20},
+			{x:40,y:50},
+			{x:60,y:10},
+			{x:70,y:20},
+			{x:80,y:60},
+		],
+		width:3,
+//		x:20,
+//		y:20,
+		anchorX:20,
+		anchorY:10,
+		rotation:45,
+		ontap:function (e) {
+			console.log(e);
+		}
+	});
+
+	/*pa.addChild(new Ycc.UI.Line({
+		name:"son",
+		fill:true,
+		fillStyle:'yellow',
+		isDrawIndex:true,
+		isShowRotateBeforeUI:true,
+		x:10,
+		y:10,
+		color:'blue',
+		anchorX:100,
+		anchorY:120,
+		rotation:45,
+		rect:new Ycc.Math.Rect(100,120,50,80),
+
+		ontap:function (e) {
+			console.log(e);
+		}
+	}));*/
+	layer.addUI(pa);
+
+	ycc.layerManager.reRenderAllLayerToStage();
+
+
+	layer.ontap = function (e) {
+		console.log('layer -> ',e);
+	};
+
+</script>

@@ -5488,10 +5488,18 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 	
 	/**
 	 * 根据当前的锚点、旋转角度获取某个点的转换之后的坐标
-	 * @param dot {Ycc.Math.Dot}	需要转换的点，该点为相对坐标，相对于当前UI的父级
+	 * @param dot {Ycc.Math.Dot|Ycc.Math.Dot[]}	需要转换的点，该点为相对坐标，相对于当前UI的父级
 	 * @return {Ycc.Math.Dot}		转换后的点，该点为绝对坐标
 	 */
 	Ycc.UI.Base.prototype.transformByRotate = function (dot) {
+		var self = this;
+		// 点数组的转换
+		if(Ycc.utils.isArray(dot)){
+			return dot.map(function (itemDot) {
+				return self.transformByRotate(itemDot);
+			});
+		}
+		
 		var res = new Ycc.Math.Dot();
 		// 位置的绝对坐标
 		var pos = this.getAbsolutePosition();
@@ -6619,10 +6627,10 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 	 * @param option.color="black"	{string}	线条颜色
 	 * @param option.smooth=false	{boolean}	线条是否平滑
 	 * @constructor
-	 * @extends Ycc.UI.Base
+	 * @extends Ycc.UI.Polygon
 	 */
 	Ycc.UI.BrokenLine = function BrokenLine(option) {
-		Ycc.UI.Base.call(this,option);
+		Ycc.UI.Polygon.call(this,option);
 
 		this.yccClass = Ycc.UI.BrokenLine;
 		
@@ -6633,7 +6641,7 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 		this.extend(option);
 	};
 	// 继承prototype
-	Ycc.utils.mergeObject(Ycc.UI.BrokenLine.prototype,Ycc.UI.Base.prototype);
+	Ycc.utils.mergeObject(Ycc.UI.BrokenLine.prototype,Ycc.UI.Polygon.prototype);
 	
 	/**
 	 * 计算UI的各种属性。此操作必须在绘制之前调用。
@@ -6666,6 +6674,9 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 		this.rect.y = miny;
 		this.rect.width = maxx-minx;
 		this.rect.height = maxy-miny;
+		
+		// 计算容纳区的顶点坐标
+		this.coordinates=this.rect.getVertices();
 	};
 	/**
 	 * 绘制
@@ -6681,7 +6692,14 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 		this.ctx.strokeWidth = this.width;
 		this.ctx.beginPath();
 		// 因为直接操作舞台，所以绘制之前需要转换成舞台绝对坐标
-		var pointList = pa?pa.transformToAbsolute(this.pointList):this.pointList;
+		// var pointList = pa?pa.transformToAbsolute(this.pointList):this.pointList;
+		var pointList = this.transformByRotate(this.pointList);
+		// 坐标系旋转
+		// var absoluteAnchor = this.transformToAbsolute({x:this.anchorX,y:this.anchorY});
+		// this.ctx.translate(absoluteAnchor.x,absoluteAnchor.y);
+		// this.ctx.rotate(this.rotation*Math.PI/180);
+		// this.ctx.translate(-absoluteAnchor.x,-absoluteAnchor.y);
+		
 		if(this.smooth)
 			this._smoothLineRender(pointList);
 		else
@@ -7056,11 +7074,12 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 		this.ctx.fillStyle = config.color;
 		this.ctx.strokeStyle = config.color;
 		
-		var absoluteAnchor = this.transformToAbsolute({x:this.anchorX,y:this.anchorY});
 		// 坐标系旋转
+		var absoluteAnchor = this.transformToAbsolute({x:this.anchorX,y:this.anchorY});
 		this.ctx.translate(absoluteAnchor.x,absoluteAnchor.y);
 		this.ctx.rotate(this.rotation*Math.PI/180);
 		this.ctx.translate(-absoluteAnchor.x,-absoluteAnchor.y);
+
 		// 绘制
 		for(var i = 0;i<self.displayLines.length;i++){
 			var x = rect.x;

@@ -231,11 +231,12 @@
 		this.ctx.fillStyle = config.color;
 		this.ctx.strokeStyle = config.color;
 		
-		var absoluteAnchor = this.transformToAbsolute({x:this.anchorX,y:this.anchorY});
 		// 坐标系旋转
+		var absoluteAnchor = this.transformToAbsolute({x:this.anchorX,y:this.anchorY});
 		this.ctx.translate(absoluteAnchor.x,absoluteAnchor.y);
 		this.ctx.rotate(this.rotation*Math.PI/180);
 		this.ctx.translate(-absoluteAnchor.x,-absoluteAnchor.y);
+
 		// 绘制
 		for(var i = 0;i<self.displayLines.length;i++){
 			var x = rect.x;

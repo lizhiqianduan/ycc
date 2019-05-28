@@ -655,10 +655,18 @@
 	
 	/**
 	 * 根据当前的锚点、旋转角度获取某个点的转换之后的坐标
-	 * @param dot {Ycc.Math.Dot}	需要转换的点，该点为相对坐标，相对于当前UI的父级
+	 * @param dot {Ycc.Math.Dot|Ycc.Math.Dot[]}	需要转换的点，该点为相对坐标，相对于当前UI的父级
 	 * @return {Ycc.Math.Dot}		转换后的点，该点为绝对坐标
 	 */
 	Ycc.UI.Base.prototype.transformByRotate = function (dot) {
+		var self = this;
+		// 点数组的转换
+		if(Ycc.utils.isArray(dot)){
+			return dot.map(function (itemDot) {
+				return self.transformByRotate(itemDot);
+			});
+		}
+		
 		var res = new Ycc.Math.Dot();
 		// 位置的绝对坐标
 		var pos = this.getAbsolutePosition();
