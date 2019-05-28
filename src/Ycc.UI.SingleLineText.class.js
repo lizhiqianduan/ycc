@@ -176,9 +176,6 @@
 			y = y+rect.height/2-fontSize/2;
 		}
 		
-		var parent = this.getParent();
-		var absoluteDot = parent?parent.transformByRotate({x:x,y:y}):this;
-		x=absoluteDot.x,y=absoluteDot.y;
 		this.ctx.save();
 		// this.scaleAndRotate();
 		// 坐标系旋转
