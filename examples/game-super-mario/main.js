@@ -97,7 +97,7 @@ function createYcc() {
 		t3 = Date.now();
 
 		// 绘制刚体的方框
-		// currentScene && currentScene.debug && currentScene.debug();
+		currentScene && currentScene.debug && currentScene.debug();
 		// window.onerror = function (e) { alert('系统错误！'+e); };
 		
 		t4 = Date.now();
@@ -171,7 +171,7 @@ function loadRes(cb){
 
 function projectInit(levelName) {
 	
-	ycc.ticker.start(60);
+	ycc.ticker.start(50);
 	engine = Matter.Engine.create();
 	Matter.Engine.run(engine);
 	currentScene = new GameScene(levelName);
