@@ -8,7 +8,8 @@
 (function (Ycc) {
 	
 	/**
-	 * 多行文本UI
+	 * 多边形UI
+	 * 位置坐标x、y为只读属性，且为相对坐标，默认取多边形的第一个顶点坐标
 	 * @constructor
 	 * @extends Ycc.UI.Base
 	 * @param option    			{object}        	所有可配置的配置项
@@ -19,6 +20,18 @@
 		Ycc.UI.Base.call(this, option);
 		this.yccClass = Ycc.UI.Polygon;
 		
+		/**
+		 * 位置x
+		 * @type {number}
+		 * @readonly
+		 */
+		this.x=0;
+		/**
+		 * 位置y
+		 * @type {number}
+		 * @readonly
+		 */
+		this.y=0;
 		/**
 		 * 是否填充
 		 * @type {boolean}
@@ -63,7 +76,10 @@
 	 * @override
 	 */
 	Ycc.UI.Polygon.prototype.computeUIProps = function () {
-	
+
+		// 计算相对位置
+		if(this.coordinates[0])
+			this.x=this.coordinates[0].x,this.y=this.coordinates[0].y;
 	};
 	
 	/**
@@ -77,8 +93,6 @@
 			console.error("[Ycc error]:","ctx is null !");
 			return;
 		}
-		var coordinates = this.coordinates;
-		var start = this.transformByRotate(coordinates[0]);
 		
 		// console.log('render');
 		

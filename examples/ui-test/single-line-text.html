@@ -44,8 +44,6 @@
 		isDrawIndex:true,
 		isShowRotateBeforeUI:true,
 		rectBgColor:'green',
-//		x:20,
-//		y:20,
 		color:'red',
 		rect:new Ycc.Math.Rect(20,20,100,80),
 		content:'单行文本',
@@ -58,25 +56,27 @@
 			console.log(e);
 		}
 	});
-
-	pa.addChild(new Ycc.UI.Rect({
+	var son = new Ycc.UI.SingleLineText({
 		name:"son",
 		fill:true,
-		fillStyle:'yellow',
+		fillStyle:'blue',
 		isDrawIndex:true,
 		isShowRotateBeforeUI:true,
-		x:10,
-		y:10,
-		color:'blue',
-		anchorX:100,
-		anchorY:120,
-		rotation:45,
-		rect:new Ycc.Math.Rect(100,120,50,80),
+		rectBgColor:'green',
+		color:'red',
+		rect:new Ycc.Math.Rect(20,20,100,80),
+		content:'单行文本2',
+		overflow:'auto',
+//		anchorX:20,
+//		anchorY:20,
+//		rotation:45,
 
 		ontap:function (e) {
 			console.log(e);
 		}
-	}));
+	});
+
+	pa.addChild(son);
 	layer.addUI(pa);
 
 	ycc.layerManager.reRenderAllLayerToStage();

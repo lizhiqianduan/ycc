@@ -589,34 +589,29 @@
 	
 	
 	/**
-	 * 根据图层坐标和UI位置坐标，将UI内某个点的相对坐标（相对于UI），转换为舞台的绝对坐标
-	 * @todo 所有UI类render的时候都应该加上这个转换
+	 * 根据图层坐标和UI位置坐标，将某个点的相对坐标（相对于UI的父级），转换为舞台的绝对坐标
 	 * @param dotOrArr {Ycc.Math.Dot | Ycc.Math.Dot[]}
 	 * @return {Ycc.Math.Dot | Ycc.Math.Dot[]}
 	 */
 	Ycc.UI.Base.prototype.transformToAbsolute = function (dotOrArr) {
-		var res = null;
-		var absoluteRect = this.getAbsolutePosition();
-		
+		var self = this;
 		if(Ycc.utils.isArray(dotOrArr)){
-			res = [];
-			for(var i=0;i<dotOrArr.length;i++){
-				var resDot = new Ycc.Math.Dot(0,0);
-				var dot = dotOrArr[i];
-				resDot.x=absoluteRect.x+dot.x;
-				resDot.y=absoluteRect.y+dot.y;
-				res.push(resDot);
-			}
-			return res;
+			return dotOrArr.map(function (item) {
+				return self.transformToAbsolute(item);
+			});
 		}
-		res = new Ycc.Math.Dot(0,0);
-		res.x = absoluteRect.x+dotOrArr.x;
-		res.y = absoluteRect.y+dotOrArr.y;
-		return res;
+		
+		var pa = this.getParent();
+		if(!pa){
+			return new Ycc.Math.Dot(dotOrArr.x+this.belongTo.x,dotOrArr.y+this.belongTo.y);
+		}else{
+			var paAbsolute = pa.getAbsolutePosition();
+			return new Ycc.Math.Dot(dotOrArr.x+paAbsolute.x,dotOrArr.y+paAbsolute.y);
+		}
 	};
 	
 	/**
-	 * 根据图层坐标和UI位置坐标，将某个点的绝对坐标，转换为相对于UI的相对坐标
+	 * 根据图层坐标和UI位置坐标，将某个点的绝对坐标，转换为相对于UI父级的相对坐标
 	 * @param dotOrArr {Ycc.Math.Dot | Ycc.Math.Dot[]}
 	 * @return {Ycc.Math.Dot | Ycc.Math.Dot[]}
 	 */
@@ -669,15 +664,16 @@
 		var res = new Ycc.Math.Dot();
 		// 位置的绝对坐标
 		var pos = this.getAbsolutePosition();
-		
+		// pos={x:0,y:0};
 		var dotX = dot.x;
 		var dotY = dot.y;
 		
 		// 坐标旋转
 		var dx = (dotX - this.anchorX)*Math.cos(this.rotation/180*Math.PI) - (dotY - this.anchorY)*Math.sin(this.rotation/180*Math.PI)+this.anchorX;
 		var dy = (dotY - this.anchorY)*Math.cos(this.rotation/180*Math.PI) + (dotX - this.anchorX)*Math.sin(this.rotation/180*Math.PI)+this.anchorY;
-		res.x=dx+pos.x;
-		res.y=dy+pos.y;
+		// res.x=dx+pos.x;
+		// res.y=dy+pos.y;
+		res = this.transformToAbsolute({x:dx,y:dy});
 
 		return res;
 	};

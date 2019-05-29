@@ -17,7 +17,7 @@
 	 * @param option	{object}		所有可配置的配置项
 	 * @param option.content=""	{string}	内容
 	 * @param option.color=black	{string}	颜色
-	 * @param option.rect	{Ycc.Math.Rect}	容纳区。会根据属性设置动态修改。
+	 * @param option.rect	{Ycc.Math.Rect}	容纳区。会根据属性设置动态修改。位置坐标x,y为rect的x,y
 	 * @param option.overflow=auto	{string}	水平方向超出rect之后的显示方式
 	 * 		<br> `hidden` -- 直接隐藏
 	 * 		<br> `auto`	-- 修改rect大小，完全显示
@@ -122,13 +122,9 @@
 		}
 		
 		// 计算多边形坐标
-		this.coordinates=[
-			{x:this.rect.x,y:this.rect.y},
-			{x:this.rect.x+this.rect.width,y:this.rect.y},
-			{x:this.rect.x+this.rect.width,y:this.rect.y+this.rect.height},
-			{x:this.rect.x,y:this.rect.y+this.rect.height},
-			{x:this.rect.x,y:this.rect.y},
-		];
+		this.coordinates= this.rect.getVertices();
+		// 计算相对位置
+		this.x=this.rect.x,this.y=this.rect.y;
 	};
 	/**
 	 * 渲染至ctx

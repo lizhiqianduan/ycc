@@ -5422,34 +5422,29 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 	
 	
 	/**
-	 * 根据图层坐标和UI位置坐标，将UI内某个点的相对坐标（相对于UI），转换为舞台的绝对坐标
-	 * @todo 所有UI类render的时候都应该加上这个转换
+	 * 根据图层坐标和UI位置坐标，将某个点的相对坐标（相对于UI的父级），转换为舞台的绝对坐标
 	 * @param dotOrArr {Ycc.Math.Dot | Ycc.Math.Dot[]}
 	 * @return {Ycc.Math.Dot | Ycc.Math.Dot[]}
 	 */
 	Ycc.UI.Base.prototype.transformToAbsolute = function (dotOrArr) {
-		var res = null;
-		var absoluteRect = this.getAbsolutePosition();
-		
+		var self = this;
 		if(Ycc.utils.isArray(dotOrArr)){
-			res = [];
-			for(var i=0;i<dotOrArr.length;i++){
-				var resDot = new Ycc.Math.Dot(0,0);
-				var dot = dotOrArr[i];
-				resDot.x=absoluteRect.x+dot.x;
-				resDot.y=absoluteRect.y+dot.y;
-				res.push(resDot);
-			}
-			return res;
+			return dotOrArr.map(function (item) {
+				return self.transformToAbsolute(item);
+			});
 		}
-		res = new Ycc.Math.Dot(0,0);
-		res.x = absoluteRect.x+dotOrArr.x;
-		res.y = absoluteRect.y+dotOrArr.y;
-		return res;
+		
+		var pa = this.getParent();
+		if(!pa){
+			return new Ycc.Math.Dot(dotOrArr.x+this.belongTo.x,dotOrArr.y+this.belongTo.y);
+		}else{
+			var paAbsolute = pa.getAbsolutePosition();
+			return new Ycc.Math.Dot(dotOrArr.x+paAbsolute.x,dotOrArr.y+paAbsolute.y);
+		}
 	};
 	
 	/**
-	 * 根据图层坐标和UI位置坐标，将某个点的绝对坐标，转换为相对于UI的相对坐标
+	 * 根据图层坐标和UI位置坐标，将某个点的绝对坐标，转换为相对于UI父级的相对坐标
 	 * @param dotOrArr {Ycc.Math.Dot | Ycc.Math.Dot[]}
 	 * @return {Ycc.Math.Dot | Ycc.Math.Dot[]}
 	 */
@@ -5502,15 +5497,16 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 		var res = new Ycc.Math.Dot();
 		// 位置的绝对坐标
 		var pos = this.getAbsolutePosition();
-		
+		// pos={x:0,y:0};
 		var dotX = dot.x;
 		var dotY = dot.y;
 		
 		// 坐标旋转
 		var dx = (dotX - this.anchorX)*Math.cos(this.rotation/180*Math.PI) - (dotY - this.anchorY)*Math.sin(this.rotation/180*Math.PI)+this.anchorX;
 		var dy = (dotY - this.anchorY)*Math.cos(this.rotation/180*Math.PI) + (dotX - this.anchorX)*Math.sin(this.rotation/180*Math.PI)+this.anchorY;
-		res.x=dx+pos.x;
-		res.y=dy+pos.y;
+		// res.x=dx+pos.x;
+		// res.y=dy+pos.y;
+		res = this.transformToAbsolute({x:dx,y:dy});
 
 		return res;
 	};
@@ -5526,7 +5522,8 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 (function (Ycc) {
 	
 	/**
-	 * 多行文本UI
+	 * 多边形UI
+	 * 位置坐标x、y为只读属性，且为相对坐标，默认取多边形的第一个顶点坐标
 	 * @constructor
 	 * @extends Ycc.UI.Base
 	 * @param option    			{object}        	所有可配置的配置项
@@ -5537,6 +5534,18 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 		Ycc.UI.Base.call(this, option);
 		this.yccClass = Ycc.UI.Polygon;
 		
+		/**
+		 * 位置x
+		 * @type {number}
+		 * @readonly
+		 */
+		this.x=0;
+		/**
+		 * 位置y
+		 * @type {number}
+		 * @readonly
+		 */
+		this.y=0;
 		/**
 		 * 是否填充
 		 * @type {boolean}
@@ -5581,7 +5590,10 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 	 * @override
 	 */
 	Ycc.UI.Polygon.prototype.computeUIProps = function () {
-	
+
+		// 计算相对位置
+		if(this.coordinates[0])
+			this.x=this.coordinates[0].x,this.y=this.coordinates[0].y;
 	};
 	
 	/**
@@ -5595,8 +5607,6 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 			console.error("[Ycc error]:","ctx is null !");
 			return;
 		}
-		var coordinates = this.coordinates;
-		var start = this.transformByRotate(coordinates[0]);
 		
 		// console.log('render');
 		
@@ -6432,7 +6442,10 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 	 * @override
 	 */
 	Ycc.UI.ImageFrameAnimation.prototype.computeUIProps = function () {
-		this.coordinates = this.rect.getVertices();
+		// 计算多边形坐标
+		this.coordinates= this.rect.getVertices();
+		// 计算相对位置
+		this.x=this.rect.x,this.y=this.rect.y;
 	};
 	
 	/**
@@ -7570,7 +7583,7 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 	 * @param option	{object}		所有可配置的配置项
 	 * @param option.content=""	{string}	内容
 	 * @param option.color=black	{string}	颜色
-	 * @param option.rect	{Ycc.Math.Rect}	容纳区。会根据属性设置动态修改。
+	 * @param option.rect	{Ycc.Math.Rect}	容纳区。会根据属性设置动态修改。位置坐标x,y为rect的x,y
 	 * @param option.overflow=auto	{string}	水平方向超出rect之后的显示方式
 	 * 		<br> `hidden` -- 直接隐藏
 	 * 		<br> `auto`	-- 修改rect大小，完全显示
@@ -7675,13 +7688,9 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 		}
 		
 		// 计算多边形坐标
-		this.coordinates=[
-			{x:this.rect.x,y:this.rect.y},
-			{x:this.rect.x+this.rect.width,y:this.rect.y},
-			{x:this.rect.x+this.rect.width,y:this.rect.y+this.rect.height},
-			{x:this.rect.x,y:this.rect.y+this.rect.height},
-			{x:this.rect.x,y:this.rect.y},
-		];
+		this.coordinates= this.rect.getVertices();
+		// 计算相对位置
+		this.x=this.rect.x,this.y=this.rect.y;
 	};
 	/**
 	 * 渲染至ctx
