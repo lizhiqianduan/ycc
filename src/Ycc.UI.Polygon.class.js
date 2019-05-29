@@ -17,6 +17,7 @@
 	 * @param option.coordinates  	{Ycc.Math.Dot[]}    多边形点坐标的数组，为保证图形能够闭合，起点和终点必须相等。注意：点列表的坐标为相对坐标
 	 */
 	Ycc.UI.Polygon = function Polygon(option) {
+		option = option || {};
 		Ycc.UI.Base.call(this, option);
 		this.yccClass = Ycc.UI.Polygon;
 		
