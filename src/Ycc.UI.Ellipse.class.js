@@ -72,6 +72,9 @@
 		this.rect.y = yMin;
 		this.rect.width = xMax-xMin;
 		this.rect.height = yMax-yMin;
+		
+		this.coordinates = this.rect.getVertices();
+		this.x=this.point.x,this.y=this.point.y;
 	};
 	
 	
@@ -131,6 +134,7 @@
 	 * @override
 	 */
 	Ycc.UI.Ellipse.prototype.renderDashBeforeUI=function (ctx) {
+		if(!this.isShowRotateBeforeUI || this.coordinates.length===0) return;
 		var width = this.width,
 			rotateAngle=this.angle,
 			height=this.height;
