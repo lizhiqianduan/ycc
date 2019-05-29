@@ -5684,9 +5684,6 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 	 */
 	Ycc.UI.Polygon.prototype.getAbsolutePositionRect = function () {
 		if(!this.coordinates[0]) return console.log(new Ycc.Debugger.Error('need compute prop coordinates').message);
-
-		var rect = new Ycc.Math.Rect();
-		var pos = this.getAbsolutePosition();
 		
 		var start = this.coordinates[0];
 		var minx=start.x,miny=start.y,maxx=start.x,maxy=start.y;
@@ -5698,12 +5695,9 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 			if(dot.y<miny) miny=dot.y;
 			if(dot.y>=maxy) maxy=dot.y;
 		}
-		rect.x=minx+pos.x;
-		rect.y=miny+pos.y;
-		rect.width=maxx-minx;
-		rect.height=maxy-miny;
-		// console.log(minx,miny,maxx,maxy);
-		return rect;
+		
+		var posAbsolute = this.transformToAbsolute({x:minx,y:miny});
+		return new Ycc.Math.Rect(posAbsolute.x,posAbsolute.y,maxx-minx,maxy-miny);
 	};
 	
 	
