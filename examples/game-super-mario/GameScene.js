@@ -378,7 +378,7 @@ GameScene.prototype.updateMarioBodyVerticesByMarioRect = function () {
 	temp.x+=6;
 	temp.width-=16;
 	// 赋值刚体高、宽
-	Matter.Body.setVertices(this.getMatterBodyFromUI(this.mario),temp.getVertices());
+	Matter.Body.setVertices(this.getMatterBodyFromUI(this.mario),temp.getVertices().slice(0,4));
 	temp=null;
 };
 
