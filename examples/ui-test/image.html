@@ -103,7 +103,21 @@
 				console.log(e);
 			}
 		});
-
+		pa.addChild(new Ycc.UI.Image({
+			name:"parent",
+			fill:true,
+			fillStyle:'blue',
+			rect:new Ycc.Math.Rect(120,120,50,50),
+			isShowRotateBeforeUI:true,
+			res:imgs.logo,
+			color:'blue',
+//			anchorX:120,
+//			anchorY:120,
+//			rotation:45,
+			ontap:function (e) {
+				console.log(e);
+			}
+		}));
 		layer.addUI(pa);
 		ycc.layerManager.reRenderAllLayerToStage();
 
