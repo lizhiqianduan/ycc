@@ -93,6 +93,7 @@
 			this.rect.height = this.res.height;
 		}
 		this.coordinates = this.rect.getVertices();
+		this.x = this.rect.x,this.y=this.rect.y;
 	};
 	
 	/**
@@ -121,12 +122,19 @@
 	 */
 	Ycc.UI.Image.prototype.render = function () {
 		this.ctx.save();
-		this.scaleAndRotate();
+		// this.scaleAndRotate();
 		
-		var rect = this.getAbsolutePosition();//this.rect;
+		var rect = this.getAbsolutePositionRect();//this.rect;
 		var img = this.res;
 		// 局部变量
 		var i,j,wCount,hCount,xRest,yRest;
+		
+
+		// 坐标系旋转
+		var absoluteAnchor = this.transformToAbsolute({x:this.anchorX,y:this.anchorY});
+		this.ctx.translate(absoluteAnchor.x,absoluteAnchor.y);
+		this.ctx.rotate(this.rotation*Math.PI/180);
+		this.ctx.translate(-absoluteAnchor.x,-absoluteAnchor.y);
 		
 		this._processMirror(rect);
 		if(this.fillMode === "none")
