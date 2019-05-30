@@ -6604,11 +6604,17 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 			
 			
 			// 计算多边形坐标
-			this.coordinates= this.rect.getVertices();
-			// 计算相对位置
-			this.x=this.rect.x,this.y=this.rect.y;
-
+			// 计算多边形坐标
+			this.coordinates=[
+				{x:cx1,y:cy1},
+				{x:cx2,y:cy2},
+				{x:cx3,y:cy3},
+				{x:cx4,y:cy4},
+				{x:cx1,y:cy1},
+			];
 		}
+		// 计算相对位置
+		this.x=this.start.x,this.y=this.start.y;
 	};
 	/**
 	 * 绘制函数与Polygon相同
@@ -6703,8 +6709,11 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 		this.rect.width = maxx-minx;
 		this.rect.height = maxy-miny;
 		
-		// 计算容纳区的顶点坐标
-		this.coordinates=this.rect.getVertices();
+		// 计算多边形坐标
+		this.coordinates= this.rect.getVertices();
+		// 计算相对位置
+		this.x=this.rect.x,this.y=this.rect.y;
+
 	};
 	/**
 	 * 绘制

@@ -2370,7 +2370,7 @@ function loadRes(cb){
 
 function projectInit(levelName) {
 	
-	ycc.ticker.start(50);
+	ycc.ticker.start(60);
 	engine = Matter.Engine.create();
 	Matter.Engine.run(engine);
 	currentScene = new GameScene(levelName);
