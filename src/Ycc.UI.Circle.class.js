@@ -47,6 +47,11 @@
 			y=this.point.y,
 			r=this.r;
 		this.rect = new Ycc.Math.Rect(x-r,y-r,2*r,2*r);
+		// 计算多边形坐标
+		this.coordinates= this.rect.getVertices();
+		// 计算相对位置
+		this.x=this.point.x,this.y=this.point.y;
+		
 	};
 	
 	

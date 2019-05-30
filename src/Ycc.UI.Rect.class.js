@@ -46,13 +46,9 @@
 	 */
 	Ycc.UI.Rect.prototype.computeUIProps = function () {
 		// 计算多边形坐标
-		this.coordinates=[
-			{x:this.rect.x,y:this.rect.y},
-			{x:this.rect.x+this.rect.width,y:this.rect.y},
-			{x:this.rect.x+this.rect.width,y:this.rect.y+this.rect.height},
-			{x:this.rect.x,y:this.rect.y+this.rect.height},
-			{x:this.rect.x,y:this.rect.y},
-		];
+		this.coordinates = this.rect.getVertices();
+		// 赋值位置信息
+		this.x = this.rect.x,this.y=this.rect.y;
 	};
 	
 	

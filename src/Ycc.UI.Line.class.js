@@ -70,13 +70,10 @@
 			
 			
 			// 计算多边形坐标
-			this.coordinates=[
-				{x:cx1,y:cy1},
-				{x:cx2,y:cy2},
-				{x:cx3,y:cy3},
-				{x:cx4,y:cy4},
-				{x:cx1,y:cy1},
-			];
+			this.coordinates= this.rect.getVertices();
+			// 计算相对位置
+			this.x=this.rect.x,this.y=this.rect.y;
+
 		}
 	};
 	/**

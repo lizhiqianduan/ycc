@@ -84,9 +84,11 @@
 			config.rect.height = config.lineHeight*this.displayLines.length;
 		}
 		
-		// 计算多边形顶点坐标
+		// 计算多边形坐标
 		this.coordinates= this.rect.getVertices();
-		
+		// 计算相对位置
+		this.x=this.rect.x,this.y=this.rect.y;
+
 		/**
 		 * 获取需要实际绘制的文本行数组
 		 */

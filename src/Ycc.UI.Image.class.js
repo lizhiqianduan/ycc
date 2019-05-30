@@ -92,8 +92,11 @@
 			this.rect.width = this.res.width;
 			this.rect.height = this.res.height;
 		}
-		this.coordinates = this.rect.getVertices();
-		this.x = this.rect.x,this.y=this.rect.y;
+		// 计算多边形坐标
+		this.coordinates= this.rect.getVertices();
+		// 计算相对位置
+		this.x=this.rect.x,this.y=this.rect.y;
+
 	};
 	
 	/**

@@ -103,7 +103,12 @@
 				console.log(e);
 			}
 		});
-		pa.addChild(new Ycc.UI.Image({
+		var rect = new Ycc.UI.Rect({
+			rect:new Ycc.Math.Rect(100,100,50,50),
+			color:'red',
+			fill:true
+		});
+		rect.addChild(new Ycc.UI.Image({
 			name:"parent",
 			fill:true,
 			fillStyle:'blue',
@@ -119,6 +124,7 @@
 			}
 		}));
 		layer.addUI(pa);
+		layer.addUI(rect);
 		ycc.layerManager.reRenderAllLayerToStage();
 
 		this.ui = pa;

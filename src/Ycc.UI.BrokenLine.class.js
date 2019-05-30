@@ -67,8 +67,11 @@
 		this.rect.width = maxx-minx;
 		this.rect.height = maxy-miny;
 		
-		// 计算容纳区的顶点坐标
-		this.coordinates=this.rect.getVertices();
+		// 计算多边形坐标
+		this.coordinates= this.rect.getVertices();
+		// 计算相对位置
+		this.x=this.rect.x,this.y=this.rect.y;
+
 	};
 	/**
 	 * 绘制

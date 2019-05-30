@@ -5879,8 +5879,11 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 		this.rect.width = xMax-xMin;
 		this.rect.height = yMax-yMin;
 		
-		this.coordinates = this.rect.getVertices();
+		// 计算多边形坐标
+		this.coordinates= this.rect.getVertices();
+		// 计算相对位置
 		this.x=this.point.x,this.y=this.point.y;
+
 	};
 	
 	
@@ -6015,6 +6018,11 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 			y=this.point.y,
 			r=this.r;
 		this.rect = new Ycc.Math.Rect(x-r,y-r,2*r,2*r);
+		// 计算多边形坐标
+		this.coordinates= this.rect.getVertices();
+		// 计算相对位置
+		this.x=this.point.x,this.y=this.point.y;
+		
 	};
 	
 	
@@ -6182,8 +6190,11 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 			this.rect.width = this.res.width;
 			this.rect.height = this.res.height;
 		}
-		this.coordinates = this.rect.getVertices();
-		this.x = this.rect.x,this.y=this.rect.y;
+		// 计算多边形坐标
+		this.coordinates= this.rect.getVertices();
+		// 计算相对位置
+		this.x=this.rect.x,this.y=this.rect.y;
+
 	};
 	
 	/**
@@ -6593,13 +6604,10 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 			
 			
 			// 计算多边形坐标
-			this.coordinates=[
-				{x:cx1,y:cy1},
-				{x:cx2,y:cy2},
-				{x:cx3,y:cy3},
-				{x:cx4,y:cy4},
-				{x:cx1,y:cy1},
-			];
+			this.coordinates= this.rect.getVertices();
+			// 计算相对位置
+			this.x=this.rect.x,this.y=this.rect.y;
+
 		}
 	};
 	/**
@@ -6942,9 +6950,11 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 			config.rect.height = config.lineHeight*this.displayLines.length;
 		}
 		
-		// 计算多边形顶点坐标
+		// 计算多边形坐标
 		this.coordinates= this.rect.getVertices();
-		
+		// 计算相对位置
+		this.x=this.rect.x,this.y=this.rect.y;
+
 		/**
 		 * 获取需要实际绘制的文本行数组
 		 */
@@ -7157,13 +7167,9 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 	 */
 	Ycc.UI.Rect.prototype.computeUIProps = function () {
 		// 计算多边形坐标
-		this.coordinates=[
-			{x:this.rect.x,y:this.rect.y},
-			{x:this.rect.x+this.rect.width,y:this.rect.y},
-			{x:this.rect.x+this.rect.width,y:this.rect.y+this.rect.height},
-			{x:this.rect.x,y:this.rect.y+this.rect.height},
-			{x:this.rect.x,y:this.rect.y},
-		];
+		this.coordinates = this.rect.getVertices();
+		// 赋值位置信息
+		this.x = this.rect.x,this.y=this.rect.y;
 	};
 	
 	
@@ -7384,9 +7390,11 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 			tempW += ui.rect.width+1;
 		}
 		
-		// 计算顶点坐标
-		this.coordinates = this.rect.getVertices();
-		
+		// 计算多边形坐标
+		this.coordinates= this.rect.getVertices();
+		// 计算相对位置
+		this.x=this.rect.x,this.y=this.rect.y;
+
 	};
 	
 	/**
