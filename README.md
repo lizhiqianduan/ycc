@@ -73,7 +73,7 @@ ycc.layerManager.reRenderAllLayerToStage();
 
 1、UI在舞台的真实属性，只能先绘制后再获取。
 
-2、所有UI都必须继承多边形类Polygon，而Polygon类继承自基类Base（v0.2及其之前的版本全都继承自Base，改版进行中），必要时UI可以覆盖父类的方法。
+2、所有UI都必须继承多边形类Polygon，而Polygon类继承自基类Base（v0.0.2及其之前的版本全都继承自Base），必要时UI可以覆盖父类的方法。
 
 3、UI的x,y坐标表示UI的位置，但其值为相对坐标，相对于UI的父级，可以通过方法获取其绝对坐标。
 
