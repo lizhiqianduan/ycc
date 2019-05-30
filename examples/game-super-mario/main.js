@@ -5,7 +5,7 @@
  * @description  main文件
  */
 
-if(!Ycc.utils.isMobile()){
+if(!window.Ycc.utils.isMobile()){
 	document.body.innerHTML='<img src="./images/qr.png"/>';
 	throw new Error('PC端请扫码进入！');
 }

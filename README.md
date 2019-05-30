@@ -79,6 +79,40 @@ ycc.layerManager.reRenderAllLayerToStage();
 
 4、UI的锚点坐标也是相对位置，同样也是相对于UI的父级。
 
+#### 常用命令
+
+##### 安装依赖
+```
+npm install
+```
+下载源码后，首先需要安装依赖，否则后续命令将会报错。
+##### 启动源码监听
+```
+npm start
+```
+命令将监听src目录下的源码变化，并自动构建至build目录。
+##### 打开示例
+```
+npm run example
+```
+命令会启动一个服务，监听7777端口，并自动打开浏览器访问示例。
+##### 编译源码
+```
+npm run build
+```
+命令将编译src目录下的源码，并构建至build目录。
+##### 构建API文档
+```
+npm run doc
+```
+命令将生成API文档，存入项目的docs目录。
+##### 构建微信小游戏-超级玛丽
+```
+npm run build:game_super_mario
+```
+命令将为微信端生成一个小游戏至目录`/examples/wx-minigame/examples/game-super-mario`。
+
+wx-minigame目录可以直接使用微信开发者工具打开、调试、构建、预览、绑定账号、上传等操作。
 
 #### 示例
 

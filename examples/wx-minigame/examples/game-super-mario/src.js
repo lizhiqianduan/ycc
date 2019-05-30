@@ -1380,8 +1380,8 @@ GameScene.prototype.update = function () {
 			res:images.bucket,
 			fillMode:'scale',
 			name:'bucket',
-			anchorX:bucketWidth/2,
-			anchorY:bucketHeight/2,
+			anchorX:startX+bucketWidth/2,
+			anchorY:stageH-height-bucketHeight+bucketHeight/2,
 			rotation:[0,0,90,180,270][direction||1]
 		});
 		this.layer.addUI(image);
@@ -1820,7 +1820,7 @@ GameScene.prototype.update = function () {
 		btn.addChild(new Ycc.UI.Line({
 			start:new Ycc.Math.Dot(5,5),
 			end:new Ycc.Math.Dot(25,25),
-			width:5,
+			width:3,
 			color:'#ccc',
 			ontap:function (e) {
 				if(audios.bgm.running)
@@ -2204,7 +2204,7 @@ GameScene.prototype.update = function () {
  * @description  main文件
  */
 
-if(!Ycc.utils.isMobile()){
+if(!window.Ycc.utils.isMobile()){
 	document.body.innerHTML='<img src="./images/qr.png"/>';
 	throw new Error('PC端请扫码进入！');
 }
