@@ -81,6 +81,8 @@
 		}
 		// 计算相对位置
 		this.x=this.start.x,this.y=this.start.y;
+		this.strokeStyle = this.color;
+		this.fillStyle = this.color;
 	};
 	/**
 	 * 绘制函数与Polygon相同

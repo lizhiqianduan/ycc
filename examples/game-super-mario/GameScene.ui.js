@@ -913,7 +913,7 @@
 		btn.addChild(new Ycc.UI.Line({
 			start:new Ycc.Math.Dot(5,5),
 			end:new Ycc.Math.Dot(25,25),
-			width:5,
+			width:3,
 			color:'#ccc',
 			ontap:function (e) {
 				if(audios.bgm.running)
