@@ -15,10 +15,10 @@
 	 * @param option.rect	{Ycc.Math.Rect}	容纳区。会根据属性设置动态修改。
 	 * @param option.fill=true {boolean}	填充or描边
 	 * @constructor
-	 * @extends Ycc.UI.Base
+	 * @extends Ycc.UI.Polygon
 	 */
 	Ycc.UI.CropRect = function CropRect(option) {
-		Ycc.UI.Base.call(this,option);
+		Ycc.UI.Polygon.call(this,option);
 		this.yccClass = Ycc.UI.CropRect;
 		
 		/**
@@ -89,7 +89,7 @@
 		this._initUI();
 	};
 	// 继承prototype
-	Ycc.utils.mergeObject(Ycc.UI.CropRect.prototype,Ycc.UI.Base.prototype);
+	Ycc.utils.mergeObject(Ycc.UI.CropRect.prototype,Ycc.UI.Polygon.prototype);
 	
 	
 	/**
@@ -121,7 +121,7 @@
 					content:"",
 					rectBgColor:"#666",
 					color:"#fff",
-					onclick:function () {}
+					ontap:function () {}
 				},config);
 				var btn = new Ycc.UI.SingleLineText(config);
 				btn.addListener("mouseover",function () {
@@ -192,9 +192,11 @@
 			tempW += ui.rect.width+1;
 		}
 		
-		
-		
-		
+		// 计算多边形坐标
+		this.coordinates= this.rect.getVertices();
+		// 计算相对位置
+		this.x=this.rect.x,this.y=this.rect.y;
+
 	};
 	
 	/**
@@ -210,6 +212,7 @@
 		
 		this.userData = this.userData?this.userData:{};
 		this.addListener("dragstart",function (e) {
+			console.log('dragstart',e);
 			// self.showBtns(false);
 			// 标识第几个变换控制点
 			this.userData.ctrlStart = 0;

@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>图片Image测试示例</title>
+	<link rel="stylesheet" href="../style.css">
+	<meta name=viewport content="width=device-width,initial-scale=1,user-scalable=0,viewport-fit=cover">
+</head>
+<body>
+<div class="tip">
+	<h3>示例说明：</h3>
+	<div>
+		1、这个示例展示系统的图片UI。<br>
+		2、图一Image经过了旋转，其旋转中心通过anchorX、anchorY设置<br>
+		3、图二Image使用了repeat模式，并且通过mirror参数将图片进行了镜像<br>
+		4、虚线标注了UI旋转、平移之前的位置。<br>
+	</div>
+	<br><br>
+</div>
+
+<div id="canvas"></div>
+
+
+</body>
+</html>
+
+<script src="http://localhost:9000/livereload.js"></script>
+<script src="../common.js"></script>
+<script src="../../build/ycc.js"></script>
+
+<script>
+
+
+	function Scene() {
+		this.ycc = null;
+		this.layer = null;
+		this.imgs = null;
+		this._onReadyCb=null;
+
+
+		this.ui=null;
+
+
+
+		this.init();
+	}
+
+
+	Scene.prototype.init = function () {
+		var self = this;
+		var canvas = document.createElement("canvas");
+		canvas.width = 300;
+		canvas.height = 400;
+		canvas.style.margin='10px';
+		document.getElementById("canvas").appendChild(canvas);
+		var ycc = new Ycc();
+		ycc.bindCanvas(canvas);
+		// 新建图层
+		this.layer = ycc.layerManager.newLayer({enableEventManager:true});
+		this.ycc = ycc;
+
+		ycc.loader.loadResParallel([{
+			name:'logo',url:'./img/logo.jpg'
+		}],function (list, map) {
+			self.imgs = map;
+			self._onReadyCb&&self._onReadyCb();
+		});
+	};
+
+
+	Scene.prototype.onReady = function (cb) {
+		this._onReadyCb=cb;
+		return this;
+	};
+
+
+	new Scene().onReady(onSceneReady);
+
+	new Scene().onReady(onSceneReady2);
+
+
+
+
+
+
+
+	function onSceneReady() {
+		var ycc = this.ycc;
+		var layer = this.layer;
+		var imgs = this.imgs;
+		var pa = new Ycc.UI.Image({
+			name:"parent",
+			fill:true,
+			fillStyle:'blue',
+			rect:new Ycc.Math.Rect(20,20,50,50),
+			isShowRotateBeforeUI:true,
+			res:imgs.logo,
+			color:'blue',
+			anchorX:20,
+			anchorY:20,
+			rotation:45,
+			ontap:function (e) {
+				console.log(e);
+			}
+		});
+		var rect = new Ycc.UI.Rect({
+			rect:new Ycc.Math.Rect(100,100,50,50),
+			color:'red',
+			fill:true
+		});
+		rect.addChild(new Ycc.UI.Image({
+			name:"parent",
+			fill:true,
+			fillStyle:'blue',
+			rect:new Ycc.Math.Rect(120,120,50,50),
+			isShowRotateBeforeUI:true,
+			res:imgs.logo,
+			color:'blue',
+//			anchorX:120,
+//			anchorY:120,
+//			rotation:45,
+			ontap:function (e) {
+				console.log(e);
+			}
+		}));
+		layer.addUI(pa);
+		layer.addUI(rect);
+		ycc.layerManager.reRenderAllLayerToStage();
+
+		this.ui = pa;
+	}
+
+	function onSceneReady2() {
+		var ycc = this.ycc;
+		var layer = this.layer;
+		var imgs = this.imgs;
+		var pa = new Ycc.UI.Image({
+			name:"parent",
+			fill:true,
+			fillStyle:'blue',
+			rect:new Ycc.Math.Rect(20,20,250,250),
+			isShowRotateBeforeUI:true,
+			res:imgs.logo,
+			fillMode:'repeat',
+			mirror:1,
+			color:'blue',
+			anchorX:20,
+			anchorY:20,
+			rotation:45,
+			ontap:function (e) {
+				console.log(e);
+			}
+		});
+
+		layer.addUI(pa);
+		ycc.layerManager.reRenderAllLayerToStage();
+
+		this.ui = pa;
+	}
+
+</script>

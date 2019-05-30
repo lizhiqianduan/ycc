@@ -29,10 +29,10 @@
 	 * 		<br> 3		--		上下左右颠倒
 	 * @param option.scale9GridRect	{Ycc.Math.Rect}	9宫格相对于res图片的中间区域，当且仅当fillMode为scale9Grid有效。
 	 * @constructor
-	 * @extends Ycc.UI.Base
+	 * @extends Ycc.UI.Polygon
 	 */
 	Ycc.UI.Image = function Image(option) {
-		Ycc.UI.Base.call(this,option);
+		Ycc.UI.Polygon.call(this,option);
 		this.yccClass = Ycc.UI.Image;
 		
 		/**
@@ -78,7 +78,7 @@
 		this.extend(option);
 	};
 	// 继承prototype
-	Ycc.utils.mergeObject(Ycc.UI.Image.prototype,Ycc.UI.Base.prototype);
+	Ycc.utils.mergeObject(Ycc.UI.Image.prototype,Ycc.UI.Polygon.prototype);
 	Ycc.UI.Image.prototype.constructor = Ycc.UI.Image;
 	
 	
@@ -92,6 +92,11 @@
 			this.rect.width = this.res.width;
 			this.rect.height = this.res.height;
 		}
+		// 计算多边形坐标
+		this.coordinates= this.rect.getVertices();
+		// 计算相对位置
+		this.x=this.rect.x,this.y=this.rect.y;
+
 	};
 	
 	/**
@@ -120,12 +125,19 @@
 	 */
 	Ycc.UI.Image.prototype.render = function () {
 		this.ctx.save();
-		this.scaleAndRotate();
+		// this.scaleAndRotate();
 		
-		var rect = this.getAbsolutePosition();//this.rect;
+		var rect = this.getAbsolutePositionRect();//this.rect;
 		var img = this.res;
 		// 局部变量
 		var i,j,wCount,hCount,xRest,yRest;
+		
+
+		// 坐标系旋转
+		var absoluteAnchor = this.transformToAbsolute({x:this.anchorX,y:this.anchorY});
+		this.ctx.translate(absoluteAnchor.x,absoluteAnchor.y);
+		this.ctx.rotate(this.rotation*Math.PI/180);
+		this.ctx.translate(-absoluteAnchor.x,-absoluteAnchor.y);
 		
 		this._processMirror(rect);
 		if(this.fillMode === "none")

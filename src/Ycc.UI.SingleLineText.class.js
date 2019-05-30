@@ -17,7 +17,7 @@
 	 * @param option	{object}		所有可配置的配置项
 	 * @param option.content=""	{string}	内容
 	 * @param option.color=black	{string}	颜色
-	 * @param option.rect	{Ycc.Math.Rect}	容纳区。会根据属性设置动态修改。
+	 * @param option.rect	{Ycc.Math.Rect}	容纳区。会根据属性设置动态修改。位置坐标x,y为rect的x,y
 	 * @param option.overflow=auto	{string}	水平方向超出rect之后的显示方式
 	 * 		<br> `hidden` -- 直接隐藏
 	 * 		<br> `auto`	-- 修改rect大小，完全显示
@@ -25,7 +25,7 @@
 	 */
 
 	Ycc.UI.SingleLineText = function SingleLineText(option) {
-		Ycc.UI.Base.call(this,option);
+		Ycc.UI.Polygon.call(this,option);
 		this.yccClass = Ycc.UI.SingleLineText;
 		
 		/**
@@ -80,7 +80,7 @@
 	};
 
 	// 继承prototype
-	Ycc.utils.mergeObject(Ycc.UI.SingleLineText.prototype,Ycc.UI.Base.prototype);
+	Ycc.utils.mergeObject(Ycc.UI.SingleLineText.prototype,Ycc.UI.Polygon.prototype);
 	Ycc.UI.SingleLineText.prototype.constructor = Ycc.UI.SingleLineText;
 	
 	
@@ -119,8 +119,12 @@
 			if(parseInt(this.fontSize)>this.rect.height){
 				this.rect.height = parseInt(this.fontSize);
 			}
-			
 		}
+		
+		// 计算多边形坐标
+		this.coordinates= this.rect.getVertices();
+		// 计算相对位置
+		this.x=this.rect.x,this.y=this.rect.y;
 	};
 	/**
 	 * 渲染至ctx
@@ -128,7 +132,6 @@
 	 */
 	Ycc.UI.SingleLineText.prototype.render = function (ctx) {
 		var self = this;
-		
 		// 设置画布属性再计算，否则计算内容长度会有偏差
 		self.belongTo._setCtxProps(self);
 
@@ -148,7 +151,7 @@
 		// 配置项
 		var option = this;
 		// 绝对坐标
-		var rect = this.getAbsolutePosition();
+		var rect = this.getAbsolutePositionRect();
 		x = rect.x;
 		
 		var textWidth = this.ctx.measureText(this.displayContent).width;
@@ -170,6 +173,13 @@
 		}
 		
 		this.ctx.save();
+		// this.scaleAndRotate();
+		// 坐标系旋转
+		var absoluteAnchor = this.transformToAbsolute({x:this.anchorX,y:this.anchorY});
+		this.ctx.translate(absoluteAnchor.x,absoluteAnchor.y);
+		this.ctx.rotate(this.rotation*Math.PI/180);
+		this.ctx.translate(-absoluteAnchor.x,-absoluteAnchor.y);
+		
 		this.ctx.fillStyle = option.color;
 		this.ctx.strokeStyle = option.color;
 		// this.baseUI.text([x,y],self.displayContent,option.fill);

@@ -18,16 +18,24 @@
 	 * @param option.point {Ycc.Math.Dot} 圆心位置
 	 * @param option.width=20 {number} 长轴
 	 * @param option.height=10 {number} 短轴
+	 * @param option.angle=0	{number} 椭圆绕其中心的自转角度
+	 * 		注：通过rotation设置的旋转角度只会旋转椭圆的中心点，此处的angle是将椭圆本身围绕中心点旋转。
+	 * 		此处的理解，可以结合地球绕太阳旋转，angle表示自转角度，rotation表示公转角度。
 	 * @constructor
-	 * @extends Ycc.UI.Base
+	 * @extends Ycc.UI.Polygon
 	 */
 	Ycc.UI.Ellipse = function Ellipse(option) {
-		Ycc.UI.Base.call(this,option);
+		Ycc.UI.Polygon.call(this,option);
 		this.yccClass = Ycc.UI.Ellipse;
 		
 		this.point = new Ycc.Math.Dot();
 		this.width = 20;
 		this.height = 10;
+		
+		/**
+		 * 椭圆自转角度
+		 * @type {number}
+		 */
 		this.angle = 0;
 		
 		// centrePoint,width,height,rotateAngle,fill
@@ -38,7 +46,7 @@
 		this.extend(option);
 	};
 	// 继承prototype
-	Ycc.utils.mergeObject(Ycc.UI.Ellipse.prototype,Ycc.UI.Base.prototype);
+	Ycc.utils.mergeObject(Ycc.UI.Ellipse.prototype,Ycc.UI.Polygon.prototype);
 	Ycc.UI.Ellipse.prototype.constructor = Ycc.UI.Ellipse;
 	
 	
@@ -47,7 +55,6 @@
 	 * 计算UI的各种属性。此操作必须在绘制之前调用。
 	 * <br> 计算与绘制分离的好处是，在绘制UI之前就可以提前确定元素的各种信息，从而判断是否需要绘制。
 	 * @override
-	 * @todo 计算容纳区域
 	 */
 	Ycc.UI.Ellipse.prototype.computeUIProps = function () {
 		var x=this.point.x,
@@ -65,6 +72,12 @@
 		this.rect.y = yMin;
 		this.rect.width = xMax-xMin;
 		this.rect.height = yMax-yMin;
+		
+		// 计算多边形坐标
+		this.coordinates= this.rect.getVertices();
+		// 计算相对位置
+		this.x=this.point.x,this.y=this.point.y;
+
 	};
 	
 	
@@ -77,8 +90,7 @@
 			rotateAngle=this.angle,
 			height=this.height;
 		
-		var pa = this.getParent();
-		var point = pa?pa.transformToAbsolute(this.point):this.point;
+		var point = this.transformByRotate(this.point);
 		
 		this.ctx.save();
 		var r = (width > height) ? width : height;
@@ -101,12 +113,54 @@
 			this.ctx.stroke();
 		else
 			this.ctx.fill();
-		
+			
 		this.ctx.restore();
 	};
 	
 	
+	/**
+	 * 判断是否在椭圆内
+	 * @param dot	绝对坐标
+	 * @param noneZeroMode
+	 * @override
+	 */
+	Ycc.UI.Ellipse.prototype.containDot = function (dot,noneZeroMode) {
+		var point = this.transformByRotate(this.point);
+		// 椭圆自转角度
+		dot = new Ycc.Math.Dot(dot).rotate(-this.angle,point);
+		return Math.pow((dot.x-point.x)/this.width*2,2)+Math.pow((dot.y-point.y)/this.height*2,2)<=1;
+	};
 	
-	
+	/**
+	 * 渲染旋转平移之前的位置
+	 * @param ctx
+	 * @override
+	 */
+	Ycc.UI.Ellipse.prototype.renderDashBeforeUI=function (ctx) {
+		if(!this.isShowRotateBeforeUI || this.coordinates.length===0) return;
+		var width = this.width,
+			rotateAngle=this.angle,
+			height=this.height;
+		
+		var pa = this.getParent();
+		var point = pa?pa.transformToAbsolute(this.point):this.point;
+		
+		this.ctx.save();
+		var r = (width > height) ? width : height;
+		// 计算压缩比例
+		var ratioX = width / r;
+		var ratioY = height / r;
+		this.ctx.scale(ratioX, ratioY);
+		this.ctx.beginPath();
+		this.ctx.arc(point.x / ratioX,  point.y/ ratioY, r/2, 0, 2 * Math.PI, false);
+		this.ctx.closePath();
+		
+		this.ctx.strokeStyle = this.color;
+		this.ctx.setLineDash([10]);
+
+		this.ctx.stroke();
+		
+		this.ctx.restore();
+	}
 	
 })(Ycc);

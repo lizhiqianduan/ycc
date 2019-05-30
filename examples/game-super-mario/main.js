@@ -5,7 +5,7 @@
  * @description  main文件
  */
 
-if(!Ycc.utils.isMobile()){
+if(!window.Ycc.utils.isMobile()){
 	document.body.innerHTML='<img src="./images/qr.png"/>';
 	throw new Error('PC端请扫码进入！');
 }
@@ -78,7 +78,7 @@ function createYcc() {
 	ycc.debugger.addField('update时间',function () {return t3-t2;});
 	ycc.debugger.addField('debug时间',function () {return t4-t3;});
 	ycc.debugger.addField('自定义',function () {return __log;});
-	// ycc.debugger.showDebugPanel();
+	ycc.debugger.showDebugPanel();
 
 
 

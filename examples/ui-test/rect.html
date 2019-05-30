@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>方块Rect测试示例</title>
+	<link rel="stylesheet" href="../style.css">
+	<meta name=viewport content="width=device-width,initial-scale=1,user-scalable=0,viewport-fit=cover">
+</head>
+<body>
+<div class="tip">
+	<h3>示例说明：</h3>
+	<div>
+		1、这个示例展示系统的方块UI。<br>
+		2、蓝色方块经过了旋转，其旋转中心通过anchorX、anchorY。<br>
+		3、UI的x、y值可以理解为UI的偏移量，虚线标注了UI旋转、平移之前的位置。<br>
+	</div>
+	<br><br>
+</div>
+
+<div id="canvas"></div>
+
+
+</body>
+</html>
+
+<script src="http://localhost:9000/livereload.js"></script>
+<script src="../common.js"></script>
+<script src="../../build/ycc.js"></script>
+
+<script>
+	var canvas = document.createElement("canvas");
+	canvas.width = 300;
+	canvas.height = 400;
+	document.getElementById("canvas").appendChild(canvas);
+	var ycc = new Ycc();
+	ycc.bindCanvas(canvas);
+
+	// 新建图层
+	var layer = ycc.layerManager.newLayer({enableEventManager:true});
+	var pa = new Ycc.UI.Rect({
+		name:"parent",
+		fill:true,
+		fillStyle:'blue',
+		isDrawIndex:true,
+		isShowRotateBeforeUI:true,
+		x:20,
+		y:20,
+		color:'red',
+		rect:new Ycc.Math.Rect(20,20,100,80),
+
+		ontap:function (e) {
+			console.log(e);
+		}
+	});
+
+	pa.addChild(new Ycc.UI.Rect({
+		name:"son",
+		fill:true,
+		fillStyle:'yellow',
+		isDrawIndex:true,
+		isShowRotateBeforeUI:true,
+		x:10,
+		y:10,
+		color:'blue',
+		anchorX:100,
+		anchorY:120,
+		rotation:45,
+		rect:new Ycc.Math.Rect(100,120,50,80),
+
+		ontap:function (e) {
+			console.log(e);
+		}
+	}));
+	layer.addUI(pa);
+
+	ycc.layerManager.reRenderAllLayerToStage();
+
+
+	layer.ontap = function (e) {
+		console.log('layer -> ',e);
+	};
+
+</script>

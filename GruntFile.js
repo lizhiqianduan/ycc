@@ -35,6 +35,7 @@ module.exports = function(grunt){
 					'src/Ycc.UI.Base.class.js',
 			
 					// ui
+					'src/Ycc.UI.Polygon.class.js',
 					'src/Ycc.UI.Ellipse.class.js',
 					'src/Ycc.UI.Circle.class.js',
 					'src/Ycc.UI.Image.class.js',

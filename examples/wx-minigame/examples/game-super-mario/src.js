@@ -424,7 +424,7 @@ GameScene.prototype.updateMarioBodyVerticesByMarioRect = function () {
 	temp.x+=6;
 	temp.width-=16;
 	// 赋值刚体高、宽
-	Matter.Body.setVertices(this.getMatterBodyFromUI(this.mario),temp.getVertices());
+	Matter.Body.setVertices(this.getMatterBodyFromUI(this.mario),temp.getVertices().slice(0,4));
 	temp=null;
 };
 
@@ -1380,8 +1380,8 @@ GameScene.prototype.update = function () {
 			res:images.bucket,
 			fillMode:'scale',
 			name:'bucket',
-			anchorX:bucketWidth/2,
-			anchorY:bucketHeight/2,
+			anchorX:startX+bucketWidth/2,
+			anchorY:stageH-height-bucketHeight+bucketHeight/2,
 			rotation:[0,0,90,180,270][direction||1]
 		});
 		this.layer.addUI(image);
@@ -1582,8 +1582,8 @@ GameScene.prototype.update = function () {
 		self.btnLayer.addUI(new Ycc.UI.Image({
 			rect:new Ycc.Math.Rect(marginLeft,stageH-(2*btnSize+btnSpace+marginBottom),btnSize,btnSize),
 			fillMode:'scale',
-			anchorX:btnSize/2,
-			anchorY:btnSize/2,
+			anchorX:marginLeft+btnSize/2,
+			anchorY:stageH-(2*btnSize+btnSpace+marginBottom)+btnSize/2,
 			res:images.btn,
 			rotation:180,
 			ondragstart:function (e) {
@@ -1632,8 +1632,8 @@ GameScene.prototype.update = function () {
 		self.btnLayer.addUI(new Ycc.UI.Image({
 			rect:new Ycc.Math.Rect(marginLeft+btnSize/2+btnSpace/2,stageH-(btnSize+marginBottom),btnSize,btnSize),
 			fillMode:'scale',
-			anchorX:btnSize/2,
-			anchorY:btnSize/2,
+			anchorX:marginLeft+btnSize/2+btnSpace/2+btnSize/2,
+			anchorY:stageH-(btnSize+marginBottom)+btnSize/2,
 			res:images.btn,
 			rotation:90,
 			ondragstart:function (e) {
@@ -1804,8 +1804,8 @@ GameScene.prototype.update = function () {
 		var self = this;
 		var btn = new Ycc.UI.Image({
 			rect:new Ycc.Math.Rect(stageW-40,10,30,30),
-			anchorX:15,
-			anchorY:15,
+			anchorX:stageW-40+15,
+			anchorY:10+15,
 			fillMode:'scale',
 			res:images.music,
 			name:'musicBtn',
@@ -1820,7 +1820,7 @@ GameScene.prototype.update = function () {
 		btn.addChild(new Ycc.UI.Line({
 			start:new Ycc.Math.Dot(5,5),
 			end:new Ycc.Math.Dot(25,25),
-			width:5,
+			width:3,
 			color:'#ccc',
 			ontap:function (e) {
 				if(audios.bgm.running)
@@ -2204,7 +2204,7 @@ GameScene.prototype.update = function () {
  * @description  main文件
  */
 
-if(!Ycc.utils.isMobile()){
+if(!window.Ycc.utils.isMobile()){
 	document.body.innerHTML='<img src="./images/qr.png"/>';
 	throw new Error('PC端请扫码进入！');
 }
@@ -2277,7 +2277,7 @@ function createYcc() {
 	ycc.debugger.addField('update时间',function () {return t3-t2;});
 	ycc.debugger.addField('debug时间',function () {return t4-t3;});
 	ycc.debugger.addField('自定义',function () {return __log;});
-	// ycc.debugger.showDebugPanel();
+	ycc.debugger.showDebugPanel();
 
 
 

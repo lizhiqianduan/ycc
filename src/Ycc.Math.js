@@ -59,6 +59,56 @@
 		return this.x>=rect.x&&this.x<=rect.x+rect.width  && this.y>=rect.y && this.y<=rect.y+rect.height;
 	};
 	
+	/**
+	 * 判读两点位置是否相同
+	 * @param dot
+	 * @return {boolean}
+	 */
+	Ycc.Math.Dot.prototype.isEqual = function (dot) {
+		return this.x===dot.x && this.y===dot.y;
+	};
+	
+	/**
+	 * 点的加法/点的偏移量
+	 * @param dot {Ycc.Math.Dot} 加的点
+	 * @return {Ycc.Math.Dot} 返回一个新的点
+	 */
+	Ycc.Math.Dot.prototype.plus = function (dot) {
+		return new Ycc.Math.Dot(this.x+dot.x,this.y+dot.y);
+	};
+	
+	/**
+	 * 将当前点绕另外一个点旋转一定度数
+	 * @param rotation	旋转角度
+	 * @param anchorDot	锚点坐标
+	 * @return 旋转后的点
+	 */
+	Ycc.Math.Dot.prototype.rotate = function (rotation,anchorDot) {
+		anchorDot=anchorDot||new Ycc.Math.Dot(0,0);
+		var dotX = this.x,dotY=this.y,anchorX=anchorDot.x,anchorY=anchorDot.y;
+		var dx = (dotX - anchorX)*Math.cos(rotation/180*Math.PI) - (dotY - anchorY)*Math.sin(rotation/180*Math.PI)+anchorX;
+		var dy = (dotY - anchorY)*Math.cos(rotation/180*Math.PI) + (dotX - anchorX)*Math.sin(rotation/180*Math.PI)+anchorY;
+		return new Ycc.Math.Dot(dx,dy);
+	};
+	
+	/**
+	 * 判断三点是否共线
+	 * @param dot1
+	 * @param dot2
+	 * @param dot3
+	 */
+	Ycc.Math.Dot.threeDotIsOnLine = function (dot1,dot2,dot3) {
+		// 存在位置相同点肯定共线
+		if(dot1.isEqual(dot2) || dot1.isEqual(dot3) || dot2.isEqual(dot3))
+			return true;
+		// 三个点x一样
+		if(dot1.x===dot2.x&&dot2.x===dot3.x)
+			return true;
+		var k1 = Math.abs(dot1.y-dot2.y)/Math.abs(dot1.x-dot2.x);
+		var k2 = Math.abs(dot1.y-dot3.y)/Math.abs(dot1.x-dot3.x);
+		return k1===k2;
+	};
+	
 	
 	
 	
@@ -157,9 +207,9 @@
 			new Ycc.Math.Dot(this.x,this.y),
 			new Ycc.Math.Dot(this.x+this.width,this.y),
 			new Ycc.Math.Dot(this.x+this.width,this.y+this.height),
-			new Ycc.Math.Dot(this.x,this.y+this.height)
+			new Ycc.Math.Dot(this.x,this.y+this.height),
+			new Ycc.Math.Dot(this.x,this.y)
 		];
-
 	};
 	
 	/**

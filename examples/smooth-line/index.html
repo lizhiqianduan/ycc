@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>折线平滑</title>
+	<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<div class="return-btn">
+	<a href="../">
+		返回首页
+	</a>
+</div>
+<div class="tip">
+	<h3>示例说明：</h3>
+	<div>
+		1、这个示例展示系统的折线UI。<br>
+		2、折线可以通过设置smooth属性来让折线变为曲线。<br>
+		3、下图白色曲线为平滑后的曲线。<br>
+	</div>
+	<br><br>
+</div>
+
+
+<div id="canvas">
+
+</div>
+
+</body>
+</html>
+
+<script src="http://localhost:9000/livereload.js"></script>
+<script src="../common.js"></script>
+<script src="../../build/ycc.js"></script>
+
+<script>
+
+	var canvas = document.createElement("canvas");
+	canvas.width = 300;
+	canvas.height = 600;
+	document.getElementById("canvas").appendChild(canvas);
+
+
+	var ycc = new Ycc();
+	ycc.bindCanvas(canvas);
+	// 新建图层
+	var layer = ycc.layerManager.newLayer({enableEventManager:true});
+	// 设置UI属性
+	var config,ui;
+
+	var data = [
+		new Ycc.Math.Dot(40,10),
+		new Ycc.Math.Dot(80,30),
+		new Ycc.Math.Dot(120,80),
+		new Ycc.Math.Dot(160,20),
+		new Ycc.Math.Dot(200,230),
+		new Ycc.Math.Dot(240,130),
+		new Ycc.Math.Dot(280,330),
+		new Ycc.Math.Dot(320,120),
+	];
+
+
+	config = {
+		pointList:data,
+		smooth:true,
+		color:'white',
+		rectBgColor:'blue'
+	};
+	ui = new Ycc.UI.BrokenLine(config);
+	layer.addUI(ui);
+
+
+	layer.addUI(new Ycc.UI.BrokenLine({
+		pointList:data,
+		smooth:false,
+		color:'red',
+	}));
+
+
+
+	ycc.layerManager.reRenderAllLayerToStage();
+
+
+
+</script>

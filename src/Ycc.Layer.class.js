@@ -543,7 +543,7 @@
 				if(uiIsShow&&!child.show) return -1;
 
 				// 如果位于rect内，并且层级更深，则暂存，此处根据绝对坐标比较
-				if(dot.isInRect(child.getAbsolutePosition()) && level>=tempLevel){
+				if(child.containDot(dot) && level>=tempLevel){
 					temp = child;
 					tempLevel=level;
 				}

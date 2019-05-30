@@ -16,10 +16,10 @@
 	 * @param option.fill=true {boolean}	填充or描边
 	 * @param option.color=black {string} 方块颜色
 	 * @constructor
-	 * @extends Ycc.UI.Base
+	 * @extends Ycc.UI.Polygon
 	 */
 	Ycc.UI.Rect = function Rect(option) {
-		Ycc.UI.Base.call(this,option);
+		Ycc.UI.Polygon.call(this,option);
 		this.yccClass = Ycc.UI.Rect;
 		
 		/**
@@ -36,26 +36,40 @@
 		this.extend(option);
 	};
 	// 继承prototype
-	Ycc.utils.mergeObject(Ycc.UI.Rect.prototype,Ycc.UI.Base.prototype);
+	Ycc.utils.mergeObject(Ycc.UI.Rect.prototype,Ycc.UI.Polygon.prototype);
+	
+	
+	/**
+	 * 计算UI的各种属性。此操作必须在绘制之前调用。
+	 * <br> 计算与绘制分离的好处是，在绘制UI之前就可以提前确定元素的各种信息，从而判断是否需要绘制。
+	 * @override
+	 */
+	Ycc.UI.Rect.prototype.computeUIProps = function () {
+		// 计算多边形坐标
+		this.coordinates = this.rect.getVertices();
+		// 赋值位置信息
+		this.x = this.rect.x,this.y=this.rect.y;
+	};
+	
 	
 	/**
 	 * 绘制
 	 */
-	Ycc.UI.Rect.prototype.render = function () {
+	Ycc.UI.Rect.prototype.render = function (ctx) {
+		var self = this;
+		ctx = ctx || self.ctx;
+		if(!self.ctx){
+			console.error("[Ycc error]:","ctx is null !");
+			return;
+		}
 		
-		var rect = this.getAbsolutePosition();
-
-		this.ctx.save();
-		this.ctx.beginPath();
-		this.ctx.fillStyle = this.color;
-		this.ctx.strokeStyle = this.color;
-		this.ctx.rect(rect.x,rect.y,rect.width,rect.height);
-		this.ctx.closePath();
-		if(!this.fill)
-			this.ctx.stroke();
-		else
-			this.ctx.fill();
-		this.ctx.restore();
+		
+		ctx.save();
+		ctx.fillStyle = this.color;
+		ctx.strokeStyle = this.color;
+		this.renderPath();
+		this.fill?ctx.fill():ctx.stroke();
+		ctx.restore();
 	};
 	
 	

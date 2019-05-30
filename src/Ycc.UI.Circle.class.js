@@ -15,13 +15,13 @@
 	 * @param option.rect	{Ycc.Math.Rect}	容纳区。会根据属性设置动态修改。
 	 * @param option.fill=true {boolean}	填充or描边
 	 * @param option.color=black {string} 圆的颜色
-	 * @param option.point {Ycc.Math.Dot} 圆心位置
+	 * @param option.point {Ycc.Math.Dot} 圆心位置，相对坐标
 	 * @param option.r=10 {number} 圆的半径
 	 * @constructor
-	 * @extends Ycc.UI.Base
+	 * @extends Ycc.UI.Polygon
 	 */
 	Ycc.UI.Circle = function Circle(option) {
-		Ycc.UI.Base.call(this,option);
+		Ycc.UI.Polygon.call(this,option);
 		this.yccClass = Ycc.UI.Circle;
 		
 		this.point = null;
@@ -32,7 +32,7 @@
 		this.extend(option);
 	};
 	// 继承prototype
-	Ycc.utils.mergeObject(Ycc.UI.Circle.prototype,Ycc.UI.Base.prototype);
+	Ycc.utils.mergeObject(Ycc.UI.Circle.prototype,Ycc.UI.Polygon.prototype);
 	
 	
 	/**
@@ -41,20 +41,28 @@
 	 * @override
 	 */
 	Ycc.UI.Circle.prototype.computeUIProps = function () {
+		if(!this.point) return new Ycc.Debugger.Error('Circle need prop point');
+		
 		var x=this.point.x,
 			y=this.point.y,
 			r=this.r;
 		this.rect = new Ycc.Math.Rect(x-r,y-r,2*r,2*r);
+		// 计算多边形坐标
+		this.coordinates= this.rect.getVertices();
+		// 计算相对位置
+		this.x=this.point.x,this.y=this.point.y;
+		
 	};
 	
 	
 	/**
 	 * 绘制
+	 * @override
 	 */
 	Ycc.UI.Circle.prototype.render = function () {
 		
-		var pa = this.getParent();
-		var point = pa?pa.transformToAbsolute(this.point):this.point;
+		var point = this.transformByRotate(this.point);
+		
 		
 		this.ctx.save();
 		this.ctx.beginPath();
@@ -77,8 +85,44 @@
 		this.ctx.restore();
 	};
 	
+	/**
+	 * 绘制旋转缩放之前的UI
+	 * @override
+	 */
+	Ycc.UI.Circle.prototype.renderDashBeforeUI = function (ctx) {
+		var self = this;
+		ctx = this.ctx;
+		var pa = this.getParent();
+		var point = pa?pa.transformToAbsolute(this.point):this.point;
+		
+		ctx.save();
+		// 虚线
+		ctx.setLineDash([10]);
+		ctx.beginPath();
+		this.ctx.arc(
+			point.x,
+			point.y,
+			this.r,
+			0,
+			2*Math.PI
+		);
+		ctx.closePath();
+		ctx.strokeStyle = this.color;
+		ctx.stroke();
+		ctx.restore();
+	};
 	
 	
+	/**
+	 * 判断是否在圆内
+	 * @param dot	绝对坐标
+	 * @param noneZeroMode
+	 * @override
+	 */
+	Ycc.UI.Circle.prototype.containDot = function (dot,noneZeroMode) {
+		var point = this.transformByRotate(this.point);
+		return Math.pow(dot.x-point.x,2)+Math.pow(dot.y-point.y,2)<=Math.pow(this.r,2);
+	};
 	
 	
 })(Ycc);

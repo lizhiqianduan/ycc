@@ -10,7 +10,8 @@
  * 应用启动入口类，每个实例都与一个canvas绑定。
  * 该canvas元素会被添加至HTML结构中，作为应用的显示舞台。
  * @param config {Object} 整个ycc的配置项
- * @param config.debug.drawContainer {Boolean} 是否显示所有UI的容纳区域
+ * @param config.debugDrawContainer {Boolean} 是否显示所有UI的容纳区域
+ * @param config.useGesture {Boolean} 是否启用系统的手势库，默认启用
  * @constructor
  */
 var Ycc = function Ycc(config){
@@ -79,9 +80,8 @@ var Ycc = function Ycc(config){
 	 * @type {*|{}}
 	 */
 	this.config = config || {
-		debug:{
-			drawContainer:false
-		}
+		debugDrawContainer:false,
+		useGesture:true
 	};
 	
 	/**
@@ -141,8 +141,8 @@ Ycc.prototype.bindCanvas = function (canvas) {
  * 类初始化
  */
 Ycc.prototype.init = function () {
-	
-	this._initStageGestureEvent();
+	if(true===this.config.useGesture)
+		this._initStageGestureEvent();
 };
 
 /**
@@ -175,6 +175,9 @@ Ycc.prototype._initStageGestureEvent = function () {
 	gesture.addListener('dragstart',dragstartListener);
 	gesture.addListener('dragging',draggingListener);
 	gesture.addListener('dragend',dragendListener);
+	
+	// PC端专属事件
+	gesture.addListener('mousemove',gestureListener);
 	
 	
 	function dragstartListener(e) {

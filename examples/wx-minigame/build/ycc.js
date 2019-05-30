@@ -10,7 +10,8 @@
  * 应用启动入口类，每个实例都与一个canvas绑定。
  * 该canvas元素会被添加至HTML结构中，作为应用的显示舞台。
  * @param config {Object} 整个ycc的配置项
- * @param config.debug.drawContainer {Boolean} 是否显示所有UI的容纳区域
+ * @param config.debugDrawContainer {Boolean} 是否显示所有UI的容纳区域
+ * @param config.useGesture {Boolean} 是否启用系统的手势库，默认启用
  * @constructor
  */
 var Ycc = function Ycc(config){
@@ -79,9 +80,8 @@ var Ycc = function Ycc(config){
 	 * @type {*|{}}
 	 */
 	this.config = config || {
-		debug:{
-			drawContainer:false
-		}
+		debugDrawContainer:false,
+		useGesture:true
 	};
 	
 	/**
@@ -141,8 +141,8 @@ Ycc.prototype.bindCanvas = function (canvas) {
  * 类初始化
  */
 Ycc.prototype.init = function () {
-	
-	this._initStageGestureEvent();
+	if(true===this.config.useGesture)
+		this._initStageGestureEvent();
 };
 
 /**
@@ -175,6 +175,9 @@ Ycc.prototype._initStageGestureEvent = function () {
 	gesture.addListener('dragstart',dragstartListener);
 	gesture.addListener('dragging',draggingListener);
 	gesture.addListener('dragend',dragendListener);
+	
+	// PC端专属事件
+	gesture.addListener('mousemove',gestureListener);
 	
 	
 	function dragstartListener(e) {
@@ -605,6 +608,56 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 		return this.x>=rect.x&&this.x<=rect.x+rect.width  && this.y>=rect.y && this.y<=rect.y+rect.height;
 	};
 	
+	/**
+	 * 判读两点位置是否相同
+	 * @param dot
+	 * @return {boolean}
+	 */
+	Ycc.Math.Dot.prototype.isEqual = function (dot) {
+		return this.x===dot.x && this.y===dot.y;
+	};
+	
+	/**
+	 * 点的加法/点的偏移量
+	 * @param dot {Ycc.Math.Dot} 加的点
+	 * @return {Ycc.Math.Dot} 返回一个新的点
+	 */
+	Ycc.Math.Dot.prototype.plus = function (dot) {
+		return new Ycc.Math.Dot(this.x+dot.x,this.y+dot.y);
+	};
+	
+	/**
+	 * 将当前点绕另外一个点旋转一定度数
+	 * @param rotation	旋转角度
+	 * @param anchorDot	锚点坐标
+	 * @return 旋转后的点
+	 */
+	Ycc.Math.Dot.prototype.rotate = function (rotation,anchorDot) {
+		anchorDot=anchorDot||new Ycc.Math.Dot(0,0);
+		var dotX = this.x,dotY=this.y,anchorX=anchorDot.x,anchorY=anchorDot.y;
+		var dx = (dotX - anchorX)*Math.cos(rotation/180*Math.PI) - (dotY - anchorY)*Math.sin(rotation/180*Math.PI)+anchorX;
+		var dy = (dotY - anchorY)*Math.cos(rotation/180*Math.PI) + (dotX - anchorX)*Math.sin(rotation/180*Math.PI)+anchorY;
+		return new Ycc.Math.Dot(dx,dy);
+	};
+	
+	/**
+	 * 判断三点是否共线
+	 * @param dot1
+	 * @param dot2
+	 * @param dot3
+	 */
+	Ycc.Math.Dot.threeDotIsOnLine = function (dot1,dot2,dot3) {
+		// 存在位置相同点肯定共线
+		if(dot1.isEqual(dot2) || dot1.isEqual(dot3) || dot2.isEqual(dot3))
+			return true;
+		// 三个点x一样
+		if(dot1.x===dot2.x&&dot2.x===dot3.x)
+			return true;
+		var k1 = Math.abs(dot1.y-dot2.y)/Math.abs(dot1.x-dot2.x);
+		var k2 = Math.abs(dot1.y-dot3.y)/Math.abs(dot1.x-dot3.x);
+		return k1===k2;
+	};
+	
 	
 	
 	
@@ -703,9 +756,9 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 			new Ycc.Math.Dot(this.x,this.y),
 			new Ycc.Math.Dot(this.x+this.width,this.y),
 			new Ycc.Math.Dot(this.x+this.width,this.y+this.height),
-			new Ycc.Math.Dot(this.x,this.y+this.height)
+			new Ycc.Math.Dot(this.x,this.y+this.height),
+			new Ycc.Math.Dot(this.x,this.y)
 		];
-
 	};
 	
 	/**
@@ -2147,6 +2200,23 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 	};
 	
 	
+	/**
+	 * 调试日志信息类
+	 * @param message
+	 * @constructor
+	 */
+	Ycc.Debugger.Log = function (message) {
+		this.message = '[Ycc logger]=> '+message;
+	};
+	/**
+	 * 调试错误信息类
+	 * @param message
+	 * @constructor
+	 */
+	Ycc.Debugger.Error = function (message) {
+		this.message = '[Ycc  error]=> '+message;
+	};
+	
 	
 	
 	
@@ -2378,7 +2448,9 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 	 * 公用属性
 	 * @readonly
 	 */
-	AudioPolyfill.prototype.context = ("undefined"!==typeof AudioContext || "undefined"!==typeof webkitAudioContext) && new (AudioContext || webkitAudioContext)();
+	AudioPolyfill.prototype.context = (("undefined"!==typeof AudioContext)&&new AudioContext()) ||
+		(("undefined"!==typeof webkitAudioContext)&&new webkitAudioContext());
+		///("undefined"!==typeof AudioContext || "undefined"!==typeof webkitAudioContext) && new (AudioContext || webkitAudioContext)();
 	
 	
 	/**
@@ -3359,7 +3431,8 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 		 * 6、如果move时，鼠标为按下状态，触发 鼠标按下时UI 的dragging事件
 		 * */
 		this.option.target.addEventListener('mousemove',function (e) {
-			// console.log(e.type,'...');
+			// console.log(e.type,'....',self);
+			self.triggerListener('mousemove',self._createEventData(e,'mousemove'));
 			
 			// 如果鼠标正处于按下状态，则模拟触发dragging事件
 			if(mouseDownEvent){
@@ -3432,7 +3505,7 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 				if(preTap && curTap.createTime-preTap.createTime<300 && Math.abs(preTap.pageX-curTap.pageX)<10&& Math.abs(preTap.pageY-curTap.pageY)<10){
 					self.triggerListener('doubletap',self._createEventData(curTap,'doubletap'));
 					self.triggerListener('log','doubletap triggered');
-					preLife = null;
+					preTap = null;
 					return this;
 				}
 				preTap=curTap;
@@ -4102,7 +4175,7 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 				if(uiIsShow&&!child.show) return -1;
 
 				// 如果位于rect内，并且层级更深，则暂存，此处根据绝对坐标比较
-				if(dot.isInRect(child.getAbsolutePosition()) && level>=tempLevel){
+				if(child.containDot(dot) && level>=tempLevel){
 					temp = child;
 					tempLevel=level;
 				}
@@ -4814,6 +4887,18 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 		this.rect = new Ycc.Math.Rect();
 		
 		/**
+		 * x相对父级的位置
+		 * @type {number}
+		 */
+		this.x = 0;
+		
+		/**
+		 * y相对父级的位置
+		 * @type {number}
+		 */
+		this.y = 0;
+		
+		/**
 		 * UI对象的锚点坐标。相对坐标。相对于rect的x
 		 * 锚点坐标主要用于图形的旋转、平移、缩放
 		 * @type {number}
@@ -4826,18 +4911,6 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 		 * @type {number}
 		 */
 		this.anchorY = 0;
-		
-		/**
-		 * x方向的缩放比例
-		 * @type {number}
-		 */
-		this.scaleX = 1;
-
-		/**
-		 * y方向的缩放比例
-		 * @type {number}
-		 */
-		this.scaleY = 1;
 		
 		/**
 		 * 相对于锚点的旋转角度
@@ -4905,6 +4978,12 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 		 * @type {null}
 		 */
 		this.userData = null;
+		
+		/**
+		 * 是否显示缩放之前的位置
+		 * @type {boolean}
+		 */
+		this.isShowRotateBeforeUI = false;
 		
 		/**
 		 * 基础绘图UI
@@ -4986,10 +5065,16 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 	 */
 	Ycc.UI.Base.prototype.renderRectBgColor = function (absoluteRect) {
 		var rect = absoluteRect;
+		var dots = this.getAbsolutePositionPolygon();
+		if(!dots||dots.length===0) return console.log(new Ycc.Debugger.Log("no polygon coordirates!").message);
+		
 		this.ctx.save();
 		this.ctx.fillStyle = this.rectBgColor;
 		this.ctx.beginPath();
-		this.ctx.rect(rect.x,rect.y,rect.width,rect.height);
+		this.ctx.moveTo(dots[0].x,dots[0].y);
+		for(var i=1;i<dots.length-1;i++)
+			this.ctx.lineTo(dots[i].x,dots[i].y);
+		// this.ctx.rect(rect.x,rect.y,rect.width,rect.height);
 		this.ctx.closePath();
 		this.ctx.fill();
 		this.ctx.restore();
@@ -5014,6 +5099,15 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 		this.ctx.stroke();
 		this.ctx.restore();
 		rect = null;
+	};
+	
+	/**
+	 * 绘制UI平移、旋转之前的位置，用虚线绘制
+	 * 需要子UI重载
+	 * @param [ctx]	绘图环境，非必传
+	 */
+	Ycc.UI.Base.prototype.renderDashBeforeUI = function (ctx) {
+	
 	};
 	
 	
@@ -5053,11 +5147,12 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 	 * 坐标系的缩放和旋转。
 	 * 先缩放、再旋转。
 	 * @todo 子类渲染前需要调用此方法
+	 * @todo 多边形替换rect后，此方法废弃，不再调用
 	 */
 	Ycc.UI.Base.prototype.scaleAndRotate = function () {
 		// 坐标系缩放
-		this.ctx.scale(this.scaleX,this.scaleY);
-		var rect = this.getAbsolutePosition();
+		// this.ctx.scale(this.scaleX,this.scaleY);
+		var rect = this.getAbsolutePositionRect();
 		// 坐标系旋转
 		this.ctx.translate(this.anchorX+rect.x,this.anchorY+rect.y);
 		this.ctx.rotate(this.rotation*Math.PI/180);
@@ -5210,19 +5305,24 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 	 */
 	Ycc.UI.Base.prototype.__render = function (ctx) {
 		this.triggerListener('computestart',new Ycc.Event("computestart"));
-		this.computeUIProps();
+		var error = this.computeUIProps();
 		this.triggerListener('computeend',new Ycc.Event("computeend"));
+		
+		if(error) return console.error(error.message);
+		
 		// 超出舞台时，不予渲染
 		if(this.isOutOfStage())
 			return;
-		var absolutePosition = this.getAbsolutePosition();
+		var absolutePosition = this.getAbsolutePositionRect();
 		// 绘制UI的背景，rectBgColor
 		this.renderRectBgColor(absolutePosition);
 		// 绘制容纳区的边框
 		this.renderRectBorder(absolutePosition);
+		// 绘制旋转平移之前的UI
+		this.renderDashBeforeUI();
 		
 		// 全局UI配置项，是否绘制UI的容器
-		if(this.belongTo.yccInstance.config.debug.drawContainer){
+		if(this.belongTo.yccInstance.config.debugDrawContainer){
 			this._renderContainer(absolutePosition);
 		}
 		
@@ -5283,7 +5383,23 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 	};
 	
 	/**
+	 * 获取UI平移、旋转之后位置的多边形区域，子UI需覆盖此方法
+	 */
+	Ycc.UI.Base.prototype.getAbsolutePositionPolygon = function () {};
+	
+	/**
+	 * 获取容纳UI的矩形区域，子UI可以覆盖此方法
+	 * 注：此区域未经过旋转
+	 * @return {Ycc.Math.Rect}
+	 */
+	Ycc.UI.Base.prototype.getAbsolutePositionRect = function () {
+		var pos = this.getAbsolutePosition();
+		return new Ycc.Math.Rect(pos.x,pos.y,this.rect.width,this.rect.height);
+	};
+	
+	/**
 	 * 获取UI的绝对坐标，主要考虑图层坐标
+	 * 注：此区域未经过旋转
 	 * @return {Ycc.Math.Rect}
 	 */
 	Ycc.UI.Base.prototype.getAbsolutePosition = function(){
@@ -5306,58 +5422,388 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 	
 	
 	/**
-	 * 根据图层坐标和UI位置坐标，将UI内某个点的相对坐标（相对于UI），转换为舞台的绝对坐标
-	 * @todo 所有UI类render的时候都应该加上这个转换
+	 * 根据图层坐标和UI位置坐标，将某个点的相对坐标（相对于UI的父级），转换为舞台的绝对坐标
 	 * @param dotOrArr {Ycc.Math.Dot | Ycc.Math.Dot[]}
 	 * @return {Ycc.Math.Dot | Ycc.Math.Dot[]}
 	 */
 	Ycc.UI.Base.prototype.transformToAbsolute = function (dotOrArr) {
-		var res = null;
-		var absoluteRect = this.getAbsolutePosition();
-		
+		var self = this;
 		if(Ycc.utils.isArray(dotOrArr)){
-			res = [];
-			for(var i=0;i<dotOrArr.length;i++){
-				var resDot = new Ycc.Math.Dot(0,0);
-				var dot = dotOrArr[i];
-				resDot.x=absoluteRect.x+dot.x;
-				resDot.y=absoluteRect.y+dot.y;
-				res.push(resDot);
-			}
-			return res;
+			return dotOrArr.map(function (item) {
+				return self.transformToAbsolute(item);
+			});
 		}
-		res = new Ycc.Math.Dot(0,0);
-		res.x = absoluteRect.x+dotOrArr.x;
-		res.y = absoluteRect.y+dotOrArr.y;
-		return res;
+		
+		var pa = this.getParent();
+		if(!pa){
+			return new Ycc.Math.Dot(dotOrArr.x+this.belongTo.x,dotOrArr.y+this.belongTo.y);
+		}else{
+			var paAbsolute = pa.getAbsolutePosition();
+			return new Ycc.Math.Dot(dotOrArr.x+paAbsolute.x,dotOrArr.y+paAbsolute.y);
+		}
 	};
 	
 	/**
-	 * 根据图层坐标和UI位置坐标，将某个点的绝对坐标，转换为相对于UI的相对坐标
+	 * 根据图层坐标和UI位置坐标，将某个点的绝对坐标，转换为相对于UI父级的相对坐标
 	 * @param dotOrArr {Ycc.Math.Dot | Ycc.Math.Dot[]}
 	 * @return {Ycc.Math.Dot | Ycc.Math.Dot[]}
 	 */
 	Ycc.UI.Base.prototype.transformToLocal = function (dotOrArr) {
 		var res = null;
-		var absoluteRect = this.getAbsolutePosition();
+		var absolutePos = this.getAbsolutePosition();
 		if(Ycc.utils.isArray(dotOrArr)){
 			res = [];
 			for(var i=0;i<dotOrArr.length;i++){
 				var resDot = new Ycc.Math.Dot(0,0);
 				var dot = dotOrArr[i];
-				resDot.x=dot.x-(absoluteRect.x);
-				resDot.y=dot.y-(absoluteRect.y);
+				resDot.x=dot.x-(absolutePos.x)+this.x;
+				resDot.y=dot.y-(absolutePos.y)+this.y;
 				res.push(resDot);
 			}
 			return res;
 		}
 		res = new Ycc.Math.Dot(0,0);
-		res.x = dotOrArr.x-(absoluteRect.x);
-		res.y = dotOrArr.y-(absoluteRect.y);
+		// 本地坐标需加上当前的x、y
+		res.x = dotOrArr.x-(absolutePos.x)+this.x;
+		res.y = dotOrArr.y-(absolutePos.y)+this.y;
+		return res;
+	};
+	
+
+	/**
+	 * 判断某个点是否在UI组件内
+	 * 默认根据ui的容纳区rect字段进行判断，子UI可以覆盖此方法
+	 * @param dot	{Ycc.Math.Dot}	某个点的绝对坐标
+	 * @return {boolean}
+	 */
+	Ycc.UI.Base.prototype.containDot = function (dot) {
+		return dot.isInRect(this.getAbsolutePosition());
+	};
+	
+	/**
+	 * 根据当前的锚点、旋转角度获取某个点的转换之后的坐标
+	 * @param dot {Ycc.Math.Dot|Ycc.Math.Dot[]}	需要转换的点，该点为相对坐标，相对于当前UI的父级
+	 * @return {Ycc.Math.Dot}		转换后的点，该点为绝对坐标
+	 */
+	Ycc.UI.Base.prototype.transformByRotate = function (dot) {
+		var self = this;
+		// 点数组的转换
+		if(Ycc.utils.isArray(dot)){
+			return dot.map(function (itemDot) {
+				return self.transformByRotate(itemDot);
+			});
+		}
+		
+		var res = new Ycc.Math.Dot();
+		// 位置的绝对坐标
+		var pos = this.getAbsolutePosition();
+		// pos={x:0,y:0};
+		var dotX = dot.x;
+		var dotY = dot.y;
+		
+		// 坐标旋转
+		var dx = (dotX - this.anchorX)*Math.cos(this.rotation/180*Math.PI) - (dotY - this.anchorY)*Math.sin(this.rotation/180*Math.PI)+this.anchorX;
+		var dy = (dotY - this.anchorY)*Math.cos(this.rotation/180*Math.PI) + (dotX - this.anchorX)*Math.sin(this.rotation/180*Math.PI)+this.anchorY;
+		// res.x=dx+pos.x;
+		// res.y=dy+pos.y;
+		res = this.transformToAbsolute({x:dx,y:dy});
+
 		return res;
 	};
 
 
+})(Ycc);;/**
+ * @file    Ycc.UI.Polygon.class.js
+ * @author  xiaohei
+ * @date    2019/4/26
+ * @description  Ycc.UI.Polygon.class文件
+ */
+
+(function (Ycc) {
+	
+	/**
+	 * 多边形UI
+	 * 位置坐标x、y为只读属性，且为相对坐标，默认取多边形的第一个顶点坐标
+	 * @constructor
+	 * @extends Ycc.UI.Base
+	 * @param option    			{object}        	所有可配置的配置项
+	 * @param option.fill 			{boolean}			是否填充绘制，false表示描边绘制
+	 * @param option.coordinates  	{Ycc.Math.Dot[]}    多边形点坐标的数组，为保证图形能够闭合，起点和终点必须相等。注意：点列表的坐标为相对坐标
+	 */
+	Ycc.UI.Polygon = function Polygon(option) {
+		option = option || {};
+		Ycc.UI.Base.call(this, option);
+		this.yccClass = Ycc.UI.Polygon;
+		
+		/**
+		 * 位置x
+		 * @type {number}
+		 * @readonly
+		 */
+		this.x=0;
+		/**
+		 * 位置y
+		 * @type {number}
+		 * @readonly
+		 */
+		this.y=0;
+		/**
+		 * 是否填充
+		 * @type {boolean}
+		 */
+		this.fill = true;
+		
+		/**
+		 * 颜色
+		 * @type {string}
+		 */
+		this.fillStyle = "blue";
+		
+		/**
+		 * 光线投射模式 1-升级模式 2-普通模式
+		 * @type {number}
+		 */
+		this.noneZeroMode = 1;
+		
+		/**
+		 * 是否绘制点的下标
+		 * @type {boolean}
+		 */
+		this.isDrawIndex = false;
+		
+		/**
+		 * 多边形点坐标的数组，为保证图形能够闭合，起点和终点必须相等
+		 * @type {null}
+		 */
+		this.coordinates=option.coordinates||[];
+		
+		// 合并属性
+		this.extend(option);
+	};
+	
+	// 继承prototype
+	Ycc.utils.mergeObject(Ycc.UI.Polygon.prototype, Ycc.UI.Base.prototype);
+	Ycc.UI.Polygon.prototype.constructor = Ycc.UI.Polygon;
+	
+	/**
+	 * 计算UI的各种属性。此操作必须在绘制之前调用。
+	 * <br> 计算与绘制分离的好处是，在绘制UI之前就可以提前确定元素的各种信息，从而判断是否需要绘制。
+	 * @override
+	 */
+	Ycc.UI.Polygon.prototype.computeUIProps = function () {
+
+		// 计算相对位置
+		if(this.coordinates[0])
+			this.x=this.coordinates[0].x,this.y=this.coordinates[0].y;
+	};
+	
+	/**
+	 * 渲染至ctx
+	 * @param ctx
+	 */
+	Ycc.UI.Polygon.prototype.render = function (ctx) {
+		var self = this;
+		ctx = ctx || self.ctx;
+		if(!self.ctx){
+			console.error("[Ycc error]:","ctx is null !");
+			return;
+		}
+		
+		// console.log('render');
+		
+		// 绘制旋转缩放之前的UI
+
+		ctx.save();
+		ctx.fillStyle = this.fillStyle;
+		ctx.strokeStyle = this.strokeStyle;
+		this.renderPath();
+		this.fill?ctx.fill():ctx.stroke();
+		ctx.restore();
+	};
+	
+	/**
+	 * 根据coordinates绘制路径
+	 * 只绘制路径，不填充、不描边
+	 * 继承的子类若不是多边形，需要重载此方法
+	 */
+	Ycc.UI.Polygon.prototype.renderPath = function (ctx) {
+		if(this.coordinates.length===0) return;
+		
+		var self = this;
+		ctx = ctx || self.ctx;
+		
+		var start = this.transformByRotate(this.coordinates[0]);
+		ctx.beginPath();
+		ctx.moveTo(start.x,start.y);
+		for(var i=0;i<this.coordinates.length-1;i++){
+			var dot = this.transformByRotate(this.coordinates[i]);
+			if(this.isDrawIndex) ctx.fillText(i+'',dot.x-10,dot.y+10);
+			ctx.lineTo(dot.x,dot.y);
+		}
+		ctx.closePath();
+	
+	};
+	
+	/**
+	 * 获取当前UI平移、旋转之后位置的多边形区域
+	 * @return {Ycc.Math.Dot[]} 返回多边形点的坐标数组
+	 * @override
+	 */
+	Ycc.UI.Polygon.prototype.getAbsolutePositionPolygon = function () {
+		var self = this;
+		return this.coordinates.map(function (point) {
+			return self.transformByRotate(point);
+		});
+	};
+	
+	/**
+	 * 获取UI的绝对坐标，只计算图层坐标和UI的位置坐标x、y
+	 * 不考虑UI的缩放和旋转，缩放旋转可通过其他方法转换
+	 * @param [pos] {Ycc.Math.Dot}	获取到的位置对象，非必传
+	 * @return {Ycc.Math.Dot}
+	 * @override
+	 */
+	Ycc.UI.Polygon.prototype.getAbsolutePosition = function(pos){
+		pos = pos || new Ycc.Math.Dot(this.x,this.y);
+		var pa = this.getParent();
+		
+		if(!pa){
+			// 最顶层的UI需要加上图层的坐标
+			pos.x = this.x+this.belongTo.x;
+			pos.y = this.y+this.belongTo.y;
+		}else{
+			var paPos = pa.getAbsolutePosition();
+			pos.x += paPos.x;
+			pos.y += paPos.y;
+		}
+		return pos;
+	};
+	
+	/**
+	 * 获取能容纳当前UI的最小方形区域
+	 * @return {Ycc.Math.Rect}
+	 */
+	Ycc.UI.Polygon.prototype.getAbsolutePositionRect = function () {
+		if(!this.coordinates[0]) return console.log(new Ycc.Debugger.Error('need compute prop coordinates').message);
+		
+		var start = this.coordinates[0];
+		var minx=start.x,miny=start.y,maxx=start.x,maxy=start.y;
+		
+		for(var i=0;i<this.coordinates.length-1;i++){
+			var dot = this.coordinates[i];
+			if(dot.x<minx) minx=dot.x;
+			if(dot.x>=maxx) maxx=dot.x;
+			if(dot.y<miny) miny=dot.y;
+			if(dot.y>=maxy) maxy=dot.y;
+		}
+		
+		var posAbsolute = this.transformToAbsolute({x:minx,y:miny});
+		return new Ycc.Math.Rect(posAbsolute.x,posAbsolute.y,maxx-minx,maxy-miny);
+	};
+	
+	
+	/**
+	 * 绘制旋转缩放之前的UI
+	 * @override
+	 */
+	Ycc.UI.Polygon.prototype.renderDashBeforeUI = function (ctx) {
+		if(!this.isShowRotateBeforeUI || this.coordinates.length===0) return;
+		
+		var self = this;
+		ctx = ctx || self.ctx;
+		var pa = this.getParent();
+		var paPos =pa? pa.getAbsolutePosition():new Ycc.Math.Dot();
+		var start = new Ycc.Math.Dot(this.coordinates[0].x+paPos.x,this.coordinates[0].y+paPos.y);
+		
+		ctx.save();
+		// 虚线
+		ctx.setLineDash([10]);
+		ctx.beginPath();
+		ctx.moveTo(start.x,start.y);
+		for(var i=0;i<self.coordinates.length-1;i++){
+			var dot = self.coordinates[i];
+			ctx.lineTo(dot.x+paPos.x,dot.y+paPos.y);
+		}
+		ctx.closePath();
+		ctx.strokeStyle = this.strokeStyle;
+		ctx.stroke();
+		ctx.restore();
+	};
+
+	
+	/**
+	 * 重载基类的包含某个点的函数，用于点击事件等的响应
+	 * 两种方法：
+	 * 方法一：经过该点的水平射线与多边形的焦点数，即Ray-casting Algorithm
+	 * 方法二：某个点始终位于多边形逆时针向量的左侧、或者顺时针方向的右侧即可判断，算法名忘记了
+	 * 此方法采用方法一，并假设该射线平行于x轴，方向为x轴正方向
+	 * @param dot {Ycc.Math.Dot} 需要判断的点，绝对坐标
+	 * @param noneZeroMode {Number} 是否noneZeroMode 1--启用 2--关闭 默认启用
+	 * 		从这个点引出一根“射线”，与多边形的任意若干条边相交，计数初始化为0，若相交处被多边形的边从左到右切过，计数+1，若相交处被多边形的边从右到左切过，计数-1，最后检查计数，如果是0，点在多边形外，如果非0，点在多边形内
+	 * @return {boolean}
+	 */
+	Ycc.UI.Polygon.prototype.containDot = function (dot,noneZeroMode) {
+		// 默认启动none zero mode
+		noneZeroMode=noneZeroMode||this.noneZeroMode;
+		var _dot = dot;
+		
+		var x = _dot.x,y=_dot.y;
+		var crossNum = 0;
+		// 点在线段的左侧数目
+		var leftCount = 0;
+		// 点在线段的右侧数目
+		var rightCount = 0;
+		for(var i=0;i<this.coordinates.length-1;i++){
+			var start = this.transformByRotate(this.coordinates[i]);
+			var end = this.transformByRotate(this.coordinates[i+1]);
+			
+			// 起点、终点斜率不存在的情况
+			if(start.x===end.x) {
+				// 因为射线向右水平，此处说明不相交
+				if(x>start.x) continue;
+				
+				// 从左侧贯穿
+				if((end.y>start.y&&y>=start.y && y<=end.y)){
+					leftCount++;
+					// console.log('++1');
+					crossNum++;
+				}
+				// 从右侧贯穿
+				if((end.y<start.y&&y>=end.y && y<=start.y)) {
+					rightCount++;
+					// console.log('++1');
+					crossNum++;
+				}
+				continue;
+			}
+			// 斜率存在的情况，计算斜率
+			var k=(end.y-start.y)/(end.x-start.x);
+			// 交点的x坐标
+			var x0 = (y-start.y)/k+start.x;
+			// 因为射线向右水平，此处说明不相交
+			if(x>x0) continue;
+			
+			if((end.x>start.x&&x0>=start.x && x0<=end.x)){
+				// console.log('++2');
+				crossNum++;
+				if(k>=0) leftCount++;
+				else rightCount++;
+			}
+			if((end.x<start.x&&x0>=end.x && x0<=start.x)) {
+				// console.log('++2');
+				crossNum++;
+				if(k>=0) rightCount++;
+				else leftCount++;
+			}
+		}
+		
+		// console.log('polygon',dot,noneZeroMode,crossNum,crossNum%2,leftCount,rightCount);
+		return noneZeroMode===1?leftCount-rightCount!==0:crossNum%2===1;
+	};
+	
+	
+	
+	
 })(Ycc);;/**
  * @file    Ycc.UI.Ellipse.class.js
  * @author  xiaohei
@@ -5378,16 +5824,24 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 	 * @param option.point {Ycc.Math.Dot} 圆心位置
 	 * @param option.width=20 {number} 长轴
 	 * @param option.height=10 {number} 短轴
+	 * @param option.angle=0	{number} 椭圆绕其中心的自转角度
+	 * 		注：通过rotation设置的旋转角度只会旋转椭圆的中心点，此处的angle是将椭圆本身围绕中心点旋转。
+	 * 		此处的理解，可以结合地球绕太阳旋转，angle表示自转角度，rotation表示公转角度。
 	 * @constructor
-	 * @extends Ycc.UI.Base
+	 * @extends Ycc.UI.Polygon
 	 */
 	Ycc.UI.Ellipse = function Ellipse(option) {
-		Ycc.UI.Base.call(this,option);
+		Ycc.UI.Polygon.call(this,option);
 		this.yccClass = Ycc.UI.Ellipse;
 		
 		this.point = new Ycc.Math.Dot();
 		this.width = 20;
 		this.height = 10;
+		
+		/**
+		 * 椭圆自转角度
+		 * @type {number}
+		 */
 		this.angle = 0;
 		
 		// centrePoint,width,height,rotateAngle,fill
@@ -5398,7 +5852,7 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 		this.extend(option);
 	};
 	// 继承prototype
-	Ycc.utils.mergeObject(Ycc.UI.Ellipse.prototype,Ycc.UI.Base.prototype);
+	Ycc.utils.mergeObject(Ycc.UI.Ellipse.prototype,Ycc.UI.Polygon.prototype);
 	Ycc.UI.Ellipse.prototype.constructor = Ycc.UI.Ellipse;
 	
 	
@@ -5407,7 +5861,6 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 	 * 计算UI的各种属性。此操作必须在绘制之前调用。
 	 * <br> 计算与绘制分离的好处是，在绘制UI之前就可以提前确定元素的各种信息，从而判断是否需要绘制。
 	 * @override
-	 * @todo 计算容纳区域
 	 */
 	Ycc.UI.Ellipse.prototype.computeUIProps = function () {
 		var x=this.point.x,
@@ -5425,6 +5878,12 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 		this.rect.y = yMin;
 		this.rect.width = xMax-xMin;
 		this.rect.height = yMax-yMin;
+		
+		// 计算多边形坐标
+		this.coordinates= this.rect.getVertices();
+		// 计算相对位置
+		this.x=this.point.x,this.y=this.point.y;
+
 	};
 	
 	
@@ -5437,8 +5896,7 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 			rotateAngle=this.angle,
 			height=this.height;
 		
-		var pa = this.getParent();
-		var point = pa?pa.transformToAbsolute(this.point):this.point;
+		var point = this.transformByRotate(this.point);
 		
 		this.ctx.save();
 		var r = (width > height) ? width : height;
@@ -5461,13 +5919,55 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 			this.ctx.stroke();
 		else
 			this.ctx.fill();
-		
+			
 		this.ctx.restore();
 	};
 	
 	
+	/**
+	 * 判断是否在椭圆内
+	 * @param dot	绝对坐标
+	 * @param noneZeroMode
+	 * @override
+	 */
+	Ycc.UI.Ellipse.prototype.containDot = function (dot,noneZeroMode) {
+		var point = this.transformByRotate(this.point);
+		// 椭圆自转角度
+		dot = new Ycc.Math.Dot(dot).rotate(-this.angle,point);
+		return Math.pow((dot.x-point.x)/this.width*2,2)+Math.pow((dot.y-point.y)/this.height*2,2)<=1;
+	};
 	
-	
+	/**
+	 * 渲染旋转平移之前的位置
+	 * @param ctx
+	 * @override
+	 */
+	Ycc.UI.Ellipse.prototype.renderDashBeforeUI=function (ctx) {
+		if(!this.isShowRotateBeforeUI || this.coordinates.length===0) return;
+		var width = this.width,
+			rotateAngle=this.angle,
+			height=this.height;
+		
+		var pa = this.getParent();
+		var point = pa?pa.transformToAbsolute(this.point):this.point;
+		
+		this.ctx.save();
+		var r = (width > height) ? width : height;
+		// 计算压缩比例
+		var ratioX = width / r;
+		var ratioY = height / r;
+		this.ctx.scale(ratioX, ratioY);
+		this.ctx.beginPath();
+		this.ctx.arc(point.x / ratioX,  point.y/ ratioY, r/2, 0, 2 * Math.PI, false);
+		this.ctx.closePath();
+		
+		this.ctx.strokeStyle = this.color;
+		this.ctx.setLineDash([10]);
+
+		this.ctx.stroke();
+		
+		this.ctx.restore();
+	}
 	
 })(Ycc);;/**
  * @file    Ycc.UI.Circle.class.js
@@ -5486,13 +5986,13 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 	 * @param option.rect	{Ycc.Math.Rect}	容纳区。会根据属性设置动态修改。
 	 * @param option.fill=true {boolean}	填充or描边
 	 * @param option.color=black {string} 圆的颜色
-	 * @param option.point {Ycc.Math.Dot} 圆心位置
+	 * @param option.point {Ycc.Math.Dot} 圆心位置，相对坐标
 	 * @param option.r=10 {number} 圆的半径
 	 * @constructor
-	 * @extends Ycc.UI.Base
+	 * @extends Ycc.UI.Polygon
 	 */
 	Ycc.UI.Circle = function Circle(option) {
-		Ycc.UI.Base.call(this,option);
+		Ycc.UI.Polygon.call(this,option);
 		this.yccClass = Ycc.UI.Circle;
 		
 		this.point = null;
@@ -5503,7 +6003,7 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 		this.extend(option);
 	};
 	// 继承prototype
-	Ycc.utils.mergeObject(Ycc.UI.Circle.prototype,Ycc.UI.Base.prototype);
+	Ycc.utils.mergeObject(Ycc.UI.Circle.prototype,Ycc.UI.Polygon.prototype);
 	
 	
 	/**
@@ -5512,20 +6012,28 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 	 * @override
 	 */
 	Ycc.UI.Circle.prototype.computeUIProps = function () {
+		if(!this.point) return new Ycc.Debugger.Error('Circle need prop point');
+		
 		var x=this.point.x,
 			y=this.point.y,
 			r=this.r;
 		this.rect = new Ycc.Math.Rect(x-r,y-r,2*r,2*r);
+		// 计算多边形坐标
+		this.coordinates= this.rect.getVertices();
+		// 计算相对位置
+		this.x=this.point.x,this.y=this.point.y;
+		
 	};
 	
 	
 	/**
 	 * 绘制
+	 * @override
 	 */
 	Ycc.UI.Circle.prototype.render = function () {
 		
-		var pa = this.getParent();
-		var point = pa?pa.transformToAbsolute(this.point):this.point;
+		var point = this.transformByRotate(this.point);
+		
 		
 		this.ctx.save();
 		this.ctx.beginPath();
@@ -5548,8 +6056,44 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 		this.ctx.restore();
 	};
 	
+	/**
+	 * 绘制旋转缩放之前的UI
+	 * @override
+	 */
+	Ycc.UI.Circle.prototype.renderDashBeforeUI = function (ctx) {
+		var self = this;
+		ctx = this.ctx;
+		var pa = this.getParent();
+		var point = pa?pa.transformToAbsolute(this.point):this.point;
+		
+		ctx.save();
+		// 虚线
+		ctx.setLineDash([10]);
+		ctx.beginPath();
+		this.ctx.arc(
+			point.x,
+			point.y,
+			this.r,
+			0,
+			2*Math.PI
+		);
+		ctx.closePath();
+		ctx.strokeStyle = this.color;
+		ctx.stroke();
+		ctx.restore();
+	};
 	
 	
+	/**
+	 * 判断是否在圆内
+	 * @param dot	绝对坐标
+	 * @param noneZeroMode
+	 * @override
+	 */
+	Ycc.UI.Circle.prototype.containDot = function (dot,noneZeroMode) {
+		var point = this.transformByRotate(this.point);
+		return Math.pow(dot.x-point.x,2)+Math.pow(dot.y-point.y,2)<=Math.pow(this.r,2);
+	};
 	
 	
 })(Ycc);;/**
@@ -5583,10 +6127,10 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 	 * 		<br> 3		--		上下左右颠倒
 	 * @param option.scale9GridRect	{Ycc.Math.Rect}	9宫格相对于res图片的中间区域，当且仅当fillMode为scale9Grid有效。
 	 * @constructor
-	 * @extends Ycc.UI.Base
+	 * @extends Ycc.UI.Polygon
 	 */
 	Ycc.UI.Image = function Image(option) {
-		Ycc.UI.Base.call(this,option);
+		Ycc.UI.Polygon.call(this,option);
 		this.yccClass = Ycc.UI.Image;
 		
 		/**
@@ -5632,7 +6176,7 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 		this.extend(option);
 	};
 	// 继承prototype
-	Ycc.utils.mergeObject(Ycc.UI.Image.prototype,Ycc.UI.Base.prototype);
+	Ycc.utils.mergeObject(Ycc.UI.Image.prototype,Ycc.UI.Polygon.prototype);
 	Ycc.UI.Image.prototype.constructor = Ycc.UI.Image;
 	
 	
@@ -5646,6 +6190,11 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 			this.rect.width = this.res.width;
 			this.rect.height = this.res.height;
 		}
+		// 计算多边形坐标
+		this.coordinates= this.rect.getVertices();
+		// 计算相对位置
+		this.x=this.rect.x,this.y=this.rect.y;
+
 	};
 	
 	/**
@@ -5674,12 +6223,19 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 	 */
 	Ycc.UI.Image.prototype.render = function () {
 		this.ctx.save();
-		this.scaleAndRotate();
+		// this.scaleAndRotate();
 		
-		var rect = this.getAbsolutePosition();//this.rect;
+		var rect = this.getAbsolutePositionRect();//this.rect;
 		var img = this.res;
 		// 局部变量
 		var i,j,wCount,hCount,xRest,yRest;
+		
+
+		// 坐标系旋转
+		var absoluteAnchor = this.transformToAbsolute({x:this.anchorX,y:this.anchorY});
+		this.ctx.translate(absoluteAnchor.x,absoluteAnchor.y);
+		this.ctx.rotate(this.rotation*Math.PI/180);
+		this.ctx.translate(-absoluteAnchor.x,-absoluteAnchor.y);
 		
 		this._processMirror(rect);
 		if(this.fillMode === "none")
@@ -5827,10 +6383,10 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 	 * 		<br> 2		--		左右翻转
 	 * 		<br> 3		--		上下左右颠倒
 	 * @constructor
-	 * @extends Ycc.UI.Base
+	 * @extends Ycc.UI.Polygon
 	 */
 	Ycc.UI.ImageFrameAnimation = function ImageFrameAnimation(option) {
-		Ycc.UI.Base.call(this,option);
+		Ycc.UI.Polygon.call(this,option);
 		this.yccClass = Ycc.UI.ImageFrameAnimation;
 		
 		
@@ -5894,7 +6450,7 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 		this.isRunning = this.autoplay;
 	};
 	// 继承prototype
-	Ycc.utils.mergeObject(Ycc.UI.ImageFrameAnimation.prototype,Ycc.UI.Base.prototype);
+	Ycc.utils.mergeObject(Ycc.UI.ImageFrameAnimation.prototype,Ycc.UI.Polygon.prototype);
 	Ycc.UI.ImageFrameAnimation.prototype.constructor = Ycc.UI.ImageFrameAnimation;
 	
 	
@@ -5904,7 +6460,10 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 	 * @override
 	 */
 	Ycc.UI.ImageFrameAnimation.prototype.computeUIProps = function () {
-	
+		// 计算多边形坐标
+		this.coordinates= this.rect.getVertices();
+		// 计算相对位置
+		this.x=this.rect.x,this.y=this.rect.y;
 	};
 	
 	/**
@@ -5934,7 +6493,7 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 	Ycc.UI.ImageFrameAnimation.prototype.render = function () {
 		
 		// 绝对坐标
-		var rect = this.getAbsolutePosition();
+		var rect = this.getAbsolutePositionRect();
 		// 获取当前显示第几个序列图，由于默认播放第一帧图片，这里直接渲染第二帧图片
 		var index = parseInt((this.belongTo.yccInstance.ticker.frameAllCount-this.startFrameCount)/this.frameSpace)%this.frameRectCount+1;
 		// 若没开始播放，默认只绘制第一个序列帧
@@ -5991,10 +6550,10 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 	 * @param option.width=1	{number}	线条宽度
 	 * @param option.color="black"	{string}	线条颜色
 	 * @constructor
-	 * @extends Ycc.UI.Base
+	 * @extends Ycc.UI.Polygon
 	 */
 	Ycc.UI.Line = function Line(option) {
-		Ycc.UI.Base.call(this,option);
+		Ycc.UI.Polygon.call(this,option);
 		this.yccClass = Ycc.UI.Line;
 		
 		this.start = new Ycc.Math.Dot(0,0);
@@ -6005,7 +6564,7 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 		this.extend(option);
 	};
 	// 继承prototype
-	Ycc.utils.mergeObject(Ycc.UI.Line.prototype,Ycc.UI.Base.prototype);
+	Ycc.utils.mergeObject(Ycc.UI.Line.prototype,Ycc.UI.Polygon.prototype);
 	Ycc.UI.Line.prototype.constructor = Ycc.UI.Line;
 
 	/**
@@ -6018,26 +6577,66 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 		this.rect.y = this.start.y<this.end.y?this.start.y:this.end.y;
 		this.rect.width = Math.abs(this.start.x-this.end.x);
 		this.rect.height = Math.abs(this.start.y-this.end.y);
+		
+		
+		// 计算多边形坐标
+		var x1=this.start.x,y1=this.start.y,x2=this.end.x,y2=this.end.y;
+		// 垂直线段的斜率
+		var k = -(x2-x1)/(y2-y1);
+		if(y2-y1===0) {
+			this.coordinates=[
+				{x:this.start.x,y:this.start.y-this.width/2},
+				{x:this.start.x,y:this.start.y+this.width/2},
+				{x:this.end.x,y:this.end.y+this.width/2},
+				{x:this.end.x,y:this.end.y-this.width/2},
+				{x:this.start.x,y:this.start.y-this.width/2},
+			];
+		}else {
+			var cx1 = x1-Math.pow(Math.pow(this.width/2,2)/(k*k+1),0.5);
+			var cx2 = x1+Math.pow(Math.pow(this.width/2,2)/(k*k+1),0.5);
+			var cx3 = x2+Math.pow(Math.pow(this.width/2,2)/(k*k+1),0.5);
+			var cx4 = x2-Math.pow(Math.pow(this.width/2,2)/(k*k+1),0.5);
+			
+			var cy1 = k*(cx1-x1)+y1;
+			var cy2 = k*(cx2-x1)+y1;
+			var cy3 = k*(cx3-x2)+y2;
+			var cy4 = k*(cx4-x2)+y2;
+			
+			
+			// 计算多边形坐标
+			// 计算多边形坐标
+			this.coordinates=[
+				{x:cx1,y:cy1},
+				{x:cx2,y:cy2},
+				{x:cx3,y:cy3},
+				{x:cx4,y:cy4},
+				{x:cx1,y:cy1},
+			];
+		}
+		// 计算相对位置
+		this.x=this.start.x,this.y=this.start.y;
+		this.strokeStyle = this.color;
+		this.fillStyle = this.color;
 	};
 	/**
-	 * 绘制
+	 * 绘制函数与Polygon相同
 	 */
-	Ycc.UI.Line.prototype.render = function () {
-		
-		var pa = this.getParent();
-		var start = pa?pa.transformToAbsolute(this.start):this.start;
-		var end = pa?pa.transformToAbsolute(this.end):this.end;
-		this.ctx.save();
-		this.ctx.strokeStyle = this.color;
-		this.ctx.strokeWidth = this.width;
-		
-		this.ctx.beginPath();
-		this.ctx.moveTo(start.x, start.y);
-		this.ctx.lineTo(end.x, end.y);
-		this.ctx.stroke();
-		this.ctx.closePath();
-		this.ctx.restore();
-	};
+	// Ycc.UI.Line.prototype.render = function () {
+	//
+	// 	var pa = this.getParent();
+	// 	var start = pa?pa.transformToAbsolute(this.start):this.start;
+	// 	var end = pa?pa.transformToAbsolute(this.end):this.end;
+	// 	this.ctx.save();
+	// 	this.ctx.strokeStyle = this.color;
+	// 	this.ctx.lineWidth = this.width;
+	//
+	// 	this.ctx.beginPath();
+	// 	this.ctx.moveTo(start.x, start.y);
+	// 	this.ctx.lineTo(end.x, end.y);
+	// 	this.ctx.stroke();
+	// 	this.ctx.closePath();
+	// 	this.ctx.restore();
+	// };
 	
 	
 	
@@ -6062,21 +6661,23 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 	 * @param option.pointList		{Ycc.Math.Dot[]}		Dot数组。该坐标是相对于图层的坐标
 	 * @param option.width=1	{number}	线条宽度
 	 * @param option.color="black"	{string}	线条颜色
+	 * @param option.smooth=false	{boolean}	线条是否平滑
 	 * @constructor
-	 * @extends Ycc.UI.Base
+	 * @extends Ycc.UI.Polygon
 	 */
 	Ycc.UI.BrokenLine = function BrokenLine(option) {
-		Ycc.UI.Base.call(this,option);
+		Ycc.UI.Polygon.call(this,option);
 
 		this.yccClass = Ycc.UI.BrokenLine;
 		
 		this.pointList = [];
 		this.width = 1;
 		this.color = "black";
+		this.smooth = false;
 		this.extend(option);
 	};
 	// 继承prototype
-	Ycc.utils.mergeObject(Ycc.UI.BrokenLine.prototype,Ycc.UI.Base.prototype);
+	Ycc.utils.mergeObject(Ycc.UI.BrokenLine.prototype,Ycc.UI.Polygon.prototype);
 	
 	/**
 	 * 计算UI的各种属性。此操作必须在绘制之前调用。
@@ -6109,6 +6710,12 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 		this.rect.y = miny;
 		this.rect.width = maxx-minx;
 		this.rect.height = maxy-miny;
+		
+		// 计算多边形坐标
+		this.coordinates= this.rect.getVertices();
+		// 计算相对位置
+		this.x=this.rect.x,this.y=this.rect.y;
+
 	};
 	/**
 	 * 绘制
@@ -6124,16 +6731,145 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 		this.ctx.strokeWidth = this.width;
 		this.ctx.beginPath();
 		// 因为直接操作舞台，所以绘制之前需要转换成舞台绝对坐标
-		var pointList = pa?pa.transformToAbsolute(this.pointList):this.pointList;
+		// var pointList = pa?pa.transformToAbsolute(this.pointList):this.pointList;
+		var pointList = this.transformByRotate(this.pointList);
+		
+		if(this.smooth)
+			this._smoothLineRender(pointList);
+		else
+			this._normalRender(pointList);
+		this.ctx.closePath();
+		this.ctx.restore();
+	};
+	
+	/**
+	 * 普通绘制
+	 * @param pointList
+	 * @private
+	 */
+	Ycc.UI.BrokenLine.prototype._normalRender = function (pointList) {
 		this.ctx.moveTo(pointList[0].x, pointList[0].y);
 		for(var i =1;i<pointList.length;i++){
 			this.ctx.lineTo(pointList[i].x, pointList[i].y);
 		}
 		this.ctx.stroke();
-		this.ctx.closePath();
-		this.ctx.restore();
 	};
 	
+	/**
+	 * 绘制平滑的曲线
+	 * 方案一：使用三次贝塞尔曲线
+	 * 原理：
+	 * 1、任意顶点的两个控制点连线始终平行于x轴
+	 * 2、它们的连线始终经过顶点
+	 * 3、两个控制点距离顶点的长度，根据顶点的相邻顶点在x轴方向上的距离乘以某个系数来确定
+	 * 4、这两个控制点分属于不同的两条曲线，分别是起点的控制点和终点的控制点
+	 * 5、第一个顶点和最后一个顶点只有一个控制点
+	 * @param pointList	{Ycc.Math.Dot[]}	经过转换后的舞台绝对坐标点列表
+	 */
+	Ycc.UI.BrokenLine.prototype._smoothLineRender = function (pointList) {
+		// 获取生成曲线的两个控制点和两个顶点，N个顶点可以得到N-1条曲线
+		var list = getCurveList(pointList);
+		// 调用canvas三次贝塞尔方法bezierCurveTo逐一绘制
+		this.ctx.beginPath();
+		for(var i=0;i<list.length;i++){
+			this.ctx.moveTo(list[i].start.x,list[i].start.y);
+			this.ctx.bezierCurveTo(list[i].dot1.x,list[i].dot1.y,list[i].dot2.x,list[i].dot2.y,list[i].end.x,list[i].end.y);
+		}
+		this.ctx.stroke();
+		
+		
+		/**
+		 * 获取曲线的绘制列表，N个顶点可以得到N-1条曲线
+		 * @return {Array}
+		 */
+		function getCurveList(pointList) {
+			// 长度比例系数
+			var lenParam = 1/3;
+			// 存储曲线列表
+			var curveList = [];
+			// 第一段曲线控制点1为其本身
+			curveList.push({
+				start:pointList[0],
+				end:pointList[1],
+				dot1:pointList[0],
+				dot2:null
+			});
+			for(var i=1;i<pointList.length-1;i++){
+				var cur = pointList[i];
+				var next = pointList[i+1];
+				var pre = pointList[i-1];
+				// 上一段曲线的控制点2
+				var p1 = new Ycc.Math.Dot(cur.x-lenParam*(Math.abs(cur.x-pre.x)),cur.y);
+				// 当前曲线的控制点1
+				var p2 = new Ycc.Math.Dot(cur.x+lenParam*(Math.abs(cur.x-next.x)),cur.y);
+				// 上一段曲线的控制点2
+				curveList[i-1].dot2 = p1;
+				curveList.push({
+					start:cur,
+					end:next,
+					dot1:p2,
+					dot2:null
+				});
+			}
+			// 最后一段曲线的控制点2为其本身
+			curveList[curveList.length-1].dot2=pointList[pointList.length-1];
+			return curveList;
+		}
+	};
+	
+	/**
+	 * 绘制平滑的曲线
+	 * 方案二：使用三次贝塞尔曲线
+	 * 原理：
+	 * 1、顶点两端的控制点连线始终经过顶点
+	 * 2、控制点连线始终垂直于两向量的夹角平分线
+	 * 3、两个控制点距离顶点的长度，根据顶点的相邻顶点在x轴方向上的距离乘以某个系数来确定
+	 * 4、这两个控制点分属于不同的两条曲线，分别是起点的控制点和终点的控制点
+	 * 5、第一个顶点和最后一个顶点只有一个控制点
+	 * @param pointList	{Ycc.Math.Dot[]}	经过转换后的舞台绝对坐标点列表
+	 */
+	Ycc.UI.BrokenLine.prototype._smoothLineRender02 = function (pointList) {
+		
+		
+		
+		
+		
+		/**
+		 * 获取曲线的绘制列表，N个顶点可以得到N-1条曲线
+		 * @return {Array}
+		 */
+		function getCurveList() {
+			var lenParam = 1/3;
+			var curveList = [];
+			// 第一段曲线控制点1为其本身
+			curveList.push({
+				start:pointList[0],
+				end:pointList[1],
+				dot1:pointList[0],
+				dot2:null
+			});
+			for(var i=1;i<pointList.length-1;i++){
+				var cur = pointList[i];
+				var next = pointList[i+1];
+				var pre = pointList[i-1];
+				// 上一段曲线的控制点2
+				var p1 = new Ycc.Math.Dot(cur.x-lenParam*(Math.abs(cur.x-pre.x)),cur.y);
+				// 当前曲线的控制点1
+				var p2 = new Ycc.Math.Dot(cur.x+lenParam*(Math.abs(cur.x-next.x)),cur.y);
+				// 上一段曲线的控制点2
+				curveList[i-1].dot2 = p1;
+				curveList.push({
+					start:cur,
+					end:next,
+					dot1:p2,
+					dot2:null
+				});
+			}
+			// 最后一段曲线的控制点2为其本身
+			curveList[curveList.length-1].dot2=pointList[pointList.length-1];
+			return curveList;
+		}
+	};
 	
 	
 	
@@ -6169,7 +6905,7 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 	 * 		<br> `auto`	-- 修改rect大小，完全显示
 	 */
 	Ycc.UI.MultiLineText = function MultiLineText(option) {
-		Ycc.UI.Base.call(this,option);
+		Ycc.UI.Polygon.call(this,option);
 		this.yccClass = Ycc.UI.MultiLineText;
 		
 		// /**
@@ -6204,7 +6940,7 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 	};
 
 	// 继承prototype
-	Ycc.utils.mergeObject(Ycc.UI.MultiLineText.prototype,Ycc.UI.Base.prototype);
+	Ycc.utils.mergeObject(Ycc.UI.MultiLineText.prototype,Ycc.UI.Polygon.prototype);
 	Ycc.UI.MultiLineText.prototype.constructor = Ycc.UI.MultiLineText;
 	
 	
@@ -6225,6 +6961,11 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 			config.rect.height = config.lineHeight*this.displayLines.length;
 		}
 		
+		// 计算多边形坐标
+		this.coordinates= this.rect.getVertices();
+		// 计算相对位置
+		this.x=this.rect.x,this.y=this.rect.y;
+
 		/**
 		 * 获取需要实际绘制的文本行数组
 		 */
@@ -6363,12 +7104,18 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 		// 引用
 		var config = this;
 		// 绝对坐标的rect
-		var rect = this.getAbsolutePosition();
+		var rect = this.getAbsolutePositionRect();
 		
 		this.ctx.save();
 		this.ctx.fillStyle = config.color;
 		this.ctx.strokeStyle = config.color;
 		
+		// 坐标系旋转
+		var absoluteAnchor = this.transformToAbsolute({x:this.anchorX,y:this.anchorY});
+		this.ctx.translate(absoluteAnchor.x,absoluteAnchor.y);
+		this.ctx.rotate(this.rotation*Math.PI/180);
+		this.ctx.translate(-absoluteAnchor.x,-absoluteAnchor.y);
+
 		// 绘制
 		for(var i = 0;i<self.displayLines.length;i++){
 			var x = rect.x;
@@ -6376,7 +7123,7 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 			if(y+config.lineHeight>rect.y+rect.height){
 				break;
 			}
-			this.belongTo.yccInstance.baseUI.text([x,y],self.displayLines[i],config.fill);
+			this.ctx.fillText(self.displayLines[i],x,y);
 		}
 		this.ctx.restore();
 	};
@@ -6401,10 +7148,10 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 	 * @param option.fill=true {boolean}	填充or描边
 	 * @param option.color=black {string} 方块颜色
 	 * @constructor
-	 * @extends Ycc.UI.Base
+	 * @extends Ycc.UI.Polygon
 	 */
 	Ycc.UI.Rect = function Rect(option) {
-		Ycc.UI.Base.call(this,option);
+		Ycc.UI.Polygon.call(this,option);
 		this.yccClass = Ycc.UI.Rect;
 		
 		/**
@@ -6421,26 +7168,40 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 		this.extend(option);
 	};
 	// 继承prototype
-	Ycc.utils.mergeObject(Ycc.UI.Rect.prototype,Ycc.UI.Base.prototype);
+	Ycc.utils.mergeObject(Ycc.UI.Rect.prototype,Ycc.UI.Polygon.prototype);
+	
+	
+	/**
+	 * 计算UI的各种属性。此操作必须在绘制之前调用。
+	 * <br> 计算与绘制分离的好处是，在绘制UI之前就可以提前确定元素的各种信息，从而判断是否需要绘制。
+	 * @override
+	 */
+	Ycc.UI.Rect.prototype.computeUIProps = function () {
+		// 计算多边形坐标
+		this.coordinates = this.rect.getVertices();
+		// 赋值位置信息
+		this.x = this.rect.x,this.y=this.rect.y;
+	};
+	
 	
 	/**
 	 * 绘制
 	 */
-	Ycc.UI.Rect.prototype.render = function () {
+	Ycc.UI.Rect.prototype.render = function (ctx) {
+		var self = this;
+		ctx = ctx || self.ctx;
+		if(!self.ctx){
+			console.error("[Ycc error]:","ctx is null !");
+			return;
+		}
 		
-		var rect = this.getAbsolutePosition();
-
-		this.ctx.save();
-		this.ctx.beginPath();
-		this.ctx.fillStyle = this.color;
-		this.ctx.strokeStyle = this.color;
-		this.ctx.rect(rect.x,rect.y,rect.width,rect.height);
-		this.ctx.closePath();
-		if(!this.fill)
-			this.ctx.stroke();
-		else
-			this.ctx.fill();
-		this.ctx.restore();
+		
+		ctx.save();
+		ctx.fillStyle = this.color;
+		ctx.strokeStyle = this.color;
+		this.renderPath();
+		this.fill?ctx.fill():ctx.stroke();
+		ctx.restore();
 	};
 	
 	
@@ -6463,10 +7224,10 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 	 * @param option.rect	{Ycc.Math.Rect}	容纳区。会根据属性设置动态修改。
 	 * @param option.fill=true {boolean}	填充or描边
 	 * @constructor
-	 * @extends Ycc.UI.Base
+	 * @extends Ycc.UI.Polygon
 	 */
 	Ycc.UI.CropRect = function CropRect(option) {
-		Ycc.UI.Base.call(this,option);
+		Ycc.UI.Polygon.call(this,option);
 		this.yccClass = Ycc.UI.CropRect;
 		
 		/**
@@ -6537,7 +7298,7 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 		this._initUI();
 	};
 	// 继承prototype
-	Ycc.utils.mergeObject(Ycc.UI.CropRect.prototype,Ycc.UI.Base.prototype);
+	Ycc.utils.mergeObject(Ycc.UI.CropRect.prototype,Ycc.UI.Polygon.prototype);
 	
 	
 	/**
@@ -6569,7 +7330,7 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 					content:"",
 					rectBgColor:"#666",
 					color:"#fff",
-					onclick:function () {}
+					ontap:function () {}
 				},config);
 				var btn = new Ycc.UI.SingleLineText(config);
 				btn.addListener("mouseover",function () {
@@ -6640,9 +7401,11 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 			tempW += ui.rect.width+1;
 		}
 		
-		
-		
-		
+		// 计算多边形坐标
+		this.coordinates= this.rect.getVertices();
+		// 计算相对位置
+		this.x=this.rect.x,this.y=this.rect.y;
+
 	};
 	
 	/**
@@ -6658,6 +7421,7 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 		
 		this.userData = this.userData?this.userData:{};
 		this.addListener("dragstart",function (e) {
+			console.log('dragstart',e);
 			// self.showBtns(false);
 			// 标识第几个变换控制点
 			this.userData.ctrlStart = 0;
@@ -6845,7 +7609,7 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 	 * @param option	{object}		所有可配置的配置项
 	 * @param option.content=""	{string}	内容
 	 * @param option.color=black	{string}	颜色
-	 * @param option.rect	{Ycc.Math.Rect}	容纳区。会根据属性设置动态修改。
+	 * @param option.rect	{Ycc.Math.Rect}	容纳区。会根据属性设置动态修改。位置坐标x,y为rect的x,y
 	 * @param option.overflow=auto	{string}	水平方向超出rect之后的显示方式
 	 * 		<br> `hidden` -- 直接隐藏
 	 * 		<br> `auto`	-- 修改rect大小，完全显示
@@ -6853,7 +7617,7 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 	 */
 
 	Ycc.UI.SingleLineText = function SingleLineText(option) {
-		Ycc.UI.Base.call(this,option);
+		Ycc.UI.Polygon.call(this,option);
 		this.yccClass = Ycc.UI.SingleLineText;
 		
 		/**
@@ -6908,7 +7672,7 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 	};
 
 	// 继承prototype
-	Ycc.utils.mergeObject(Ycc.UI.SingleLineText.prototype,Ycc.UI.Base.prototype);
+	Ycc.utils.mergeObject(Ycc.UI.SingleLineText.prototype,Ycc.UI.Polygon.prototype);
 	Ycc.UI.SingleLineText.prototype.constructor = Ycc.UI.SingleLineText;
 	
 	
@@ -6947,8 +7711,12 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 			if(parseInt(this.fontSize)>this.rect.height){
 				this.rect.height = parseInt(this.fontSize);
 			}
-			
 		}
+		
+		// 计算多边形坐标
+		this.coordinates= this.rect.getVertices();
+		// 计算相对位置
+		this.x=this.rect.x,this.y=this.rect.y;
 	};
 	/**
 	 * 渲染至ctx
@@ -6956,7 +7724,6 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 	 */
 	Ycc.UI.SingleLineText.prototype.render = function (ctx) {
 		var self = this;
-		
 		// 设置画布属性再计算，否则计算内容长度会有偏差
 		self.belongTo._setCtxProps(self);
 
@@ -6976,7 +7743,7 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 		// 配置项
 		var option = this;
 		// 绝对坐标
-		var rect = this.getAbsolutePosition();
+		var rect = this.getAbsolutePositionRect();
 		x = rect.x;
 		
 		var textWidth = this.ctx.measureText(this.displayContent).width;
@@ -6998,6 +7765,13 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 		}
 		
 		this.ctx.save();
+		// this.scaleAndRotate();
+		// 坐标系旋转
+		var absoluteAnchor = this.transformToAbsolute({x:this.anchorX,y:this.anchorY});
+		this.ctx.translate(absoluteAnchor.x,absoluteAnchor.y);
+		this.ctx.rotate(this.rotation*Math.PI/180);
+		this.ctx.translate(-absoluteAnchor.x,-absoluteAnchor.y);
+		
 		this.ctx.fillStyle = option.color;
 		this.ctx.strokeStyle = option.color;
 		// this.baseUI.text([x,y],self.displayContent,option.fill);
@@ -7167,6 +7941,16 @@ if("undefined"!== typeof wx){
  * 导出兼容文件，兼容npm模块的加载模式
  */
 
-;if("undefined"!== typeof module) {
-	exports = module.exports = Ycc;
+
+;if(typeof exports==="object"&&typeof module!=="undefined"){
+	module.exports=Ycc;
+}else if(typeof define==="function"){
+	define("Ycc",Ycc)
+}else{
+	var g;
+	if(typeof window!=="undefined"){g=window}
+	else if(typeof global!=="undefined"){g=global}
+	else if(typeof self!=="undefined"){g=self}
+	else{g=this}
+	g.Ycc = Ycc;
 }

@@ -473,8 +473,8 @@
 			res:images.bucket,
 			fillMode:'scale',
 			name:'bucket',
-			anchorX:bucketWidth/2,
-			anchorY:bucketHeight/2,
+			anchorX:startX+bucketWidth/2,
+			anchorY:stageH-height-bucketHeight+bucketHeight/2,
 			rotation:[0,0,90,180,270][direction||1]
 		});
 		this.layer.addUI(image);
@@ -675,8 +675,8 @@
 		self.btnLayer.addUI(new Ycc.UI.Image({
 			rect:new Ycc.Math.Rect(marginLeft,stageH-(2*btnSize+btnSpace+marginBottom),btnSize,btnSize),
 			fillMode:'scale',
-			anchorX:btnSize/2,
-			anchorY:btnSize/2,
+			anchorX:marginLeft+btnSize/2,
+			anchorY:stageH-(2*btnSize+btnSpace+marginBottom)+btnSize/2,
 			res:images.btn,
 			rotation:180,
 			ondragstart:function (e) {
@@ -725,8 +725,8 @@
 		self.btnLayer.addUI(new Ycc.UI.Image({
 			rect:new Ycc.Math.Rect(marginLeft+btnSize/2+btnSpace/2,stageH-(btnSize+marginBottom),btnSize,btnSize),
 			fillMode:'scale',
-			anchorX:btnSize/2,
-			anchorY:btnSize/2,
+			anchorX:marginLeft+btnSize/2+btnSpace/2+btnSize/2,
+			anchorY:stageH-(btnSize+marginBottom)+btnSize/2,
 			res:images.btn,
 			rotation:90,
 			ondragstart:function (e) {
@@ -897,8 +897,8 @@
 		var self = this;
 		var btn = new Ycc.UI.Image({
 			rect:new Ycc.Math.Rect(stageW-40,10,30,30),
-			anchorX:15,
-			anchorY:15,
+			anchorX:stageW-40+15,
+			anchorY:10+15,
 			fillMode:'scale',
 			res:images.music,
 			name:'musicBtn',
@@ -913,7 +913,7 @@
 		btn.addChild(new Ycc.UI.Line({
 			start:new Ycc.Math.Dot(5,5),
 			end:new Ycc.Math.Dot(25,25),
-			width:5,
+			width:3,
 			color:'#ccc',
 			ontap:function (e) {
 				if(audios.bgm.running)
