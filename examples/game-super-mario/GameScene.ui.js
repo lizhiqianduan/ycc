@@ -473,8 +473,8 @@
 			res:images.bucket,
 			fillMode:'scale',
 			name:'bucket',
-			anchorX:bucketWidth/2,
-			anchorY:bucketHeight/2,
+			anchorX:startX+bucketWidth/2,
+			anchorY:stageH-height-bucketHeight+bucketHeight/2,
 			rotation:[0,0,90,180,270][direction||1]
 		});
 		this.layer.addUI(image);
