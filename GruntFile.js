@@ -3,6 +3,7 @@
  */
 var grunt = require("grunt");
 var fs = require("fs");
+var packageJSON = require("./package.json");
 
 module.exports = function(grunt){
 	
@@ -73,7 +74,7 @@ module.exports = function(grunt){
 			src: ['src/*.js','README.md'],
 			options: {
 				verbose: true,
-				destination: 'docs',
+				destination: 'docs/v'+packageJSON.version,
 				private:true,
 				template:"./lib/jaguarjs-jsdoc",
 				configure: "jsdoc-conf.json"
