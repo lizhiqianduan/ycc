@@ -1,10 +1,4 @@
-/**
- * @file    Ycc.class.js
- * @author  xiaohei
- * @date    2017/9/30
- * @description  Ycc.class文件
- *
- */
+
 
 /**
  * 应用启动入口类，每个实例都与一个canvas绑定。
@@ -338,14 +332,7 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 	return null;
 };
 
-;/**
- * @file        Ycc.utils.js
- * @author      xiaohei
- * @desc
- *  整个程序公用的基础工具模块
- *
- * @requires    Ycc.init
- */
+;
 
 (function(Ycc){
     Ycc.utils = {};
@@ -547,12 +534,7 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 	
 })(Ycc);
 
-;/**
- * @file    Ycc.Math.js
- * @author  xiaohei
- * @date    2017/11/2
- * @description  Ycc.Math文件
- */
+;
 
 
 (function (Ycc) {
@@ -895,13 +877,7 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 	};
 	
 	
-})(Ycc);;/**
- * @file    Ycc.Tree.class.js
- * @author  xiaohei
- * @date    2018/8/6
- * @description  Ycc.Tree.class文件
- */
-
+})(Ycc);;
 
 
 
@@ -1323,14 +1299,7 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 	
 	
 	
-})(Ycc);;/**
- * @file    Ycc.Graph.class.js
- * @author  xiaohei
- * @date    2018/8/14
- * @description  Ycc.Graph.class文件
- *
- * 图的结构类，有向图、无向图等
- */
+})(Ycc);;
 
 (function (Ycc) {
 	
@@ -1771,13 +1740,7 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 
 
 
-})(Ycc);;/**
- * @file    Ycc.Ticker.class.js
- * @author  xiaohei
- * @date    2017/10/26
- * @description  Ycc.Ticker.class文件
- */
-
+})(Ycc);;
 
 
 (function (Ycc) {
@@ -2025,13 +1988,7 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 	
 	
 	
-})(Ycc);;/**
- * @file    Ycc.Debugger.class.js
- * @author  xiaohei
- * @date    2018/10/24
- * @description  Ycc.Debugger.class文件
- */
-
+})(Ycc);;
 
 (function (Ycc) {
 	
@@ -2220,13 +2177,7 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 	
 	
 	
-})(Ycc);;/**
- * @file    Ycc.Loader.class.js
- * @author  xiaohei
- * @date    2017/10/9
- * @description  Ycc.Loader.class文件
- */
-
+})(Ycc);;
 
 
 (function (Ycc) {
@@ -2485,15 +2436,7 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 	};
 	
 	
-})(Ycc);;/**
- * @file    Ycc.Ajax.class.js
- * @author  xiaohei
- * @date    2018/10/31
- * @description  Ycc.Ajax.class文件
- */
-
-
-
+})(Ycc);;
 (function (Ycc) {
 	
 	/**
@@ -2559,13 +2502,7 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 	
 	
 	
-})(Ycc);;/**
- * @file    Ycc.Event.class.js
- * @author  xiaohei
- * @date    2017/11/20
- * @description  Ycc.Event.class文件
- */
-
+})(Ycc);;
 
 
 (function (Ycc) {
@@ -2655,13 +2592,7 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 	
 	
 	
-})(Ycc);;/**
- * @file    Ycc.Listener.class.js
- * @author  xiaohei
- * @date    2017/11/16
- * @description  Ycc.Listener.class文件
- */
-
+})(Ycc);;
 
 
 
@@ -2960,13 +2891,7 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 	
 	
 	
-})(Ycc);;/**
- * @file    Ycc.TouchLifeTracer.class.js
- * @author  xiaohei
- * @date    2018/6/12
- * @description  Ycc.TouchLifeTracer.class文件
- * @requires Ycc.Listener
- */
+})(Ycc);;
 
 
 (function (Ycc) {
@@ -3210,15 +3135,7 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 		return -1;
 	};
 	
-})(Ycc);;/**
- * @file    Ycc.Gesture.class.js
- * @author  xiaohei
- * @date    2018/6/19
- * @description  Ycc.Gesture.class文件
- * 移动端的手势类，封装简单的手势操作，操作只对target元素生效，若需要转发给Ycc.UI，则需要自己处理
- * @requires Ycc.TouchLifeTracer
- */
-
+})(Ycc);;
 
 (function (Ycc) {
 	
@@ -3630,15 +3547,7 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 
 
 })(Ycc);
-;/**
- * @file    Ycc.Layer.class.js
- * @author  xiaohei
- * @date    2017/11/16
- * @description  Ycc.Layer.class文件
- * @requires Ycc.Listener
- */
-
-
+;
 
 (function (Ycc) {
 	
@@ -4233,13 +4142,7 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 		return res;
 	};
 	
-})(Ycc);;/**
- * @file    Ycc.Layer.class.js
- * @author  xiaohei
- * @date    2017/10/23
- * @description  Ycc.LayerManager.class文件
- */
-
+})(Ycc);;
 
 (function (Ycc) {
 	
@@ -4394,15 +4297,7 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 	
 	
 	
-})(Ycc);;/**
- * @file    Ycc.PhotoManager.class.js
- * @author  xiaohei
- * @date    2017/9/30
- * @description		Ycc.PhotoManager.class文件。
- * 	Ycc实例的快照管理类
- *
- */
-
+})(Ycc);;
 
 
 (function (Ycc){
@@ -4494,20 +4389,7 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 	
 	
 	
-})(Ycc);;/**
- * @file 	ycc.ui.js
- * @author	xiaohei
- * @date	2016/4/1
- *
- * @desc
- * 控制所有的绘图基本操作，保存所有的绘图步骤，并提供回退、前进、清空、快照等方法。
- * 不管理图形颜色、阴影、文字等内容。
- * 所有图形绘制都为同步操作
- *
- * @requires Ycc
- * @requires Ycc.utils
- * */
-
+})(Ycc);;
 (function(Ycc){
 	// 检查依赖项
 	if(!Ycc || !Ycc.utils){
@@ -4831,16 +4713,7 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 
 
 
-})(Ycc);;/**
- * @file    Ycc.UI.Base.class.js
- * @author  xiaohei
- * @date    2017/11/15
- * @description  Ycc.UI.Base.class文件。
- * 所有容器UI的基础类
- * @requires Ycc.UI
- * @requires Ycc.utils
- */
-
+})(Ycc);;
 (function (Ycc) {
 	var uid = 0;
 	
@@ -5512,12 +5385,7 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 	};
 
 
-})(Ycc);;/**
- * @file    Ycc.UI.Polygon.class.js
- * @author  xiaohei
- * @date    2019/4/26
- * @description  Ycc.UI.Polygon.class文件
- */
+})(Ycc);;
 
 (function (Ycc) {
 	
@@ -5804,13 +5672,7 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 	
 	
 	
-})(Ycc);;/**
- * @file    Ycc.UI.Ellipse.class.js
- * @author  xiaohei
- * @date    2017/11/24
- * @description  Ycc.UI.Ellipse.class文件
- */
-
+})(Ycc);;
 
 
 (function (Ycc) {
@@ -5969,13 +5831,7 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 		this.ctx.restore();
 	}
 	
-})(Ycc);;/**
- * @file    Ycc.UI.Circle.class.js
- * @author  xiaohei
- * @date    2017/11/23
- * @description  Ycc.UI.Circle.class文件
- */
-
+})(Ycc);;
 
 
 (function (Ycc) {
@@ -6061,6 +5917,7 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 	 * @override
 	 */
 	Ycc.UI.Circle.prototype.renderDashBeforeUI = function (ctx) {
+		if(!this.isShowRotateBeforeUI || this.coordinates.length===0) return;
 		var self = this;
 		ctx = this.ctx;
 		var pa = this.getParent();
@@ -6096,13 +5953,7 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 	};
 	
 	
-})(Ycc);;/**
- * @file    Ycc.UI.Image.class.js
- * @author  xiaohei
- * @date    2017/11/22
- * @description  Ycc.UI.Image.class文件
- */
-
+})(Ycc);;
 
 
 (function (Ycc) {
@@ -6359,13 +6210,7 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 	
 	
 	
-})(Ycc);;/**
- * @file    Ycc.UI.ImageFrameAnimation.js
- * @author  xiaohei
- * @date    2018/9/29
- * @description  Ycc.UI.ImageFrameAnimation文件
- */
-
+})(Ycc);;
 
 (function (Ycc) {
 	/**
@@ -6532,12 +6377,7 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 	
 })(Ycc);
 
-;/**
- * @file    Ycc.UI.Line.class.js
- * @author  xiaohei
- * @date    2017/11/17
- * @description  Ycc.UI.Line.class文件
- */
+;
 
 
 (function (Ycc) {
@@ -6642,13 +6482,7 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 	
 	
 	
-})(Ycc);;/**
- * @file    Ycc.UI.BrokenLine.class.js
- * @author  xiaohei
- * @date    2017/11/24
- * @description  Ycc.UI.BrokenLine.class文件
- */
-
+})(Ycc);;
 
 
 
@@ -6875,13 +6709,7 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 	
 	
 	
-})(Ycc);;/**
- * @file    Ycc.UI.MultiLineText.class.js
- * @author  xiaohei
- * @date    2017/11/16
- * @description  Ycc.UI.MultiLineText.class文件
- */
-
+})(Ycc);;
 
 
 
@@ -7130,13 +6958,7 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 	
 	
 	
-})(Ycc);;/**
- * @file    Ycc.UI.Rect.class.js
- * @author  xiaohei
- * @date    2017/11/17
- * @description  Ycc.UI.Rect.class文件
- */
-
+})(Ycc);;
 
 
 (function (Ycc) {
@@ -7207,12 +7029,7 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 	
 	
 	
-})(Ycc);;/**
- * @file    Ycc.UI.CropRect.class.js
- * @author  xiaohei
- * @date    2017/11/29
- * @description  Ycc.UI.CropRect.class文件
- */
+})(Ycc);;
 
 
 
@@ -7590,13 +7407,7 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 	
 	
 	
-})(Ycc);;/**
- * @file    Ycc.UI.SingleLineText.class.js
- * @author  xiaohei
- * @date    2017/11/15
- * @description  Ycc.UI.SingleLineText.class文件
- */
-
+})(Ycc);;
 
 
 
@@ -7781,13 +7592,7 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 	
 	
 	
-})(Ycc);;/**
- * @file    Ycc.UI.ComponentButton.class.js
- * @author  xiaohei
- * @date    2018/11/27
- * @description  Ycc.UI.ComponentButton.class文件
- */
-
+})(Ycc);;
 (function (Ycc) {
 	
 	/**
@@ -7904,14 +7709,7 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 			this.__textUI.color = this.textColor;
 		}
 	};
-})(Ycc);;/**
- * @file    Ycc.polyfill.wx.js
- * @author  xiaohei
- * @date    2018/11/19
- * @description  Ycc.polyfill.wx文件
- */
-
-
+})(Ycc);;
 // 兼容微信
 if("undefined"!== typeof wx){
 	// Ycc.prototype.getStageWidth = function () {
@@ -7932,14 +7730,7 @@ if("undefined"!== typeof wx){
 			return Date.now();
 		};
 	}
-};;/**
- * @file    Ycc.polyfill.export.js
- * @author  xiaohei
- * @date    2018/12/11
- * @description  Ycc.polyfill.export文件
- *
- * 导出兼容文件，兼容npm模块的加载模式
- */
+};;
 
 
 ;if(typeof exports==="object"&&typeof module!=="undefined"){
