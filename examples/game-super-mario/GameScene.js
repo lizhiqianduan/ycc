@@ -638,8 +638,8 @@ GameScene.prototype.directionCompute = function () {
 GameScene.prototype.marioHitWall = function (wallBoxBody) {
 	var self = this;
 	var wallBox = this.getUIFromMatterBody(wallBoxBody);
-	var wallBoxRect = wallBox.getAbsolutePosition();
-	var marioRect = this.mario.getAbsolutePosition();
+	var wallBoxRect = wallBox.getAbsolutePositionRect();
+	var marioRect = this.mario.getAbsolutePositionRect();
 	// Mario中线
 	var middleX = marioRect.x+marioRect.width/2;
 	
@@ -662,8 +662,9 @@ GameScene.prototype.marioHitWall = function (wallBoxBody) {
 	
 	
 	for(var i=0;i<wallBox.children.length;i++){
-		var child = wallBox.children[i].getAbsolutePosition();
+		var child = wallBox.children[i].getAbsolutePositionRect();
 		if(middleX<child.width+child.x && middleX>child.x){
+			console.log('撞中间某一块');
 			rebuildWall(wallBox,i,1);
 			// wallBox.removeChild(wallBox.children[i]);
 			return;
