@@ -296,6 +296,8 @@
         this.ball.point.y+=this.beta*this.level;
 
 		this.ballTextUI.content=this.score+'';
+		this.ballTextUI.rect.x=-this.ball.rect.width/2;
+		this.ballTextUI.rect.y=-this.ball.rect.height/2;
 		this.ballTextUI.rect.width=this.ball.rect.width;
 		this.ballTextUI.rect.height=this.ball.rect.height;
 
