@@ -90,6 +90,7 @@
 	 * @override
 	 */
 	Ycc.UI.Circle.prototype.renderDashBeforeUI = function (ctx) {
+		if(!this.isShowRotateBeforeUI || this.coordinates.length===0) return;
 		var self = this;
 		ctx = this.ctx;
 		var pa = this.getParent();
