@@ -70,11 +70,13 @@ module.exports = function(grunt){
 			}
         }
         ,jsdoc:{
-			src: ['src/*.js'],
+			src: ['src/*.js','README.md'],
 			options: {
+				verbose: true,
 				destination: 'docs',
 				private:true,
-				template:"./lib/jaguarjs-jsdoc"
+				template:"./lib/jaguarjs-jsdoc",
+				configure: "jsdoc-conf.json"
 			}
 		}
 		
