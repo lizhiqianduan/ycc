@@ -202,6 +202,13 @@
 		arr.length = 0;
 	};
 	
+	/**
+	 * 检测是否微信环境
+	 * @return {boolean}
+	 */
+	Ycc.utils.isWx = function () {
+		return "undefined"!== typeof wx;
+	}
 	
 	
 	

@@ -338,3 +338,21 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 	return null;
 };
 
+/**
+ * 兼容创建舞台canvas，微信端、H5端
+ * @param options
+ * @return {*}
+ */
+Ycc.prototype.createStageCanvas = function (options) {
+	// 微信环境，canvas为全局变量
+	if(Ycc.isWx() && typeof canvas!=='undefined') return canvas;
+	
+	options = options || {
+		width:window.innerWidth,
+		height:window.innerHeight
+	};
+	var canvas = document.createElement("canvas");
+	canvas.width = options.width;
+	canvas.height = options.height;
+	return canvas;
+};
