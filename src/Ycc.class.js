@@ -339,14 +339,16 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 };
 
 /**
- * 兼容创建舞台canvas，微信端、H5端
+ * 创建舞台canvas，只针对H5端。微信小游戏的canvas为全局变量，直接使用即可
+ * @example
+ * var ycc = new Ycc();
+ * var stage = canvas || ycc.createStageCanvas();
+ * ycc.bindCanvas(stage);
+ *
  * @param options
- * @return {*}
+ * @return {*}	已创建的canvas元素
  */
 Ycc.prototype.createStageCanvas = function (options) {
-	// 微信环境，canvas为全局变量
-	if(Ycc.isWx() && typeof canvas!=='undefined') return canvas;
-	
 	options = options || {
 		width:window.innerWidth,
 		height:window.innerHeight
