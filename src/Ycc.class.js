@@ -262,7 +262,7 @@ Ycc.prototype._initStageGestureEvent = function () {
 	 * @return {null}
 	 */
 	function triggerUIEventBubbleUp(type,x,y,ui) {
-		if(ui && ui.belongTo.enableEventManager){
+		if(ui && ui.belongTo && ui.belongTo.enableEventManager){
 			// 触发ui的事件
 			ui.triggerListener(type,new Ycc.Event({x:x,y:y,type:type,target:ui}));
 
