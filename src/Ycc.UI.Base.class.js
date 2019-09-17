@@ -111,6 +111,14 @@
 		this.show = true;
 		
 		/**
+		 * 是否幽灵状态，默认false
+		 * 幽灵状态的UI：只能用于显示，不可点击，事件也不会触发，其子元素的事件也不会触发，不能通过getUIFromPointer获取
+		 * 用于解决多个UI重叠时是否需要穿透，以点击被覆盖UI的问题
+		 * @type {boolean}
+		 */
+		this.ghost = false;
+		
+		/**
 		 * 默认情况下，UI阻止事件冒泡，但不会阻止事件传播给图层
 		 * @type {boolean}
 		 */

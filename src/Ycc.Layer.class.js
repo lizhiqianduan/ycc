@@ -539,6 +539,9 @@
 			//this.uiList[i].__render();
 			// 按树的层次向下遍历
 			this.uiList[i].itor().depthDown(function (child, level) {
+				// 幽灵状态的UI不予获取
+				if(child.ghost) return -1;
+				
 				// 跳过不可见的UI，返回-1阻止继续遍历其子UI
 				if(uiIsShow&&!child.show) return -1;
 
