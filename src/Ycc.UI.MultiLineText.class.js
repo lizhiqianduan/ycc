@@ -75,6 +75,12 @@
 	 */
 	Ycc.UI.MultiLineText.prototype.computeUIProps = function () {
 		var self = this;
+		// 取离屏绘图环境
+		var ctx = this.ctxCache;
+		
+		// 设置画布属性再计算，否则计算内容长度会有偏差
+		self.belongTo._setCtxProps(self,ctx);
+		
 		var config = this;
 		// 文本行
 		var lines = this.content.split(/(?:\r\n|\r|\n)/);
@@ -123,7 +129,7 @@
 				 */
 				function dealLine(line){
 					var subLines = [];
-					var lineW = self.ctx.measureText(line).width;
+					var lineW = ctx.measureText(line).width;
 					// 若没有超长
 					if(lineW<=config.rect.width){
 						subLines.push(line);
@@ -132,7 +138,7 @@
 					
 					for(var j=0;j<line.length;j++){
 						var part = line.slice(0,j+1);
-						var partW = self.ctx.measureText(part).width;
+						var partW = ctx.measureText(part).width;
 						if(partW>config.rect.width){
 							var subLine = line.slice(0,j-1);
 							subLines.push(subLine);
@@ -164,7 +170,7 @@
 				 */
 				function dealLine(line){
 					var subLines = [];
-					var lineW = self.ctx.measureText(line).width;
+					var lineW = ctx.measureText(line).width;
 					// 若没有超长
 					if(lineW<=config.rect.width){
 						subLines.push(line);
@@ -174,7 +180,7 @@
 					var spacePosition = 0;
 					for(var j=0;j<line.length;j++){
 						var part = line.slice(0,j+1);
-						var partW = self.ctx.measureText(part).width;
+						var partW = ctx.measureText(part).width;
 						var curChar = line[j];
 						if(curChar===" ")
 							spacePosition = j;
@@ -216,9 +222,9 @@
 		
 		var self = this;
 		
-		self.ctx = ctx || self.ctx;
+		ctx = ctx || this.ctxCache;
 		
-		if(!self.ctx){
+		if(!ctx){
 			console.error("[Ycc error]:","ctx is null !");
 			return;
 		}
@@ -228,27 +234,28 @@
 		var config = this;
 		// 绝对坐标的rect
 		var rect = this.getAbsolutePositionRect();
+		var lineHeight = config.lineHeight*self.dpi;
 		
-		this.ctx.save();
-		this.ctx.fillStyle = config.color;
-		this.ctx.strokeStyle = config.color;
+		ctx.save();
+		ctx.fillStyle = config.color;
+		ctx.strokeStyle = config.color;
 		
 		// 坐标系旋转
 		var absoluteAnchor = this.transformToAbsolute({x:this.anchorX,y:this.anchorY});
-		this.ctx.translate(absoluteAnchor.x,absoluteAnchor.y);
-		this.ctx.rotate(this.rotation*Math.PI/180);
-		this.ctx.translate(-absoluteAnchor.x,-absoluteAnchor.y);
+		ctx.translate(absoluteAnchor.x,absoluteAnchor.y);
+		ctx.rotate(this.rotation*Math.PI/180);
+		ctx.translate(-absoluteAnchor.x,-absoluteAnchor.y);
 
 		// 绘制
 		for(var i = 0;i<self.displayLines.length;i++){
-			var x = rect.x;
-			var y = rect.y + i*config.lineHeight;
-			if(y+config.lineHeight>rect.y+rect.height){
+			var x = rect.x*self.dpi;
+			var y = rect.y*self.dpi + i*config.lineHeight*self.dpi;
+			if(y+lineHeight>rect.y*self.dpi+rect.height*self.dpi){
 				break;
 			}
-			this.ctx.fillText(self.displayLines[i],x,y);
+			ctx.fillText(self.displayLines[i],x,y);
 		}
-		this.ctx.restore();
+		ctx.restore();
 	};
 	
 	
