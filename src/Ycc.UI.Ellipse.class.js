@@ -91,30 +91,32 @@
 			height=this.height;
 		
 		var point = this.transformByRotate(this.point);
+		// 只绘制至上屏canvas
+		var ctx = this.ctxCache;
 		
-		this.ctx.save();
+		ctx.save();
 		var r = (width > height) ? width : height;
 		// 计算压缩比例
 		var ratioX = width / r;
 		var ratioY = height / r;
 		// 默认旋转中心位于画布左上角，需要改变旋转中心点
-		this.ctx.translate(point.x,point.y);
-		this.ctx.rotate(parseInt(rotateAngle)*Math.PI/180);
+		ctx.translate(point.x,point.y);
+		ctx.rotate(parseInt(rotateAngle)*Math.PI/180);
 		// 再变换回原来的旋转中心点
-		this.ctx.translate(-point.x,-point.y);
+		ctx.translate(-point.x,-point.y);
 		// this.ctx.scale(1, 1);
-		this.ctx.scale(ratioX, ratioY);
-		this.ctx.beginPath();
-		this.ctx.arc(point.x / ratioX,  point.y/ ratioY, r/2, 0, 2 * Math.PI, false);
-		this.ctx.closePath();
+		ctx.scale(ratioX, ratioY);
+		ctx.beginPath();
+		ctx.arc(point.x / ratioX,  point.y/ ratioY, r/2, 0, 2 * Math.PI, false);
+		ctx.closePath();
 		
-		this.ctx.fillStyle = this.ctx.strokeStyle = this.color;
+		ctx.fillStyle = this.ctx.strokeStyle = this.color;
 		if(!this.fill)
-			this.ctx.stroke();
+			ctx.stroke();
 		else
-			this.ctx.fill();
+			ctx.fill();
 			
-		this.ctx.restore();
+		ctx.restore();
 	};
 	
 	
