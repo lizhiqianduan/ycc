@@ -89,7 +89,7 @@
 	 */
 	Ycc.UI.Polygon.prototype.render = function (ctx) {
 		var self = this;
-		ctx = ctx || self.ctx;
+		ctx = ctx || self.ctxCache;
 		if(!self.ctx){
 			console.error("[Ycc error]:","ctx is null !");
 			return;
@@ -102,7 +102,7 @@
 		ctx.save();
 		ctx.fillStyle = this.fillStyle;
 		ctx.strokeStyle = this.strokeStyle;
-		this.renderPath();
+		this.renderPath(ctx);
 		this.fill?ctx.fill():ctx.stroke();
 		ctx.restore();
 	};
