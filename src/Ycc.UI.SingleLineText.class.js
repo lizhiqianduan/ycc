@@ -92,26 +92,33 @@
 	Ycc.UI.SingleLineText.prototype.computeUIProps = function () {
 		var self = this;
 		
+		var ctx = this.ctxCache;
+		var rect = this.rect;
+		var x = rect.x*this.dpi;
+		var y = rect.y*this.dpi;
+		var width = rect.width*this.dpi;
+		var height = rect.height*this.dpi;
+		
 		// 设置画布属性再计算，否则计算内容长度会有偏差
-		self.belongTo._setCtxProps(self);
+		this._setCtxProps(self);
 		
 		// 内容的长度
-		var contentWidth = this.ctx.measureText(this.content).width;
+		var contentWidth = ctx.measureText(this.content).width;
 		
 		this.displayContent = this.content;
 		
 		// 长度超长时的处理
-		if(contentWidth>this.rect.width){
+		/*if(contentWidth>width){
 			if(this.overflow === "hidden"){
-				self.displayContent = self.getMaxContentInWidth(this.content,this.rect.width);
+				self.displayContent = self.getMaxContentInWidth(this.content,width);
 			}else if(this.overflow === "auto"){
 				this.rect.width = contentWidth;
 			}
-		}
-		
+		}*/
+		console.log(contentWidth,width);
 		if(this.overflow === "hidden"){
-			if(contentWidth>this.rect.width)
-				self.displayContent = self.getMaxContentInWidth(this.content,this.rect.width);
+			if(contentWidth>width)
+				self.displayContent = self.getMaxContentInWidth(this.content,width);
 		}else if(this.overflow === "auto"){
 			if(contentWidth>this.rect.width){
 				this.rect.width = contentWidth;
@@ -147,7 +154,7 @@
 		// dpi
 		var dpi = this.belongTo.yccInstance.getSystemInfo().devicePixelRatio;
 		// 文字的绘制起点
-		var x,y;
+		var x,y,width,height;
 		// 字体大小
 		var fontSize = parseInt(self.fontSize)*dpi;
 		// 配置项

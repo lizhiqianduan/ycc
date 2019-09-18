@@ -550,12 +550,13 @@
 	Ycc.UI.Base.prototype.getMaxContentInWidth = function (content, width) {
 		var out = content;
 		var outW = 0;
+		var ctx = this.ctxCache;
 		
-		if(this.ctx.measureText(content).width<=width)
+		if(ctx.measureText(content).width<=width)
 			return content;
 		for(var i = 0;i<content.length;i++){
 			out = content.slice(0,i+1);
-			outW = this.ctx.measureText(out).width;
+			outW = ctx.measureText(out).width;
 			if(outW>width){
 				return content.slice(0,i);
 			}
