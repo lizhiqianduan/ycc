@@ -78,14 +78,15 @@
 	 */
 	Ycc.UI.BrokenLine.prototype.render = function () {
 		if(this.pointList.length<2) return null;
+
+		var ctx = this.ctxCache;
 		
 		// 父级
 		var pa = this.getParent();
-		
-		this.ctx.save();
-		this.ctx.strokeStyle = this.color;
-		this.ctx.strokeWidth = this.width;
-		this.ctx.beginPath();
+		ctx.save();
+		ctx.strokeStyle = this.color;
+		ctx.strokeWidth = this.width;
+		ctx.beginPath();
 		// 因为直接操作舞台，所以绘制之前需要转换成舞台绝对坐标
 		// var pointList = pa?pa.transformToAbsolute(this.pointList):this.pointList;
 		var pointList = this.transformByRotate(this.pointList);
@@ -94,8 +95,8 @@
 			this._smoothLineRender(pointList);
 		else
 			this._normalRender(pointList);
-		this.ctx.closePath();
-		this.ctx.restore();
+		ctx.closePath();
+		ctx.restore();
 	};
 	
 	/**
@@ -104,11 +105,12 @@
 	 * @private
 	 */
 	Ycc.UI.BrokenLine.prototype._normalRender = function (pointList) {
-		this.ctx.moveTo(pointList[0].x, pointList[0].y);
+		var ctx = this.ctxCache;
+		ctx.moveTo(pointList[0].x*this.dpi, pointList[0].y*this.dpi);
 		for(var i =1;i<pointList.length;i++){
-			this.ctx.lineTo(pointList[i].x, pointList[i].y);
+			ctx.lineTo(pointList[i].x*this.dpi, pointList[i].y*this.dpi);
 		}
-		this.ctx.stroke();
+		ctx.stroke();
 	};
 	
 	/**
@@ -123,15 +125,17 @@
 	 * @param pointList	{Ycc.Math.Dot[]}	经过转换后的舞台绝对坐标点列表
 	 */
 	Ycc.UI.BrokenLine.prototype._smoothLineRender = function (pointList) {
+		var ctx = this.ctxCache;
 		// 获取生成曲线的两个控制点和两个顶点，N个顶点可以得到N-1条曲线
 		var list = getCurveList(pointList);
 		// 调用canvas三次贝塞尔方法bezierCurveTo逐一绘制
-		this.ctx.beginPath();
+		ctx.beginPath();
 		for(var i=0;i<list.length;i++){
-			this.ctx.moveTo(list[i].start.x,list[i].start.y);
-			this.ctx.bezierCurveTo(list[i].dot1.x,list[i].dot1.y,list[i].dot2.x,list[i].dot2.y,list[i].end.x,list[i].end.y);
+			ctx.moveTo(list[i].start.x*this.dpi,list[i].start.y*this.dpi);
+			ctx.bezierCurveTo(list[i].dot1.x*this.dpi,list[i].dot1.y*this.dpi,list[i].dot2.x*this.dpi,list[i].dot2.y*this.dpi,
+				list[i].end.x*this.dpi,list[i].end.y*this.dpi);
 		}
-		this.ctx.stroke();
+		ctx.stroke();
 		
 		
 		/**
