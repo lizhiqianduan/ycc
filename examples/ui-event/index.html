@@ -36,13 +36,12 @@
 
 
 <script>
-	var canvas = document.createElement("canvas");
-	canvas.width = 300;
-	canvas.height = 300;
-	document.getElementById("canvas").appendChild(canvas);
 
 	var ycc = new Ycc();
+	var canvas = ycc.createCanvas({width:300,height:800,dpiAdaptation:true});
+	document.getElementById("canvas").appendChild(canvas);
 	ycc.bindCanvas(canvas);
+
 	// 新建图层
 	var layer = ycc.layerManager.newLayer({enableEventManager:true});
 	// 设置UI属性
@@ -72,6 +71,7 @@
 		console.log("我是",this.yccClass.name,"我",e.type,e);
 		this.rect.x = startRect.x+e.x-startPos.x;
 		this.rect.y = startRect.y+e.y-startPos.y;
+		this.updateCache();
 		ycc.layerManager.reRenderAllLayerToStage();
 	};
 
