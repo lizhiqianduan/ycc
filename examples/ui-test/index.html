@@ -33,18 +33,15 @@
 <script src="http://localhost:9000/livereload.js"></script>
 <script src="../common.js"></script>
 <script src="../../build/ycc.js"></script>
+<!--<script src="https://www.lizhiqianduan.com/products/ycc/build/ycc.js"></script>-->
 
 <script>
 
-	var canvas = document.createElement("canvas");
-	canvas.width = 300;
-	canvas.height = 800;
-	canvas.height = 800;
-	document.getElementById("canvas").appendChild(canvas);
-
-
 	var ycc = new Ycc({debug:{drawContainer:true}});
+	var canvas = ycc.createCanvas({width:300,height:800,dpiAdaptation:true});
+	document.getElementById("canvas").appendChild(canvas);
 	ycc.bindCanvas(canvas);
+
 	// 新建图层
 	var layer = ycc.layerManager.newLayer({enableEventManager:true});
 	// 设置UI属性
@@ -76,7 +73,7 @@
 	ycc.baseUI.rect([config.rect.x,config.rect.y],[config.rect.x+config.rect.width,config.rect.y+config.rect.height]);
 
 	config = {
-		rect:new Ycc.Math.Rect(320,100,30,50)
+		rect:new Ycc.Math.Rect(200,100,30,50)
 	};
 	ui = new Ycc.UI.Rect(config);
 	layer.addUI(ui);
