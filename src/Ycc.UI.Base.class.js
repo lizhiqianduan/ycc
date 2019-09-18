@@ -749,4 +749,15 @@
 			ctx[key] = ctxConfig[key];
 		}
 	};
+	
+	/**
+	 * 更新缓存的canvas
+	 */
+	Ycc.UI.Base.prototype.updateCache = function () {
+		// 清空缓存画布
+		this.ctxCache.canvas.width = this.ctx.canvas.width;
+		// 渲染
+		this.__render();
+	};
+	
 })(Ycc);
