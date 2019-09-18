@@ -60,16 +60,17 @@
 	 * @override
 	 */
 	Ycc.UI.Circle.prototype.render = function () {
+		var ctx = this.ctxCache;
 		
 		var point = this.transformByRotate(this.point);
 		
 		
-		this.ctx.save();
-		this.ctx.beginPath();
-		this.ctx.fillStyle = this.color;
-		this.ctx.strokeStyle = this.color;
+		ctx.save();
+		ctx.beginPath();
+		ctx.fillStyle = this.color;
+		ctx.strokeStyle = this.color;
 		
-		this.ctx.arc(
+		ctx.arc(
 			point.x,
 			point.y,
 			this.r,
@@ -77,12 +78,12 @@
 			2*Math.PI
 		);
 		
-		this.ctx.closePath();
+		ctx.closePath();
 		if(!this.fill)
-			this.ctx.stroke();
+			ctx.stroke();
 		else
-			this.ctx.fill();
-		this.ctx.restore();
+			ctx.fill();
+		ctx.restore();
 	};
 	
 	/**
