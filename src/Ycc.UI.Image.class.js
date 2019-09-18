@@ -105,17 +105,18 @@
 	 * @private
 	 */
 	Ycc.UI.Image.prototype._processMirror = function (rect) {
+		var ctx = this.ctxCache;
 		if(this.mirror===1){
-			this.ctx.scale(-1, 1);
-			this.ctx.translate(-rect.x*2-rect.width,0);
+			ctx.scale(-1, 1);
+			ctx.translate(-rect.x*2-rect.width,0);
 		}
 		if(this.mirror===2){
-			this.ctx.scale(1, -1);
-			this.ctx.translate(0,-rect.y*2-rect.height);
+			ctx.scale(1, -1);
+			ctx.translate(0,-rect.y*2-rect.height);
 		}
 		if(this.mirror===3){
-			this.ctx.scale(-1, -1);
-			this.ctx.translate(-rect.x*2-rect.width,-rect.y*2-rect.height);
+			ctx.scale(-1, -1);
+			ctx.translate(-rect.x*2-rect.width,-rect.y*2-rect.height);
 		}
 		
 	};
@@ -124,32 +125,39 @@
 	 * 绘制
 	 */
 	Ycc.UI.Image.prototype.render = function () {
-		this.ctx.save();
+		var ctx = this.ctxCache;
+		
+		ctx.save();
 		// this.scaleAndRotate();
 		
 		var rect = this.getAbsolutePositionRect();//this.rect;
 		var img = this.res;
 		// 局部变量
 		var i,j,wCount,hCount,xRest,yRest;
+		var x = rect.x*this.dpi;
+		var y = rect.y*this.dpi;
+		var width = rect.width*this.dpi;
+		var height = rect.height*this.dpi;
+		var imgWidth = img.width*this.dpi;
+		var imgHeight = img.height*this.dpi;
 		
-
 		// 坐标系旋转
 		var absoluteAnchor = this.transformToAbsolute({x:this.anchorX,y:this.anchorY});
-		this.ctx.translate(absoluteAnchor.x,absoluteAnchor.y);
-		this.ctx.rotate(this.rotation*Math.PI/180);
-		this.ctx.translate(-absoluteAnchor.x,-absoluteAnchor.y);
+		ctx.translate(absoluteAnchor.x,absoluteAnchor.y);
+		ctx.rotate(this.rotation*Math.PI/180);
+		ctx.translate(-absoluteAnchor.x,-absoluteAnchor.y);
 		
 		this._processMirror(rect);
 		if(this.fillMode === "none")
-			this.ctx.drawImage(this.res,0,0,rect.width,rect.height,rect.x,rect.y,rect.width,rect.height);
+			ctx.drawImage(this.res,0,0,rect.width,rect.height,rect.x,rect.y,rect.width,rect.height);
 		else if(this.fillMode === "scale")
-			this.ctx.drawImage(this.res,0,0,img.width,img.height,rect.x,rect.y,rect.width,rect.height);
+			ctx.drawImage(this.res,0,0,img.width,img.height,rect.x,rect.y,rect.width,rect.height);
 		else if(this.fillMode === "auto"){
-			this.ctx.drawImage(this.res,0,0,img.width,img.height,rect.x,rect.y,rect.width,rect.height);
+			ctx.drawImage(this.res,0,0,img.width,img.height,rect.x,rect.y,rect.width,rect.height);
 		}else if(this.fillMode === "repeat"){
 			// x,y方向能容纳的img个数
-			wCount = parseInt(rect.width/img.width)+1;
-			hCount = parseInt(rect.height/img.height)+1;
+			wCount = parseInt(width/imgWidth)+1;
+			hCount = parseInt(height/imgHeight)+1;
 
 			for(i=0;i<wCount;i++){
 				for(j=0;j<hCount;j++){
@@ -159,11 +167,13 @@
 						xRest = rect.width-i*img.width;
 					if(j===hCount-1)
 						yRest = rect.height-j*img.height;
-					this.ctx.drawImage(this.res,
+					if(i===wCount-1)
+						console.log('剩余量',i,j,xRest,yRest);
+					ctx.drawImage(this.res,
 						0,0,
 						xRest,yRest,
-						rect.x+img.width*i,rect.y+img.height*j,
-						xRest,yRest);
+						x+imgWidth*i,y+imgHeight*j,
+						xRest*this.dpi,yRest*this.dpi);
 				}
 			}
 		}else if(this.fillMode === "scaleRepeat"){
@@ -245,7 +255,7 @@
 				if(!grid[k]) continue;
 				src = grid[k].src;
 				dest = grid[k].dest;
-				this.ctx.drawImage(this.res,
+				ctx.drawImage(this.res,
 					// 源
 					src.x,src.y,src.width,src.height,
 					// 目标
@@ -255,7 +265,7 @@
 			}
 			
 		}
-		this.ctx.restore();
+		ctx.restore();
 		
 	};
 	
