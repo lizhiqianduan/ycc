@@ -717,6 +717,35 @@
 
 		return res;
 	};
-
-
+	
+	
+	/**
+	 * 设置当前环境画布的所有的属性
+	 * @param props 属性map
+	 * @param ctx	绘图环境，可选参数，默认为离屏canvas的绘图环境
+	 * @private
+	 */
+	Ycc.UI.Base.prototype._setCtxProps = function (props,ctx) {
+		var self = this;
+		ctx = ctx || self.ctxCache;
+		var ctxConfig = {
+			fontStyle:"normal",
+			fontVariant:"normal",
+			fontWeight:"normal",
+			fontSize:"16px",
+			fontFamily:"微软雅黑",
+			font:"16px 微软雅黑",
+			textBaseline:"hanging",
+			fillStyle:"red",
+			strokeStyle:"blue"
+		};
+		ctxConfig = Ycc.utils.extend(ctxConfig,props);
+		// dpi兼容 字体大小
+		ctxConfig.fontSize=parseInt(ctxConfig.fontSize)*this.dpi+'px';
+		ctxConfig.font = [ctxConfig.fontStyle,ctxConfig.fontVariant,ctxConfig.fontWeight,ctxConfig.fontSize,ctxConfig.fontFamily].join(" ");
+		for(var key in ctxConfig){
+			if(!ctxConfig.hasOwnProperty(key)) continue;
+			ctx[key] = ctxConfig[key];
+		}
+	};
 })(Ycc);

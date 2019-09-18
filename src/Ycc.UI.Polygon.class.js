@@ -111,6 +111,8 @@
 	 * 根据coordinates绘制路径
 	 * 只绘制路径，不填充、不描边
 	 * 继承的子类若不是多边形，需要重载此方法
+	 * <br> 开启离屏canvas后，此过程只会发生在离屏canvas中
+	 * @param ctx 离屏canvas的绘图环境
 	 */
 	Ycc.UI.Polygon.prototype.renderPath = function (ctx) {
 		if(this.coordinates.length===0) return;

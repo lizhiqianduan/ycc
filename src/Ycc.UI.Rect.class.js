@@ -49,6 +49,8 @@
 		this.coordinates = this.rect.getVertices();
 		// 赋值位置信息
 		this.x = this.rect.x,this.y=this.rect.y;
+		
+		// this._setCtxProps(this);
 	};
 	
 	
@@ -57,8 +59,8 @@
 	 */
 	Ycc.UI.Rect.prototype.render = function (ctx) {
 		var self = this;
-		ctx = ctx || self.ctx;
-		if(!self.ctx){
+		ctx = ctx || self.ctxCache;
+		if(!ctx){
 			console.error("[Ycc error]:","ctx is null !");
 			return;
 		}
@@ -67,9 +69,10 @@
 		ctx.save();
 		ctx.fillStyle = this.color;
 		ctx.strokeStyle = this.color;
-		this.renderPath();
+		this.renderPath(ctx);
 		this.fill?ctx.fill():ctx.stroke();
 		ctx.restore();
+		console.log('rect is over!!');
 	};
 	
 	
