@@ -114,19 +114,19 @@
 	 * <br> 开启离屏canvas后，此过程只会发生在离屏canvas中
 	 * @param ctx 离屏canvas的绘图环境
 	 */
-	Ycc.UI.Polygon.prototype.renderPath = function (ctx) {
+	Ycc.UI.Polygon.prototype.renderPath = function () {
 		if(this.coordinates.length===0) return;
 		
 		var self = this;
-		ctx = ctx || self.ctx;
+		var ctx = this.ctxCache;
 		
 		var start = this.transformByRotate(this.coordinates[0]);
 		ctx.beginPath();
-		ctx.moveTo(start.x,start.y);
+		ctx.moveTo(start.x*this.dpi,start.y*this.dpi);
 		for(var i=0;i<this.coordinates.length-1;i++){
 			var dot = this.transformByRotate(this.coordinates[i]);
 			if(this.isDrawIndex) ctx.fillText(i+'',dot.x-10,dot.y+10);
-			ctx.lineTo(dot.x,dot.y);
+			ctx.lineTo(dot.x*this.dpi,dot.y*this.dpi);
 		}
 		ctx.closePath();
 	
