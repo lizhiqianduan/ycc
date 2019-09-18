@@ -151,7 +151,7 @@
 		if(this.fillMode === "none")
 			ctx.drawImage(this.res,0,0,rect.width,rect.height,rect.x,rect.y,rect.width,rect.height);
 		else if(this.fillMode === "scale")
-			ctx.drawImage(this.res,0,0,img.width,img.height,rect.x,rect.y,rect.width,rect.height);
+			ctx.drawImage(this.res,0,0,img.width,img.height,x,y,width,height);
 		else if(this.fillMode === "auto"){
 			ctx.drawImage(this.res,0,0,img.width,img.height,rect.x,rect.y,rect.width,rect.height);
 		}else if(this.fillMode === "repeat"){
