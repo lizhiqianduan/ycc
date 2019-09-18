@@ -4,6 +4,7 @@
 	<meta charset="UTF-8">
 	<title>折线平滑</title>
 	<link rel="stylesheet" href="../style.css">
+	<meta name=viewport content="width=device-width,initial-scale=1,user-scalable=0,viewport-fit=cover">
 </head>
 <body>
 <div class="return-btn">
@@ -35,13 +36,9 @@
 
 <script>
 
-	var canvas = document.createElement("canvas");
-	canvas.width = 300;
-	canvas.height = 600;
-	document.getElementById("canvas").appendChild(canvas);
-
-
 	var ycc = new Ycc();
+	var canvas = ycc.createCanvas({width:300,height:800,dpiAdaptation:true});
+	document.getElementById("canvas").appendChild(canvas);
 	ycc.bindCanvas(canvas);
 	// 新建图层
 	var layer = ycc.layerManager.newLayer({enableEventManager:true});
