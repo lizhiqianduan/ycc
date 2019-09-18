@@ -127,34 +127,37 @@
 		this.x=this.rect.x,this.y=this.rect.y;
 	};
 	/**
-	 * 渲染至ctx
+	 * 渲染至离屏ctx
+	 * <br> 开启离屏canvas后，此过程只会发生在离屏canvas中
 	 * @param ctx
 	 */
 	Ycc.UI.SingleLineText.prototype.render = function (ctx) {
 		var self = this;
-		// 设置画布属性再计算，否则计算内容长度会有偏差
-		self.belongTo._setCtxProps(self);
-
-		self.ctx = ctx || self.ctx;
 		
-		if(!self.ctx){
+		ctx = ctx||self.ctxCache;
+		
+		if(!ctx){
 			console.error("[Ycc error]:","ctx is null !");
 			return;
 		}
+
+		// 设置画布属性再计算，否则计算内容长度会有偏差
+		self.belongTo._setCtxProps(self,ctx);
 		
-		
-		
+		// dpi
+		var dpi = this.belongTo.yccInstance.getSystemInfo().devicePixelRatio;
 		// 文字的绘制起点
 		var x,y;
 		// 字体大小
-		var fontSize = parseInt(self.fontSize);
+		var fontSize = parseInt(self.fontSize)*dpi;
 		// 配置项
 		var option = this;
 		// 绝对坐标
 		var rect = this.getAbsolutePositionRect();
+		rect = new Ycc.Math.Rect(rect.x*dpi,rect.y*dpi,rect.width*dpi,rect.height*dpi);
 		x = rect.x;
 		
-		var textWidth = this.ctx.measureText(this.displayContent).width;
+		var textWidth = ctx.measureText(this.displayContent).width;
 		if(this.xAlign==="center"){
 			x+=(rect.width-textWidth)/2;
 		}
@@ -172,20 +175,24 @@
 			y = y+rect.height/2-fontSize/2;
 		}
 		
-		this.ctx.save();
+		ctx.save();
 		// this.scaleAndRotate();
 		// 坐标系旋转
 		var absoluteAnchor = this.transformToAbsolute({x:this.anchorX,y:this.anchorY});
-		this.ctx.translate(absoluteAnchor.x,absoluteAnchor.y);
-		this.ctx.rotate(this.rotation*Math.PI/180);
-		this.ctx.translate(-absoluteAnchor.x,-absoluteAnchor.y);
+		ctx.translate(absoluteAnchor.x,absoluteAnchor.y);
+		ctx.rotate(this.rotation*Math.PI/180);
+		ctx.translate(-absoluteAnchor.x,-absoluteAnchor.y);
 		
-		this.ctx.fillStyle = option.color;
-		this.ctx.strokeStyle = option.color;
+		ctx.fillStyle = option.color;
+		ctx.strokeStyle = option.color;
 		// this.baseUI.text([x,y],self.displayContent,option.fill);
-		this.ctx.fillText(self.displayContent,x,y);
-		this.ctx.restore();
-	};
+		ctx.fillText(self.displayContent,x,y);
+		ctx.restore();
+		
+		// console.log('缓存绘制',x,y,fontSize,textWidth);
+	}
+	
+	
 	
 	
 	
