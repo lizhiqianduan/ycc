@@ -86,9 +86,9 @@
 	 * 绘制
 	 */
 	Ycc.UI.Ellipse.prototype.render = function () {
-		var width = this.width,
+		var width = this.width*this.dpi,
 			rotateAngle=this.angle,
-			height=this.height;
+			height=this.height*this.dpi;
 		
 		var point = this.transformByRotate(this.point);
 		// 只绘制至上屏canvas
@@ -96,18 +96,21 @@
 		
 		ctx.save();
 		var r = (width > height) ? width : height;
+		var x = point.x*this.dpi;
+		var y = point.y*this.dpi;
+		
 		// 计算压缩比例
 		var ratioX = width / r;
 		var ratioY = height / r;
 		// 默认旋转中心位于画布左上角，需要改变旋转中心点
-		ctx.translate(point.x,point.y);
+		ctx.translate(x,y);
 		ctx.rotate(parseInt(rotateAngle)*Math.PI/180);
 		// 再变换回原来的旋转中心点
-		ctx.translate(-point.x,-point.y);
+		ctx.translate(-x,-y);
 		// this.ctx.scale(1, 1);
 		ctx.scale(ratioX, ratioY);
 		ctx.beginPath();
-		ctx.arc(point.x / ratioX,  point.y/ ratioY, r/2, 0, 2 * Math.PI, false);
+		ctx.arc(x / ratioX,  y/ ratioY, r/2, 0, 2 * Math.PI, false);
 		ctx.closePath();
 		
 		ctx.fillStyle = this.ctx.strokeStyle = this.color;
