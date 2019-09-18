@@ -47,6 +47,19 @@
 		 * @type {null}
 		 */
 		this.ctx = null;
+		
+		/**
+		 * 缓存的绘图环境
+		 * @type {null}
+		 */
+		this.ctxCache = null;
+		
+		/**
+		 * 设备像素比
+		 * @type {number}
+		 */
+		this.dpi = 1;
+		
 		/**
 		 * UI的绘图区域
 		 * @type {Ycc.Math.Rect}
@@ -219,15 +232,25 @@
 		Ycc.utils.isFn(this.beforeInit) && this.beforeInit();
 		this.belongTo = layer;
 		this.ctx = layer.ctx;
+		// 创建离屏canvas
+		this.ctxCache = this.belongTo.yccInstance.createCacheCtx();
+		this.dpi = this.belongTo.yccInstance.getSystemInfo().devicePixelRatio;
+		// debug
+		// document.body.appendChild(this.ctxCache.canvas);
+		// this.ctxCache.canvas.style.background="red";
 
 		// 初始化时计算一次属性
-		this.computeUIProps();
+		// this.computeUIProps();
+		
+		// 初始化时，直接计算并渲染至离屏canvas中，以等待外部使用
+		this.__render();
 		Ycc.utils.isFn(this.afterInit) && this.afterInit();
 	};
 	
 	/**
 	 * 计算UI的各种属性。此操作必须在绘制之前调用。
 	 * <br> 计算与绘制分离的好处是，在绘制UI之前就可以提前确定元素的各种信息，从而判断是否需要绘制。
+	 * <br> 开启离屏canvas后，此过程只会发生在离屏canvas中
 	 * @override
 	 */
 	Ycc.UI.Base.prototype.computeUIProps = function () {
@@ -236,43 +259,49 @@
 	
 	/**
 	 * 渲染容纳区rect的背景色
+	 * <br> 开启离屏canvas后，此过程只会发生在离屏canvas中
 	 * @param absoluteRect	{Ycc.Math.Rect}	容纳区的绝对位置
 	 */
 	Ycc.UI.Base.prototype.renderRectBgColor = function (absoluteRect) {
 		var rect = absoluteRect;
 		var dots = this.getAbsolutePositionPolygon();
 		if(!dots||dots.length===0) return console.log(new Ycc.Debugger.Log("no polygon coordirates!").message);
-		
-		this.ctx.save();
-		this.ctx.fillStyle = this.rectBgColor;
-		this.ctx.beginPath();
-		this.ctx.moveTo(dots[0].x,dots[0].y);
+
+		var ctx = this.ctxCache;
+
+		ctx.save();
+		ctx.fillStyle = this.rectBgColor;
+		ctx.beginPath();
+		ctx.moveTo(dots[0].x*this.dpi,dots[0].y*this.dpi);
 		for(var i=1;i<dots.length-1;i++)
-			this.ctx.lineTo(dots[i].x,dots[i].y);
+			ctx.lineTo(dots[i].x*this.dpi,dots[i].y*this.dpi);
 		// this.ctx.rect(rect.x,rect.y,rect.width,rect.height);
-		this.ctx.closePath();
-		this.ctx.fill();
-		this.ctx.restore();
+		ctx.closePath();
+		ctx.fill();
+		ctx.restore();
 		rect = null;
 	};
 	
 	/**
 	 * 渲染容纳区rect的边框
+	 * <br> 开启离屏canvas后，此过程只会发生在离屏canvas中
 	 * @param absoluteRect	{Ycc.Math.Rect}	容纳区的绝对位置
 	 */
 	Ycc.UI.Base.prototype.renderRectBorder = function (absoluteRect) {
+		console.log('绘制边框');
 		// 边框宽度为0，不渲染
 		if(this.rectBorderWidth<=0) return;
+		var ctx = this.ctxCache;
 
 		var rect = absoluteRect;
-		this.ctx.save();
-		this.ctx.strokeStyle = this.rectBorderColor;
-		this.ctx.strokeWidth = this.rectBorderWidth;
-		this.ctx.beginPath();
-		this.ctx.rect(rect.x,rect.y,rect.width,rect.height);
-		this.ctx.closePath();
-		this.ctx.stroke();
-		this.ctx.restore();
+		ctx.save();
+		ctx.strokeStyle = this.rectBorderColor;
+		ctx.strokeWidth = this.rectBorderWidth;
+		ctx.beginPath();
+		ctx.rect(rect.x*this.dpi,rect.y*this.dpi,rect.width*this.dpi,rect.height*this.dpi);
+		ctx.closePath();
+		ctx.stroke();
+		ctx.restore();
 		rect = null;
 	};
 	
@@ -456,18 +485,20 @@
 	
 	/**
 	 * 绘制UI的容器（红色小方框）
+	 * <br> 开启离屏canvas后，此过程只会发生在离屏canvas中
 	 * @param absoluteRect {Ycc.Math.Rect}	UI的绝对坐标
 	 * @private
 	 */
 	Ycc.UI.Base.prototype._renderContainer = function (absoluteRect) {
 		var rect = absoluteRect;
-		this.ctx.save();
-		this.ctx.beginPath();
-		this.ctx.strokeStyle = "#ff0000";
-		this.ctx.rect(rect.x,rect.y,rect.width,rect.height);
-		this.ctx.closePath();
-		this.ctx.stroke();
-		this.ctx.restore();
+		var ctx = this.ctxCache;
+		ctx.save();
+		ctx.beginPath();
+		ctx.strokeStyle = "#ff0000";
+		ctx.rect(rect.x*this.dpi,rect.y*this.dpi,rect.width*this.dpi,rect.height*this.dpi);
+		ctx.closePath();
+		ctx.stroke();
+		ctx.restore();
 		rect=null;
 	};
 	
@@ -475,6 +506,7 @@
 	 * 渲染统一调用的入口，供图层统一调用。
 	 * 新增渲染过程中的hook函数。
 	 * 此方法不允许重载、覆盖
+	 * <br> 开启离屏canvas后，此过程只会发生在离屏canvas中
 	 * @param [ctx]	绘图环境。可选
 	 * @private
 	 */
@@ -493,8 +525,8 @@
 		this.renderRectBgColor(absolutePosition);
 		// 绘制容纳区的边框
 		this.renderRectBorder(absolutePosition);
-		// 绘制旋转平移之前的UI
-		this.renderDashBeforeUI();
+		// 绘制旋转平移之前的UI，只在离屏canvas中绘制
+		this.renderDashBeforeUI(this.ctxCache);
 		
 		// 全局UI配置项，是否绘制UI的容器
 		if(this.belongTo.yccInstance.config.debugDrawContainer){
