@@ -153,7 +153,7 @@
 		else if(this.fillMode === "scale")
 			ctx.drawImage(this.res,0,0,img.width,img.height,x,y,width,height);
 		else if(this.fillMode === "auto"){
-			ctx.drawImage(this.res,0,0,img.width,img.height,rect.x,rect.y,rect.width,rect.height);
+			ctx.drawImage(this.res,0,0,img.width,img.height,x,y,width,height);
 		}else if(this.fillMode === "repeat"){
 			// x,y方向能容纳的img个数
 			wCount = parseInt(width/imgWidth)+1;
