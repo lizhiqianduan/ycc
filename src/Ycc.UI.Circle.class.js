@@ -71,9 +71,9 @@
 		ctx.strokeStyle = this.color;
 		
 		ctx.arc(
-			point.x,
-			point.y,
-			this.r,
+			point.x*this.dpi,
+			point.y*this.dpi,
+			this.r*this.dpi,
 			0,
 			2*Math.PI
 		);
