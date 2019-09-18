@@ -205,10 +205,10 @@
 		// 虚线
 		ctx.setLineDash([10]);
 		ctx.beginPath();
-		ctx.moveTo(start.x,start.y);
+		ctx.moveTo(start.x*this.dpi,start.y*this.dpi);
 		for(var i=0;i<self.coordinates.length-1;i++){
 			var dot = self.coordinates[i];
-			ctx.lineTo(dot.x+paPos.x,dot.y+paPos.y);
+			ctx.lineTo(dot.x*this.dpi+paPos.x*this.dpi,dot.y*this.dpi+paPos.y*this.dpi);
 		}
 		ctx.closePath();
 		ctx.strokeStyle = this.strokeStyle;
