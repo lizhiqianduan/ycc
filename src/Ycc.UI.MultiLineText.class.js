@@ -131,7 +131,7 @@
 					var subLines = [];
 					var lineW = ctx.measureText(line).width;
 					// 若没有超长
-					if(lineW<=config.rect.width){
+					if(lineW<=config.rect.width*self.dpi){
 						subLines.push(line);
 						return subLines;
 					}
@@ -139,7 +139,7 @@
 					for(var j=0;j<line.length;j++){
 						var part = line.slice(0,j+1);
 						var partW = ctx.measureText(part).width;
-						if(partW>config.rect.width){
+						if(partW>config.rect.width*self.dpi){
 							var subLine = line.slice(0,j-1);
 							subLines.push(subLine);
 							var restLine = line.slice(j-1);
@@ -172,7 +172,7 @@
 					var subLines = [];
 					var lineW = ctx.measureText(line).width;
 					// 若没有超长
-					if(lineW<=config.rect.width){
+					if(lineW<=config.rect.width*self.dpi){
 						subLines.push(line);
 						return subLines;
 					}
@@ -181,10 +181,11 @@
 					for(var j=0;j<line.length;j++){
 						var part = line.slice(0,j+1);
 						var partW = ctx.measureText(part).width;
+						// console.log(part,partW,config.rect.width*self.dpi,222);
 						var curChar = line[j];
 						if(curChar===" ")
 							spacePosition = j;
-						if(partW>config.rect.width){
+						if(partW>config.rect.width*self.dpi){
 							var subLine = "";
 							var restLine = "";
 							// 若当前字符为空格
