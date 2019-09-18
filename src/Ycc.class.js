@@ -12,6 +12,8 @@
  * @param config {Object} 整个ycc的配置项
  * @param config.debugDrawContainer {Boolean} 是否显示所有UI的容纳区域
  * @param config.useGesture {Boolean} 是否启用系统的手势库，默认启用
+ * @param config.dpiAdaptation {Boolean} 是否开启高分屏适配，默认启用
+ * 若开启，所有UI都会创建一个属于自己的离屏canvas，大小与舞台一致
  * @constructor
  */
 var Ycc = function Ycc(config){
@@ -77,12 +79,13 @@ var Ycc = function Ycc(config){
 	
 	/**
 	 * 整个ycc的配置项
-	 * @type {*|{}}
+	 * @type {{debugDrawContainer:boolean,useGesture:boolean,dpiAdaptation:boolean}}
 	 */
-	this.config = config || {
+	this.config = Ycc.utils.extend({
 		debugDrawContainer:false,
-		useGesture:true
-	};
+		useGesture:true,
+		dpiAdaptation:true
+	},config||{});
 	
 	/**
 	 * 是否移动端
@@ -339,22 +342,60 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 };
 
 /**
- * 创建舞台canvas，只针对H5端。微信小游戏的canvas为全局变量，直接使用即可
+ * 创建canvas，只针对H5端。微信小游戏的canvas为全局变量，直接使用即可
  * @example
  * var ycc = new Ycc();
- * var stage = canvas || ycc.createStageCanvas();
+ * var stage = canvas || ycc.createCanvas();
  * ycc.bindCanvas(stage);
  *
  * @param options
+ * @param options.width
+ * @param options.height
+ * @param options.dpiAdaptation		是否根据dpi适配canvas大小
  * @return {*}	已创建的canvas元素
  */
-Ycc.prototype.createStageCanvas = function (options) {
-	options = options || {
+Ycc.prototype.createCanvas = function (options) {
+	options = options||{};
+	var option = Ycc.utils.mergeObject({
 		width:window.innerWidth,
-		height:window.innerHeight
-	};
+		height:window.innerHeight,
+		dpiAdaptation:false
+	},options);
 	var canvas = document.createElement("canvas");
-	canvas.width = options.width;
-	canvas.height = options.height;
+	var dpi = this.getSystemInfo().devicePixelRatio;
+	if(option.dpiAdaptation){
+		canvas.width = option.width*dpi;
+		canvas.height = option.height*dpi;
+		canvas.style.width=option.width+'px';
+	}else{
+		canvas.width = option.width;
+		canvas.height = option.height;
+	}
 	return canvas;
+};
+
+/**
+ * 获取系统信息
+ * @return {{model: string, pixelRatio: number, windowWidth: number, windowHeight: number, system: string, language: string, version: string, screenWidth: number, screenHeight: number, SDKVersion: string, brand: string, fontSizeSetting: number, benchmarkLevel: number, batteryLevel: number, statusBarHeight: number, safeArea: {right: number, bottom: number, left: number, top: number, width: number, height: number}, platform: string, devicePixelRatio: number}}
+ */
+Ycc.prototype.getSystemInfo = function () {
+	return {
+		"model":"iPhone 5",
+		"pixelRatio":window.devicePixelRatio||1,
+		"windowWidth":window.innerWidth,
+		"windowHeight":window.innerHeight,
+		"screenWidth":320,
+		"screenHeight":568,
+		"devicePixelRatio":window.devicePixelRatio||1
+	};
+};
+
+/**
+ * 创建一个离屏的绘图空间，大小与舞台等同
+ */
+Ycc.prototype.createCacheCtx = function () {
+	return this.createCanvas({
+		width:this.getStageWidth(),
+		height:this.getStageHeight()
+	}).getContext('2d');
 };
