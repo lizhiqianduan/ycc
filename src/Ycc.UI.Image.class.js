@@ -259,7 +259,7 @@
 					// 源
 					src.x,src.y,src.width,src.height,
 					// 目标
-					dest.x,dest.y,dest.width,dest.height
+					dest.x*this.dpi,dest.y*this.dpi,dest.width*this.dpi,dest.height*this.dpi
 				);
 				
 			}
