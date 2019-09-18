@@ -372,9 +372,13 @@
 	
 	/**
 	 * 设置画布所有的属性
+	 * @param props 属性map
+	 * @param ctx	绘图环境，可选参数，默认为上屏canvas的绘图环境
+	 * @private
 	 */
-	Ycc.Layer.prototype._setCtxProps = function (props) {
+	Ycc.Layer.prototype._setCtxProps = function (props,ctx) {
 		var self = this;
+		ctx = ctx || self.ctx;
 		var ctxConfig = {
 			fontStyle:"normal",
 			fontVariant:"normal",
@@ -387,11 +391,12 @@
 			strokeStyle:"blue"
 		};
 		ctxConfig = Ycc.utils.extend(ctxConfig,props);
-		
+		// dpi兼容
+		ctxConfig.fontSize=parseInt(ctxConfig.fontSize)*this.yccInstance.getSystemInfo().devicePixelRatio+'px';
 		ctxConfig.font = [ctxConfig.fontStyle,ctxConfig.fontVariant,ctxConfig.fontWeight,ctxConfig.fontSize,ctxConfig.fontFamily].join(" ");
 		for(var key in ctxConfig){
 			if(!ctxConfig.hasOwnProperty(key)) continue;
-			self.ctx[key] = ctxConfig[key];
+			ctx[key] = ctxConfig[key];
 		}
 	};
 	
@@ -480,7 +485,7 @@
 	
 	/**
 	 * 重绘图层。
-	 * <br>注意：并没有渲染至舞台。
+	 * <br>直接将UI的离屏canvas绘制至上屏canvas。
 	 */
 	Ycc.Layer.prototype.reRender = function () {
 		// this.clear();
@@ -493,9 +498,12 @@
 			this.uiList[i].itor().depthDown(function (ui, level) {
 				//console.log(level,ui);
 				self.uiCountRecursion++;
-				if(ui.show)
-					ui.__render();
-				else
+				if(ui.show){
+					console.log(ui,1111);
+					// ui.__render();
+					// 直接将离屏canvas绘制至上屏canvas
+					self.ctx.drawImage(ui.ctxCache.canvas,0,0);
+				}else
 					return -1;
 			});
 		}
