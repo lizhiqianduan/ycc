@@ -111,17 +111,18 @@
 	 * @private
 	 */
 	Ycc.UI.ImageFrameAnimation.prototype._processMirror = function (rect) {
+		var ctx = this.ctxCache;
 		if(this.mirror===1){
-			this.ctx.scale(-1, 1);
-			this.ctx.translate(-rect.x*2-rect.width,0);
+			ctx.scale(-1, 1);
+			ctx.translate(-rect.x*2-rect.width,0);
 		}
 		if(this.mirror===2){
-			this.ctx.scale(1, -1);
-			this.ctx.translate(0,-rect.y*2-rect.height);
+			ctx.scale(1, -1);
+			ctx.translate(0,-rect.y*2-rect.height);
 		}
 		if(this.mirror===3){
-			this.ctx.scale(-1, -1);
-			this.ctx.translate(-rect.x*2-rect.width,-rect.y*2-rect.height);
+			ctx.scale(-1, -1);
+			ctx.translate(-rect.x*2-rect.width,-rect.y*2-rect.height);
 		}
 		
 	};
@@ -133,6 +134,12 @@
 		
 		// 绝对坐标
 		var rect = this.getAbsolutePositionRect();
+		
+		var x = rect.x*this.dpi;
+		var y = rect.y*this.dpi;
+		var width = rect.width*this.dpi;
+		var height = rect.height*this.dpi;
+		
 		// 获取当前显示第几个序列图，由于默认播放第一帧图片，这里直接渲染第二帧图片
 		var index = parseInt((this.belongTo.yccInstance.ticker.frameAllCount-this.startFrameCount)/this.frameSpace)%this.frameRectCount+1;
 		// 若没开始播放，默认只绘制第一个序列帧
@@ -147,7 +154,7 @@
 
 		this.ctx.drawImage(this.res,
 			this.firstFrameRect.x+this.firstFrameRect.width*index,this.firstFrameRect.y,this.firstFrameRect.width,this.firstFrameRect.height,
-			rect.x,rect.y,rect.width,rect.height);
+			x,y,width,height);
 		this.ctx.restore();
 	};
 	
