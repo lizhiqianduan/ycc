@@ -30,15 +30,11 @@
 
 <script src="../../build/ycc.js"></script>
 <script>
-	var canvas = document.createElement("canvas");
-	canvas.width = 300;
-	canvas.height = 500;
-	document.body.appendChild(canvas);
-
-
-
 	var ycc = new Ycc();
+	var canvas = ycc.createCanvas({width:300,height:800,dpiAdaptation:true});
+	document.body.appendChild(canvas);
 	ycc.bindCanvas(canvas);
+
 	// 新建图层
 	var layer = ycc.layerManager.newLayer({enableFrameEvent:true});
 
