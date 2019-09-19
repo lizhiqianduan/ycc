@@ -236,10 +236,8 @@
             xAlign:"center",
             rect:new Ycc.Math.Rect(0,stageH/2+lineHeight*-1,stageW,lineHeight),
             color:color,
-            fontSize:fontSize,
-			rectBgColor:'red'
+            fontSize:fontSize
         });
-        console.log(this.finalScoreText.rect,11111);
         this.overLayer.addUI(this.finalScoreText);
 
 
@@ -290,8 +288,6 @@
                 this.finalScoreText.content="才坚持"+this.score+"秒，朋友，静下心来吧！";
             else
                 this.finalScoreText.content="是不是还不会玩啊？保持手机平衡哦！";
-
-			this.finalScoreText.content="1";
 			this.overLayer.show=true;
             return;
 		}
