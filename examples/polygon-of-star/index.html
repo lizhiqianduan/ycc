@@ -55,14 +55,11 @@
 		{x:200,y:350},
 		{x:50,y:300},
 	];
-	var canvas = document.createElement("canvas");
-	canvas.width = 300;
-	canvas.height = 480;
-	document.getElementById("canvas").appendChild(canvas);
-
-
 	var ycc = new Ycc();
+	var canvas = ycc.createCanvas({width:300,height:480,dpiAdaptation:true});
+	document.getElementById("canvas").appendChild(canvas);
 	ycc.bindCanvas(canvas);
+
 	// 新建图层
 	var layer = ycc.layerManager.newLayer({enableEventManager:true});
 	var polygon = new Ycc.UI.Polygon({

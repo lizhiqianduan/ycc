@@ -24,8 +24,7 @@
 </div>
 
 
-
-<canvas width="600" height="600" id="canvas" style="width: 300px;"></canvas>
+<div id="canvas"></div>
 
 <br>
 <button onclick="dfs()">深度优先</button>
@@ -115,7 +114,10 @@
 
 
 	/////////// 绘制无向图至canvas
-	var ycc = new Ycc().bindCanvas(document.getElementById('canvas'));
+	var ycc = new Ycc();
+	var canvas = ycc.createCanvas({width:300,height:300,dpiAdaptation:true});
+	document.getElementById("canvas").appendChild(canvas);
+	ycc.bindCanvas(canvas);
 	var layer = ycc.layerManager.newLayer();
 	var r = 100;
 

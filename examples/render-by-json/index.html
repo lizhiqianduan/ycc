@@ -21,8 +21,7 @@
 	<br><br>
 </div>
 
-<canvas width="600" height="400" id="canvas" style="width: 300px;"></canvas>
-
+<div id="canvas"></div>
 <br>
 <br>
 <div>这个示例的大致意思是: <br> 两个图层，每个图层三个UI。</div>
@@ -97,8 +96,9 @@
 <script src="../../build/ycc.js"></script>
 <script>
 
-	var stage = document.getElementById("canvas");
-	var ycc = new window.Ycc();
+	var ycc = new Ycc();
+	var stage = ycc.createCanvas({width:300,height:300,dpiAdaptation:true});
+	document.getElementById("canvas").appendChild(stage);
 	ycc.bindCanvas(stage);
 
 	var arr = [{

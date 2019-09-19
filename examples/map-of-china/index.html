@@ -39,10 +39,10 @@
 
 <script>
 
-	var canvas = document.createElement("canvas");
-	canvas.width = 350;
-	canvas.height = 250;
+	var ycc = new Ycc();
+	var canvas = ycc.createCanvas({width:350,height:250,dpiAdaptation:true});
 	document.getElementById("canvas").appendChild(canvas);
+	ycc.bindCanvas(canvas);
 
 	// 地图的偏移量
 	var offsetX = 70; // 临界值为 73.4766
@@ -50,8 +50,6 @@
 	// 缩放倍数
 	var scale=5;
 
-	var ycc = new Ycc();
-	ycc.bindCanvas(canvas);
 	// 新建图层
 	var layer = ycc.layerManager.newLayer({enableEventManager:true});
 
