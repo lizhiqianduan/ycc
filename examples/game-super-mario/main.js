@@ -66,12 +66,12 @@ function createYcc() {
 		document.body.appendChild(canvas);
 	}
 	canvas.style.width = canvas.width+'px';
-	canvas.width*=ycc.getSystemInfo().devicePixelRatio;
-	canvas.height*=ycc.getSystemInfo().devicePixelRatio;
+	canvas.width*=ycc.dpi;
+	canvas.height*=ycc.dpi;
 // 初始化全局变量
 	ycc.bindCanvas(canvas);
-	stageW = ycc.getStageWidth();
-	stageH = ycc.getStageHeight();
+	stageW = ycc.getStageWidth()/ycc.dpi;
+	stageH = ycc.getStageHeight()/ycc.dpi;
 	
 	
 	ycc.debugger.addField('帧间隔',function () {return ycc.ticker.deltaTime;});

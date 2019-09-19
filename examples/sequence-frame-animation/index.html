@@ -39,17 +39,19 @@
 
 <script>
 
-	var canvas = document.createElement('canvas');
-	console.log(document.documentElement.clientWidth,document.documentElement.clientHeight);
-	canvas.width=document.documentElement.clientWidth;
-	canvas.height=document.documentElement.clientHeight;
+//	var canvas = document.createElement('canvas');
+//	console.log(document.documentElement.clientWidth,document.documentElement.clientHeight);
+//	canvas.width=document.documentElement.clientWidth;
+//	canvas.height=document.documentElement.clientHeight;
+//	document.body.appendChild(canvas);
+	var ycc = new Ycc();
+	var canvas = ycc.createCanvas({dpiAdaptation:true});
 	document.body.appendChild(canvas);
-
+	ycc.bindCanvas(canvas);
 
 	///////////////////////////// 全局变量
-	var ycc = new Ycc().bindCanvas(canvas);
-	var stageW = ycc.getStageWidth();
-	var stageH = ycc.getStageHeight();
+	var stageW = ycc.getStageWidth()/ycc.dpi;
+	var stageH = ycc.getStageHeight()/ycc.dpi;
 	// 所有的图片资源
 	var images = null;
 	// 马里奥UI
