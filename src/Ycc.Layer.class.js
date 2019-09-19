@@ -490,6 +490,7 @@
 	 * @param forceUpdate {Boolean} 是否强制更新UI的离屏canvas，默认false
 	 */
 	Ycc.Layer.prototype.render = function (forceUpdate) {
+		if(!this.show) return;
 		// this.clear();
 		var self = this;
 		// 若强制更新，则先更新离屏canvas的缓存
