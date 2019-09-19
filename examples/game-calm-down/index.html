@@ -38,24 +38,26 @@
 
 
 <script>
-	if(!Ycc.utils.isMobile()){
-		document.body.innerHTML='<img src="./images/qr.png"/>';
-		throw new Error('PC端请扫码进入！');
-	}
-    if(!DeviceOrientationEvent)
-        throw new Error(alert('您这个手机不支持陀螺仪哦！'));
+//	if(!Ycc.utils.isMobile()){
+//		document.body.innerHTML='<img src="./images/qr.png"/>';
+//		throw new Error('PC端请扫码进入！');
+//	}
+//    if(!DeviceOrientationEvent)
+//        throw new Error(alert('您这个手机不支持陀螺仪哦！'));
 
-	var canvas = document.createElement('canvas');
-	console.log(document.documentElement.clientWidth,document.documentElement.clientHeight);
-	canvas.width=document.documentElement.clientWidth;
-	canvas.height=document.documentElement.clientHeight;
+//	var canvas = document.createElement('canvas');
+//	console.log(document.documentElement.clientWidth,document.documentElement.clientHeight);
+//	canvas.width=document.documentElement.clientWidth;
+//	canvas.height=document.documentElement.clientHeight;
+//	document.body.appendChild(canvas);
+
+	var ycc = new Ycc();
+	var canvas = ycc.createCanvas({dpiAdaptation:true});
 	document.body.appendChild(canvas);
+	ycc.bindCanvas(canvas);
 
-
-
-	var ycc = new Ycc().bindCanvas(canvas);
-	var stageW = ycc.getStageWidth();
-	var stageH = ycc.getStageHeight();
+	var stageW = ycc.getStageWidth()/ycc.dpi;
+	var stageH = ycc.getStageHeight()/ycc.dpi;
 	// 所有的图片资源
 	var images = null;
 	// 所有音频资源
@@ -232,10 +234,12 @@
         this.finalScoreText=new Ycc.UI.SingleLineText({
             content:"您坚持了"+this.score+"秒，心情是否平静了点呢？",
             xAlign:"center",
-            rect:new Ycc.Math.Rect(0,stageH/2+lineHeight*-1,stageW,30),
+            rect:new Ycc.Math.Rect(0,stageH/2+lineHeight*-1,stageW,lineHeight),
             color:color,
-            fontSize:fontSize
+            fontSize:fontSize,
+			rectBgColor:'red'
         });
+        console.log(this.finalScoreText.rect,11111);
         this.overLayer.addUI(this.finalScoreText);
 
 
@@ -287,6 +291,7 @@
             else
                 this.finalScoreText.content="是不是还不会玩啊？保持手机平衡哦！";
 
+			this.finalScoreText.content="1";
 			this.overLayer.show=true;
             return;
 		}
