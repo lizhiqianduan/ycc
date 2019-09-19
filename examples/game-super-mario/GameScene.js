@@ -195,11 +195,11 @@ GameScene.prototype.debug = function () {
 	context.beginPath();
 	for (var i = 0; i < bodies.length; i += 1) {
 		var vertices = bodies[i].vertices;
-		context.moveTo(vertices[0].x+this.layer.x, vertices[0].y);
+		context.moveTo(vertices[0].x*ycc.dpi+this.layer.x, vertices[0].y*ycc.dpi);
 		for (var j = 1; j < vertices.length; j += 1) {
-			context.lineTo(vertices[j].x+this.layer.x, vertices[j].y);
+			context.lineTo(vertices[j].x*ycc.dpi+this.layer.x, vertices[j].y*ycc.dpi);
 		}
-		context.lineTo(vertices[0].x+this.layer.x, vertices[0].y);
+		context.lineTo(vertices[0].x*ycc.dpi+this.layer.x, vertices[0].y*ycc.dpi);
 	}
 	context.lineWidth = 2;
 	context.strokeStyle = '#999';
@@ -855,7 +855,10 @@ GameScene.prototype.update = function () {
 		this.layer.x = -(this.mario.rect.x-stageW/2);
 	}
 
-
+	// ycc.layerManager.reRenderAllLayerToStage();
+	
+	this.layer.reRender();
+	this.btnLayer.reRender();
 
 	
 	

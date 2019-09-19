@@ -92,16 +92,16 @@ function createYcc() {
 	ycc.ticker.addFrameListener(function () {
 		t1 = Date.now();
 
-		ycc.layerManager.reRenderAllLayerToStage();
+		// ycc.layerManager.reRenderAllLayerToStage();
 
 		t2 = Date.now();
 
 		currentScene && currentScene.update && currentScene.update();
-		
+		ycc.debugger.layer.reRender();
 		t3 = Date.now();
 
 		// 绘制刚体的方框
-		// currentScene && currentScene.debug && currentScene.debug();
+		currentScene && currentScene.debug && currentScene.debug();
 		// window.onerror = function (e) { alert('系统错误！'+e); };
 		
 		t4 = Date.now();
