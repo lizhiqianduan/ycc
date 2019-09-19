@@ -111,15 +111,20 @@
 		imageRes = imgs;
 
 		// 新建渲染舞台
-		var canvas = document.createElement("canvas");
-		canvas.width = 300;//imageRes.paper.width;
-		canvas.height = 200;//imageRes.paper.height;
-		originWidth = canvas.width;
-		document.getElementById("canvas").appendChild(canvas);
+//		var canvas = document.createElement("canvas");
+//		canvas.width = 300;//imageRes.paper.width;
+//		canvas.height = 200;//imageRes.paper.height;
+//		originWidth = canvas.width;
+//		document.getElementById("canvas").appendChild(canvas);
+
 
 
 		ycc = new Ycc();
+		var canvas = ycc.createCanvas({width:300,height:200,dpiAdaptation:true});
+		document.getElementById("canvas").appendChild(canvas);
 		ycc.bindCanvas(canvas);
+		originWidth = canvas.width;
+
 		layer = ycc.layerManager.newLayer({name:"试卷图层"});
 		layer.enableEventManager = true;
 
