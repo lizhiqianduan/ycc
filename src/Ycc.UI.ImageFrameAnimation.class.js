@@ -112,17 +112,21 @@
 	 */
 	Ycc.UI.ImageFrameAnimation.prototype._processMirror = function (rect) {
 		var ctx = this.ctxCache;
+		var x = rect.x*this.dpi;
+		var y = rect.y*this.dpi;
+		var width = rect.width*this.dpi;
+		var height = rect.height*this.dpi;
 		if(this.mirror===1){
 			ctx.scale(-1, 1);
-			ctx.translate(-rect.x*2-rect.width,0);
+			ctx.translate(-x*2-width,0);
 		}
 		if(this.mirror===2){
 			ctx.scale(1, -1);
-			ctx.translate(0,-rect.y*2-rect.height);
+			ctx.translate(0,-y*2-height);
 		}
 		if(this.mirror===3){
 			ctx.scale(-1, -1);
-			ctx.translate(-rect.x*2-rect.width,-rect.y*2-rect.height);
+			ctx.translate(-x*2-width,-y*2-height);
 		}
 		
 	};
@@ -131,6 +135,7 @@
 	 * 绘制
 	 */
 	Ycc.UI.ImageFrameAnimation.prototype.render = function () {
+		var ctx = this.ctxCache;
 		
 		// 绝对坐标
 		var rect = this.getAbsolutePositionRect();
@@ -146,16 +151,16 @@
 		if(!this.isRunning || index>=this.frameRectCount)
 			index=0;
 		// 绘制
-		this.ctx.save();
+		ctx.save();
 		this.scaleAndRotate();
 
 		// 处理镜像属性
 		this._processMirror(rect);
 
-		this.ctx.drawImage(this.res,
+		ctx.drawImage(this.res,
 			this.firstFrameRect.x+this.firstFrameRect.width*index,this.firstFrameRect.y,this.firstFrameRect.width,this.firstFrameRect.height,
 			x,y,width,height);
-		this.ctx.restore();
+		ctx.restore();
 	};
 	
 	

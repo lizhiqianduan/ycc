@@ -106,17 +106,22 @@
 	 */
 	Ycc.UI.Image.prototype._processMirror = function (rect) {
 		var ctx = this.ctxCache;
+		var x = rect.x*this.dpi;
+		var y = rect.y*this.dpi;
+		var width = rect.width*this.dpi;
+		var height = rect.height*this.dpi;
+		
 		if(this.mirror===1){
 			ctx.scale(-1, 1);
-			ctx.translate(-rect.x*2-rect.width,0);
+			ctx.translate(-x*2-width,0);
 		}
 		if(this.mirror===2){
 			ctx.scale(1, -1);
-			ctx.translate(0,-rect.y*2-rect.height);
+			ctx.translate(0,-y*2-height);
 		}
 		if(this.mirror===3){
 			ctx.scale(-1, -1);
-			ctx.translate(-rect.x*2-rect.width,-rect.y*2-rect.height);
+			ctx.translate(-x*2-width,-y*2-height);
 		}
 		
 	};
@@ -143,9 +148,9 @@
 		
 		// 坐标系旋转
 		var absoluteAnchor = this.transformToAbsolute({x:this.anchorX,y:this.anchorY});
-		ctx.translate(absoluteAnchor.x,absoluteAnchor.y);
+		ctx.translate(absoluteAnchor.x*this.dpi,absoluteAnchor.y*this.dpi);
 		ctx.rotate(this.rotation*Math.PI/180);
-		ctx.translate(-absoluteAnchor.x,-absoluteAnchor.y);
+		ctx.translate(-absoluteAnchor.x*this.dpi,-absoluteAnchor.y*this.dpi);
 		
 		this._processMirror(rect);
 		if(this.fillMode === "none")
