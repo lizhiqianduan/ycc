@@ -20,8 +20,9 @@
 	<br><br>
 </div>
 
+<div id="canvas">
 
-<canvas width="300" height="200" id="canvas"></canvas>
+</div>
 
 </body>
 </html>
@@ -33,11 +34,10 @@
 
 
 <script>
-	var canvas = document.getElementById("canvas");
-	var width = canvas.width;
-	var height = canvas.height;
-
-	ycc = new Ycc();
+	var width = 300,height=400;
+	var ycc = new Ycc();
+	var canvas = ycc.createCanvas({width:width,height:height,dpiAdaptation:true});
+	document.getElementById("canvas").appendChild(canvas);
 	ycc.bindCanvas(canvas);
 	ycc.ticker.start();
 
