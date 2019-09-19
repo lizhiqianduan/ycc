@@ -58,6 +58,11 @@
 		this.ctx = null;
 		
 		/**
+		 * 图层的缓存绘图环境
+		 */
+		this.ctxCache = this.yccInstance.createCacheCtx();
+		
+		/**
 		 * 图层id
 		 */
 		this.id = layerIndex++;
@@ -417,6 +422,8 @@
 			Ycc.UI.release(ui);
 		});
 		this.uiList.length=0;
+		// 更新缓存
+		this.updateCache();
 	};
 	
 	
@@ -432,6 +439,7 @@
 	
 	/**
 	 * 渲染图层至舞台
+	 * @deprecated
 	 */
 	Ycc.Layer.prototype.renderToStage = function () {
 		if(this.show)
@@ -455,6 +463,8 @@
 		if(index===-1)
 			return this.uiList.push(ui);
 		this.uiList.splice(index,0,ui);
+		// 更新缓存
+		this.updateCache();
 	};
 	
 	/**
@@ -469,6 +479,8 @@
 		Ycc.UI.release(ui);
 		this.uiList[index]=null;
 		this.uiList.splice(index,1);
+		// 更新缓存
+		this.updateCache();
 		return true;
 	};
 	
@@ -480,23 +492,10 @@
 	Ycc.Layer.prototype.render = function (forceUpdate) {
 		// this.clear();
 		var self = this;
-		self.uiCountRecursion=0;
-		for(var i=0;i<this.uiList.length;i++){
-			if(!this.uiList[i].show) continue;
-			//this.uiList[i].__render();
-			// 按树的层次向下渲染
-			this.uiList[i].itor().depthDown(function (ui, level) {
-				//console.log(level,ui);
-				self.uiCountRecursion++;
-				if(ui.show){
-					// 若强制更新，则先更新离屏canvas的缓存
-					if(forceUpdate) ui.updateCache();
-					// 直接将离屏canvas绘制至上屏canvas
-					self.ctx.drawImage(ui.ctxCache.canvas,0,0);
-				}else
-					return -1;
-			});
-		}
+		// 若强制更新，则先更新离屏canvas的缓存
+		if(forceUpdate) this.updateCache();
+		
+		self.ctx.drawImage(this.ctxCache.canvas,0,0);
 		// 兼容wx端，wx端多一个draw API
 		self.ctx.draw && self.ctx.draw();
 	};
@@ -609,6 +608,42 @@
 		res.x = (dotOrArr.x)-this.x;
 		res.y = (dotOrArr.y)-this.y;
 		return res;
+	};
+	
+	/**
+	 * 更新图层的缓存绘图环境
+	 */
+	Ycc.Layer.prototype.updateCache = function () {
+		this.clearCache();
+		var ctx = this.ctxCache;
+		
+		ctx.canvas.width = this.ctx.canvas.width;
+		
+		// this.clear();
+		var self = this;
+		self.uiCountRecursion=0;
+		for(var i=0;i<this.uiList.length;i++){
+			if(!this.uiList[i].show) continue;
+			//this.uiList[i].__render();
+			// 按树的层次向下渲染
+			this.uiList[i].itor().depthDown(function (ui, level) {
+				//console.log(level,ui);
+				self.uiCountRecursion++;
+				if(ui.show){
+					ui.__render();
+				}else
+					return -1;
+			});
+		}
+		// 兼容wx端，wx端多一个draw API
+		ctx.draw && ctx.draw();
+	};
+	
+	/**
+	 * 清空缓存画布
+	 */
+	Ycc.Layer.prototype.clearCache = function () {
+		this.ctxCache.canvas.width = this.ctx.canvas.width;
 	};
 	
 })(Ycc);

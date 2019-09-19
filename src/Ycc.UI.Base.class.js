@@ -232,8 +232,8 @@
 		Ycc.utils.isFn(this.beforeInit) && this.beforeInit();
 		this.belongTo = layer;
 		this.ctx = layer.ctx;
-		// 创建离屏canvas
-		this.ctxCache = this.belongTo.yccInstance.createCacheCtx();
+		// UI的离屏canvas使用图层的离屏canvas
+		this.ctxCache = this.belongTo.ctxCache;
 		this.dpi = this.belongTo.yccInstance.getSystemInfo().devicePixelRatio;
 		// debug
 		// document.body.appendChild(this.ctxCache.canvas);
@@ -243,7 +243,7 @@
 		// this.computeUIProps();
 		
 		// 初始化时，直接计算并渲染至离屏canvas中，以等待外部使用
-		this.__render();
+		// this.__render();
 		Ycc.utils.isFn(this.afterInit) && this.afterInit();
 	};
 	
@@ -748,16 +748,6 @@
 			if(!ctxConfig.hasOwnProperty(key)) continue;
 			ctx[key] = ctxConfig[key];
 		}
-	};
-	
-	/**
-	 * 更新缓存的canvas
-	 */
-	Ycc.UI.Base.prototype.updateCache = function () {
-		// 清空缓存画布
-		this.ctxCache.canvas.width = this.ctx.canvas.width;
-		// 渲染
-		this.__render();
 	};
 	
 })(Ycc);
