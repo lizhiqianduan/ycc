@@ -56,6 +56,8 @@ loadRes(function (imgs, musics) {
 
 
 function createYcc() {
+	ycc = new Ycc();
+	
 	if(typeof canvas === 'undefined'){
 // 创建canvas
 		window.canvas = document.createElement('canvas');
@@ -63,9 +65,11 @@ function createYcc() {
 		canvas.height=window.innerHeight;
 		document.body.appendChild(canvas);
 	}
-
+	canvas.style.width = canvas.width+'px';
+	canvas.width*=ycc.getSystemInfo().devicePixelRatio;
+	canvas.height*=ycc.getSystemInfo().devicePixelRatio;
 // 初始化全局变量
-	ycc = new Ycc().bindCanvas(canvas);
+	ycc.bindCanvas(canvas);
 	stageW = ycc.getStageWidth();
 	stageH = ycc.getStageHeight();
 	
