@@ -101,7 +101,7 @@ function createYcc() {
 		t3 = Date.now();
 
 		// 绘制刚体的方框
-		currentScene && currentScene.debug && currentScene.debug();
+		// currentScene && currentScene.debug && currentScene.debug();
 		// window.onerror = function (e) { alert('系统错误！'+e); };
 		
 		t4 = Date.now();

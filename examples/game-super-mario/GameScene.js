@@ -576,6 +576,8 @@ GameScene.prototype.marioDeadProcess = function(){
 	// 显示结束之后的图层
 	this.gameOverLayer.show = true;
 	
+	console.log('死亡');
+	this.gameOverLayer.reRender();
 	// ycc.ticker.stop(60);
 };
 
@@ -856,10 +858,8 @@ GameScene.prototype.update = function () {
 	}
 
 	// ycc.layerManager.reRenderAllLayerToStage();
-	
 	this.layer.reRender();
 	this.btnLayer.reRender();
-
-	
+	this.gameOverLayer.reRender();
 	
 };

@@ -11,6 +11,8 @@
 	"libVersion": "1.9.94",
 	"appid": "wxa2e24ec8a522aad9",
 	"projectname": "mario-super-man",
+	"simulatorType": "wechat",
+	"simulatorPluginLibVersion": {},
 	"condition": {
 		"search": {
 			"current": -1,
