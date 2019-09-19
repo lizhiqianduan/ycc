@@ -20,7 +20,7 @@
 	</div>
 	<br><br>
 </div>
-
+<div id="canvas"></div>
 </body>
 </html>
 <script src="../common.js"></script>
@@ -29,15 +29,12 @@
 
 <script src="../../build/ycc.js"></script>
 <script>
-	var canvas = document.createElement("canvas");
-	canvas.width = 320;
-	canvas.height = 400;
-	document.body.appendChild(canvas);
-
-
-
+	
 	var ycc = new Ycc();
+	var canvas = ycc.createCanvas({width:300,height:420,dpiAdaptation:true});
+	document.getElementById("canvas").appendChild(canvas);
 	ycc.bindCanvas(canvas);
+	
 	ycc.ticker.start();
 	// 新建图层
 	var layer = ycc.layerManager.newLayer({enableFrameEvent:true});

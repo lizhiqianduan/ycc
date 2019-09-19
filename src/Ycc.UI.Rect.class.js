@@ -72,7 +72,6 @@
 		this.renderPath(ctx);
 		this.fill?ctx.fill():ctx.stroke();
 		ctx.restore();
-		console.log('rect is over!!');
 	};
 	
 	
