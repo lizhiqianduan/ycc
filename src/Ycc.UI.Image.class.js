@@ -190,8 +190,8 @@
 					this.ctx.drawImage(this.res,
 						0,0,
 						img.width,img.height,
-						rect.x+this.scaleRepeatRect.width*i,rect.y+this.scaleRepeatRect.height*j,
-						xRest,yRest);
+						rect.x*this.dpi+this.scaleRepeatRect.width*i,rect.y*this.dpi+this.scaleRepeatRect.height*j,
+						xRest*this.dpi,yRest*this.dpi);
 				}
 			}
 		}else if(this.fillMode === "scale9Grid"){
