@@ -125,7 +125,7 @@
 				this.rect.width = contentWidth/this.dpi;
 			}
 			if(parseInt(this.fontSize)>this.rect.height){
-				this.rect.height = parseInt(this.fontSize)/this.dpi;
+				this.rect.height = parseInt(this.fontSize);
 			}
 		}
 		
