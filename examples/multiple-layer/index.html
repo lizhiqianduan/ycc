@@ -54,14 +54,14 @@
 <div id="stage">
 	<div>绘图区（拖动鼠标绘制） <button onclick="newLayer()">新建图层</button></div>
 	<br>
-	<canvas width="300" height="150"></canvas>
+	<div id="canvas"></div>
 	<br>
 	<span>注：图层原本为透明色，灰色仅仅是为了显示效果</span>
 </div>
 
 <div class="right-section">
 	<h4>图层信息 </h4>
-	<span style="color: red; display: none;font-size: 12px;" id="tip">没有图层，请点击新建图层</span>
+	<span style="color: red; display: none;font-size: 12px;" id="tip">没有图层，不能绘制，请点击新建图层</span>
 	<div id="layer">
 
 	</div>
@@ -152,13 +152,16 @@
 
 <script>
 
-	var stage = document.getElementById("stage").getElementsByTagName("canvas")[0];
-	var layerDom = document.getElementById("layer");
 
-	var ycc = new window.Ycc();
+	var ycc = new Ycc();
+	var stage = ycc.createCanvas({width:300,height:150,dpiAdaptation:true});
+	document.getElementById("canvas").appendChild(stage);
 	ycc.bindCanvas(stage);
 
-	newLayer();
+
+	var layerDom = document.getElementById("layer");
+	document.getElementById('tip').style.display = "block";
+//	newLayer();
 
 
 
@@ -176,7 +179,7 @@
 	 * */
 	function newLayer() {
 		document.getElementById('tip').style.display = "none";
-		var layer = ycc.layerManager.newLayer({enableEventManager:true});
+		var layer = ycc.layerManager.newLayer({enableEventManager:true,name:'child'});
 		ycc.layerManager.enableEventManagerOnly(layer);
 		ycc.layerManager.reRenderAllLayerToStage();
 		pen();
@@ -227,8 +230,17 @@
 		ycc.layerManager.deleteLayer(ycc.findLayerById(layerId));
 		ycc.layerManager.reRenderAllLayerToStage();
 		document.getElementById("ycc-layer-"+layerId).remove();
-		if(ycc.layerList.length===0)
+		if(getShowLayer().length===0)
 			document.getElementById('tip').style.display = "inline";
+	}
+
+	/**
+	 * 获取用于显示的图层列表
+	 */
+	function getShowLayer() {
+		return ycc.layerList.filter(function (item) {
+			return item.name==='child';
+		});
 	}
 
 	/**
@@ -245,8 +257,8 @@
 	 */
 	function renderLayerToHtml() {
 		layerDom.innerHTML="";
-		for(var i=ycc.layerList.length-1;i>=0;i--){
-			var layer = ycc.layerList[i];
+		for(var i=getShowLayer().length-1;i>=0;i--){
+			var layer = getShowLayer()[i];
 			var renderData = Ycc.utils.mergeObject({
 				x:0,
 				y:0,
@@ -258,11 +270,14 @@
 			layerDom.innerHTML+=Ycc.utils.renderTpl(document.getElementById("layer-box-tpl").innerHTML,renderData);
 		}
 
-		for(var j=ycc.layerList.length-1;j>=0;j--){
-			var _layer = ycc.layerList[j];
+		for(var j=getShowLayer().length-1;j>=0;j--){
+			var _layer = getShowLayer()[j];
 			var _tplID = "ycc-layer-"+_layer.id;
 			var canvasList = document.getElementById(_tplID).getElementsByTagName("canvas");
 			var canvas = canvasList[0];
+//			canvas.style.width=canvas.width+'px';
+			canvas.width*=ycc.getSystemInfo().devicePixelRatio;
+			canvas.height*=ycc.getSystemInfo().devicePixelRatio;
 			var layerYcc = new Ycc().bindCanvas(canvas);
 			var newLayer = layerYcc.layerManager.newLayer({enableEventManager:true});
 			_layer.uiList.forEach(function (ui) {
