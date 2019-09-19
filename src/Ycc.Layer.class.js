@@ -473,21 +473,11 @@
 	};
 	
 	/**
-	 * 渲染Layer。
-	 * <br>注意：并没有渲染至舞台。
-	 */
-	Ycc.Layer.prototype.render = function () {
-		for(var i=0;i<this.uiList.length;i++){
-			if(!this.uiList[i].show) continue;
-			this.uiList[i].render();
-		}
-	};
-	
-	/**
-	 * 重绘图层。
+	 * 渲染Layer中的所有UI，
 	 * <br>直接将UI的离屏canvas绘制至上屏canvas。
+	 * @param forceUpdate {Boolean} 是否强制更新UI的离屏canvas，默认false
 	 */
-	Ycc.Layer.prototype.reRender = function () {
+	Ycc.Layer.prototype.render = function (forceUpdate) {
 		// this.clear();
 		var self = this;
 		self.uiCountRecursion=0;
@@ -499,8 +489,8 @@
 				//console.log(level,ui);
 				self.uiCountRecursion++;
 				if(ui.show){
-					console.log(ui,1111);
-					// ui.__render();
+					// 若强制更新，则先更新离屏canvas的缓存
+					if(forceUpdate) ui.updateCache();
 					// 直接将离屏canvas绘制至上屏canvas
 					self.ctx.drawImage(ui.ctxCache.canvas,0,0);
 				}else
@@ -509,6 +499,15 @@
 		}
 		// 兼容wx端，wx端多一个draw API
 		self.ctx.draw && self.ctx.draw();
+	};
+	
+	/**
+	 * 强制重绘图层。
+	 * 此方法会更新图层内所有UI的离屏canvas缓存
+	 * <br>直接将UI的离屏canvas绘制至上屏canvas。
+	 */
+	Ycc.Layer.prototype.reRender = function () {
+		this.render(true);
 	};
 	
 	/**

@@ -288,7 +288,7 @@
 	 * @param absoluteRect	{Ycc.Math.Rect}	容纳区的绝对位置
 	 */
 	Ycc.UI.Base.prototype.renderRectBorder = function (absoluteRect) {
-		console.log('绘制边框');
+		// console.log('绘制边框');
 		// 边框宽度为0，不渲染
 		if(this.rectBorderWidth<=0) return;
 		var ctx = this.ctxCache;
