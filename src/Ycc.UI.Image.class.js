@@ -167,8 +167,6 @@
 						xRest = rect.width-i*img.width;
 					if(j===hCount-1)
 						yRest = rect.height-j*img.height;
-					if(i===wCount-1)
-						console.log('剩余量',i,j,xRest,yRest);
 					ctx.drawImage(this.res,
 						0,0,
 						xRest,yRest,

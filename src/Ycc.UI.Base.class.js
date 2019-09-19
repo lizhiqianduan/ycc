@@ -236,8 +236,8 @@
 		this.ctxCache = this.belongTo.yccInstance.createCacheCtx();
 		this.dpi = this.belongTo.yccInstance.getSystemInfo().devicePixelRatio;
 		// debug
-		document.body.appendChild(this.ctxCache.canvas);
-		this.ctxCache.canvas.style.background="red";
+		// document.body.appendChild(this.ctxCache.canvas);
+		// this.ctxCache.canvas.style.background="red";
 
 		// 初始化时计算一次属性
 		// this.computeUIProps();

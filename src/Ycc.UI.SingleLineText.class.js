@@ -115,7 +115,7 @@
 				this.rect.width = contentWidth;
 			}
 		}*/
-		console.log(contentWidth,width);
+		// console.log(contentWidth,width);
 		if(this.overflow === "hidden"){
 			if(contentWidth>width)
 				self.displayContent = self.getMaxContentInWidth(this.content,width);
