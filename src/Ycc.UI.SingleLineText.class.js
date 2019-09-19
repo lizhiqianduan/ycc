@@ -121,11 +121,11 @@
 			if(contentWidth>width)
 				self.displayContent = self.getMaxContentInWidth(this.content,width);
 		}else if(this.overflow === "auto"){
-			if(contentWidth>this.rect.width){
-				this.rect.width = contentWidth;
+			if(contentWidth>width){
+				this.rect.width = contentWidth/this.dpi;
 			}
 			if(parseInt(this.fontSize)>this.rect.height){
-				this.rect.height = parseInt(this.fontSize);
+				this.rect.height = parseInt(this.fontSize)/this.dpi;
 			}
 		}
 		

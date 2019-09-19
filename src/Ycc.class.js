@@ -96,6 +96,12 @@ var Ycc = function Ycc(config){
 	this.stageW = 0;
 	
 	this.stageH = 0;
+	
+	/**
+	 * dpi
+	 * @type {number}
+	 */
+	this.dpi = this.getSystemInfo().devicePixelRatio;
 };
 
 /**
