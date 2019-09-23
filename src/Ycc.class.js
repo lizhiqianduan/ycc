@@ -408,6 +408,6 @@ Ycc.prototype.createCacheCtx = function () {
 	}).getContext('2d');
 
 	// debug
-	document.body.appendChild(ctxCache.canvas);
+	// document.body.appendChild(ctxCache.canvas);
 	return ctxCache;
 };
