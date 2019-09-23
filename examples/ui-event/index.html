@@ -71,7 +71,6 @@
 		console.log("我是",this.yccClass.name,"我",e.type,e);
 		this.rect.x = startRect.x+e.x-startPos.x;
 		this.rect.y = startRect.y+e.y-startPos.y;
-		this.updateCache();
 		ycc.layerManager.reRenderAllLayerToStage();
 	};
 
