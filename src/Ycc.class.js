@@ -377,6 +377,8 @@ Ycc.prototype.createCanvas = function (options) {
 		canvas.width = option.width;
 		canvas.height = option.height;
 	}
+	// 去除5px inline-block偏差
+	canvas.style.display='block';
 	return canvas;
 };
 

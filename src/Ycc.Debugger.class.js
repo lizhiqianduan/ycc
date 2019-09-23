@@ -69,25 +69,25 @@
 		 * 调试面板的容纳区
 		 * @type {Ycc.UI.Rect}
 		 */
+		this.rect = null;
+		
+		/**
+		 * 调试面板的图层
+		 */
+		this.layer = null;
+		
+	};
+	
+	
+	Ycc.Debugger.prototype.init = function () {
 		this.rect = new Ycc.UI.Rect({
 			name:'debuggerRect',
 			rect:new Ycc.Math.Rect(10,10,200,140),
 			color:'rgba(255,255,0,0.5)'
 		});
-		
-		/**
-		 * 调试面板的图层
-		 */
 		this.layer = yccInstance.layerManager.newLayer({
 			name:"debug图层"
 		});
-		
-		
-		this.init();
-	};
-	
-	
-	Ycc.Debugger.prototype.init = function () {
 		var self = this;
 		this.yccInstance.ticker.addFrameListener(function () {
 			self.updateInfo();
@@ -98,6 +98,7 @@
 	 * 显示调试面板
 	 */
 	Ycc.Debugger.prototype.showDebugPanel = function () {
+		this.init();
 		var layer = this.layer;
 		if(layer.uiList.indexOf(this.rect)===-1)
 			layer.addUI(this.rect);
