@@ -63,6 +63,18 @@
 		this.ctxCache = this.yccInstance.createCacheCtx();
 		
 		/**
+		 * 缓存时drawImage所绘制的最小区域
+		 * @type {Ycc.Math.Rect}
+		 */
+		this.ctxCacheRect = null;
+		
+		/**
+		 * 是否以红色方框框选缓存的最小区域，调试时可使用
+		 * @type {boolean}
+		 */
+		this.renderCacheRect = false;
+		
+		/**
 		 * 图层id
 		 */
 		this.id = layerIndex++;
@@ -496,7 +508,17 @@
 		// 若强制更新，则先更新离屏canvas的缓存
 		if(forceUpdate) this.updateCache();
 		
-		self.ctx.drawImage(this.ctxCache.canvas,0,0);
+		var dpi = this.yccInstance.dpi;
+		if(!this.ctxCacheRect)
+			self.ctx.drawImage(this.ctxCache.canvas,0,0);
+		else{
+			var x = this.ctxCacheRect.x*dpi,
+				y=this.ctxCacheRect.y*dpi,
+				width=this.ctxCacheRect.width*dpi,
+				height=this.ctxCacheRect.height*dpi;
+			self.ctx.drawImage(this.ctxCache.canvas,x,y,width,height,x,y,width,height);
+		}
+		
 		// 兼容wx端，wx端多一个draw API
 		self.ctx.draw && self.ctx.draw();
 	};
@@ -612,15 +634,49 @@
 	};
 	
 	/**
+	 * 合并需要合并的最小区域
+	 * @param absolutePositionRect	当前UI的绝对坐标范围
+	 * @private
+	 */
+	Ycc.Layer.prototype._mergeCtxCacheRect = function (absolutePositionRect) {
+		var ycc = this.yccInstance;
+		
+		if(!this.ctxCacheRect)
+			return this.ctxCacheRect = new Ycc.Math.Rect(absolutePositionRect);
+		
+		var stageW = ycc.getStageWidth();
+		var stageH = ycc.getStageHeight();
+		var dpi = ycc.dpi;
+		
+		var rect = this.ctxCacheRect;
+		
+		var x1 = rect.x+rect.width;
+		var y1 = rect.y+rect.height;
+		
+		var x2 = absolutePositionRect.x+absolutePositionRect.width;
+		var y2 = absolutePositionRect.y+absolutePositionRect.height;
+		
+		// x、y取最小
+		rect.x=rect.x<absolutePositionRect.x?rect.x:absolutePositionRect.x;
+		rect.y=rect.y<absolutePositionRect.y?rect.y:absolutePositionRect.y;
+		// 高宽取最大
+		rect.width = x1<x2?(x2-rect.x):(x1-rect.x);
+		rect.height = y1<y2?(y2-rect.y):(y1-rect.y);
+		
+		// 再次计算
+		rect.x = rect.x<0?0:rect.x;
+		rect.y = rect.y<0?0:rect.y;
+		rect.width = rect.x+rect.width>stageW/dpi?stageW/dpi-rect.x:rect.width;
+		rect.height = rect.y+rect.height>stageH/dpi?stageH/dpi-rect.y:rect.height;
+		return rect;
+	};
+	
+	/**
 	 * 更新图层的缓存绘图环境
 	 */
 	Ycc.Layer.prototype.updateCache = function () {
 		this.clearCache();
 		var ctx = this.ctxCache;
-		
-		ctx.canvas.width = this.ctx.canvas.width;
-		
-		// this.clear();
 		var self = this;
 		self.uiCountRecursion=0;
 		for(var i=0;i<this.uiList.length;i++){
@@ -632,19 +688,40 @@
 				self.uiCountRecursion++;
 				if(ui.show){
 					ui.__render();
+					// 合并最小绘制区域
+					self._mergeCtxCacheRect(ui.getAbsolutePositionRect());
 				}else
 					return -1;
 			});
 		}
+		var rect = this.ctxCacheRect;
+		if(rect&&this.renderCacheRect){
+			var dpi = this.yccInstance.dpi;
+			var stageW = this.yccInstance.getStageWidth()/dpi;
+			var stageH = this.yccInstance.getStageHeight()/dpi;
+			
+			var x = rect.x<0?0:rect.x,y=rect.y<0?0:rect.y,width=rect.width>stageW?stageW:rect.width,height=rect.height>stageH?stageH:rect.height;
+			ctx.save();
+			ctx.beginPath();
+			ctx.strokeStyle='red';
+			ctx.strokeWidth=2;
+			ctx.rect(x*dpi,y*dpi,width*dpi,height*dpi);
+			ctx.closePath();
+			ctx.stroke();
+			ctx.restore();
+		}
+		
 		// 兼容wx端，wx端多一个draw API
 		ctx.draw && ctx.draw();
 	};
 	
 	/**
-	 * 清空缓存画布
+	 * 清空缓存画布、缓存区域
 	 */
 	Ycc.Layer.prototype.clearCache = function () {
 		this.ctxCache.canvas.width = this.ctx.canvas.width;
+		// 清空缓存区域
+		this.ctxCacheRect = null;
 	};
 	
 })(Ycc);

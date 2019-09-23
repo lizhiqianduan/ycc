@@ -402,8 +402,12 @@ Ycc.prototype.getSystemInfo = function () {
  * 创建一个离屏的绘图空间，大小与舞台等同
  */
 Ycc.prototype.createCacheCtx = function () {
-	return this.createCanvas({
+	var ctxCache = this.createCanvas({
 		width:this.getStageWidth(),
 		height:this.getStageHeight()
 	}).getContext('2d');
+
+	// debug
+	document.body.appendChild(ctxCache.canvas);
+	return ctxCache;
 };
