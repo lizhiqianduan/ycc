@@ -82,8 +82,11 @@
 	
 	/**
 	 * 重新将所有图层绘制至舞台。不显示的图层也会更新。
+	 * @param forceUpdate {boolean}	是否强制更新
+	 * 若强制更新，所有图层会强制更新缓存
+	 * 若非强制更新，对于使用缓存的图层，只会绘制缓存至舞台
 	 */
-	Ycc.LayerManager.prototype.reRenderAllLayerToStage = function () {
+	Ycc.LayerManager.prototype.reRenderAllLayerToStage = function (forceUpdate) {
 		var t1 = Date.now();
 		this.renderUiCount = 0;
 		this.yccInstance.clearStage();
@@ -91,7 +94,7 @@
 			var layer = this.yccInstance.layerList[i];
 			// 该图层是否可见
 			if(!layer.show) continue;
-			layer.reRender();
+			layer.reRender(forceUpdate);
 			this.renderUiCount+=layer.uiCountRecursion;
 		}
 

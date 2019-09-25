@@ -507,44 +507,56 @@
 	/**
 	 * 渲染Layer中的所有UI，
 	 * <br>直接将UI的离屏canvas绘制至上屏canvas。
-	 * @param forceUpdate {Boolean} 是否强制更新UI的离屏canvas，默认false
-	 * 当且仅当useCache为true时生效
+	 *
+	 * @param forceUpdate {boolean}	是否强制更新
+	 * 若强制更新，所有图层会强制更新缓存
+	 * 若非强制更新，对于使用缓存的图层，只会绘制缓存至舞台
 	 */
 	Ycc.Layer.prototype.render = function (forceUpdate) {
+		this.reRender(forceUpdate);
+	};
+	
+	/**
+	 * 重绘图层。
+	 * <br>直接将UI的离屏canvas绘制至上屏canvas。
+	 *
+	 * @param forceUpdate {boolean}	是否强制更新
+	 * 若强制更新，所有图层会强制更新缓存
+	 * 若非强制更新，对于使用缓存的图层，只会绘制缓存至舞台
+	 */
+	Ycc.Layer.prototype.reRender = function (forceUpdate) {
 		if(!this.show) return;
-		// 若未使用缓存，直接渲染至上屏canvas
-		if(!this.useCache){
-			this.renderAllToCtx(this.ctx);
-			return;
+		if(this.useCache){
+			return this.renderCacheToStage(forceUpdate);
 		}
-		// this.clear();
-		var self = this;
+		// 绘制所有UI至上屏ctx
+		this.renderAllToCtx(this.ctx);
+	};
+	
+	/**
+	 * 绘制缓存区域至上屏canvas
+	 * @param forceUpdate {boolean}	是否强制更新，若为true，绘制之前先重新绘制缓存
+	 */
+	Ycc.Layer.prototype.renderCacheToStage = function (forceUpdate) {
+		if(!this.useCache) return;
 		// 若强制更新，则先更新离屏canvas的缓存
 		if(forceUpdate) this.updateCache();
 		
 		var dpi = this.yccInstance.dpi;
-		if(!this.ctxCacheRect)
-			self.ctx.drawImage(this.ctxCache.canvas,0,0);
-		else{
+		if(!this.ctxCacheRect){
+			this.ctx.drawImage(this.ctxCache.canvas,0,0);
+		}else{
 			var x = this.ctxCacheRect.x*dpi,
 				y=this.ctxCacheRect.y*dpi,
 				width=this.ctxCacheRect.width*dpi,
 				height=this.ctxCacheRect.height*dpi;
-			self.ctx.drawImage(this.ctxCache.canvas,x,y,width,height,x,y,width,height);
+			this.ctx.drawImage(this.ctxCache.canvas,x,y,width,height,x,y,width,height);
 		}
 		
 		// 兼容wx端，wx端多一个draw API
-		self.ctx.draw && self.ctx.draw();
+		this.ctx.draw && this.ctx.draw();
 	};
 	
-	/**
-	 * 强制重绘图层。
-	 * 此方法会更新图层内所有UI的离屏canvas缓存
-	 * <br>直接将UI的离屏canvas绘制至上屏canvas。
-	 */
-	Ycc.Layer.prototype.reRender = function () {
-		this.render(true);
-	};
 	
 	/**
 	 * 获取图层中某个点所对应的最上层UI，最上层UI根据层级向下遍历，取层级最深的可见UI。

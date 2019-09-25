@@ -476,10 +476,9 @@
 	/**
 	 * 渲染至绘图环境。
 	 * 		<br> 注意：重写此方法时，不能修改UI类的属性。修改属性，应该放在computeUIProps方法内。
-	 * @param [ctx]	绘图环境。可选
 	 * @override
 	 */
-	Ycc.UI.Base.prototype.render = function (ctx) {
+	Ycc.UI.Base.prototype.render = function () {
 	
 	};
 	
@@ -507,10 +506,9 @@
 	 * 新增渲染过程中的hook函数。
 	 * 此方法不允许重载、覆盖
 	 * <br> 开启离屏canvas后，此过程只会发生在离屏canvas中
-	 * @param [ctx]	绘图环境。可选
 	 * @private
 	 */
-	Ycc.UI.Base.prototype.__render = function (ctx) {
+	Ycc.UI.Base.prototype.__render = function () {
 		this.triggerListener('computestart',new Ycc.Event("computestart"));
 		var error = this.computeUIProps();
 		this.triggerListener('computeend',new Ycc.Event("computeend"));
@@ -537,7 +535,7 @@
 		
 		
 		this.triggerListener('renderstart',new Ycc.Event("renderstart"));
-		this.render(ctx);
+		this.render();
 		this.triggerListener('renderend',new Ycc.Event("renderend"));
 	};
 	
