@@ -45,6 +45,12 @@
 		this.lastFrameTime = this.startTime;
 		
 		/**
+		 * 上一帧刷新时的心跳数
+		 * @type {number}
+		 */
+		this.lastFrameTickerCount = 0;
+		
+		/**
 		 * 当前帧与上一帧的刷新的时间差
 		 * @type {number}
 		 */
@@ -61,12 +67,6 @@
 		 * @type {number}
 		 */
 		this.deltaTimeRatio = 1;
-		
-		/**
-		 * 所有帧时间差的总和
-		 * @type {number}
-		 */
-		this.deltaTimeTotalValue = 0;
 		
 		/**
 		 * 所有自定义的帧监听函数列表
@@ -86,6 +86,11 @@
 		 */
 		this.defaultDeltaTime = 1e3/this.defaultFrameRate;
 		
+		/**
+		 * 每帧之间间隔的心跳数
+		 * @type {number}
+		 */
+		this.tickerSpace = 1;
 		
 		/**
 		 * 总帧数
@@ -118,20 +123,21 @@
 	/**
 	 * 定时器开始
 	 * @param [frameRate] 心跳频率，即帧率
+	 * 可取值有[60,30,20,15]
 	 */
 	Ycc.Ticker.prototype.start = function (frameRate) {
 		var self = this;
 		if(self._isRunning){
 			return;
 		}
-		
+		var timer = requestAnimationFrame || webkitRequestAnimationFrame || mozRequestAnimationFrame || oRequestAnimationFrame || msRequestAnimationFrame;
 		// 正常设置的帧率
 		frameRate = frameRate?frameRate:self.defaultFrameRate;
+		// 每帧之间的心跳间隔，默认为1
+		self.tickerSpace = parseInt(60/frameRate)||1;
 		
 		// 每帧理论的间隔时间
 		self.deltaTimeExpect = 1000/frameRate;
-		
-		var timer = requestAnimationFrame || webkitRequestAnimationFrame || mozRequestAnimationFrame || oRequestAnimationFrame || msRequestAnimationFrame;
 		
 		// 初始帧数量设为0
 		self.frameAllCount = 0;
@@ -151,40 +157,23 @@
 		
 		// 心跳回调函数。约60fps
 		function cb() {
-			
-			// 当前时间
-			var curTime = self.timerTickCount===0?self.startTime:performance.now();
-
 			// 总的心跳数加1
 			self.timerTickCount++;
-
-			// 总的心跳时间
-			var tickTime = curTime - self.startTime;
-			
-			// 所有帧刷新总时间，理论值
-			var frameTime = self.frameAllCount * self.deltaTimeExpect;
-
-			// 当总帧数*每帧的理论时间小于总心跳时间，触发帧的回调
-			if(tickTime > frameTime || "undefined"!==typeof wx){
-				// 总帧数加1
+			if(self.timerTickCount - self.lastFrameTickerCount === self.tickerSpace){
+				// 设置 总帧数加1
 				self.frameAllCount++;
+				// 设置 两帧的时间差
+				self.deltaTime = performance.now()-self.lastFrameTime;
+				// 设置 帧间隔缩放比
+				self.deltaTimeRatio = self.deltaTime/self.deltaTimeExpect;
+				// 设置 上一帧刷新时间
+				self.lastFrameTime += self.deltaTime;
+				// 设置 上一帧刷新时的心跳数
+				self.lastFrameTickerCount = self.timerTickCount;
 				// 执行所有自定义的帧监听函数
 				self.broadcastFrameEvent();
 				// 执行所有图层的帧监听函数
 				self.broadcastToLayer();
-				// 两帧的时间差
-				self.deltaTime = performance.now()-self.lastFrameTime;
-				// 帧间隔缩放比
-				self.deltaTimeRatio = self.deltaTime/self.deltaTimeExpect;
-				// 帧时间差的总和（忽略第一帧）
-				self.frameAllCount>1&&(self.deltaTimeTotalValue +=self.deltaTime);
-				
-				if(self.deltaTime/self.deltaTimeExpect>3){
-					console.warn("第%d帧：",self.frameAllCount);
-					console.warn("该帧率已低于正常值的1/3！若相邻帧持续警告，请适当降低帧率，或者提升刷新效率！","正常值：",frameRate," 当前值：",1000/self.deltaTime);
-				}
-				// 设置上一帧刷新时间
-				self.lastFrameTime += self.deltaTime;
 			}
 			
 			// 递归调用心跳函数
