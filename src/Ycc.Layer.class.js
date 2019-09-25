@@ -58,9 +58,15 @@
 		this.ctx = null;
 		
 		/**
+		 * 是否使用独立的缓存canvas
+		 * @type {boolean}
+		 */
+		this.useCache = false;
+		
+		/**
 		 * 图层的缓存绘图环境
 		 */
-		this.ctxCache = this.yccInstance.createCacheCtx();
+		this.ctxCache = null;
 		
 		/**
 		 * 缓存时drawImage所绘制的最小区域
@@ -218,6 +224,8 @@
 		
 		// 初始化图层属性
 		this.ctx = this.yccInstance.ctx;
+		// useCache参数判断
+		this.ctxCache = this.useCache?this.yccInstance.createCacheCtx():this.ctx;
 		
 		// 初始化画布属性
 		self._setCtxProps();
@@ -500,9 +508,15 @@
 	 * 渲染Layer中的所有UI，
 	 * <br>直接将UI的离屏canvas绘制至上屏canvas。
 	 * @param forceUpdate {Boolean} 是否强制更新UI的离屏canvas，默认false
+	 * 当且仅当useCache为true时生效
 	 */
 	Ycc.Layer.prototype.render = function (forceUpdate) {
 		if(!this.show) return;
+		// 若未使用缓存，直接渲染至上屏canvas
+		if(!this.useCache){
+			this.renderAllToCtx(this.ctx);
+			return;
+		}
 		// this.clear();
 		var self = this;
 		// 若强制更新，则先更新离屏canvas的缓存
@@ -634,6 +648,49 @@
 	};
 	
 	/**
+	 * 绘制所有UI至某个绘图环境
+	 * @param ctx
+	 */
+	Ycc.Layer.prototype.renderAllToCtx = function (ctx) {
+		var self = this;
+		self.uiCountRecursion=0;
+		for(var i=0;i<this.uiList.length;i++){
+			if(!this.uiList[i].show) continue;
+			//this.uiList[i].__render();
+			// 按树的层次向下渲染
+			this.uiList[i].itor().depthDown(function (ui, level) {
+				//console.log(level,ui);
+				self.uiCountRecursion++;
+				if(ui.show){
+					ui.__render();
+					// 若使用了缓存，需要计算缓存的最小绘制区域
+					if(self.useCache) self._mergeCtxCacheRect(ui.getAbsolutePositionRect());
+				}else
+					return -1;
+			});
+		}
+		var rect = this.ctxCacheRect;
+		if(this.useCache&&rect&&this.renderCacheRect){
+			var dpi = this.yccInstance.dpi;
+			var stageW = this.yccInstance.getStageWidth()/dpi;
+			var stageH = this.yccInstance.getStageHeight()/dpi;
+			
+			var x = rect.x<0?0:rect.x,y=rect.y<0?0:rect.y,width=rect.width>stageW?stageW:rect.width,height=rect.height>stageH?stageH:rect.height;
+			ctx.save();
+			ctx.beginPath();
+			ctx.strokeStyle='red';
+			ctx.strokeWidth=2;
+			ctx.rect(x*dpi,y*dpi,width*dpi,height*dpi);
+			ctx.closePath();
+			ctx.stroke();
+			ctx.restore();
+		}
+		
+		// 兼容wx端，wx端多一个draw API
+		ctx.draw && ctx.draw();
+	};
+	
+	/**
 	 * 合并需要合并的最小区域
 	 * @param absolutePositionRect	当前UI的绝对坐标范围
 	 * @private
@@ -675,44 +732,12 @@
 	 * 更新图层的缓存绘图环境
 	 */
 	Ycc.Layer.prototype.updateCache = function () {
+		// 判断是否使用缓存
+		if(!this.useCache) return;
+
 		this.clearCache();
-		var ctx = this.ctxCache;
-		var self = this;
-		self.uiCountRecursion=0;
-		for(var i=0;i<this.uiList.length;i++){
-			if(!this.uiList[i].show) continue;
-			//this.uiList[i].__render();
-			// 按树的层次向下渲染
-			this.uiList[i].itor().depthDown(function (ui, level) {
-				//console.log(level,ui);
-				self.uiCountRecursion++;
-				if(ui.show){
-					ui.__render();
-					// 合并最小绘制区域
-					self._mergeCtxCacheRect(ui.getAbsolutePositionRect());
-				}else
-					return -1;
-			});
-		}
-		var rect = this.ctxCacheRect;
-		if(rect&&this.renderCacheRect){
-			var dpi = this.yccInstance.dpi;
-			var stageW = this.yccInstance.getStageWidth()/dpi;
-			var stageH = this.yccInstance.getStageHeight()/dpi;
-			
-			var x = rect.x<0?0:rect.x,y=rect.y<0?0:rect.y,width=rect.width>stageW?stageW:rect.width,height=rect.height>stageH?stageH:rect.height;
-			ctx.save();
-			ctx.beginPath();
-			ctx.strokeStyle='red';
-			ctx.strokeWidth=2;
-			ctx.rect(x*dpi,y*dpi,width*dpi,height*dpi);
-			ctx.closePath();
-			ctx.stroke();
-			ctx.restore();
-		}
+		this.renderAllToCtx(this.ctxCache);
 		
-		// 兼容wx端，wx端多一个draw API
-		ctx.draw && ctx.draw();
 	};
 	
 	/**
