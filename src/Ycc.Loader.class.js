@@ -108,51 +108,55 @@
 		curRes.type = curRes.type || 'image';
 		
 		
+		
 		var timerId = 0;
-
-		if(curRes.type==='image'){
-			curRes.res = new Image();
-			curRes.res.src = self.basePath + curRes.url;
-
-			curRes.res.addEventListener(successEvent,onSuccess);
-			curRes.res.addEventListener(errorEvent,onError);
-
-			// 超时提示只针对图片
-			timerId = setTimeout(function () {
-				curRes.res.removeEventListener(successEvent,onSuccess);
-				curRes.res.removeEventListener(errorEvent,onSuccess);
-				onError({message:"获取资源超时！"});
-			},curRes.timeout||10000);
+		polyfillWx(self.basePath + curRes.url,function (fullPath) {
 			
-		}else if(curRes.type==='audio'){
-			// 兼容wx端
-			if("undefined"!==typeof wx){
-				curRes.res = new Audio();
-				curRes.res.src = self.basePath + curRes.url;
-				successEvent = 'loadedmetadata';
-				errorEvent = 'error';
+			if(curRes.type==='image'){
+				curRes.res = new Image();
+				curRes.res.src = fullPath;
+				
 				curRes.res.addEventListener(successEvent,onSuccess);
 				curRes.res.addEventListener(errorEvent,onError);
-				return;
-			}
-			
-			
-			curRes.res = new AudioPolyfill();
-			if(!curRes.res.context){
-				onError({message:"浏览器不支持AudioContext！"});
-				return;
-			}
-			console.log(self.basePath + curRes.url);
-			self.ajax.get(self.basePath + curRes.url,(function (curRes) {
-				return function (arrayBuffer) {
-					curRes.res.context.decodeAudioData(arrayBuffer, function(buf) {
-						curRes.res.buf=buf;
-						onSuccess();
-					}, onError);
+				
+				// 超时提示只针对图片
+				timerId = setTimeout(function () {
+					curRes.res.removeEventListener(successEvent,onSuccess);
+					curRes.res.removeEventListener(errorEvent,onSuccess);
+					onError({message:"获取资源超时！"});
+				},curRes.timeout||10000);
+				
+			}else if(curRes.type==='audio'){
+				// 兼容wx端
+				if("undefined"!==typeof wx){
+					curRes.res = new Audio();
+					curRes.res.src = fullPath;
+					successEvent = 'loadedmetadata';
+					errorEvent = 'error';
+					curRes.res.addEventListener(successEvent,onSuccess);
+					curRes.res.addEventListener(errorEvent,onError);
+					return;
 				}
-			})(curRes),onError,'arraybuffer');
-		}
-		
+				
+				
+				curRes.res = new AudioPolyfill();
+				if(!curRes.res.context){
+					onError({message:"浏览器不支持AudioContext！"});
+					return;
+				}
+				console.log(fullPath);
+				self.ajax.get(fullPath,(function (curRes) {
+					return function (arrayBuffer) {
+						curRes.res.context.decodeAudioData(arrayBuffer, function(buf) {
+							curRes.res.buf=buf;
+							onSuccess();
+						}, onError);
+					}
+				})(curRes),onError,'arraybuffer');
+			}
+			
+		});
+
 		
 		
 		function onSuccess() {
@@ -199,6 +203,36 @@
 		}
 		return null;
 	};
+	
+	
+	
+	/**
+	 * URL兼容微信的云开发
+	 * @param fullURL
+	 * 若为云开发，此路径为云开发中的FileID
+	 * 非云开发时，此路径为绝对路径
+	 * @param cb(url)
+	 */
+	function polyfillWx(fullURL, cb) {
+		// 微信端、并且使用了云路径的资源
+		if(Ycc.utils.isWx()&&fullURL.indexOf('cloud://')!==-1){
+			wx.cloud.downloadFile({
+				fileID: fullURL,
+				success: function(res){
+					// 返回临时文件路径
+					cb.call(this,res.tempFilePath);
+				},
+				fail: function () {
+					cb.call(this,fullURL);
+				}
+			});
+		}else{
+			cb.call(this,fullURL);
+		}
+	}
+	
+	
+	
 	
 	
 	/**
