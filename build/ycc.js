@@ -1,4 +1,10 @@
-
+/**
+ * @file    Ycc.class.js
+ * @author  xiaohei
+ * @date    2017/9/30
+ * @description  Ycc.class文件
+ *
+ */
 
 /**
  * 应用启动入口类，每个实例都与一个canvas绑定。
@@ -6,6 +12,8 @@
  * @param config {Object} 整个ycc的配置项
  * @param config.debugDrawContainer {Boolean} 是否显示所有UI的容纳区域
  * @param config.useGesture {Boolean} 是否启用系统的手势库，默认启用
+ * @param config.dpiAdaptation {Boolean} 是否开启高分屏适配，默认启用
+ * 若开启，所有UI都会创建一个属于自己的离屏canvas，大小与舞台一致
  * @constructor
  */
 var Ycc = function Ycc(config){
@@ -71,12 +79,13 @@ var Ycc = function Ycc(config){
 	
 	/**
 	 * 整个ycc的配置项
-	 * @type {*|{}}
+	 * @type {{debugDrawContainer:boolean,useGesture:boolean,dpiAdaptation:boolean}}
 	 */
-	this.config = config || {
+	this.config = Ycc.utils.extend({
 		debugDrawContainer:false,
-		useGesture:true
-	};
+		useGesture:true,
+		dpiAdaptation:true
+	},config||{});
 	
 	/**
 	 * 是否移动端
@@ -87,6 +96,12 @@ var Ycc = function Ycc(config){
 	this.stageW = 0;
 	
 	this.stageH = 0;
+	
+	/**
+	 * dpi
+	 * @type {number}
+	 */
+	this.dpi = this.getSystemInfo().devicePixelRatio;
 };
 
 /**
@@ -256,7 +271,7 @@ Ycc.prototype._initStageGestureEvent = function () {
 	 * @return {null}
 	 */
 	function triggerUIEventBubbleUp(type,x,y,ui) {
-		if(ui && ui.belongTo.enableEventManager){
+		if(ui && ui.belongTo && ui.belongTo.enableEventManager){
 			// 触发ui的事件
 			ui.triggerListener(type,new Ycc.Event({x:x,y:y,type:type,target:ui}));
 
@@ -332,7 +347,77 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 	return null;
 };
 
-;
+/**
+ * 创建canvas，只针对H5端。微信小游戏的canvas为全局变量，直接使用即可
+ * @example
+ * var ycc = new Ycc();
+ * var stage = canvas || ycc.createCanvas();
+ * ycc.bindCanvas(stage);
+ *
+ * @param options
+ * @param options.width
+ * @param options.height
+ * @param options.dpiAdaptation		是否根据dpi适配canvas大小
+ * @return {*}	已创建的canvas元素
+ */
+Ycc.prototype.createCanvas = function (options) {
+	options = options||{};
+	var option = Ycc.utils.mergeObject({
+		width:window.innerWidth,
+		height:window.innerHeight,
+		dpiAdaptation:false
+	},options);
+	var canvas = document.createElement("canvas");
+	var dpi = this.getSystemInfo().devicePixelRatio;
+	if(option.dpiAdaptation){
+		canvas.width = option.width*dpi;
+		canvas.height = option.height*dpi;
+		canvas.style.width=option.width+'px';
+	}else{
+		canvas.width = option.width;
+		canvas.height = option.height;
+	}
+	// 去除5px inline-block偏差
+	canvas.style.display='block';
+	return canvas;
+};
+
+/**
+ * 获取系统信息
+ * @return {{model: string, pixelRatio: number, windowWidth: number, windowHeight: number, system: string, language: string, version: string, screenWidth: number, screenHeight: number, SDKVersion: string, brand: string, fontSizeSetting: number, benchmarkLevel: number, batteryLevel: number, statusBarHeight: number, safeArea: {right: number, bottom: number, left: number, top: number, width: number, height: number}, platform: string, devicePixelRatio: number}}
+ */
+Ycc.prototype.getSystemInfo = function () {
+	return {
+		"model":"iPhone 5",
+		"pixelRatio":window.devicePixelRatio||1,
+		"windowWidth":window.innerWidth,
+		"windowHeight":window.innerHeight,
+		"screenWidth":320,
+		"screenHeight":568,
+		"devicePixelRatio":window.devicePixelRatio||1
+	};
+};
+
+/**
+ * 创建一个离屏的绘图空间，大小与舞台等同
+ */
+Ycc.prototype.createCacheCtx = function () {
+	var ctxCache = this.createCanvas({
+		width:this.getStageWidth(),
+		height:this.getStageHeight()
+	}).getContext('2d');
+
+	// debug
+	// document.body.appendChild(ctxCache.canvas);
+	return ctxCache;
+};;/**
+ * @file        Ycc.utils.js
+ * @author      xiaohei
+ * @desc
+ *  整个程序公用的基础工具模块
+ *
+ * @requires    Ycc.init
+ */
 
 (function(Ycc){
     Ycc.utils = {};
@@ -529,12 +614,24 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 		arr.length = 0;
 	};
 	
+	/**
+	 * 检测是否微信环境
+	 * @return {boolean}
+	 */
+	Ycc.utils.isWx = function () {
+		return "undefined"!== typeof wx;
+	}
 	
 	
 	
 })(Ycc);
 
-;
+;/**
+ * @file    Ycc.Math.js
+ * @author  xiaohei
+ * @date    2017/11/2
+ * @description  Ycc.Math文件
+ */
 
 
 (function (Ycc) {
@@ -877,7 +974,13 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 	};
 	
 	
-})(Ycc);;
+})(Ycc);;/**
+ * @file    Ycc.Tree.class.js
+ * @author  xiaohei
+ * @date    2018/8/6
+ * @description  Ycc.Tree.class文件
+ */
+
 
 
 
@@ -1299,7 +1402,14 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 	
 	
 	
-})(Ycc);;
+})(Ycc);;/**
+ * @file    Ycc.Graph.class.js
+ * @author  xiaohei
+ * @date    2018/8/14
+ * @description  Ycc.Graph.class文件
+ *
+ * 图的结构类，有向图、无向图等
+ */
 
 (function (Ycc) {
 	
@@ -1740,7 +1850,13 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 
 
 
-})(Ycc);;
+})(Ycc);;/**
+ * @file    Ycc.Ticker.class.js
+ * @author  xiaohei
+ * @date    2017/10/26
+ * @description  Ycc.Ticker.class文件
+ */
+
 
 
 (function (Ycc) {
@@ -1781,6 +1897,12 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 		this.lastFrameTime = this.startTime;
 		
 		/**
+		 * 上一帧刷新时的心跳数
+		 * @type {number}
+		 */
+		this.lastFrameTickerCount = 0;
+		
+		/**
 		 * 当前帧与上一帧的刷新的时间差
 		 * @type {number}
 		 */
@@ -1797,12 +1919,6 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 		 * @type {number}
 		 */
 		this.deltaTimeRatio = 1;
-		
-		/**
-		 * 所有帧时间差的总和
-		 * @type {number}
-		 */
-		this.deltaTimeTotalValue = 0;
 		
 		/**
 		 * 所有自定义的帧监听函数列表
@@ -1822,6 +1938,11 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 		 */
 		this.defaultDeltaTime = 1e3/this.defaultFrameRate;
 		
+		/**
+		 * 每帧之间间隔的心跳数
+		 * @type {number}
+		 */
+		this.tickerSpace = 1;
 		
 		/**
 		 * 总帧数
@@ -1854,20 +1975,21 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 	/**
 	 * 定时器开始
 	 * @param [frameRate] 心跳频率，即帧率
+	 * 可取值有[60,30,20,15]
 	 */
 	Ycc.Ticker.prototype.start = function (frameRate) {
 		var self = this;
 		if(self._isRunning){
 			return;
 		}
-		
+		var timer = requestAnimationFrame || webkitRequestAnimationFrame || mozRequestAnimationFrame || oRequestAnimationFrame || msRequestAnimationFrame;
 		// 正常设置的帧率
 		frameRate = frameRate?frameRate:self.defaultFrameRate;
+		// 每帧之间的心跳间隔，默认为1
+		self.tickerSpace = parseInt(60/frameRate)||1;
 		
 		// 每帧理论的间隔时间
 		self.deltaTimeExpect = 1000/frameRate;
-		
-		var timer = requestAnimationFrame || webkitRequestAnimationFrame || mozRequestAnimationFrame || oRequestAnimationFrame || msRequestAnimationFrame;
 		
 		// 初始帧数量设为0
 		self.frameAllCount = 0;
@@ -1887,40 +2009,23 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 		
 		// 心跳回调函数。约60fps
 		function cb() {
-			
-			// 当前时间
-			var curTime = self.timerTickCount===0?self.startTime:performance.now();
-
 			// 总的心跳数加1
 			self.timerTickCount++;
-
-			// 总的心跳时间
-			var tickTime = curTime - self.startTime;
-			
-			// 所有帧刷新总时间，理论值
-			var frameTime = self.frameAllCount * self.deltaTimeExpect;
-
-			// 当总帧数*每帧的理论时间小于总心跳时间，触发帧的回调
-			if(tickTime > frameTime || "undefined"!==typeof wx){
-				// 总帧数加1
+			if(self.timerTickCount - self.lastFrameTickerCount === self.tickerSpace){
+				// 设置 总帧数加1
 				self.frameAllCount++;
+				// 设置 两帧的时间差
+				self.deltaTime = performance.now()-self.lastFrameTime;
+				// 设置 帧间隔缩放比
+				self.deltaTimeRatio = self.deltaTime/self.deltaTimeExpect;
+				// 设置 上一帧刷新时间
+				self.lastFrameTime += self.deltaTime;
+				// 设置 上一帧刷新时的心跳数
+				self.lastFrameTickerCount = self.timerTickCount;
 				// 执行所有自定义的帧监听函数
 				self.broadcastFrameEvent();
 				// 执行所有图层的帧监听函数
 				self.broadcastToLayer();
-				// 两帧的时间差
-				self.deltaTime = performance.now()-self.lastFrameTime;
-				// 帧间隔缩放比
-				self.deltaTimeRatio = self.deltaTime/self.deltaTimeExpect;
-				// 帧时间差的总和（忽略第一帧）
-				self.frameAllCount>1&&(self.deltaTimeTotalValue +=self.deltaTime);
-				
-				if(self.deltaTime/self.deltaTimeExpect>3){
-					console.warn("第%d帧：",self.frameAllCount);
-					console.warn("该帧率已低于正常值的1/3！若相邻帧持续警告，请适当降低帧率，或者提升刷新效率！","正常值：",frameRate," 当前值：",1000/self.deltaTime);
-				}
-				// 设置上一帧刷新时间
-				self.lastFrameTime += self.deltaTime;
 			}
 			
 			// 递归调用心跳函数
@@ -1988,7 +2093,13 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 	
 	
 	
-})(Ycc);;
+})(Ycc);;/**
+ * @file    Ycc.Debugger.class.js
+ * @author  xiaohei
+ * @date    2018/10/24
+ * @description  Ycc.Debugger.class文件
+ */
+
 
 (function (Ycc) {
 	
@@ -2053,25 +2164,25 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 		 * 调试面板的容纳区
 		 * @type {Ycc.UI.Rect}
 		 */
+		this.rect = null;
+		
+		/**
+		 * 调试面板的图层
+		 */
+		this.layer = null;
+		
+	};
+	
+	
+	Ycc.Debugger.prototype.init = function () {
 		this.rect = new Ycc.UI.Rect({
 			name:'debuggerRect',
 			rect:new Ycc.Math.Rect(10,10,200,140),
 			color:'rgba(255,255,0,0.5)'
 		});
-		
-		/**
-		 * 调试面板的图层
-		 */
 		this.layer = yccInstance.layerManager.newLayer({
 			name:"debug图层"
 		});
-		
-		
-		this.init();
-	};
-	
-	
-	Ycc.Debugger.prototype.init = function () {
 		var self = this;
 		this.yccInstance.ticker.addFrameListener(function () {
 			self.updateInfo();
@@ -2082,6 +2193,7 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 	 * 显示调试面板
 	 */
 	Ycc.Debugger.prototype.showDebugPanel = function () {
+		this.init();
 		var layer = this.layer;
 		if(layer.uiList.indexOf(this.rect)===-1)
 			layer.addUI(this.rect);
@@ -2177,7 +2289,13 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 	
 	
 	
-})(Ycc);;
+})(Ycc);;/**
+ * @file    Ycc.Loader.class.js
+ * @author  xiaohei
+ * @date    2017/10/9
+ * @description  Ycc.Loader.class文件
+ */
+
 
 
 (function (Ycc) {
@@ -2281,51 +2399,55 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 		curRes.type = curRes.type || 'image';
 		
 		
+		
 		var timerId = 0;
-
-		if(curRes.type==='image'){
-			curRes.res = new Image();
-			curRes.res.src = self.basePath + curRes.url;
-
-			curRes.res.addEventListener(successEvent,onSuccess);
-			curRes.res.addEventListener(errorEvent,onError);
-
-			// 超时提示只针对图片
-			timerId = setTimeout(function () {
-				curRes.res.removeEventListener(successEvent,onSuccess);
-				curRes.res.removeEventListener(errorEvent,onSuccess);
-				onError({message:"获取资源超时！"});
-			},curRes.timeout||10000);
+		polyfillWx(self.basePath + curRes.url,function (fullPath) {
 			
-		}else if(curRes.type==='audio'){
-			// 兼容wx端
-			if("undefined"!==typeof wx){
-				curRes.res = new Audio();
-				curRes.res.src = self.basePath + curRes.url;
-				successEvent = 'loadedmetadata';
-				errorEvent = 'error';
+			if(curRes.type==='image'){
+				curRes.res = new Image();
+				curRes.res.src = fullPath;
+				
 				curRes.res.addEventListener(successEvent,onSuccess);
 				curRes.res.addEventListener(errorEvent,onError);
-				return;
-			}
-			
-			
-			curRes.res = new AudioPolyfill();
-			if(!curRes.res.context){
-				onError({message:"浏览器不支持AudioContext！"});
-				return;
-			}
-			console.log(self.basePath + curRes.url);
-			self.ajax.get(self.basePath + curRes.url,(function (curRes) {
-				return function (arrayBuffer) {
-					curRes.res.context.decodeAudioData(arrayBuffer, function(buf) {
-						curRes.res.buf=buf;
-						onSuccess();
-					}, onError);
+				
+				// 超时提示只针对图片
+				timerId = setTimeout(function () {
+					curRes.res.removeEventListener(successEvent,onSuccess);
+					curRes.res.removeEventListener(errorEvent,onSuccess);
+					onError({message:"获取资源超时！"});
+				},curRes.timeout||10000);
+				
+			}else if(curRes.type==='audio'){
+				// 兼容wx端
+				if("undefined"!==typeof wx){
+					curRes.res = new Audio();
+					curRes.res.src = fullPath;
+					successEvent = 'loadedmetadata';
+					errorEvent = 'error';
+					curRes.res.addEventListener(successEvent,onSuccess);
+					curRes.res.addEventListener(errorEvent,onError);
+					return;
 				}
-			})(curRes),onError,'arraybuffer');
-		}
-		
+				
+				
+				curRes.res = new AudioPolyfill();
+				if(!curRes.res.context){
+					onError({message:"浏览器不支持AudioContext！"});
+					return;
+				}
+				console.log(fullPath);
+				self.ajax.get(fullPath,(function (curRes) {
+					return function (arrayBuffer) {
+						curRes.res.context.decodeAudioData(arrayBuffer, function(buf) {
+							curRes.res.buf=buf;
+							onSuccess();
+						}, onError);
+					}
+				})(curRes),onError,'arraybuffer');
+			}
+			
+		});
+
 		
 		
 		function onSuccess() {
@@ -2372,6 +2494,36 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 		}
 		return null;
 	};
+	
+	
+	
+	/**
+	 * URL兼容微信的云开发
+	 * @param fullURL
+	 * 若为云开发，此路径为云开发中的FileID
+	 * 非云开发时，此路径为绝对路径
+	 * @param cb(url)
+	 */
+	function polyfillWx(fullURL, cb) {
+		// 微信端、并且使用了云路径的资源
+		if(Ycc.utils.isWx()&&fullURL.indexOf('cloud://')!==-1){
+			wx.cloud.downloadFile({
+				fileID: fullURL,
+				success: function(res){
+					// 返回临时文件路径
+					cb.call(this,res.tempFilePath);
+				},
+				fail: function () {
+					cb.call(this,fullURL);
+				}
+			});
+		}else{
+			cb.call(this,fullURL);
+		}
+	}
+	
+	
+	
 	
 	
 	/**
@@ -2436,7 +2588,15 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 	};
 	
 	
-})(Ycc);;
+})(Ycc);;/**
+ * @file    Ycc.Ajax.class.js
+ * @author  xiaohei
+ * @date    2018/10/31
+ * @description  Ycc.Ajax.class文件
+ */
+
+
+
 (function (Ycc) {
 	
 	/**
@@ -2502,7 +2662,13 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 	
 	
 	
-})(Ycc);;
+})(Ycc);;/**
+ * @file    Ycc.Event.class.js
+ * @author  xiaohei
+ * @date    2017/11/20
+ * @description  Ycc.Event.class文件
+ */
+
 
 
 (function (Ycc) {
@@ -2592,7 +2758,13 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 	
 	
 	
-})(Ycc);;
+})(Ycc);;/**
+ * @file    Ycc.Listener.class.js
+ * @author  xiaohei
+ * @date    2017/11/16
+ * @description  Ycc.Listener.class文件
+ */
+
 
 
 
@@ -2891,7 +3063,13 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 	
 	
 	
-})(Ycc);;
+})(Ycc);;/**
+ * @file    Ycc.TouchLifeTracer.class.js
+ * @author  xiaohei
+ * @date    2018/6/12
+ * @description  Ycc.TouchLifeTracer.class文件
+ * @requires Ycc.Listener
+ */
 
 
 (function (Ycc) {
@@ -3135,7 +3313,15 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 		return -1;
 	};
 	
-})(Ycc);;
+})(Ycc);;/**
+ * @file    Ycc.Gesture.class.js
+ * @author  xiaohei
+ * @date    2018/6/19
+ * @description  Ycc.Gesture.class文件
+ * 移动端的手势类，封装简单的手势操作，操作只对target元素生效，若需要转发给Ycc.UI，则需要自己处理
+ * @requires Ycc.TouchLifeTracer
+ */
+
 
 (function (Ycc) {
 	
@@ -3547,7 +3733,15 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 
 
 })(Ycc);
-;
+;/**
+ * @file    Ycc.Layer.class.js
+ * @author  xiaohei
+ * @date    2017/11/16
+ * @description  Ycc.Layer.class文件
+ * @requires Ycc.Listener
+ */
+
+
 
 (function (Ycc) {
 	
@@ -3597,6 +3791,29 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 		 * @type {CanvasRenderingContext2D}
 		 */
 		this.ctx = null;
+		
+		/**
+		 * 是否使用独立的缓存canvas
+		 * @type {boolean}
+		 */
+		this.useCache = false;
+		
+		/**
+		 * 图层的缓存绘图环境
+		 */
+		this.ctxCache = null;
+		
+		/**
+		 * 缓存时drawImage所绘制的最小区域
+		 * @type {Ycc.Math.Rect}
+		 */
+		this.ctxCacheRect = null;
+		
+		/**
+		 * 是否以红色方框框选缓存的最小区域，调试时可使用
+		 * @type {boolean}
+		 */
+		this.renderCacheRect = false;
 		
 		/**
 		 * 图层id
@@ -3742,6 +3959,8 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 		
 		// 初始化图层属性
 		this.ctx = this.yccInstance.ctx;
+		// useCache参数判断
+		this.ctxCache = this.useCache?this.yccInstance.createCacheCtx():this.ctx;
 		
 		// 初始化画布属性
 		self._setCtxProps();
@@ -3913,9 +4132,13 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 	
 	/**
 	 * 设置画布所有的属性
+	 * @param props 属性map
+	 * @param ctx	绘图环境，可选参数，默认为上屏canvas的绘图环境
+	 * @private
 	 */
-	Ycc.Layer.prototype._setCtxProps = function (props) {
+	Ycc.Layer.prototype._setCtxProps = function (props,ctx) {
 		var self = this;
+		ctx = ctx || self.ctx;
 		var ctxConfig = {
 			fontStyle:"normal",
 			fontVariant:"normal",
@@ -3928,11 +4151,12 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 			strokeStyle:"blue"
 		};
 		ctxConfig = Ycc.utils.extend(ctxConfig,props);
-		
+		// dpi兼容
+		ctxConfig.fontSize=parseInt(ctxConfig.fontSize)*this.yccInstance.getSystemInfo().devicePixelRatio+'px';
 		ctxConfig.font = [ctxConfig.fontStyle,ctxConfig.fontVariant,ctxConfig.fontWeight,ctxConfig.fontSize,ctxConfig.fontFamily].join(" ");
 		for(var key in ctxConfig){
 			if(!ctxConfig.hasOwnProperty(key)) continue;
-			self.ctx[key] = ctxConfig[key];
+			ctx[key] = ctxConfig[key];
 		}
 	};
 	
@@ -3953,6 +4177,8 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 			Ycc.UI.release(ui);
 		});
 		this.uiList.length=0;
+		// 更新缓存
+		this.updateCache();
 	};
 	
 	
@@ -3968,6 +4194,7 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 	
 	/**
 	 * 渲染图层至舞台
+	 * @deprecated
 	 */
 	Ycc.Layer.prototype.renderToStage = function () {
 		if(this.show)
@@ -3991,6 +4218,8 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 		if(index===-1)
 			return this.uiList.push(ui);
 		this.uiList.splice(index,0,ui);
+		// 更新缓存
+		this.updateCache();
 	};
 	
 	/**
@@ -4005,44 +4234,64 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 		Ycc.UI.release(ui);
 		this.uiList[index]=null;
 		this.uiList.splice(index,1);
+		// 更新缓存
+		this.updateCache();
 		return true;
 	};
 	
 	/**
-	 * 渲染Layer。
-	 * <br>注意：并没有渲染至舞台。
+	 * 渲染Layer中的所有UI，
+	 * <br>直接将UI的离屏canvas绘制至上屏canvas。
+	 *
+	 * @param forceUpdate {boolean}	是否强制更新
+	 * 若强制更新，所有图层会强制更新缓存
+	 * 若非强制更新，对于使用缓存的图层，只会绘制缓存至舞台
 	 */
-	Ycc.Layer.prototype.render = function () {
-		for(var i=0;i<this.uiList.length;i++){
-			if(!this.uiList[i].show) continue;
-			this.uiList[i].render();
-		}
+	Ycc.Layer.prototype.render = function (forceUpdate) {
+		this.reRender(forceUpdate);
 	};
 	
 	/**
 	 * 重绘图层。
-	 * <br>注意：并没有渲染至舞台。
+	 * <br>直接将UI的离屏canvas绘制至上屏canvas。
+	 *
+	 * @param forceUpdate {boolean}	是否强制更新
+	 * 若强制更新，所有图层会强制更新缓存
+	 * 若非强制更新，对于使用缓存的图层，只会绘制缓存至舞台
 	 */
-	Ycc.Layer.prototype.reRender = function () {
-		// this.clear();
-		var self = this;
-		self.uiCountRecursion=0;
-		for(var i=0;i<this.uiList.length;i++){
-			if(!this.uiList[i].show) continue;
-			//this.uiList[i].__render();
-			// 按树的层次向下渲染
-			this.uiList[i].itor().depthDown(function (ui, level) {
-				//console.log(level,ui);
-				self.uiCountRecursion++;
-				if(ui.show)
-					ui.__render();
-				else
-					return -1;
-			});
+	Ycc.Layer.prototype.reRender = function (forceUpdate) {
+		if(!this.show) return;
+		if(this.useCache){
+			return this.renderCacheToStage(forceUpdate);
 		}
-		// 兼容wx端，wx端多一个draw API
-		self.ctx.draw && self.ctx.draw();
+		// 绘制所有UI至上屏ctx
+		this.renderAllToCtx(this.ctx);
 	};
+	
+	/**
+	 * 绘制缓存区域至上屏canvas
+	 * @param forceUpdate {boolean}	是否强制更新，若为true，绘制之前先重新绘制缓存
+	 */
+	Ycc.Layer.prototype.renderCacheToStage = function (forceUpdate) {
+		if(!this.useCache) return;
+		// 若强制更新，则先更新离屏canvas的缓存
+		if(forceUpdate) this.updateCache();
+		
+		var dpi = this.yccInstance.dpi;
+		if(!this.ctxCacheRect){
+			this.ctx.drawImage(this.ctxCache.canvas,0,0);
+		}else{
+			var x = this.ctxCacheRect.x*dpi,
+				y=this.ctxCacheRect.y*dpi,
+				width=this.ctxCacheRect.width*dpi,
+				height=this.ctxCacheRect.height*dpi;
+			this.ctx.drawImage(this.ctxCache.canvas,x,y,width,height,x,y,width,height);
+		}
+		
+		// 兼容wx端，wx端多一个draw API
+		this.ctx.draw && this.ctx.draw();
+	};
+	
 	
 	/**
 	 * 获取图层中某个点所对应的最上层UI，最上层UI根据层级向下遍历，取层级最深的可见UI。
@@ -4080,6 +4329,9 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 			//this.uiList[i].__render();
 			// 按树的层次向下遍历
 			this.uiList[i].itor().depthDown(function (child, level) {
+				// 幽灵状态的UI不予获取
+				if(child.ghost) return -1;
+				
 				// 跳过不可见的UI，返回-1阻止继续遍历其子UI
 				if(uiIsShow&&!child.show) return -1;
 
@@ -4142,7 +4394,115 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 		return res;
 	};
 	
-})(Ycc);;
+	/**
+	 * 绘制所有UI至某个绘图环境
+	 * @param ctx
+	 */
+	Ycc.Layer.prototype.renderAllToCtx = function (ctx) {
+		var self = this;
+		self.uiCountRecursion=0;
+		for(var i=0;i<this.uiList.length;i++){
+			if(!this.uiList[i].show) continue;
+			//this.uiList[i].__render();
+			// 按树的层次向下渲染
+			this.uiList[i].itor().depthDown(function (ui, level) {
+				//console.log(level,ui);
+				self.uiCountRecursion++;
+				if(ui.show){
+					ui.__render();
+					// 若使用了缓存，需要计算缓存的最小绘制区域
+					if(self.useCache) self._mergeCtxCacheRect(ui.getAbsolutePositionRect());
+				}else
+					return -1;
+			});
+		}
+		var rect = this.ctxCacheRect;
+		if(this.useCache&&rect&&this.renderCacheRect){
+			var dpi = this.yccInstance.dpi;
+			var stageW = this.yccInstance.getStageWidth()/dpi;
+			var stageH = this.yccInstance.getStageHeight()/dpi;
+			
+			var x = rect.x<0?0:rect.x,y=rect.y<0?0:rect.y,width=rect.width>stageW?stageW:rect.width,height=rect.height>stageH?stageH:rect.height;
+			ctx.save();
+			ctx.beginPath();
+			ctx.strokeStyle='red';
+			ctx.strokeWidth=2;
+			ctx.rect(x*dpi,y*dpi,width*dpi,height*dpi);
+			ctx.closePath();
+			ctx.stroke();
+			ctx.restore();
+		}
+		
+		// 兼容wx端，wx端多一个draw API
+		ctx.draw && ctx.draw();
+	};
+	
+	/**
+	 * 合并需要合并的最小区域
+	 * @param absolutePositionRect	当前UI的绝对坐标范围
+	 * @private
+	 */
+	Ycc.Layer.prototype._mergeCtxCacheRect = function (absolutePositionRect) {
+		var ycc = this.yccInstance;
+		
+		if(!this.ctxCacheRect)
+			return this.ctxCacheRect = new Ycc.Math.Rect(absolutePositionRect);
+		
+		var stageW = ycc.getStageWidth();
+		var stageH = ycc.getStageHeight();
+		var dpi = ycc.dpi;
+		
+		var rect = this.ctxCacheRect;
+		
+		var x1 = rect.x+rect.width;
+		var y1 = rect.y+rect.height;
+		
+		var x2 = absolutePositionRect.x+absolutePositionRect.width;
+		var y2 = absolutePositionRect.y+absolutePositionRect.height;
+		
+		// x、y取最小
+		rect.x=rect.x<absolutePositionRect.x?rect.x:absolutePositionRect.x;
+		rect.y=rect.y<absolutePositionRect.y?rect.y:absolutePositionRect.y;
+		// 高宽取最大
+		rect.width = x1<x2?(x2-rect.x):(x1-rect.x);
+		rect.height = y1<y2?(y2-rect.y):(y1-rect.y);
+		
+		// 再次计算
+		rect.x = rect.x<0?0:rect.x;
+		rect.y = rect.y<0?0:rect.y;
+		rect.width = rect.x+rect.width>stageW/dpi?stageW/dpi-rect.x:rect.width;
+		rect.height = rect.y+rect.height>stageH/dpi?stageH/dpi-rect.y:rect.height;
+		return rect;
+	};
+	
+	/**
+	 * 更新图层的缓存绘图环境
+	 */
+	Ycc.Layer.prototype.updateCache = function () {
+		// 判断是否使用缓存
+		if(!this.useCache) return;
+
+		this.clearCache();
+		this.renderAllToCtx(this.ctxCache);
+		
+	};
+	
+	/**
+	 * 清空缓存画布、缓存区域
+	 */
+	Ycc.Layer.prototype.clearCache = function () {
+		this.ctxCache.canvas.width = this.ctx.canvas.width;
+		// 清空缓存区域
+		this.ctxCacheRect = null;
+	};
+	
+})(Ycc);;/**
+ * @file    Ycc.Layer.class.js
+ * @author  xiaohei
+ * @date    2017/10/23
+ * @description  Ycc.LayerManager.class文件
+ */
+
 
 (function (Ycc) {
 	
@@ -4220,8 +4580,11 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 	
 	/**
 	 * 重新将所有图层绘制至舞台。不显示的图层也会更新。
+	 * @param forceUpdate {boolean}	是否强制更新
+	 * 若强制更新，所有图层会强制更新缓存
+	 * 若非强制更新，对于使用缓存的图层，只会绘制缓存至舞台
 	 */
-	Ycc.LayerManager.prototype.reRenderAllLayerToStage = function () {
+	Ycc.LayerManager.prototype.reRenderAllLayerToStage = function (forceUpdate) {
 		var t1 = Date.now();
 		this.renderUiCount = 0;
 		this.yccInstance.clearStage();
@@ -4229,7 +4592,7 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 			var layer = this.yccInstance.layerList[i];
 			// 该图层是否可见
 			if(!layer.show) continue;
-			layer.reRender();
+			layer.reRender(forceUpdate);
 			this.renderUiCount+=layer.uiCountRecursion;
 		}
 
@@ -4297,7 +4660,15 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 	
 	
 	
-})(Ycc);;
+})(Ycc);;/**
+ * @file    Ycc.PhotoManager.class.js
+ * @author  xiaohei
+ * @date    2017/9/30
+ * @description		Ycc.PhotoManager.class文件。
+ * 	Ycc实例的快照管理类
+ *
+ */
+
 
 
 (function (Ycc){
@@ -4389,7 +4760,20 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 	
 	
 	
-})(Ycc);;
+})(Ycc);;/**
+ * @file 	ycc.ui.js
+ * @author	xiaohei
+ * @date	2016/4/1
+ *
+ * @desc
+ * 控制所有的绘图基本操作，保存所有的绘图步骤，并提供回退、前进、清空、快照等方法。
+ * 不管理图形颜色、阴影、文字等内容。
+ * 所有图形绘制都为同步操作
+ *
+ * @requires Ycc
+ * @requires Ycc.utils
+ * */
+
 (function(Ycc){
 	// 检查依赖项
 	if(!Ycc || !Ycc.utils){
@@ -4713,7 +5097,16 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 
 
 
-})(Ycc);;
+})(Ycc);;/**
+ * @file    Ycc.UI.Base.class.js
+ * @author  xiaohei
+ * @date    2017/11/15
+ * @description  Ycc.UI.Base.class文件。
+ * 所有容器UI的基础类
+ * @requires Ycc.UI
+ * @requires Ycc.utils
+ */
+
 (function (Ycc) {
 	var uid = 0;
 	
@@ -4753,6 +5146,19 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 		 * @type {null}
 		 */
 		this.ctx = null;
+		
+		/**
+		 * 缓存的绘图环境
+		 * @type {null}
+		 */
+		this.ctxCache = null;
+		
+		/**
+		 * 设备像素比
+		 * @type {number}
+		 */
+		this.dpi = 1;
+		
 		/**
 		 * UI的绘图区域
 		 * @type {Ycc.Math.Rect}
@@ -4815,6 +5221,14 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 		 * @type {boolean}
 		 */
 		this.show = true;
+		
+		/**
+		 * 是否幽灵状态，默认false
+		 * 幽灵状态的UI：只能用于显示，不可点击，事件也不会触发，其子元素的事件也不会触发，不能通过getUIFromPointer获取
+		 * 用于解决多个UI重叠时是否需要穿透，以点击被覆盖UI的问题
+		 * @type {boolean}
+		 */
+		this.ghost = false;
 		
 		/**
 		 * 默认情况下，UI阻止事件冒泡，但不会阻止事件传播给图层
@@ -4917,15 +5331,25 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 		Ycc.utils.isFn(this.beforeInit) && this.beforeInit();
 		this.belongTo = layer;
 		this.ctx = layer.ctx;
+		// UI的离屏canvas使用图层的离屏canvas
+		this.ctxCache = this.belongTo.ctxCache;
+		this.dpi = this.belongTo.yccInstance.getSystemInfo().devicePixelRatio;
+		// debug
+		// document.body.appendChild(this.ctxCache.canvas);
+		// this.ctxCache.canvas.style.background="red";
 
 		// 初始化时计算一次属性
-		this.computeUIProps();
+		// this.computeUIProps();
+		
+		// 初始化时，直接计算并渲染至离屏canvas中，以等待外部使用
+		// this.__render();
 		Ycc.utils.isFn(this.afterInit) && this.afterInit();
 	};
 	
 	/**
 	 * 计算UI的各种属性。此操作必须在绘制之前调用。
 	 * <br> 计算与绘制分离的好处是，在绘制UI之前就可以提前确定元素的各种信息，从而判断是否需要绘制。
+	 * <br> 开启离屏canvas后，此过程只会发生在离屏canvas中
 	 * @override
 	 */
 	Ycc.UI.Base.prototype.computeUIProps = function () {
@@ -4934,43 +5358,49 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 	
 	/**
 	 * 渲染容纳区rect的背景色
+	 * <br> 开启离屏canvas后，此过程只会发生在离屏canvas中
 	 * @param absoluteRect	{Ycc.Math.Rect}	容纳区的绝对位置
 	 */
 	Ycc.UI.Base.prototype.renderRectBgColor = function (absoluteRect) {
 		var rect = absoluteRect;
 		var dots = this.getAbsolutePositionPolygon();
 		if(!dots||dots.length===0) return console.log(new Ycc.Debugger.Log("no polygon coordirates!").message);
-		
-		this.ctx.save();
-		this.ctx.fillStyle = this.rectBgColor;
-		this.ctx.beginPath();
-		this.ctx.moveTo(dots[0].x,dots[0].y);
+
+		var ctx = this.ctxCache;
+
+		ctx.save();
+		ctx.fillStyle = this.rectBgColor;
+		ctx.beginPath();
+		ctx.moveTo(dots[0].x*this.dpi,dots[0].y*this.dpi);
 		for(var i=1;i<dots.length-1;i++)
-			this.ctx.lineTo(dots[i].x,dots[i].y);
+			ctx.lineTo(dots[i].x*this.dpi,dots[i].y*this.dpi);
 		// this.ctx.rect(rect.x,rect.y,rect.width,rect.height);
-		this.ctx.closePath();
-		this.ctx.fill();
-		this.ctx.restore();
+		ctx.closePath();
+		ctx.fill();
+		ctx.restore();
 		rect = null;
 	};
 	
 	/**
 	 * 渲染容纳区rect的边框
+	 * <br> 开启离屏canvas后，此过程只会发生在离屏canvas中
 	 * @param absoluteRect	{Ycc.Math.Rect}	容纳区的绝对位置
 	 */
 	Ycc.UI.Base.prototype.renderRectBorder = function (absoluteRect) {
+		// console.log('绘制边框');
 		// 边框宽度为0，不渲染
 		if(this.rectBorderWidth<=0) return;
+		var ctx = this.ctxCache;
 
 		var rect = absoluteRect;
-		this.ctx.save();
-		this.ctx.strokeStyle = this.rectBorderColor;
-		this.ctx.strokeWidth = this.rectBorderWidth;
-		this.ctx.beginPath();
-		this.ctx.rect(rect.x,rect.y,rect.width,rect.height);
-		this.ctx.closePath();
-		this.ctx.stroke();
-		this.ctx.restore();
+		ctx.save();
+		ctx.strokeStyle = this.rectBorderColor;
+		ctx.strokeWidth = this.rectBorderWidth;
+		ctx.beginPath();
+		ctx.rect(rect.x*this.dpi,rect.y*this.dpi,rect.width*this.dpi,rect.height*this.dpi);
+		ctx.closePath();
+		ctx.stroke();
+		ctx.restore();
 		rect = null;
 	};
 	
@@ -5145,27 +5575,28 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 	/**
 	 * 渲染至绘图环境。
 	 * 		<br> 注意：重写此方法时，不能修改UI类的属性。修改属性，应该放在computeUIProps方法内。
-	 * @param [ctx]	绘图环境。可选
 	 * @override
 	 */
-	Ycc.UI.Base.prototype.render = function (ctx) {
+	Ycc.UI.Base.prototype.render = function () {
 	
 	};
 	
 	/**
 	 * 绘制UI的容器（红色小方框）
+	 * <br> 开启离屏canvas后，此过程只会发生在离屏canvas中
 	 * @param absoluteRect {Ycc.Math.Rect}	UI的绝对坐标
 	 * @private
 	 */
 	Ycc.UI.Base.prototype._renderContainer = function (absoluteRect) {
 		var rect = absoluteRect;
-		this.ctx.save();
-		this.ctx.beginPath();
-		this.ctx.strokeStyle = "#ff0000";
-		this.ctx.rect(rect.x,rect.y,rect.width,rect.height);
-		this.ctx.closePath();
-		this.ctx.stroke();
-		this.ctx.restore();
+		var ctx = this.ctxCache;
+		ctx.save();
+		ctx.beginPath();
+		ctx.strokeStyle = "#ff0000";
+		ctx.rect(rect.x*this.dpi,rect.y*this.dpi,rect.width*this.dpi,rect.height*this.dpi);
+		ctx.closePath();
+		ctx.stroke();
+		ctx.restore();
 		rect=null;
 	};
 	
@@ -5173,10 +5604,10 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 	 * 渲染统一调用的入口，供图层统一调用。
 	 * 新增渲染过程中的hook函数。
 	 * 此方法不允许重载、覆盖
-	 * @param [ctx]	绘图环境。可选
+	 * <br> 开启离屏canvas后，此过程只会发生在离屏canvas中
 	 * @private
 	 */
-	Ycc.UI.Base.prototype.__render = function (ctx) {
+	Ycc.UI.Base.prototype.__render = function () {
 		this.triggerListener('computestart',new Ycc.Event("computestart"));
 		var error = this.computeUIProps();
 		this.triggerListener('computeend',new Ycc.Event("computeend"));
@@ -5191,8 +5622,8 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 		this.renderRectBgColor(absolutePosition);
 		// 绘制容纳区的边框
 		this.renderRectBorder(absolutePosition);
-		// 绘制旋转平移之前的UI
-		this.renderDashBeforeUI();
+		// 绘制旋转平移之前的UI，只在离屏canvas中绘制
+		this.renderDashBeforeUI(this.ctxCache);
 		
 		// 全局UI配置项，是否绘制UI的容器
 		if(this.belongTo.yccInstance.config.debugDrawContainer){
@@ -5203,7 +5634,7 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 		
 		
 		this.triggerListener('renderstart',new Ycc.Event("renderstart"));
-		this.render(ctx);
+		this.render();
 		this.triggerListener('renderend',new Ycc.Event("renderend"));
 	};
 	
@@ -5216,12 +5647,13 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 	Ycc.UI.Base.prototype.getMaxContentInWidth = function (content, width) {
 		var out = content;
 		var outW = 0;
+		var ctx = this.ctxCache;
 		
-		if(this.ctx.measureText(content).width<=width)
+		if(ctx.measureText(content).width<=width)
 			return content;
 		for(var i = 0;i<content.length;i++){
 			out = content.slice(0,i+1);
-			outW = this.ctx.measureText(out).width;
+			outW = ctx.measureText(out).width;
 			if(outW>width){
 				return content.slice(0,i);
 			}
@@ -5383,9 +5815,44 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 
 		return res;
 	};
-
-
-})(Ycc);;
+	
+	
+	/**
+	 * 设置当前环境画布的所有的属性
+	 * @param props 属性map
+	 * @param ctx	绘图环境，可选参数，默认为离屏canvas的绘图环境
+	 * @private
+	 */
+	Ycc.UI.Base.prototype._setCtxProps = function (props,ctx) {
+		var self = this;
+		ctx = ctx || self.ctxCache;
+		var ctxConfig = {
+			fontStyle:"normal",
+			fontVariant:"normal",
+			fontWeight:"normal",
+			fontSize:"16px",
+			fontFamily:"微软雅黑",
+			font:"16px 微软雅黑",
+			textBaseline:"hanging",
+			fillStyle:"red",
+			strokeStyle:"blue"
+		};
+		ctxConfig = Ycc.utils.extend(ctxConfig,props);
+		// dpi兼容 字体大小
+		ctxConfig.fontSize=parseInt(ctxConfig.fontSize)*this.dpi+'px';
+		ctxConfig.font = [ctxConfig.fontStyle,ctxConfig.fontVariant,ctxConfig.fontWeight,ctxConfig.fontSize,ctxConfig.fontFamily].join(" ");
+		for(var key in ctxConfig){
+			if(!ctxConfig.hasOwnProperty(key)) continue;
+			ctx[key] = ctxConfig[key];
+		}
+	};
+	
+})(Ycc);;/**
+ * @file    Ycc.UI.Polygon.class.js
+ * @author  xiaohei
+ * @date    2019/4/26
+ * @description  Ycc.UI.Polygon.class文件
+ */
 
 (function (Ycc) {
 	
@@ -5471,7 +5938,7 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 	 */
 	Ycc.UI.Polygon.prototype.render = function (ctx) {
 		var self = this;
-		ctx = ctx || self.ctx;
+		ctx = ctx || self.ctxCache;
 		if(!self.ctx){
 			console.error("[Ycc error]:","ctx is null !");
 			return;
@@ -5484,7 +5951,7 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 		ctx.save();
 		ctx.fillStyle = this.fillStyle;
 		ctx.strokeStyle = this.strokeStyle;
-		this.renderPath();
+		this.renderPath(ctx);
 		this.fill?ctx.fill():ctx.stroke();
 		ctx.restore();
 	};
@@ -5493,20 +5960,22 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 	 * 根据coordinates绘制路径
 	 * 只绘制路径，不填充、不描边
 	 * 继承的子类若不是多边形，需要重载此方法
+	 * <br> 开启离屏canvas后，此过程只会发生在离屏canvas中
+	 * @param ctx 离屏canvas的绘图环境
 	 */
-	Ycc.UI.Polygon.prototype.renderPath = function (ctx) {
+	Ycc.UI.Polygon.prototype.renderPath = function () {
 		if(this.coordinates.length===0) return;
 		
 		var self = this;
-		ctx = ctx || self.ctx;
+		var ctx = this.ctxCache;
 		
 		var start = this.transformByRotate(this.coordinates[0]);
 		ctx.beginPath();
-		ctx.moveTo(start.x,start.y);
+		ctx.moveTo(start.x*this.dpi,start.y*this.dpi);
 		for(var i=0;i<this.coordinates.length-1;i++){
 			var dot = this.transformByRotate(this.coordinates[i]);
 			if(this.isDrawIndex) ctx.fillText(i+'',dot.x-10,dot.y+10);
-			ctx.lineTo(dot.x,dot.y);
+			ctx.lineTo(dot.x*this.dpi,dot.y*this.dpi);
 		}
 		ctx.closePath();
 	
@@ -5587,10 +6056,10 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 		// 虚线
 		ctx.setLineDash([10]);
 		ctx.beginPath();
-		ctx.moveTo(start.x,start.y);
+		ctx.moveTo(start.x*this.dpi,start.y*this.dpi);
 		for(var i=0;i<self.coordinates.length-1;i++){
 			var dot = self.coordinates[i];
-			ctx.lineTo(dot.x+paPos.x,dot.y+paPos.y);
+			ctx.lineTo(dot.x*this.dpi+paPos.x*this.dpi,dot.y*this.dpi+paPos.y*this.dpi);
 		}
 		ctx.closePath();
 		ctx.strokeStyle = this.strokeStyle;
@@ -5672,7 +6141,13 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 	
 	
 	
-})(Ycc);;
+})(Ycc);;/**
+ * @file    Ycc.UI.Ellipse.class.js
+ * @author  xiaohei
+ * @date    2017/11/24
+ * @description  Ycc.UI.Ellipse.class文件
+ */
+
 
 
 (function (Ycc) {
@@ -5754,35 +6229,40 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 	 * 绘制
 	 */
 	Ycc.UI.Ellipse.prototype.render = function () {
-		var width = this.width,
+		var width = this.width*this.dpi,
 			rotateAngle=this.angle,
-			height=this.height;
+			height=this.height*this.dpi;
 		
 		var point = this.transformByRotate(this.point);
+		// 只绘制至上屏canvas
+		var ctx = this.ctxCache;
 		
-		this.ctx.save();
+		ctx.save();
 		var r = (width > height) ? width : height;
+		var x = point.x*this.dpi;
+		var y = point.y*this.dpi;
+		
 		// 计算压缩比例
 		var ratioX = width / r;
 		var ratioY = height / r;
 		// 默认旋转中心位于画布左上角，需要改变旋转中心点
-		this.ctx.translate(point.x,point.y);
-		this.ctx.rotate(parseInt(rotateAngle)*Math.PI/180);
+		ctx.translate(x,y);
+		ctx.rotate(parseInt(rotateAngle)*Math.PI/180);
 		// 再变换回原来的旋转中心点
-		this.ctx.translate(-point.x,-point.y);
+		ctx.translate(-x,-y);
 		// this.ctx.scale(1, 1);
-		this.ctx.scale(ratioX, ratioY);
-		this.ctx.beginPath();
-		this.ctx.arc(point.x / ratioX,  point.y/ ratioY, r/2, 0, 2 * Math.PI, false);
-		this.ctx.closePath();
+		ctx.scale(ratioX, ratioY);
+		ctx.beginPath();
+		ctx.arc(x / ratioX,  y/ ratioY, r/2, 0, 2 * Math.PI, false);
+		ctx.closePath();
 		
-		this.ctx.fillStyle = this.ctx.strokeStyle = this.color;
+		ctx.fillStyle = this.ctx.strokeStyle = this.color;
 		if(!this.fill)
-			this.ctx.stroke();
+			ctx.stroke();
 		else
-			this.ctx.fill();
+			ctx.fill();
 			
-		this.ctx.restore();
+		ctx.restore();
 	};
 	
 	
@@ -5831,7 +6311,13 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 		this.ctx.restore();
 	}
 	
-})(Ycc);;
+})(Ycc);;/**
+ * @file    Ycc.UI.Circle.class.js
+ * @author  xiaohei
+ * @date    2017/11/23
+ * @description  Ycc.UI.Circle.class文件
+ */
+
 
 
 (function (Ycc) {
@@ -5887,29 +6373,30 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 	 * @override
 	 */
 	Ycc.UI.Circle.prototype.render = function () {
+		var ctx = this.ctxCache;
 		
 		var point = this.transformByRotate(this.point);
 		
 		
-		this.ctx.save();
-		this.ctx.beginPath();
-		this.ctx.fillStyle = this.color;
-		this.ctx.strokeStyle = this.color;
+		ctx.save();
+		ctx.beginPath();
+		ctx.fillStyle = this.color;
+		ctx.strokeStyle = this.color;
 		
-		this.ctx.arc(
-			point.x,
-			point.y,
-			this.r,
+		ctx.arc(
+			point.x*this.dpi,
+			point.y*this.dpi,
+			this.r*this.dpi,
 			0,
 			2*Math.PI
 		);
 		
-		this.ctx.closePath();
+		ctx.closePath();
 		if(!this.fill)
-			this.ctx.stroke();
+			ctx.stroke();
 		else
-			this.ctx.fill();
-		this.ctx.restore();
+			ctx.fill();
+		ctx.restore();
 	};
 	
 	/**
@@ -5953,7 +6440,13 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 	};
 	
 	
-})(Ycc);;
+})(Ycc);;/**
+ * @file    Ycc.UI.Image.class.js
+ * @author  xiaohei
+ * @date    2017/11/22
+ * @description  Ycc.UI.Image.class文件
+ */
+
 
 
 (function (Ycc) {
@@ -6054,17 +6547,23 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 	 * @private
 	 */
 	Ycc.UI.Image.prototype._processMirror = function (rect) {
+		var ctx = this.ctxCache;
+		var x = rect.x*this.dpi;
+		var y = rect.y*this.dpi;
+		var width = rect.width*this.dpi;
+		var height = rect.height*this.dpi;
+		
 		if(this.mirror===1){
-			this.ctx.scale(-1, 1);
-			this.ctx.translate(-rect.x*2-rect.width,0);
+			ctx.scale(-1, 1);
+			ctx.translate(-x*2-width,0);
 		}
 		if(this.mirror===2){
-			this.ctx.scale(1, -1);
-			this.ctx.translate(0,-rect.y*2-rect.height);
+			ctx.scale(1, -1);
+			ctx.translate(0,-y*2-height);
 		}
 		if(this.mirror===3){
-			this.ctx.scale(-1, -1);
-			this.ctx.translate(-rect.x*2-rect.width,-rect.y*2-rect.height);
+			ctx.scale(-1, -1);
+			ctx.translate(-x*2-width,-y*2-height);
 		}
 		
 	};
@@ -6073,32 +6572,39 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 	 * 绘制
 	 */
 	Ycc.UI.Image.prototype.render = function () {
-		this.ctx.save();
+		var ctx = this.ctxCache;
+		
+		ctx.save();
 		// this.scaleAndRotate();
 		
 		var rect = this.getAbsolutePositionRect();//this.rect;
 		var img = this.res;
 		// 局部变量
 		var i,j,wCount,hCount,xRest,yRest;
+		var x = rect.x*this.dpi;
+		var y = rect.y*this.dpi;
+		var width = rect.width*this.dpi;
+		var height = rect.height*this.dpi;
+		var imgWidth = img.width*this.dpi;
+		var imgHeight = img.height*this.dpi;
 		
-
 		// 坐标系旋转
 		var absoluteAnchor = this.transformToAbsolute({x:this.anchorX,y:this.anchorY});
-		this.ctx.translate(absoluteAnchor.x,absoluteAnchor.y);
-		this.ctx.rotate(this.rotation*Math.PI/180);
-		this.ctx.translate(-absoluteAnchor.x,-absoluteAnchor.y);
+		ctx.translate(absoluteAnchor.x*this.dpi,absoluteAnchor.y*this.dpi);
+		ctx.rotate(this.rotation*Math.PI/180);
+		ctx.translate(-absoluteAnchor.x*this.dpi,-absoluteAnchor.y*this.dpi);
 		
 		this._processMirror(rect);
 		if(this.fillMode === "none")
-			this.ctx.drawImage(this.res,0,0,rect.width,rect.height,rect.x,rect.y,rect.width,rect.height);
+			ctx.drawImage(this.res,0,0,rect.width,rect.height,rect.x,rect.y,rect.width,rect.height);
 		else if(this.fillMode === "scale")
-			this.ctx.drawImage(this.res,0,0,img.width,img.height,rect.x,rect.y,rect.width,rect.height);
+			ctx.drawImage(this.res,0,0,img.width,img.height,x,y,width,height);
 		else if(this.fillMode === "auto"){
-			this.ctx.drawImage(this.res,0,0,img.width,img.height,rect.x,rect.y,rect.width,rect.height);
+			ctx.drawImage(this.res,0,0,img.width,img.height,x,y,width,height);
 		}else if(this.fillMode === "repeat"){
 			// x,y方向能容纳的img个数
-			wCount = parseInt(rect.width/img.width)+1;
-			hCount = parseInt(rect.height/img.height)+1;
+			wCount = parseInt(width/imgWidth)+1;
+			hCount = parseInt(height/imgHeight)+1;
 
 			for(i=0;i<wCount;i++){
 				for(j=0;j<hCount;j++){
@@ -6108,11 +6614,11 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 						xRest = rect.width-i*img.width;
 					if(j===hCount-1)
 						yRest = rect.height-j*img.height;
-					this.ctx.drawImage(this.res,
+					ctx.drawImage(this.res,
 						0,0,
 						xRest,yRest,
-						rect.x+img.width*i,rect.y+img.height*j,
-						xRest,yRest);
+						x+imgWidth*i,y+imgHeight*j,
+						xRest*this.dpi,yRest*this.dpi);
 				}
 			}
 		}else if(this.fillMode === "scaleRepeat"){
@@ -6131,8 +6637,8 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 					this.ctx.drawImage(this.res,
 						0,0,
 						img.width,img.height,
-						rect.x+this.scaleRepeatRect.width*i,rect.y+this.scaleRepeatRect.height*j,
-						xRest,yRest);
+						rect.x*this.dpi+this.scaleRepeatRect.width*i,rect.y*this.dpi+this.scaleRepeatRect.height*j,
+						xRest*this.dpi,yRest*this.dpi);
 				}
 			}
 		}else if(this.fillMode === "scale9Grid"){
@@ -6194,23 +6700,29 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 				if(!grid[k]) continue;
 				src = grid[k].src;
 				dest = grid[k].dest;
-				this.ctx.drawImage(this.res,
+				ctx.drawImage(this.res,
 					// 源
 					src.x,src.y,src.width,src.height,
 					// 目标
-					dest.x,dest.y,dest.width,dest.height
+					dest.x*this.dpi,dest.y*this.dpi,dest.width*this.dpi,dest.height*this.dpi
 				);
 				
 			}
 			
 		}
-		this.ctx.restore();
+		ctx.restore();
 		
 	};
 	
 	
 	
-})(Ycc);;
+})(Ycc);;/**
+ * @file    Ycc.UI.ImageFrameAnimation.js
+ * @author  xiaohei
+ * @date    2018/9/29
+ * @description  Ycc.UI.ImageFrameAnimation文件
+ */
+
 
 (function (Ycc) {
 	/**
@@ -6317,17 +6829,22 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 	 * @private
 	 */
 	Ycc.UI.ImageFrameAnimation.prototype._processMirror = function (rect) {
+		var ctx = this.ctxCache;
+		var x = rect.x*this.dpi;
+		var y = rect.y*this.dpi;
+		var width = rect.width*this.dpi;
+		var height = rect.height*this.dpi;
 		if(this.mirror===1){
-			this.ctx.scale(-1, 1);
-			this.ctx.translate(-rect.x*2-rect.width,0);
+			ctx.scale(-1, 1);
+			ctx.translate(-x*2-width,0);
 		}
 		if(this.mirror===2){
-			this.ctx.scale(1, -1);
-			this.ctx.translate(0,-rect.y*2-rect.height);
+			ctx.scale(1, -1);
+			ctx.translate(0,-y*2-height);
 		}
 		if(this.mirror===3){
-			this.ctx.scale(-1, -1);
-			this.ctx.translate(-rect.x*2-rect.width,-rect.y*2-rect.height);
+			ctx.scale(-1, -1);
+			ctx.translate(-x*2-width,-y*2-height);
 		}
 		
 	};
@@ -6336,25 +6853,32 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 	 * 绘制
 	 */
 	Ycc.UI.ImageFrameAnimation.prototype.render = function () {
+		var ctx = this.ctxCache;
 		
 		// 绝对坐标
 		var rect = this.getAbsolutePositionRect();
+		
+		var x = rect.x*this.dpi;
+		var y = rect.y*this.dpi;
+		var width = rect.width*this.dpi;
+		var height = rect.height*this.dpi;
+		
 		// 获取当前显示第几个序列图，由于默认播放第一帧图片，这里直接渲染第二帧图片
 		var index = parseInt((this.belongTo.yccInstance.ticker.frameAllCount-this.startFrameCount)/this.frameSpace)%this.frameRectCount+1;
 		// 若没开始播放，默认只绘制第一个序列帧
 		if(!this.isRunning || index>=this.frameRectCount)
 			index=0;
 		// 绘制
-		this.ctx.save();
+		ctx.save();
 		this.scaleAndRotate();
 
 		// 处理镜像属性
 		this._processMirror(rect);
 
-		this.ctx.drawImage(this.res,
+		ctx.drawImage(this.res,
 			this.firstFrameRect.x+this.firstFrameRect.width*index,this.firstFrameRect.y,this.firstFrameRect.width,this.firstFrameRect.height,
-			rect.x,rect.y,rect.width,rect.height);
-		this.ctx.restore();
+			x,y,width,height);
+		ctx.restore();
 	};
 	
 	
@@ -6377,7 +6901,12 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 	
 })(Ycc);
 
-;
+;/**
+ * @file    Ycc.UI.Line.class.js
+ * @author  xiaohei
+ * @date    2017/11/17
+ * @description  Ycc.UI.Line.class文件
+ */
 
 
 (function (Ycc) {
@@ -6482,7 +7011,13 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 	
 	
 	
-})(Ycc);;
+})(Ycc);;/**
+ * @file    Ycc.UI.BrokenLine.class.js
+ * @author  xiaohei
+ * @date    2017/11/24
+ * @description  Ycc.UI.BrokenLine.class文件
+ */
+
 
 
 
@@ -6556,14 +7091,15 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 	 */
 	Ycc.UI.BrokenLine.prototype.render = function () {
 		if(this.pointList.length<2) return null;
+
+		var ctx = this.ctxCache;
 		
 		// 父级
 		var pa = this.getParent();
-		
-		this.ctx.save();
-		this.ctx.strokeStyle = this.color;
-		this.ctx.strokeWidth = this.width;
-		this.ctx.beginPath();
+		ctx.save();
+		ctx.strokeStyle = this.color;
+		ctx.strokeWidth = this.width;
+		ctx.beginPath();
 		// 因为直接操作舞台，所以绘制之前需要转换成舞台绝对坐标
 		// var pointList = pa?pa.transformToAbsolute(this.pointList):this.pointList;
 		var pointList = this.transformByRotate(this.pointList);
@@ -6572,8 +7108,8 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 			this._smoothLineRender(pointList);
 		else
 			this._normalRender(pointList);
-		this.ctx.closePath();
-		this.ctx.restore();
+		ctx.closePath();
+		ctx.restore();
 	};
 	
 	/**
@@ -6582,11 +7118,12 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 	 * @private
 	 */
 	Ycc.UI.BrokenLine.prototype._normalRender = function (pointList) {
-		this.ctx.moveTo(pointList[0].x, pointList[0].y);
+		var ctx = this.ctxCache;
+		ctx.moveTo(pointList[0].x*this.dpi, pointList[0].y*this.dpi);
 		for(var i =1;i<pointList.length;i++){
-			this.ctx.lineTo(pointList[i].x, pointList[i].y);
+			ctx.lineTo(pointList[i].x*this.dpi, pointList[i].y*this.dpi);
 		}
-		this.ctx.stroke();
+		ctx.stroke();
 	};
 	
 	/**
@@ -6601,15 +7138,17 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 	 * @param pointList	{Ycc.Math.Dot[]}	经过转换后的舞台绝对坐标点列表
 	 */
 	Ycc.UI.BrokenLine.prototype._smoothLineRender = function (pointList) {
+		var ctx = this.ctxCache;
 		// 获取生成曲线的两个控制点和两个顶点，N个顶点可以得到N-1条曲线
 		var list = getCurveList(pointList);
 		// 调用canvas三次贝塞尔方法bezierCurveTo逐一绘制
-		this.ctx.beginPath();
+		ctx.beginPath();
 		for(var i=0;i<list.length;i++){
-			this.ctx.moveTo(list[i].start.x,list[i].start.y);
-			this.ctx.bezierCurveTo(list[i].dot1.x,list[i].dot1.y,list[i].dot2.x,list[i].dot2.y,list[i].end.x,list[i].end.y);
+			ctx.moveTo(list[i].start.x*this.dpi,list[i].start.y*this.dpi);
+			ctx.bezierCurveTo(list[i].dot1.x*this.dpi,list[i].dot1.y*this.dpi,list[i].dot2.x*this.dpi,list[i].dot2.y*this.dpi,
+				list[i].end.x*this.dpi,list[i].end.y*this.dpi);
 		}
-		this.ctx.stroke();
+		ctx.stroke();
 		
 		
 		/**
@@ -6709,7 +7248,13 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 	
 	
 	
-})(Ycc);;
+})(Ycc);;/**
+ * @file    Ycc.UI.MultiLineText.class.js
+ * @author  xiaohei
+ * @date    2017/11/16
+ * @description  Ycc.UI.MultiLineText.class文件
+ */
+
 
 
 
@@ -6780,6 +7325,12 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 	 */
 	Ycc.UI.MultiLineText.prototype.computeUIProps = function () {
 		var self = this;
+		// 取离屏绘图环境
+		var ctx = this.ctxCache;
+		
+		// 设置画布属性再计算，否则计算内容长度会有偏差
+		self.belongTo._setCtxProps(self,ctx);
+		
 		var config = this;
 		// 文本行
 		var lines = this.content.split(/(?:\r\n|\r|\n)/);
@@ -6828,17 +7379,17 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 				 */
 				function dealLine(line){
 					var subLines = [];
-					var lineW = self.ctx.measureText(line).width;
+					var lineW = ctx.measureText(line).width;
 					// 若没有超长
-					if(lineW<=config.rect.width){
+					if(lineW<=config.rect.width*self.dpi){
 						subLines.push(line);
 						return subLines;
 					}
 					
 					for(var j=0;j<line.length;j++){
 						var part = line.slice(0,j+1);
-						var partW = self.ctx.measureText(part).width;
-						if(partW>config.rect.width){
+						var partW = ctx.measureText(part).width;
+						if(partW>config.rect.width*self.dpi){
 							var subLine = line.slice(0,j-1);
 							subLines.push(subLine);
 							var restLine = line.slice(j-1);
@@ -6869,9 +7420,9 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 				 */
 				function dealLine(line){
 					var subLines = [];
-					var lineW = self.ctx.measureText(line).width;
+					var lineW = ctx.measureText(line).width;
 					// 若没有超长
-					if(lineW<=config.rect.width){
+					if(lineW<=config.rect.width*self.dpi){
 						subLines.push(line);
 						return subLines;
 					}
@@ -6879,11 +7430,12 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 					var spacePosition = 0;
 					for(var j=0;j<line.length;j++){
 						var part = line.slice(0,j+1);
-						var partW = self.ctx.measureText(part).width;
+						var partW = ctx.measureText(part).width;
+						// console.log(part,partW,config.rect.width*self.dpi,222);
 						var curChar = line[j];
 						if(curChar===" ")
 							spacePosition = j;
-						if(partW>config.rect.width){
+						if(partW>config.rect.width*self.dpi){
 							var subLine = "";
 							var restLine = "";
 							// 若当前字符为空格
@@ -6921,9 +7473,9 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 		
 		var self = this;
 		
-		self.ctx = ctx || self.ctx;
+		ctx = ctx || this.ctxCache;
 		
-		if(!self.ctx){
+		if(!ctx){
 			console.error("[Ycc error]:","ctx is null !");
 			return;
 		}
@@ -6933,32 +7485,39 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 		var config = this;
 		// 绝对坐标的rect
 		var rect = this.getAbsolutePositionRect();
+		var lineHeight = config.lineHeight*self.dpi;
 		
-		this.ctx.save();
-		this.ctx.fillStyle = config.color;
-		this.ctx.strokeStyle = config.color;
+		ctx.save();
+		ctx.fillStyle = config.color;
+		ctx.strokeStyle = config.color;
 		
 		// 坐标系旋转
 		var absoluteAnchor = this.transformToAbsolute({x:this.anchorX,y:this.anchorY});
-		this.ctx.translate(absoluteAnchor.x,absoluteAnchor.y);
-		this.ctx.rotate(this.rotation*Math.PI/180);
-		this.ctx.translate(-absoluteAnchor.x,-absoluteAnchor.y);
+		ctx.translate(absoluteAnchor.x,absoluteAnchor.y);
+		ctx.rotate(this.rotation*Math.PI/180);
+		ctx.translate(-absoluteAnchor.x,-absoluteAnchor.y);
 
 		// 绘制
 		for(var i = 0;i<self.displayLines.length;i++){
-			var x = rect.x;
-			var y = rect.y + i*config.lineHeight;
-			if(y+config.lineHeight>rect.y+rect.height){
+			var x = rect.x*self.dpi;
+			var y = rect.y*self.dpi + i*config.lineHeight*self.dpi;
+			if(y+lineHeight>rect.y*self.dpi+rect.height*self.dpi){
 				break;
 			}
-			this.ctx.fillText(self.displayLines[i],x,y);
+			ctx.fillText(self.displayLines[i],x,y);
 		}
-		this.ctx.restore();
+		ctx.restore();
 	};
 	
 	
 	
-})(Ycc);;
+})(Ycc);;/**
+ * @file    Ycc.UI.Rect.class.js
+ * @author  xiaohei
+ * @date    2017/11/17
+ * @description  Ycc.UI.Rect.class文件
+ */
+
 
 
 (function (Ycc) {
@@ -7003,6 +7562,8 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 		this.coordinates = this.rect.getVertices();
 		// 赋值位置信息
 		this.x = this.rect.x,this.y=this.rect.y;
+		
+		// this._setCtxProps(this);
 	};
 	
 	
@@ -7011,8 +7572,8 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 	 */
 	Ycc.UI.Rect.prototype.render = function (ctx) {
 		var self = this;
-		ctx = ctx || self.ctx;
-		if(!self.ctx){
+		ctx = ctx || self.ctxCache;
+		if(!ctx){
 			console.error("[Ycc error]:","ctx is null !");
 			return;
 		}
@@ -7021,7 +7582,7 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 		ctx.save();
 		ctx.fillStyle = this.color;
 		ctx.strokeStyle = this.color;
-		this.renderPath();
+		this.renderPath(ctx);
 		this.fill?ctx.fill():ctx.stroke();
 		ctx.restore();
 	};
@@ -7029,7 +7590,12 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 	
 	
 	
-})(Ycc);;
+})(Ycc);;/**
+ * @file    Ycc.UI.CropRect.class.js
+ * @author  xiaohei
+ * @date    2017/11/29
+ * @description  Ycc.UI.CropRect.class文件
+ */
 
 
 
@@ -7407,7 +7973,13 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 	
 	
 	
-})(Ycc);;
+})(Ycc);;/**
+ * @file    Ycc.UI.SingleLineText.class.js
+ * @author  xiaohei
+ * @date    2017/11/15
+ * @description  Ycc.UI.SingleLineText.class文件
+ */
+
 
 
 
@@ -7495,29 +8067,37 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 	Ycc.UI.SingleLineText.prototype.computeUIProps = function () {
 		var self = this;
 		
+		var ctx = this.ctxCache;
+		var rect = this.rect;
+		var x = rect.x*this.dpi;
+		var y = rect.y*this.dpi;
+		var width = rect.width*this.dpi;
+		var height = rect.height*this.dpi;
+		
 		// 设置画布属性再计算，否则计算内容长度会有偏差
-		self.belongTo._setCtxProps(self);
+		this._setCtxProps(self);
 		
 		// 内容的长度
-		var contentWidth = this.ctx.measureText(this.content).width;
+		var contentWidth = ctx.measureText(this.content).width;
 		
 		this.displayContent = this.content;
 		
 		// 长度超长时的处理
-		if(contentWidth>this.rect.width){
+		/*if(contentWidth>width){
 			if(this.overflow === "hidden"){
-				self.displayContent = self.getMaxContentInWidth(this.content,this.rect.width);
+				self.displayContent = self.getMaxContentInWidth(this.content,width);
 			}else if(this.overflow === "auto"){
 				this.rect.width = contentWidth;
 			}
-		}
+		}*/
+		// console.log(contentWidth,width);
 		
 		if(this.overflow === "hidden"){
-			if(contentWidth>this.rect.width)
-				self.displayContent = self.getMaxContentInWidth(this.content,this.rect.width);
+			if(contentWidth>width)
+				self.displayContent = self.getMaxContentInWidth(this.content,width);
 		}else if(this.overflow === "auto"){
-			if(contentWidth>this.rect.width){
-				this.rect.width = contentWidth;
+			if(contentWidth>width){
+				this.rect.width = contentWidth/this.dpi;
 			}
 			if(parseInt(this.fontSize)>this.rect.height){
 				this.rect.height = parseInt(this.fontSize);
@@ -7530,34 +8110,37 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 		this.x=this.rect.x,this.y=this.rect.y;
 	};
 	/**
-	 * 渲染至ctx
+	 * 渲染至离屏ctx
+	 * <br> 开启离屏canvas后，此过程只会发生在离屏canvas中
 	 * @param ctx
 	 */
 	Ycc.UI.SingleLineText.prototype.render = function (ctx) {
 		var self = this;
-		// 设置画布属性再计算，否则计算内容长度会有偏差
-		self.belongTo._setCtxProps(self);
-
-		self.ctx = ctx || self.ctx;
 		
-		if(!self.ctx){
+		ctx = ctx||self.ctxCache;
+		
+		if(!ctx){
 			console.error("[Ycc error]:","ctx is null !");
 			return;
 		}
+
+		// 设置画布属性再计算，否则计算内容长度会有偏差
+		self.belongTo._setCtxProps(self,ctx);
 		
-		
-		
+		// dpi
+		var dpi = this.belongTo.yccInstance.getSystemInfo().devicePixelRatio;
 		// 文字的绘制起点
-		var x,y;
+		var x,y,width,height;
 		// 字体大小
-		var fontSize = parseInt(self.fontSize);
+		var fontSize = parseInt(self.fontSize)*dpi;
 		// 配置项
 		var option = this;
 		// 绝对坐标
 		var rect = this.getAbsolutePositionRect();
+		rect = new Ycc.Math.Rect(rect.x*dpi,rect.y*dpi,rect.width*dpi,rect.height*dpi);
 		x = rect.x;
 		
-		var textWidth = this.ctx.measureText(this.displayContent).width;
+		var textWidth = ctx.measureText(this.displayContent).width;
 		if(this.xAlign==="center"){
 			x+=(rect.width-textWidth)/2;
 		}
@@ -7575,24 +8158,34 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 			y = y+rect.height/2-fontSize/2;
 		}
 		
-		this.ctx.save();
+		ctx.save();
 		// this.scaleAndRotate();
 		// 坐标系旋转
 		var absoluteAnchor = this.transformToAbsolute({x:this.anchorX,y:this.anchorY});
-		this.ctx.translate(absoluteAnchor.x,absoluteAnchor.y);
-		this.ctx.rotate(this.rotation*Math.PI/180);
-		this.ctx.translate(-absoluteAnchor.x,-absoluteAnchor.y);
+		ctx.translate(absoluteAnchor.x,absoluteAnchor.y);
+		ctx.rotate(this.rotation*Math.PI/180);
+		ctx.translate(-absoluteAnchor.x,-absoluteAnchor.y);
 		
-		this.ctx.fillStyle = option.color;
-		this.ctx.strokeStyle = option.color;
+		ctx.fillStyle = option.color;
+		ctx.strokeStyle = option.color;
 		// this.baseUI.text([x,y],self.displayContent,option.fill);
-		this.ctx.fillText(self.displayContent,x,y);
-		this.ctx.restore();
-	};
+		ctx.fillText(self.displayContent,x,y);
+		ctx.restore();
+		
+		// console.log('缓存绘制',x,y,fontSize,textWidth);
+	}
 	
 	
 	
-})(Ycc);;
+	
+	
+})(Ycc);;/**
+ * @file    Ycc.UI.ComponentButton.class.js
+ * @author  xiaohei
+ * @date    2018/11/27
+ * @description  Ycc.UI.ComponentButton.class文件
+ */
+
 (function (Ycc) {
 	
 	/**
@@ -7709,7 +8302,14 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 			this.__textUI.color = this.textColor;
 		}
 	};
-})(Ycc);;
+})(Ycc);;/**
+ * @file    Ycc.polyfill.wx.js
+ * @author  xiaohei
+ * @date    2018/11/19
+ * @description  Ycc.polyfill.wx文件
+ */
+
+
 // 兼容微信
 if("undefined"!== typeof wx){
 	// Ycc.prototype.getStageWidth = function () {
@@ -7730,7 +8330,14 @@ if("undefined"!== typeof wx){
 			return Date.now();
 		};
 	}
-};;
+};;/**
+ * @file    Ycc.polyfill.export.js
+ * @author  xiaohei
+ * @date    2018/12/11
+ * @description  Ycc.polyfill.export文件
+ *
+ * 导出兼容文件，兼容npm模块的加载模式
+ */
 
 
 ;if(typeof exports==="object"&&typeof module!=="undefined"){
