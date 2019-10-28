@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name=viewport content="width=device-width,initial-scale=1,user-scalable=0,viewport-fit=cover">
+	<title>性能监测</title>
+	<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<div class="return-btn">
+	<a href="../">
+		返回首页
+	</a>
+</div>
+
+<div class="tip">
+
+	<h3>示例说明：</h3>
+	<div>
+		1、这个示例展示框选操作，实质是一个框选的UI。<br>
+		2、每次点击框选按钮后，PC端可以在绘图区拖动鼠标框选，移动端可以拖拽框选。<br>
+		3、框选结束后，可以拖动红色区域改变选区位置，也可以拖动边角更改选框大小。<br>
+		4、选区下方可以添加按钮，这里的代码被注释了。<br>
+	</div>
+
+
+	<br>
+	<hr>
+	<div>
+		设置UI数量上限：<input type="number" id="max-number" value="500">
+	</div>
+	<br>
+</div>
+
+</body>
+</html>
+<script src="../common.js"></script>
+
+<script src="../../build/ycc.js"></script>
+<script>
+
+
+
+
+	// 初始化ycc及其绑定的舞台
+	var ycc = new Ycc();
+	var stage = ycc.createCanvas({width:800,height:400,dpiAdaptation:true});
+	ycc.bindCanvas(stage);
+	document.body.appendChild(stage);
+	ycc.ticker.start(60);
+	ycc.ticker.addFrameListener(update);
+
+	// 新建一个图层
+	var layer = ycc.layerManager.newLayer();
+	// 已加入舞台的img列表
+	var imgList = [];
+	// 加入舞台img的最大数量
+	var maxImgCount = 500;
+	// 调试的文字
+	var textDebug = new Ycc.UI.SingleLineText({
+		content:'render:10ms max:20ms min:3ms',
+		rect:new Ycc.Math.Rect(0,0,ycc.getStageWidth(),20),
+		fontSize:'12px',
+		color:'red',
+		rectBgColor:'#000'
+	});
+	// 资源是否加载完成
+	var hasLoad = false;
+	// 资源列表
+	var resArr = [{name:"gzh",url:"../zgh.png"}];
+	// 加入文字
+	layer.addUI(textDebug);
+
+	// 加载资源
+	ycc.loader.loadResOneByOne(resArr,onLoad);
+
+
+
+	/**
+	 * 每帧的更新函数
+	 */
+	function update(){
+		// 保证图片能够绘制
+		if(!hasLoad) return;
+
+		addImageUI();
+
+		for(var i =0;i<imgList.length;i++){
+			var img = imgList[i];
+//			img.rect.x+=(Math.random()*1)*(Math.random()<0.5?-1:1);
+
+			if(img.rect.y>ycc.getStageHeight())
+				img.rect.y=-100;
+			else
+				img.rect.y+=Math.ceil(6*(ycc.ticker.deltaTime/16.67));
+//			img.anchorX = img.rect.x+25;
+//			img.anchorY = img.rect.y+25;
+//			img.rotation +=parseInt(Math.random()*3);
+
+		}
+		textDebug.content=' 每帧心跳间隔:'+(ycc.ticker.deltaTime.toFixed(2))
+			+' 舞台可见UI数量:'+ycc.layerManager.renderUiCount
+			+' 实时绘制时间:'+ycc.layerManager.renderTime
+			+' 最大绘制时间:'+ycc.layerManager.maxRenderTime;
+		ycc.layerManager.reRenderAllLayerToStage();
+	}
+
+	/**
+	 * 加入一个UI，位置随机
+	 * */
+	function addImageUI(){
+		if(imgList.length>=maxImgCount) return;
+		var w = Math.ceil(Math.random()*50);
+		var x = parseInt(Math.random()*ycc.getStageWidth());
+		var img = new Ycc.UI.Image({
+			rect:new Ycc.Math.Rect(x,-100,w,w),
+			fillMode:'scale',
+			res:resArr[0].res
+		});
+		imgList.push(img);
+		layer.addUI(img,textDebug);
+	}
+
+
+	/**
+	 * 资源加载成功
+	 * @param resArr
+	 */
+	function onLoad(resArr) {
+		hasLoad = true;
+	}
+
+
+
+
+</script>
+
+
+

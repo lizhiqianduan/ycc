@@ -1995,8 +1995,10 @@ Ycc.prototype.createCacheCtx = function () {
 		self.frameAllCount = 0;
 
 		// timer兼容
-		timer || (timer = function(e) {
-				return setTimeout(e, 1e3 / 60);
+		timer || (timer = function(callback) {
+				return setTimeout(function () {
+					callback(Date.now());
+				}, 1e3 / 60);
 			}
 		);
 		// 启动时间
@@ -2008,14 +2010,14 @@ Ycc.prototype.createCacheCtx = function () {
 		
 		
 		// 心跳回调函数。约60fps
-		function cb() {
+		function cb(curTime) {
 			// 总的心跳数加1
 			self.timerTickCount++;
 			if(self.timerTickCount - self.lastFrameTickerCount === self.tickerSpace){
 				// 设置 总帧数加1
 				self.frameAllCount++;
 				// 设置 两帧的时间差
-				self.deltaTime = performance.now()-self.lastFrameTime;
+				self.deltaTime = curTime-self.lastFrameTime;
 				// 设置 帧间隔缩放比
 				self.deltaTimeRatio = self.deltaTime/self.deltaTimeExpect;
 				// 设置 上一帧刷新时间
@@ -2323,14 +2325,15 @@ Ycc.prototype.createCacheCtx = function () {
 	/**
 	 * 并发加载资源
 	 * @param resArr
-	 * @param [resArr.name] 	资源名称，方便查找
-	 * @param resArr.url  		资源的url
-	 * @param [resArr.type]  	资源类型 image,audio，默认为image
-	 * @param [resArr.res]  	资源加载完成后，附加给该字段
-	 * @param endCb				资源加载结束的回调
-	 * @param [progressCb]		资源加载进度的回调
-	 * @param [endResArr] 		用于存储加载已结束的音频，一般不用传值
-	 * @param [endResMap] 		用于存储加载已结束的音频map，一般不用传值。注：map的key是根据name字段生成的
+	 * @param [resArr.name] 			资源名称，方便查找
+	 * @param resArr.url  				资源的url
+	 * @param [resArr.type]  			资源类型 image,audio，默认为image
+	 * @param [resArr.res]  			资源加载完成后，附加给该字段
+	 * @param [resArr.crossOrigin]  	资源跨域配置项
+	 * @param endCb						资源加载结束的回调
+	 * @param [progressCb]				资源加载进度的回调
+	 * @param [endResArr] 				用于存储加载已结束的音频，一般不用传值
+	 * @param [endResMap] 				用于存储加载已结束的音频map，一般不用传值。注：map的key是根据name字段生成的
 	 */
 	Ycc.Loader.prototype.loadResParallel = function (resArr, endCb, progressCb,endResArr,endResMap) {
 		endResArr = endResArr || [];
@@ -2345,12 +2348,14 @@ Ycc.prototype.createCacheCtx = function () {
 			if(curRes.type==='image'){
 				curRes.res = new Image();
 				curRes.res.src = curRes.url;
+				curRes.res.crossOrigin = curRes.crossOrigin||'';
 			}
 			if(curRes.type==='audio'){
 				successEvent = 'loadedmetadata';
 				curRes.res = new Audio();
 				curRes.res.src = curRes.url;
 				curRes.res.preload = "load";
+				curRes.res.crossOrigin = curRes.crossOrigin||'';
 			}
 			
 			curRes.res.addEventListener(successEvent,listener(curRes,i,true));
@@ -3782,6 +3787,12 @@ Ycc.prototype.createCacheCtx = function () {
 		this.uiCountRecursion = 0;
 		
 		/**
+		 * 该图层渲染的ui总数(只在渲染之后赋值）
+		 * @type {number}
+		 */
+		this.uiCountRendered = 0;
+		
+		/**
 		 * ycc实例的引用
 		 */
 		this.yccInstance = yccInstance;
@@ -4401,6 +4412,7 @@ Ycc.prototype.createCacheCtx = function () {
 	Ycc.Layer.prototype.renderAllToCtx = function (ctx) {
 		var self = this;
 		self.uiCountRecursion=0;
+		self.uiCountRendered=0;
 		for(var i=0;i<this.uiList.length;i++){
 			if(!this.uiList[i].show) continue;
 			//this.uiList[i].__render();
@@ -4408,10 +4420,13 @@ Ycc.prototype.createCacheCtx = function () {
 			this.uiList[i].itor().depthDown(function (ui, level) {
 				//console.log(level,ui);
 				self.uiCountRecursion++;
+				// UI显示
 				if(ui.show){
-					ui.__render();
+					var renderError = ui.__render();
 					// 若使用了缓存，需要计算缓存的最小绘制区域
 					if(self.useCache) self._mergeCtxCacheRect(ui.getAbsolutePositionRect());
+					if(!renderError) self.uiCountRendered++;
+					// else console.log(renderError,111);
 				}else
 					return -1;
 			});
@@ -4526,6 +4541,13 @@ Ycc.prototype.createCacheCtx = function () {
 		this.renderTime = 0;
 		
 		/**
+		 * 保存最大的渲染时间，主要是reReader方法的耗时，开发者可以在每次reRender调用后获取该值
+		 * @type {number}
+		 * @readonly
+		 */
+		this.maxRenderTime = 0;
+		
+		/**
 		 * 保存渲染的UI个数，主要是reReader方法中的UI个数，开发者可以在每次reRender调用后获取该值
 		 * @type {number}
 		 * @readonly
@@ -4593,10 +4615,11 @@ Ycc.prototype.createCacheCtx = function () {
 			// 该图层是否可见
 			if(!layer.show) continue;
 			layer.reRender(forceUpdate);
-			this.renderUiCount+=layer.uiCountRecursion;
+			this.renderUiCount+=layer.uiCountRendered;
 		}
 
 		this.renderTime = Date.now()-t1;
+		this.maxRenderTime=this.renderTime>this.maxRenderTime?this.renderTime:this.maxRenderTime;
 	};
 	
 	
@@ -5471,7 +5494,7 @@ Ycc.prototype.createCacheCtx = function () {
 	Ycc.UI.Base.prototype.isOutOfStage = function () {
 		var stageW = this.belongTo.yccInstance.getStageWidth();
 		var stageH = this.belongTo.yccInstance.getStageHeight();
-		var absolute = this.getAbsolutePosition();
+		var absolute = this.getAbsolutePositionRect();
 		return absolute.x>stageW
 			|| (absolute.x+absolute.width<0)
 			|| absolute.y>stageH
@@ -5612,11 +5635,12 @@ Ycc.prototype.createCacheCtx = function () {
 		var error = this.computeUIProps();
 		this.triggerListener('computeend',new Ycc.Event("computeend"));
 		
-		if(error) return console.error(error.message);
+		if(error) return error;
 		
-		// 超出舞台时，不予渲染
+		// 超出舞台时，不予渲染，此步骤挪到外面做判断，不再重复判断
 		if(this.isOutOfStage())
-			return;
+			return {message:'UI超出舞台！'};
+		
 		var absolutePosition = this.getAbsolutePositionRect();
 		// 绘制UI的背景，rectBgColor
 		this.renderRectBgColor(absolutePosition);
