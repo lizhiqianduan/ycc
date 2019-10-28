@@ -6,7 +6,7 @@
   "scripts": {
     "start": "grunt",
     "build": "grunt build",
-    "build:game_super_mario":"grunt build:game_super_mario",
+    "build:game_super_mario": "grunt build:game_super_mario",
     "doc": "grunt jsdoc",
     "clean": "grunt clean",
     "min": "grunt uglify",
