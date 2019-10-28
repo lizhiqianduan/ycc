@@ -15,7 +15,7 @@ canvas{
     clear: both; padding: 10px 0;
 }
 .return-btn a{
-    text-align: center;width: 80%; height: 30px; display: block;margin-left: 10%; background-color: #ccc; line-height: 30px;
+    text-align: center;width: 100px; height: 30px; display: block; background-color: #ccc; line-height: 30px;
 }
 
 pre{

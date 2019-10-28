@@ -25,3 +25,6 @@ function logger(){
 	console.log('logger--> '+text);
 	document.getElementById('log-con').innerHTML+=text+'<br>';
 }
+
+// 不存在父级，显示返回按钮
+if(window.parent === window) document.querySelector('.return-btn').style.display = 'block';
