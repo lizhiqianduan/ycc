@@ -372,7 +372,7 @@
 	Ycc.UI.Base.prototype.isOutOfStage = function () {
 		var stageW = this.belongTo.yccInstance.getStageWidth();
 		var stageH = this.belongTo.yccInstance.getStageHeight();
-		var absolute = this.getAbsolutePosition();
+		var absolute = this.getAbsolutePositionRect();
 		return absolute.x>stageW
 			|| (absolute.x+absolute.width<0)
 			|| absolute.y>stageH
@@ -513,11 +513,12 @@
 		var error = this.computeUIProps();
 		this.triggerListener('computeend',new Ycc.Event("computeend"));
 		
-		if(error) return console.error(error.message);
+		if(error) return error;
 		
-		// 超出舞台时，不予渲染
+		// 超出舞台时，不予渲染，此步骤挪到外面做判断，不再重复判断
 		if(this.isOutOfStage())
-			return;
+			return {message:'UI超出舞台！'};
+		
 		var absolutePosition = this.getAbsolutePositionRect();
 		// 绘制UI的背景，rectBgColor
 		this.renderRectBgColor(absolutePosition);

@@ -680,11 +680,13 @@
 			this.uiList[i].itor().depthDown(function (ui, level) {
 				//console.log(level,ui);
 				self.uiCountRecursion++;
+				// UI显示
 				if(ui.show){
-					ui.__render();
+					var renderError = ui.__render();
 					// 若使用了缓存，需要计算缓存的最小绘制区域
 					if(self.useCache) self._mergeCtxCacheRect(ui.getAbsolutePositionRect());
-					self.uiCountRendered++;
+					if(!renderError) self.uiCountRendered++;
+					// else console.log(renderError,111);
 				}else
 					return -1;
 			});
