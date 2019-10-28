@@ -47,6 +47,12 @@
 		this.uiCountRecursion = 0;
 		
 		/**
+		 * 该图层渲染的ui总数(只在渲染之后赋值）
+		 * @type {number}
+		 */
+		this.uiCountRendered = 0;
+		
+		/**
 		 * ycc实例的引用
 		 */
 		this.yccInstance = yccInstance;
@@ -666,6 +672,7 @@
 	Ycc.Layer.prototype.renderAllToCtx = function (ctx) {
 		var self = this;
 		self.uiCountRecursion=0;
+		self.uiCountRendered=0;
 		for(var i=0;i<this.uiList.length;i++){
 			if(!this.uiList[i].show) continue;
 			//this.uiList[i].__render();
@@ -677,6 +684,7 @@
 					ui.__render();
 					// 若使用了缓存，需要计算缓存的最小绘制区域
 					if(self.useCache) self._mergeCtxCacheRect(ui.getAbsolutePositionRect());
+					self.uiCountRendered++;
 				}else
 					return -1;
 			});

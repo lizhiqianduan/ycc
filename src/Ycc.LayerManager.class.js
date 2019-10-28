@@ -95,7 +95,7 @@
 			// 该图层是否可见
 			if(!layer.show) continue;
 			layer.reRender(forceUpdate);
-			this.renderUiCount+=layer.uiCountRecursion;
+			this.renderUiCount+=layer.uiCountRendered;
 		}
 
 		this.renderTime = Date.now()-t1;
