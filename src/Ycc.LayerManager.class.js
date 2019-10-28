@@ -28,6 +28,13 @@
 		this.renderTime = 0;
 		
 		/**
+		 * 保存最大的渲染时间，主要是reReader方法的耗时，开发者可以在每次reRender调用后获取该值
+		 * @type {number}
+		 * @readonly
+		 */
+		this.maxRenderTime = 0;
+		
+		/**
 		 * 保存渲染的UI个数，主要是reReader方法中的UI个数，开发者可以在每次reRender调用后获取该值
 		 * @type {number}
 		 * @readonly
@@ -99,6 +106,7 @@
 		}
 
 		this.renderTime = Date.now()-t1;
+		this.maxRenderTime=this.renderTime>this.maxRenderTime?this.renderTime:this.maxRenderTime;
 	};
 	
 	
