@@ -32,14 +32,15 @@
 	/**
 	 * 并发加载资源
 	 * @param resArr
-	 * @param [resArr.name] 	资源名称，方便查找
-	 * @param resArr.url  		资源的url
-	 * @param [resArr.type]  	资源类型 image,audio，默认为image
-	 * @param [resArr.res]  	资源加载完成后，附加给该字段
-	 * @param endCb				资源加载结束的回调
-	 * @param [progressCb]		资源加载进度的回调
-	 * @param [endResArr] 		用于存储加载已结束的音频，一般不用传值
-	 * @param [endResMap] 		用于存储加载已结束的音频map，一般不用传值。注：map的key是根据name字段生成的
+	 * @param [resArr.name] 			资源名称，方便查找
+	 * @param resArr.url  				资源的url
+	 * @param [resArr.type]  			资源类型 image,audio，默认为image
+	 * @param [resArr.res]  			资源加载完成后，附加给该字段
+	 * @param [resArr.crossOrigin]  	资源跨域配置项
+	 * @param endCb						资源加载结束的回调
+	 * @param [progressCb]				资源加载进度的回调
+	 * @param [endResArr] 				用于存储加载已结束的音频，一般不用传值
+	 * @param [endResMap] 				用于存储加载已结束的音频map，一般不用传值。注：map的key是根据name字段生成的
 	 */
 	Ycc.Loader.prototype.loadResParallel = function (resArr, endCb, progressCb,endResArr,endResMap) {
 		endResArr = endResArr || [];
@@ -54,12 +55,14 @@
 			if(curRes.type==='image'){
 				curRes.res = new Image();
 				curRes.res.src = curRes.url;
+				curRes.res.crossOrigin = curRes.crossOrigin||'';
 			}
 			if(curRes.type==='audio'){
 				successEvent = 'loadedmetadata';
 				curRes.res = new Audio();
 				curRes.res.src = curRes.url;
 				curRes.res.preload = "load";
+				curRes.res.crossOrigin = curRes.crossOrigin||'';
 			}
 			
 			curRes.res.addEventListener(successEvent,listener(curRes,i,true));
