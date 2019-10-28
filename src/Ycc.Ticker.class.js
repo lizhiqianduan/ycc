@@ -143,8 +143,10 @@
 		self.frameAllCount = 0;
 
 		// timer兼容
-		timer || (timer = function(e) {
-				return setTimeout(e, 1e3 / 60);
+		timer || (timer = function(callback) {
+				return setTimeout(function () {
+					callback(Date.now());
+				}, 1e3 / 60);
 			}
 		);
 		// 启动时间
@@ -156,14 +158,14 @@
 		
 		
 		// 心跳回调函数。约60fps
-		function cb() {
+		function cb(curTime) {
 			// 总的心跳数加1
 			self.timerTickCount++;
 			if(self.timerTickCount - self.lastFrameTickerCount === self.tickerSpace){
 				// 设置 总帧数加1
 				self.frameAllCount++;
 				// 设置 两帧的时间差
-				self.deltaTime = performance.now()-self.lastFrameTime;
+				self.deltaTime = curTime-self.lastFrameTime;
 				// 设置 帧间隔缩放比
 				self.deltaTimeRatio = self.deltaTime/self.deltaTimeExpect;
 				// 设置 上一帧刷新时间
