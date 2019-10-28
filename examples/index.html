@@ -56,11 +56,20 @@
 				return null;
 			}
 			console.log(url,dom);
+
+			// 加入选中的颜色
+			if(dom){
+				document.querySelectorAll('.pure-menu-item').forEach(function (item) {
+					item && (item.style.backgroundColor='transparent');
+				});
+				dom.style.backgroundColor='#ccc';
+			}
+
 			document.demo.location.href = url;
 		}
 		window.onload = function () {
 			if(document.documentElement.clientWidth>=640){
-				goToDemo('./multiple-layer/');
+				goToDemo('./multi-touch/');
 			}
 		}
 	</script>
@@ -83,6 +92,7 @@
 		<hr>
 		<ul class="pure-menu-list">
 			<li class="pure-menu-item" onclick="goToDemo('./multiple-layer/',this)"><a href="#" class="pure-menu-link">多图层示例</a></li>
+			<li class="pure-menu-item" onclick="goToDemo('./performance-monitor/',this)"><a href="#" class="pure-menu-link">性能测试-二维码</a></li>
 			<li class="pure-menu-item" onclick="goToDemo('./image-loader/',this)"><a href="#" class="pure-menu-link">图片加载</a></li>
 			<li class="pure-menu-item" onclick="goToDemo('./paper-selector/',this)"><a href="#" class="pure-menu-link">框选操作</a></li>
 			<li class="pure-menu-item" onclick="goToDemo('./simple-editor/',this)"><a href="#" class="pure-menu-link">迷你画板</a></li>
@@ -92,7 +102,7 @@
 			<li class="pure-menu-item" onclick="goToDemo('./ui-test/',this)"><a href="#" class="pure-menu-link">UI示例</a></li>
 			<li class="pure-menu-item" onclick="goToDemo('./smooth-line/',this)"><a href="#" class="pure-menu-link">平滑的折线图</a></li>
 			<li class="pure-menu-item" onclick="goToDemo('./ui-children/',this)"><a href="#" class="pure-menu-link">UI嵌套</a></li>
-			<li class="pure-menu-item" onclick="goToDemo('./multi-touch/',this)"><a href="#" class="pure-menu-link">移动端手势示例</a></li>
+			<li class="pure-menu-item" onclick="goToDemo('./multi-touch/',this)" style="background-color: #ccc;"><a href="#" class="pure-menu-link">移动端手势示例</a></li>
 			<li class="pure-menu-item" onclick="goToDemo('./render-by-json/',this)"><a href="#" class="pure-menu-link">根据json数组渲染示例</a></li>
 			<li class="pure-menu-item" onclick="goToDemo('./tree/',this)"><a href="#" class="pure-menu-link">树结构示例</a></li>
 			<li class="pure-menu-item" onclick="goToDemo('./graph/',this)"><a href="#" class="pure-menu-link">图结构示例</a></li>

@@ -27,4 +27,6 @@ function logger(){
 }
 
 // 不存在父级，显示返回按钮
-if(window.parent === window) document.querySelector('.return-btn').style.display = 'block';
+if(window.parent === window) {
+	document.querySelector('.return-btn')&&(document.querySelector('.return-btn').style.display = 'block');
+}
