@@ -31,7 +31,8 @@
 	<div>
 		设置UI数量上限：<input type="number" id="max-number" value="500">
 		设置速度：<input type="number" id="speed" value="2">
-		<button onclick="onStartClick()">开始渲染</button>
+		<button onclick="onStartClick()" id="start">开始</button>
+		<button onclick="onStopClick()" id="stop">结束</button>
 	</div>
 	<br>
 </div>
@@ -46,14 +47,30 @@
 
 	// 全局的ycc，只能有一个
 	var global_ycc = null;
+	onStopClick();
 
 
+	function onStopClick(){
+		document.querySelector('#start').style.display = 'inline';
+		document.querySelector('#stop').style.display = 'none';
+
+		// 清空上次的绘制记录
+		if(global_ycc) {
+			document.body.removeChild(global_ycc.canvasDom);
+			global_ycc.ticker.stop();
+			global_ycc.layerManager.deleteAllLayer();
+			global_ycc.clearStage();
+			global_ycc = null;
+		}
+	}
 
 	/**
 	 * 点击开始
 	 */
 	function onStartClick(){
 		console.log('开始！');
+		document.querySelector('#start').style.display = 'none';
+		document.querySelector('#stop').style.display = 'inline';
 
 		// 清空上次的绘制记录
 		if(global_ycc) {
@@ -120,11 +137,16 @@
 				if(img.rect.y>ycc.getStageHeight())
 					img.rect.y=-100;
 				else{
-					img.rect.y+=Math.ceil(speed*(ycc.ticker.deltaTime/16.67));
-					// img.rect.y+=speed;
+					var ratio = (ycc.ticker.deltaTime/16.67);
+					ratio = (ratio>1?1:ratio);
+					img.rect.y+=Math.ceil(speed*ratio);
+//					 img.rect.y+=speed;
 				}
 
 			}
+
+//			if(ycc.ticker.deltaTime>17) console.log('此帧超出',ycc.ticker.deltaTime);
+
 			textDebug.content=' 每帧心跳间隔:'+(ycc.ticker.deltaTime.toFixed(2))
 					+'\r\n 舞台可见UI数量:'+ycc.layerManager.renderUiCount
 					+'\r\n 实时绘制时间:'+ycc.layerManager.renderTime
