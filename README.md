@@ -122,9 +122,10 @@ wx-minigame目录可以直接使用微信开发者工具打开、调试、构建
 
 你可以点击[查看线上文档](http://www.lizhiqianduan.com/products/ycc/docs/)，也可以下载Ycc模块后点击查看`/ycc/docs/index.html`
 
-#### 案例
+#### 线上案例
 
-![微信小游戏-别踩白块](https://www.lizhiqianduan.com/wp-content/uploads/image/20191029/1572355723994593.png =200x200)
+<img src='https://www.lizhiqianduan.com/wp-content/uploads/image/20191029/1572355723994593.png' width=200 height=200 />
+微信小游戏-别踩白块
 
 #### 需要注意的事
 
