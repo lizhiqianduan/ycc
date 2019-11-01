@@ -3,7 +3,7 @@
     "allowUnknownTags" : true
   },
   "templates": {
-    "applicationName": "Ycc Engine v0.0.4 API文档",
+    "applicationName": "Ycc Engine v0.0.5 API文档",
     "meta": {
       "title": "Ycc Engine API文档",
       "description": "",
