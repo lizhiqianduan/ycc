@@ -124,8 +124,8 @@ wx-minigame目录可以直接使用微信开发者工具打开、调试、构建
 
 #### 案例
 
-![微信小游戏](https://www.lizhiqianduan.com/wp-content/uploads/image/20191029/1572355723994593.png)
-
+<img src='https://www.lizhiqianduan.com/wp-content/uploads/image/20191029/1572355723994593.png' width=200 height=200 />
+微信小游戏-别踩白块
 
 #### 需要注意的事
 
