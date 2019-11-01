@@ -12,7 +12,6 @@
  * @param config {Object} 整个ycc的配置项
  * @param config.debugDrawContainer {Boolean} 是否显示所有UI的容纳区域
  * @param config.useGesture {Boolean} 是否启用系统的手势库，默认启用
- * @param config.dpiAdaptation {Boolean} 是否开启高分屏适配，默认启用
  * 若开启，所有UI都会创建一个属于自己的离屏canvas，大小与舞台一致
  * @constructor
  */
@@ -79,12 +78,11 @@ var Ycc = function Ycc(config){
 	
 	/**
 	 * 整个ycc的配置项
-	 * @type {{debugDrawContainer:boolean,useGesture:boolean,dpiAdaptation:boolean}}
+	 * @type {{debugDrawContainer:boolean,useGesture:boolean}}
 	 */
 	this.config = Ycc.utils.extend({
 		debugDrawContainer:false,
-		useGesture:true,
-		dpiAdaptation:true
+		useGesture:true
 	},config||{});
 	
 	/**
