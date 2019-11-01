@@ -122,6 +122,11 @@ wx-minigame目录可以直接使用微信开发者工具打开、调试、构建
 
 你可以点击[查看线上文档](http://www.lizhiqianduan.com/products/ycc/docs/)，也可以下载Ycc模块后点击查看`/ycc/docs/index.html`
 
+#### 案例
+
+![微信小游戏](https://www.lizhiqianduan.com/wp-content/uploads/image/20191029/1572355723994593.png)
+
+
 #### 需要注意的事
 
 项目的`develop`分支一般都比`master`分支超前，如果你想要查看最新的代码，请下载`develop`分支的代码！
