@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name=viewport content="width=device-width,initial-scale=1,user-scalable=0,viewport-fit=cover">
+	<title>音频示例</title>
+	<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<div class="return-btn">
+	<a href="../">
+		返回首页
+	</a>
+</div>
+<div class="tip">
+	<h3>示例说明：</h3>
+	<div>
+		1、这个示例展示系统的音频播放功能。<br>
+		2、点击播放，一首《那女孩对我说》送给你。<br>
+	</div>
+	<br><br>
+</div>
+
+
+<button onclick="play()" id="play" disabled>播放</button>
+</body>
+</html>
+
+<script src="http://localhost:9000/livereload.js"></script>
+<script src="../common.js"></script>
+<script src="../../build/ycc.js"></script>
+
+<script>
+
+	var ycc = new Ycc();
+	ycc.bindCanvas(ycc.createCanvas());
+
+
+	var resArr = ['31!','32!','33!','34!','35!','36!','37!','41!','42!','43!','44!','45!','46!','47!'].map(function(item){
+		return {name:item,url:'./'+item+'.mp3',type:'audio'};
+	});
+	var map = {
+		'1!':'41!',
+		'2!':'42!',
+		'3!':'43!',
+		'4!':'44!',
+		'5!':'45!',
+		'6!':'46!',
+		'7!':'47!',
+		'1#':'31!',
+		'2#':'32!',
+		'3#':'33!',
+		'4#':'34!',
+		'5#':'35!',
+		'6#':'36!',
+		'7#':'37!',
+	};
+	var song = [
+		'5! 6! 1# 1# 6! 2# 00 00',
+		'2# 7! 2# 3# 3# 7! 1# 00',
+		'1# 7! 5! 6! 6! 00',
+		'6! 5! 6! 3! 3! 2! 3! 00'
+	];
+
+
+	ycc.loader.loadResOneByOne(resArr,function(resArr){
+		onLoad();
+	});
+
+
+	function onLoad(){
+		document.getElementById('play').disabled=false;
+	}
+
+	function play(){
+		var index = 0;
+		setInterval(function(){
+			var resName = map[song.join(' ').split(' ')[index]];
+			var tone = ycc.loader.getResByName(resName,resArr);
+			if(tone) tone.res.play();
+			index++;
+		},500);
+	}
+
+
+
+
+
+</script>
