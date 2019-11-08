@@ -54,6 +54,7 @@
 		&nbsp;&nbsp;
 		<button onclick="zoomIn()">放大</button>
 		<button onclick="zoomOut()">缩小</button>
+		<button onclick="rotate()">旋转</button>
 		&nbsp;&nbsp;&nbsp;&nbsp;
 		<button onclick="line()">直线</button>
 		<button onclick="pen()">钢笔</button>
@@ -100,11 +101,15 @@
 	// 本例所有操作都在一个图层完成
 	var layer = null;
 
+	// 画板底图
+	var paper = null;
+
 	// 放大缩小的比例
 	var scale = 1;
 
 	// canvas初始宽度
 	var originWidth = 0;
+	var originHeight = 0;
 
 	// 加载器实例
 	new Ycc.Loader().loadResParallel(imageResources,function (arr,imgs) {
@@ -120,10 +125,11 @@
 
 
 		ycc = new Ycc();
-		var canvas = ycc.createCanvas({width:300,height:200,dpiAdaptation:true});
+		var canvas = ycc.createCanvas({width:imgs.paper.width,height:imgs.paper.height,dpiAdaptation:true});
 		document.getElementById("canvas").appendChild(canvas);
 		ycc.bindCanvas(canvas);
 		originWidth = canvas.width;
+		originHeight = canvas.height;
 
 		layer = ycc.layerManager.newLayer({name:"试卷图层"});
 		layer.enableEventManager = true;
@@ -133,10 +139,13 @@
 		};
 
 //		layer.ui.image(imgs.paper,[0,0]);
-		layer.addUI(new Ycc.UI.Image({
+		paper = new Ycc.UI.Image({
 			rect:new Ycc.Math.Rect(0,0,imgs.paper.width,imgs.paper.height),
-			res:imgs.paper
-		}));
+			res:imgs.paper,
+			anchorX:imgs.paper.width/2,
+			anchorY:imgs.paper.height/2
+		});
+		layer.addUI(paper);
 		ycc.layerManager.reRenderAllLayerToStage();
 		ycc.photoManager.takePhoto();
 
@@ -185,6 +194,39 @@
 	function zoomOut() {
 		scale-=0.1;
 		ycc.canvasDom.style.width = originWidth*scale+"px";
+	}
+
+	/**
+	 * 旋转
+	 */
+	function rotate(){
+		paper.rotation+=90;
+		paper.rotation = paper.rotation>=360?0:paper.rotation;
+
+		if(paper.rotation===90){
+			paper.rect.x = (paper.res.width-paper.res.height)/2;
+			paper.rect.y = (paper.res.width-paper.res.height)/2;
+			ycc.canvasDom.width = paper.res.height;
+			ycc.canvasDom.height = paper.res.width;
+			ycc.canvasDom.style.width=ycc.canvasDom.width*ycc.dpi*scale+'px';
+		}
+
+		if(paper.rotation===180 || paper.rotation===0){
+			paper.rect.x = 0;
+			paper.rect.y = 0;
+			ycc.canvasDom.width = paper.res.width;
+			ycc.canvasDom.height = paper.res.height;
+			ycc.canvasDom.style.width=ycc.canvasDom.width*ycc.dpi*scale+'px';
+		}
+		if(paper.rotation===270){
+			paper.rect.x = -(paper.res.width-paper.res.height)/2;
+			paper.rect.y = -(paper.res.width-paper.res.height)/2;
+			ycc.canvasDom.width = paper.res.height;
+			ycc.canvasDom.height = paper.res.width;
+			ycc.canvasDom.style.width=ycc.canvasDom.width*ycc.dpi*scale+'px';
+		}
+
+		ycc.layerManager.reRenderAllLayerToStage();
 	}
 
 
