@@ -159,51 +159,117 @@
 	];
 
 	// 音域测试
-	song = [
-		'1234567'.split('').map(item=>item+'d').join(' '),
-		'1234567'.split('').map(item=>item+'e').join(' '),
-		'1234567'.split('').map(item=>item+'f').join(' '),
-	];
+	// song = [
+	// 	'1234567'.split('').map(item=>item+'d').join(' '),
+	// 	'1234567'.split('').map(item=>item+'e').join(' '),
+	// 	'1234567'.split('').map(item=>item+'f').join(' '),
+	// ];
 
 	// 父亲 400ms
-	song = [
-			'1e 5d 1e 3e 4e 3e 2e 1e 1e 5d 1e 2e 3e 00',
-			'1e 5d 1e 3e 4e 3e 2e 1e 3e 2e 2e 1e 1e 00',
-			'1e 5d 1e 3e 4e 3e 2e 1e 6e 5e 5e 4e 4e 00',
-			'1e 5d 1e 3e 4e 3e 2e 00 1e 3e 2e 2e 1e 1e 00',
-			'1e 6d 6e 00 6e 5e 3e 3e 00',
-			'3e 4e 5e 1e 5e 5e 00',
-			'1e 7d 6d 00 6e 6e 7e 5e 5e 00',
-			'5e 6e 5e 4e 3e 3e 00 2e 00 00',
-			//
-			'6e 7e 1f 1f 1f 1f 7e 00',
-			'6e 7e 7e 7e 7e 3f 2f 1f 00',
-			'6e 7e 1f 1f 1f 1f 1f 7e 6e 7e 6e 5e 00',
-			'6e 7e 1f 1f 1f 1f 7e 00',
-			'6e 7e 7e 7e 7e 3f 7e 1f 00',
-			'6e 7e 1f 1f 1f 3f 2f 00 7e 6e 6e 00',
-
-			'6e 7e 1f 1f 1f 1f 7e 00',
-			'6e 7e 7e 7e 7e 3f 2f 1f 00',
-			'6e 7e 1f 1f 1f 1f 1f 7e 6e 6e 6e 5e 00',
-			'6e 7e 1f 1f 1f 1f 7e 00',
-			'6e 7e 7e 7e 7e 3f 7e 1f 00',
-			'6e 7e 1f 1f 1f 3f 2f 00 7e 6e 6e 00'
-
-	];
+	// song = [
+	// 		'1e 5d 1e 3e 4e 3e 2e 1e 1e 5d 1e 2e 3e 00',
+	// 		'1e 5d 1e 3e 4e 3e 2e 1e 3e 2e 2e 1e 1e 00',
+	// 		'1e 5d 1e 3e 4e 3e 2e 1e 6e 5e 5e 4e 4e 00',
+	// 		'1e 5d 1e 3e 4e 3e 2e 00 1e 3e 2e 2e 1e 1e 00',
+	// 		'1e 00 6d 00 6e 00 6e 5e 3e 3e 00',
+	// 		'3e 4e 5e 1e 5e 5e 00',
+	// 		'1e 7d 6d 00 6e 6e 7e 5e 5e 00',
+	// 		'5e 6e 5e 4e 00 3e 3e 00 2e 00 00',
+	// 		//
+	// 		'6e 7e 1f 1f 1f 1f 7e 00',
+	// 		'6e 7e 7e 7e 7e 3f 2f 1f 00',
+	// 		'6e 7e 1f 1f 1f 1f 1f 7e 6e 7e 6e 5e 00',
+	// 		'6e 7e 1f 1f 1f 1f 7e 00',
+	// 		'6e 7e 7e 7e 7e 3f 7e 1f 00',
+	// 		'6e 7e 1f 1f 1f 3f 2f 00 7e 6e 6e 00',
+	//
+	// 		'6e 7e 1f 1f 1f 1f 7e 00',
+	// 		'6e 7e 7e 7e 7e 3f 2f 1f 00',
+	// 		'6e 7e 1f 1f 1f 1f 1f 7e 6e 6e 6e 5e 00',
+	// 		'6e 7e 1f 1f 1f 1f 7e 00',
+	// 		'6e 7e 7e 7e 7e 3f 7e 1f 00',
+	// 		'6e 7e 1f 1f 1f 3f 2f 00 7e 6e 6e 00'
+	//
+	// ];
 
 	// 9277 300ms
-	song = [
-			'6d 1e 2e 2e 3e 2e 00 1e 6d 1e 1e 1e 6d 5d 1e 00',
-			'1e 6d 5d 2e 3e 2e 00 1e 6d 1e 1e 6d 5d 1e 00',
-			'6d 1e 2e 2e 3e 2e 00 1e 6d 1e 1e 1e 6d 5d 1e 00',
-			'1e 6d 5d 2e 3e 2e 00 1e 6d 1e 1e 6d 5d 1e 00',
+	// song = [
+	// 		'6d 1e 2e 2e 3e 2e 00 1e 6d 1e 1e 1e 6d 5d 1e 00',
+	// 		'1e 6d 5d 2e 3e 2e 00 1e 6d 1e 1e 6d 5d 1e 00',
+	// 		'6d 1e 2e 2e 3e 2e 00 1e 6d 1e 1e 1e 6d 5d 1e 00',
+	// 		'1e 6d 5d 2e 3e 2e 00 1e 6d 1e 1e 6d 5d 1e 00',
+	//
+	// 		'2e 3e 2e 00 1e 6d 1e 00 1e 6d 5d 1e 00',
+	// 		'1e 6d 5d 2e 3e 2e 00 1e 6d 1e 1e 6d 5d 1e 00',
+	// 		'6d 1e 2e 2e 3e 2e 00 1e 6d 1e 1e 1e 6d 5d 1e 00',
+	// 		'1e 6d 5d 2e 3e 2e 00 1e 6d 1e 1e 6d 5d 3e 2e 00 00'
+	// ];
 
-			'2e 3e 2e 00 1e 6d 1e 00 1e 6d 5d 1e 00',
-			'1e 6d 5d 2e 3e 2e 00 1e 6d 1e 1e 6d 5d 1e 00',
-			'6d 1e 2e 2e 3e 2e 00 1e 6d 1e 1e 1e 6d 5d 1e 00',
-			'1e 6d 5d 2e 3e 2e 00 1e 6d 1e 1e 6d 5d 3e 2e 00 00'
-	];
+	// 我的将军啊 300ms
+	// song = [
+	// 		'6d 1e 2e 00 3e 00 2e 00',
+	// 		'1e 2e 3e 5e 5e 7d 6d 00',
+	// 		'6d 1e 2e 2e 3e 2e 2e 00',
+	// 		'1e 2e 3e 5e 5e 7d 6d 00',
+	//
+	// 	'6d 1e 2e 00 3e 00 2e 00',
+	// 	'1e 2e 3e 5e 5e 7d 6d 00',
+	// 	'6d 1e 2e 2e 3e 2e 2e 00',
+	// 	'1e 2e 3e 5e 5e 7d 6d 00',
+	//
+	// 	'6d 1e 2e 00 3e 00 2e 00',
+	// 	'1e 2e 3e 5e 5e 7d 6d 00',
+	// 	'6e 1f 2f 2f 3f 2f 2f 00',
+	// 	'1f 2f 3f 5f 5f 7e 6e 00',
+	// 	'6e 1f 2f 2f 3f 2f 2f 00',
+	// 	'1f 2f 3f 5f 5f 7e 6e 00'
+	//
+	// ];
+
+	// 讲真的 300 200ms
+
+	// song = [
+	// 		'333211'.split('').map(item=>item+'e').join(' '),
+	// 		'5d 6d 00 00',
+	// 		'76767'.split('').map(item=>item+'d').join(' '),
+	// 		'1e 2e 7d 00 1e 00 00',
+	// 		'323511'.split('').map(item=>item+'e').join(' '),
+	// 		'5d 6d 00 00',
+	// 		'76767'.split('').map(item=>item+'d').join(' '),
+	// 		'2e 7d 1e 00 00',
+	//
+	// 		'1e 00 6d 00 5e 00',
+	// 		'554332'.split('').map(item=>item+'e').join(' '),
+	// 		'00 00',
+	// 		'7d 00 5d 00 4e 00 4e 4e 00 3e 2e 2e 1e 00 00',
+	//
+	// 		'12332'.split('').map(item=>item+'e').join(' '),
+	// 		'00 00',
+	// 		'1e 6d 4e 00 4e 00 4e 00',
+	// 		'5443'.split('').map(item=>item+'e').join(' '),
+	// 		'00 00',
+	//
+	// 		//
+	// 		'7d 00 1e 00 2e 00', // 讲真的
+	// 		'32323'.split('').map(item=>item+'e').join(' '),
+	// 		'00 6d 5e 00 6e 4e 3e 4e 00 00',
+	// 		'21212'.split('').map(item=>item+'e').join(' '),
+	// 		'00 5d 4e 00 5e 3e 2e 3e 00 00',
+	// 		'3e 2e 1e 3e 00 2e 00', //要你亲口说
+	// 		'7d 2e 1e 2e 6e 00 00',
+	// 		'6d 3e 1e 1e 6d 1e 2e 3e 3e 2e 00 00',
+	//
+	// 		'7d 00 1e 00 2e 00', // 讲真的
+	// 		'32323'.split('').map(item=>item+'e').join(' '),
+	// 		'00 6d 5e 00 6e 4e 3e 4e 00 00',
+	// 		'21212'.split('').map(item=>item+'e').join(' '),
+	// 		'00 5d 4e 00 5e 3e 2e 3e 00 00',
+	// 		'3e 2e 1e 3e 00 2e 00', //自作多情了
+	// 		'1e 2e 1e 2e 6e 00 00',
+	// 		'6d 3e 1e 1e 6d 1e 6d 3e 3e 2e 00',
+	// 		'3d 7d 1e 2e 7d 00 6d 00'
+	//
+	// ];
 
 
 
@@ -228,11 +294,16 @@
 				tone.res.play();
 			}
 			index++;
-		},300);
+		},200);
 	}
 
 	function stop() {
 		clearInterval(timerid);
+	}
+
+	// 获取乐谱字符串
+	function getSongMelody(){
+		song.join(' ');
 	}
 
 
