@@ -36,6 +36,14 @@
 	var ycc = new Ycc();
 	ycc.bindCanvas(ycc.createCanvas());
 
+	// 将字符串转为某个音
+	String.prototype.toTone = function (type) {
+		return this.split('').map(item=>{
+			if(item==='0') return '00';
+			return item+type;
+		}).join(' ')
+	};
+
 
 	var resArr = [
 		// '31!','32!','33!','34!','35!','36!','37!',
@@ -270,6 +278,25 @@
 	// 		'3d 7d 1e 2e 7d 00 6d 00'
 	//
 	// ];
+
+	// 答案-杨坤 200ms
+	song = [
+			'5e 6e 1f 00 1f 00 1f 6e 00 5e 00 00 00',
+			'505053010'.toTone('e'),
+			'5e 6e 1f 00 1f 00 1f 6e 00 5e 00 00',
+			'506050603000'.toTone('e'),
+			'5e 6e 1f 00 1f 00 1f 6e 00 5e 00 00',
+			'303020100'.toTone('f'),
+			'5e 6e 1f 00 1f 00 1f 6e 00 5e 00 6e 00 1f 00 00 00',
+
+			'5e 6e 1f 00 2f 3f 00 6e 00 1f 00 2f 3f 00 6e 00 1f 00 2f 00 3f 00 3f 00 5f 00 00 00 3f 00 00',
+			'2f 3f 00 6e 00 1f 00 2f 3f 00 6e 00 1f 00 2f 00 1f 00 2f 00 1f 00 00 00',
+			'5e 6e 1f 00 2f 3f 00 6e 00 1f 00 2f 3f 00 6e 00 1f 00 2f 00 3f 00 3f 00 5f 00 00 00 3f 00 00',
+			'2f 3f 00 6e 00 1f 00 2f 3f 00 6e 00 1f 00 2f 00 1f 00 2f 00 1f 00',
+
+
+	];
+
 
 
 
