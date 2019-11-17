@@ -1,5 +1,5 @@
 {
-  "name": "ycc-engine",
+  "name": "ycc.js",
   "version": "0.0.5",
   "description": "Mini and powerful canvas engine for creating App or Game.",
   "main": "./build/ycc.min.js",
@@ -21,6 +21,8 @@
   "author": "xiaohei",
   "license": "ISC",
   "keywords": [
+    "ycc-engine",
+    "ycc.js",
     "ycc",
     "engine",
     "canvas"
