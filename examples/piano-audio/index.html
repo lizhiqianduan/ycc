@@ -38,10 +38,10 @@
 
 	// 将字符串转为某个音
 	String.prototype.toTone = function (type) {
-		return this.split('').map(item=>{
+		return this.split('').map(function(item){
 			if(item==='0') return '00';
 			return item+type;
-		}).join(' ')
+		}).join(' ');
 	};
 
 
