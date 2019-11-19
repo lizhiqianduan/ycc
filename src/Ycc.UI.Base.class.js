@@ -10,7 +10,9 @@
 
 (function (Ycc) {
 	var uid = 0;
-	
+	// 全局的透明度
+	var globalAlpha = 1;
+
 	/**
 	 * 所有UI类的基类。
 	 * <br> 所有UI都必须遵循先计算、后绘制的流程
@@ -98,7 +100,7 @@
 		 */
 		this.rotation = 0;
 		
-		
+
 		/**
 		 * 容纳区的背景色
 		 * @type {string}
@@ -136,7 +138,12 @@
 		 * @type {boolean}
 		 */
 		this.stopEventBubbleUp = true;
-		
+
+		/**
+		 * 透明度
+		 * @type {number}
+		 */
+		this.opacity = 1;
 		/**
 		 * 线条宽度
 		 * @type {number}
@@ -507,6 +514,7 @@
 	 * 此方法不允许重载、覆盖
 	 * <br> 开启离屏canvas后，此过程只会发生在离屏canvas中
 	 * @private
+	 * @return {renderError.message|null}
 	 */
 	Ycc.UI.Base.prototype.__render = function () {
 		this.triggerListener('computestart',new Ycc.Event("computestart"));
@@ -518,7 +526,11 @@
 		// 超出舞台时，不予渲染，此步骤挪到外面做判断，不再重复判断
 		if(this.isOutOfStage())
 			return {message:'UI超出舞台！'};
-		
+
+
+		// 绘制前的处理
+		this._processBeforeRender();
+
 		var absolutePosition = this.getAbsolutePositionRect();
 		// 绘制UI的背景，rectBgColor
 		this.renderRectBgColor(absolutePosition);
@@ -531,15 +543,35 @@
 		if(this.belongTo.yccInstance.config.debugDrawContainer){
 			this._renderContainer(absolutePosition);
 		}
-		
-		
-		
-		
-		this.triggerListener('renderstart',new Ycc.Event("renderstart"));
+
 		this.render();
+
+		// 绘制后的处理
+		this._processAfterRender();
+	};
+
+	/**
+	 * UI类渲染前的处理
+	 * @private
+	 */
+	Ycc.UI.Base.prototype._processBeforeRender = function(){
+		this.triggerListener('renderstart',new Ycc.Event("renderstart"));
+		// 保存
+		globalAlpha = this.ctx.globalAlpha;
+		// 设置透明度
+		this.ctx.globalAlpha = this.opacity;
+	};
+
+	/**
+	 * UI类渲染后的处理
+	 * @private
+	 */
+	Ycc.UI.Base.prototype._processAfterRender = function(){
+		// 取消设置的透明度
+		this.ctx.globalAlpha = globalAlpha;
 		this.triggerListener('renderend',new Ycc.Event("renderend"));
 	};
-	
+
 	/**
 	 * 给定宽度，获取能容纳的最长单行字符串
 	 * @param content	{string} 文本内容
