@@ -722,6 +722,13 @@
 	};
 	
 	/**
+	 * 获取当前UI在树结构中的深度
+	 */
+	Ycc.UI.Base.prototype.getDeepLevel = function () {
+		return this.getParentList().length+1;
+	};
+	
+	/**
 	 * 根据当前的锚点、旋转角度获取某个点的转换之后的坐标
 	 * @param dot {Ycc.Math.Dot|Ycc.Math.Dot[]}	需要转换的点，该点为相对坐标，相对于当前UI的父级
 	 * @return {Ycc.Math.Dot}		转换后的点，该点为绝对坐标

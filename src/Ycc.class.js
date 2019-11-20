@@ -352,6 +352,7 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
  * @param options 				{object}	点坐标，为舞台的绝对坐标
  * @param options.uiIsShow 		{boolean}	UI是否可见
  * @param options.uiIsGhost 	{boolean}	UI是否未幽灵
+ * @return {Ycc.UI[]} 			返回找到的UI列表，图层越靠后图层内的UI越靠前
  */
 Ycc.prototype.getUIListFromPointer = function (dot,options) {
 	var self = this;
