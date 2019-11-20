@@ -47,6 +47,7 @@ module.exports = function(grunt){
 					'src/Ycc.UI.Rect.class.js',
 					'src/Ycc.UI.CropRect.class.js',
 					'src/Ycc.UI.SingleLineText.class.js',
+					'src/Ycc.UI.ScrollerRect.class.js',
 					
 					// 组件
 					'src/Ycc.UI.ComponentButton.class.js',
