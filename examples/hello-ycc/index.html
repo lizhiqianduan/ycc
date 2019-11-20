@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Hello,Ycc!</title>
+	<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<div class="return-btn">
+	<a href="../">
+		返回首页
+	</a>
+</div>
+
+<div class="tip">
+
+	<h3>示例说明：</h3>
+	<div>
+		这个示例是教程里最简单的一个，仅仅显示了一个居中文本"Hello,Ycc!"。
+	</div>
+	<br><br>
+</div>
+</body>
+</html>
+
+<script src="../common.js"></script>
+
+<script src="http://localhost:9000/livereload.js"></script>
+
+<script src="../../build/ycc.js"></script>
+<script>
+	// 新建Ycc实例
+	var ycc = new Ycc();
+	// 新建舞台
+	var stage = ycc.createCanvas({width:300,height:480,dpiAdaptation:true});
+	ycc.bindCanvas(stage);
+	document.body.appendChild(stage);
+	var layer = ycc.layerManager.newLayer({enableEventManager:true});
+	var text = new Ycc.UI.SingleLineText({content:"Hello,Ycc!",rect:new Ycc.Math.Rect(0,ycc.getStageHeight()/2,ycc.getStageWidth(),30),xAlign:'center'});
+	text.ontap = function(){
+		console.log("点击事件！");
+	}
+	layer.addUI(text);
+	ycc.layerManager.reRenderAllLayerToStage();
+</script>
