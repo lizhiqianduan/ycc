@@ -75,6 +75,7 @@
 		<button onclick="itor(2)">左子树优先遍历</button>
 		<button onclick="itor(3)">右子树优先遍历</button>
 		<button onclick="itor(4)">按层级向下遍历</button>
+		<button onclick="itor(5)">按层级向下反向遍历</button>
 	</div>
 	<div>遍历结果: <span id="itor-res"></span></div>
 
@@ -195,7 +196,12 @@
 				document.getElementById('itor-res').innerHTML+=node.data+' ';
 			});
 		}
-
+		if(type===5){
+			console.log('======== 按层级向下反向遍历');
+			tree.itor({reverse:true}).depthDown(function (node,layer) {
+				document.getElementById('itor-res').innerHTML+=node.data+' ';
+			});
+		}
 	}
 
 

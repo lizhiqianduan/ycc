@@ -346,6 +346,35 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 };
 
 /**
+ * 获取舞台中某个点所对应的最上层UI，不遍历不可见图层
+ * 默认取可见且不是幽灵的UI
+ * @param dot 					{Ycc.Math.Dot}	点坐标，为舞台的绝对坐标
+ * @param options 				{object}	点坐标，为舞台的绝对坐标
+ * @param options.uiIsShow 		{boolean}	UI是否可见
+ * @param options.uiIsGhost 	{boolean}	UI是否未幽灵
+ * @return {Ycc.UI[]} 			返回找到的UI列表，图层越靠后图层内的UI越靠前
+ */
+Ycc.prototype.getUIListFromPointer = function (dot,options) {
+	var self = this;
+	options = options || {
+		uiIsShow:true,
+		uiIsGhost:false
+	};
+	var uiList = [];
+	// 从最末一个图层开始寻找
+	for(var j=self.layerList.length-1;j>=0;j--){
+		var layer = self.layerList[j];
+		//
+		if(!layer.show) continue;
+		var list = layer.getUIListFromPointer(dot);
+		uiList = uiList.concat(list);
+	}
+	uiList = uiList.filter(function(item){return (item.show===options.uiIsShow)&&(item.ghost===options.uiIsGhost);});
+	return uiList;
+
+};
+
+/**
  * 创建canvas，只针对H5端。微信小游戏的canvas为全局变量，直接使用即可
  * @example
  * var ycc = new Ycc();
@@ -1136,11 +1165,15 @@ Ycc.prototype.createCacheCtx = function () {
 	
 	/**
 	 * 树的迭代器，返回集中常用的迭代方法
-	 * @param option 暂时不用
+	 * @param option 			遍历时的配置项
+	 * @param option.reverse	遍历子节点时，是否将子节点反向，默认false，目前仅支持depthDown遍历
 	 * @return {{each: each, leftChildFirst: leftChildFirst, rightChildFirst: rightChildFirst, depthDown: depthDown}}
 	 */
 	Ycc.Tree.prototype.itor = function (option) {
 		var self = this;
+		option = option || {
+			reverse:false
+		};
 
 		/**
 		 * 父代优先遍历
@@ -1219,11 +1252,14 @@ Ycc.prototype.createCacheCtx = function () {
 				return true;
 			layer=layer||0;
 			layer++;
+			// 待遍历的节点判断反向
+			var itorNodes = option.reverse?reverse(nodes):nodes;
+			// 下一层需要遍历的所有节点
 			var nextNodes = [];
 			// 是否停止遍历下一层的标志位
 			var breakFlag = false;
-			for(var i=0;i<nodes.length;i++) {
-				var rvl = cb.call(self, nodes[i], layer);
+			for(var i=0;i<itorNodes.length;i++) {
+				var rvl = cb.call(self, itorNodes[i], layer);
 				// 如果返回为true，则表示停止遍历下一层
 				// 如果返回为-1，则表示当前节点的所有子孙节点不再遍历
 				if (rvl===true) {
@@ -1231,12 +1267,27 @@ Ycc.prototype.createCacheCtx = function () {
 					break;
 				}else if(rvl===-1)
 					continue;
-				nextNodes = nextNodes.concat(nodes[i].children);
+				nextNodes = nextNodes.concat(option.reverse?reverse(itorNodes[i].children):itorNodes[i].children);
 			}
 			if(breakFlag){
 				nextNodes = [];
 			}
+			// 是否反向
+			if(option.reverse) nextNodes.reverse();
 			return depthDownByNodes(nextNodes,cb,layer);
+		}
+		
+		/**
+		 * 将list反向
+		 * @param list
+		 * @return {Array}
+		 */
+		function reverse(list){
+			var ls = [];
+			for(var i=list.length-1;i>=0;i--){
+				ls.push(list[i]);
+			}
+			return ls;
 		}
 		
 		return {
@@ -2798,6 +2849,7 @@ Ycc.prototype.createCacheCtx = function () {
 		
 		/**
 		 * 是否阻止所有的事件触发
+		 * @desc 只会阻止当前UI事件的触发，不会阻止其下面子元素事件的触发
 		 * @type {boolean}
 		 */
 		this.stopAllEvent = false;
@@ -4354,6 +4406,23 @@ Ycc.prototype.createCacheCtx = function () {
 		return temp;
 	};
 	
+	/**
+	 * 获取图层中某个点所对应的所有UI，无论显示不显示，无论是否是幽灵，都会获取。
+	 * @param dot {Ycc.Math.Dot}	点坐标，为舞台的绝对坐标
+	 * @return {Ycc.UI[]}
+	 */
+	Ycc.Layer.prototype.getUIListFromPointer = function (dot) {
+		var self = this;
+		var uiList = [];
+		for(var i=0;i<this.uiList.length;i++){
+			// 按树的层次向下遍历
+			this.uiList[i].itor().depthDown(function (child, level) {
+				// 如果位于rect内，并且层级更深，则暂存，此处根据绝对坐标比较
+				if(child.containDot(dot)) uiList.push(child);
+			});
+		}
+		return uiList;
+	};
 	
 	/**
 	 * 根据图层坐标，将图层内某个点的相对坐标（相对于图层），转换为舞台的绝对坐标
@@ -5309,14 +5378,16 @@ Ycc.prototype.createCacheCtx = function () {
 		/**
 		 * 初始化之前的hook
 		 * @type {function}
+		 * @private
 		 */
-		this.beforeInit = null;
+		this._beforeInit = null;
 		
 		/**
 		 * 初始化之后的hook
 		 * @type {function}
+		 * @private
 		 */
-		this.afterInit = null;
+		this._afterInit = null;
 
 		/**
 		 * 计算属性前的hook
@@ -5356,7 +5427,7 @@ Ycc.prototype.createCacheCtx = function () {
 	 * @param layer	{Layer}		图层
 	 */
 	Ycc.UI.Base.prototype.init = function (layer) {
-		Ycc.utils.isFn(this.beforeInit) && this.beforeInit();
+		Ycc.utils.isFn(this._beforeInit) && this._beforeInit();
 		this.belongTo = layer;
 		this.ctx = layer.ctx;
 		// UI的离屏canvas使用图层的离屏canvas
@@ -5371,7 +5442,7 @@ Ycc.prototype.createCacheCtx = function () {
 		
 		// 初始化时，直接计算并渲染至离屏canvas中，以等待外部使用
 		// this.__render();
-		Ycc.utils.isFn(this.afterInit) && this.afterInit();
+		Ycc.utils.isFn(this._afterInit) && this._afterInit();
 	};
 	
 	/**
@@ -5562,13 +5633,13 @@ Ycc.prototype.createCacheCtx = function () {
 			 * 初始化之前的hook
 			 * @type {function}
 			 */
-			ui.beforeInit = null;
+			ui._beforeInit = null;
 			
 			/**
 			 * 初始化之后的hook
 			 * @type {function}
 			 */
-			ui.afterInit = null;
+			ui._afterInit = null;
 			
 			/**
 			 * 计算属性前的hook
@@ -5837,6 +5908,13 @@ Ycc.prototype.createCacheCtx = function () {
 	 */
 	Ycc.UI.Base.prototype.containDot = function (dot) {
 		return dot.isInRect(this.getAbsolutePosition());
+	};
+	
+	/**
+	 * 获取当前UI在树结构中的深度
+	 */
+	Ycc.UI.Base.prototype.getDeepLevel = function () {
+		return this.getParentList().length+1;
 	};
 	
 	/**
@@ -8232,6 +8310,165 @@ Ycc.prototype.createCacheCtx = function () {
 	
 	
 	
+	
+})(Ycc);;/**
+ * @file    Ycc.UI.ScrollerRect.class.js
+ * @author  xiaohei
+ * @date    2019/11/19
+ * @description  Ycc.UI.ScrollerRect.class文件
+ * 滚动区域UI
+ */
+
+
+
+(function (Ycc) {
+
+    /**
+     * 滚动区域UI
+     * @param option	            {object}		所有可配置的配置项
+	 * @param option.rect	        {Ycc.Math.Rect}	容纳区。
+	 * @param option.selfRender	    {Boolean}	    是否自身实时渲染
+     * @constructor
+     * @extends Ycc.UI.Polygon
+     */
+    Ycc.UI.ScrollerRect = function ScrollerRect(option) {
+        Ycc.UI.Polygon.call(this,option);
+        this.yccClass = Ycc.UI.ScrollerRect;
+	
+		/**
+         * 是否自身实时渲染，启用后，会实时重绘整个画布
+		 * @type {boolean}
+		 */
+		this.selfRender = false;
+        
+        this.extend(option);
+	
+		/**
+		 * 滚动区的UI容纳区，此区域用于容纳区域内的UI，不可编辑修改属性
+		 * @type {Ycc.UI.Rect}
+		 * @private
+		 */
+		this._wrapper = null;
+	
+		/**
+		 * 滚动区的事件容纳区，此区域用于接收舞台的事件
+		 * @type {Ycc.UI.Rect}
+		 * @private
+		 */
+		this._eventWrapper = null;
+	
+		/**
+		 * 初始化完成的回调
+		 * @override
+		 * @private
+		 */
+		this._afterInit = function () {
+			this._initWrapperRect();
+			this._initEvent();
+		}
+		
+    };
+    // 继承prototype
+    Ycc.utils.mergeObject(Ycc.UI.ScrollerRect.prototype,Ycc.UI.Polygon.prototype);
+
+
+    /**
+     * 计算UI的各种属性。此操作必须在绘制之前调用。
+     * <br> 计算与绘制分离的好处是，在绘制UI之前就可以提前确定元素的各种信息，从而判断是否需要绘制。
+     * @override
+     */
+    Ycc.UI.ScrollerRect.prototype.computeUIProps = function () {
+        // 计算多边形坐标
+        this.coordinates = this.rect.getVertices();
+        // 赋值位置信息
+        this.x = this.rect.x,this.y=this.rect.y;
+
+        // this._setCtxProps(this);
+    };
+
+
+    /**
+     * 绘制
+     */
+    Ycc.UI.ScrollerRect.prototype.render = function (ctx) {
+        var self = this;
+        // ctx = ctx || self.ctxCache;
+        // if(!ctx){
+        //     console.error("[Ycc error]:","ctx is null !");
+        //     return;
+        // }
+
+        console.log('不需要更新渲染');
+        // ctx.save();
+        // this.renderPath(ctx);
+        // ctx.restore();
+    };
+	
+	
+	/**
+	 * 重载基类方法
+	 * @param ui
+	 */
+	Ycc.UI.ScrollerRect.prototype.addChild = function (ui) {
+		if(this.belongTo) ui.init(this.belongTo);
+
+		// 将子UI加到容器中
+		if(ui===this._wrapper||ui===this._eventWrapper)
+			this.addChildTree(ui);
+		else
+			this._wrapper.addChildTree(ui);
+
+		return this;
+	};
+	
+	
+	
+	/**
+     * 初始化
+	 * @private
+	 */
+	Ycc.UI.ScrollerRect.prototype._initEvent = function () {
+		
+	    //拖动开始时的状态
+	    var startStatus = {
+	        rect:null,
+            startEvent:null,
+			// 子元素顶点
+			childrenPoints:[]
+        };
+	    console.log('init event',this);
+        this.addListener('dragstart',function (e) {
+           console.log(e);
+           startStatus.startEvent = e;
+           startStatus.rect = new Ycc.Math.Rect(this.rect);
+		});
+        
+        this.addListener('dragging',function (e) {
+			var deltaX = e.x-startStatus.startEvent.x;
+			var deltaY = e.y-startStatus.startEvent.y;
+			
+			// this.children.
+			
+			
+            // this.rect.y = startStatus.rect.y+deltaY;
+            this._wrapper.rect.y = startStatus.rect.y+deltaY;
+            if(this.selfRender)
+                this.belongTo.yccInstance.layerManager.reRenderAllLayerToStage();
+		});
+	};
+	
+	/**
+	 * 创建一个容器方块
+	 * @private
+	 */
+	Ycc.UI.ScrollerRect.prototype._initWrapperRect = function () {
+		this._wrapper = new Ycc.UI.Rect({name:'滚动区UI容器',rect:new Ycc.Math.Rect(0,0,this.rect.width,this.rect.height),ghost:true});
+		this._eventWrapper = new Ycc.UI.Rect({name:'滚动区事件容器',rect:new Ycc.Math.Rect(0,0,this.rect.width,this.rect.height),ghost:false,stopEventBubbleUp:false});
+		this._wrapper.ontap = console.log;
+		this._eventWrapper.ontap = console.log;
+		this.addChild(this._wrapper);
+		this.addChild(this._eventWrapper);
+	};
 	
 })(Ycc);;/**
  * @file    Ycc.UI.ComponentButton.class.js
