@@ -189,14 +189,16 @@
 		/**
 		 * 初始化之前的hook
 		 * @type {function}
+		 * @private
 		 */
-		this.beforeInit = null;
+		this._beforeInit = null;
 		
 		/**
 		 * 初始化之后的hook
 		 * @type {function}
+		 * @private
 		 */
-		this.afterInit = null;
+		this._afterInit = null;
 
 		/**
 		 * 计算属性前的hook
@@ -236,7 +238,7 @@
 	 * @param layer	{Layer}		图层
 	 */
 	Ycc.UI.Base.prototype.init = function (layer) {
-		Ycc.utils.isFn(this.beforeInit) && this.beforeInit();
+		Ycc.utils.isFn(this._beforeInit) && this._beforeInit();
 		this.belongTo = layer;
 		this.ctx = layer.ctx;
 		// UI的离屏canvas使用图层的离屏canvas
@@ -251,7 +253,7 @@
 		
 		// 初始化时，直接计算并渲染至离屏canvas中，以等待外部使用
 		// this.__render();
-		Ycc.utils.isFn(this.afterInit) && this.afterInit();
+		Ycc.utils.isFn(this._afterInit) && this._afterInit();
 	};
 	
 	/**
@@ -442,13 +444,13 @@
 			 * 初始化之前的hook
 			 * @type {function}
 			 */
-			ui.beforeInit = null;
+			ui._beforeInit = null;
 			
 			/**
 			 * 初始化之后的hook
 			 * @type {function}
 			 */
-			ui.afterInit = null;
+			ui._afterInit = null;
 			
 			/**
 			 * 计算属性前的hook

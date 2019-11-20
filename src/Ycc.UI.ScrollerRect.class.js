@@ -29,8 +29,24 @@
 		this.selfRender = false;
         
         this.extend(option);
-        
-        this._init();
+	
+		/**
+		 * 滚动区的容纳区UI，不可编辑修改属性
+		 * @type {Ycc.UI.Rect}
+		 * @private
+		 */
+		this._wrapper = null;
+	
+		/**
+		 * 初始化完成的回调
+		 * @override
+		 * @private
+		 */
+		this._afterInit = function () {
+			this._initWrapperRect();
+			this._initEvent();
+		}
+		
     };
     // 继承prototype
     Ycc.utils.mergeObject(Ycc.UI.ScrollerRect.prototype,Ycc.UI.Polygon.prototype);
@@ -68,18 +84,40 @@
         // ctx.restore();
     };
 	
+	
+	/**
+	 * 重载基类方法
+	 * @param ui
+	 */
+	Ycc.UI.ScrollerRect.prototype.addChild = function (ui) {
+		if(this.belongTo) ui.init(this.belongTo);
+
+		// 将子UI加到容器中
+		if(ui===this._wrapper)
+			this.addChildTree(ui);
+		else
+			this._wrapper.addChildTree(ui);
+
+		return this;
+	};
+	
+	
+	
 	/**
      * 初始化
 	 * @private
 	 */
-	Ycc.UI.ScrollerRect.prototype._init = function () {
-	    
+	Ycc.UI.ScrollerRect.prototype._initEvent = function () {
+		
 	    //拖动开始时的状态
 	    var startStatus = {
 	        rect:null,
-            startEvent:null
+            startEvent:null,
+			// 子元素顶点
+			childrenPoints:[]
         };
-        this.addEventListener('dragstart',function (e) {
+	    console.log('init event',this);
+        this.addListener('dragstart',function (e) {
            console.log(e);
            startStatus.startEvent = e;
            startStatus.rect = new Ycc.Math.Rect(this.rect);
@@ -88,12 +126,26 @@
         this.addListener('dragging',function (e) {
 			var deltaX = e.x-startStatus.startEvent.x;
 			var deltaY = e.y-startStatus.startEvent.y;
-            this.rect.y = startStatus.rect.y+deltaY;
+			
+			// this.children.
+			
+			
+            // this.rect.y = startStatus.rect.y+deltaY;
+            this._wrapper.rect.y = startStatus.rect.y+deltaY;
             if(this.selfRender)
-                this.ycc.layerManager.reRenderAllLayerToStage();
+                this.belongTo.yccInstance.layerManager.reRenderAllLayerToStage();
 		});
 	};
-
-
-
+	
+	/**
+	 * 创建一个容器方块
+	 * @private
+	 */
+	Ycc.UI.ScrollerRect.prototype._initWrapperRect = function () {
+		this._wrapper = new Ycc.UI.Rect({rect:new Ycc.Math.Rect(0,0,this.rect.width,this.rect.height),ghost:false,stopEventBubbleUp:false});
+		console.log('加入warpper',this._wrapper);
+		this._wrapper.ontap = console.log;
+		this.addChild(this._wrapper);
+	};
+	
 })(Ycc);

@@ -35,6 +35,7 @@
 		
 		/**
 		 * 是否阻止所有的事件触发
+		 * @desc 只会阻止当前UI事件的触发，不会阻止其下面子元素事件的触发
 		 * @type {boolean}
 		 */
 		this.stopAllEvent = false;
