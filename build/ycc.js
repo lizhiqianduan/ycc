@@ -8392,15 +8392,28 @@ Ycc.prototype.createCacheCtx = function () {
      */
     Ycc.UI.ScrollerRect.prototype.render = function (ctx) {
         var self = this;
-        // ctx = ctx || self.ctxCache;
+        ctx = ctx || self.ctxCache;
         // if(!ctx){
         //     console.error("[Ycc error]:","ctx is null !");
         //     return;
         // }
 
         console.log('不需要更新渲染');
-        // ctx.save();
-        // this.renderPath(ctx);
+        ctx.save();
+        // ctx.beginPath();
+		// ctx.rect(10,10,50,50);
+		// // ctx.stroke();
+
+        this.renderPath(ctx);
+		ctx.clip();
+		// ctx.closePath();
+
+		ctx.beginPath();
+
+		ctx.rect(10,10,300,50);
+		ctx.stroke();
+		// ctx.closePath();
+
         // ctx.restore();
     };
 	
@@ -8428,7 +8441,7 @@ Ycc.prototype.createCacheCtx = function () {
 	 * @private
 	 */
 	Ycc.UI.ScrollerRect.prototype._initEvent = function () {
-		
+		var self = this;
 	    //拖动开始时的状态
 	    var startStatus = {
 	        rect:null,
@@ -8437,13 +8450,13 @@ Ycc.prototype.createCacheCtx = function () {
 			childrenPoints:[]
         };
 	    console.log('init event',this);
-        this.addListener('dragstart',function (e) {
+        this._eventWrapper.addListener('dragstart',function (e) {
            console.log(e);
            startStatus.startEvent = e;
-           startStatus.rect = new Ycc.Math.Rect(this.rect);
+           startStatus.rect = new Ycc.Math.Rect(self._wrapper.rect);
 		});
         
-        this.addListener('dragging',function (e) {
+        this._eventWrapper.addListener('dragging',function (e) {
 			var deltaX = e.x-startStatus.startEvent.x;
 			var deltaY = e.y-startStatus.startEvent.y;
 			
@@ -8451,10 +8464,18 @@ Ycc.prototype.createCacheCtx = function () {
 			
 			
             // this.rect.y = startStatus.rect.y+deltaY;
-            this._wrapper.rect.y = startStatus.rect.y+deltaY;
-            if(this.selfRender)
-                this.belongTo.yccInstance.layerManager.reRenderAllLayerToStage();
+			self._wrapper.rect.y = startStatus.rect.y+deltaY;
+            if(self.selfRender)
+				self.belongTo.yccInstance.layerManager.reRenderAllLayerToStage();
 		});
+
+        this._wrapper.onrenderstart = function () {
+			self.belongTo.yccInstance.ctx.save();
+			self.belongTo.yccInstance.ctx.clip();
+		};
+        this._eventWrapper.onrenderend = function () {
+			self.belongTo.yccInstance.ctx.restore();
+		}
 	};
 	
 	/**
@@ -8462,8 +8483,8 @@ Ycc.prototype.createCacheCtx = function () {
 	 * @private
 	 */
 	Ycc.UI.ScrollerRect.prototype._initWrapperRect = function () {
-		this._wrapper = new Ycc.UI.Rect({name:'滚动区UI容器',rect:new Ycc.Math.Rect(0,0,this.rect.width,this.rect.height),ghost:true});
-		this._eventWrapper = new Ycc.UI.Rect({name:'滚动区事件容器',rect:new Ycc.Math.Rect(0,0,this.rect.width,this.rect.height),ghost:false,stopEventBubbleUp:false});
+		this._wrapper = new Ycc.UI.Rect({name:'滚动区UI容器',opacity:0,rect:new Ycc.Math.Rect(0,0,this.rect.width,this.rect.height),ghost:true});
+		this._eventWrapper = new Ycc.UI.Rect({name:'滚动区事件容器',opacity:0,rect:new Ycc.Math.Rect(0,0,this.rect.width,this.rect.height),ghost:false,stopEventBubbleUp:false});
 		this._wrapper.ontap = console.log;
 		this._eventWrapper.ontap = console.log;
 		this.addChild(this._wrapper);

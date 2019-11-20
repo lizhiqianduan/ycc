@@ -37,10 +37,10 @@
 	document.body.appendChild(stage);
 	var layer = ycc.layerManager.newLayer({enableEventManager:true});
 
-	var scroller = new Ycc.UI.ScrollerRect({rect:new Ycc.Math.Rect(20,20,100,100),selfRender:true,rectBgColor:'rgba(0,0,0,0.1)'});
+	var scroller = new Ycc.UI.ScrollerRect({rect:new Ycc.Math.Rect(20,20,100,100),selfRender:true,rectBgColor:'transparent'});
 	layer.addUI(scroller);
 
-	var text = new Ycc.UI.SingleLineText({content:"Hello,Ycc!",rect:new Ycc.Math.Rect(0,0,100,30),xAlign:'center',rectBgColor:'green'});
+	var text = new Ycc.UI.SingleLineText({content:"Hello,Ycc!",rect:new Ycc.Math.Rect(0,0,200,50),xAlign:'center',rectBgColor:'green'});
 	scroller.addChild(text);
 
 	text.ontap = console.log;
