@@ -162,11 +162,15 @@
 	
 	/**
 	 * 树的迭代器，返回集中常用的迭代方法
-	 * @param option 暂时不用
+	 * @param option 			遍历时的配置项
+	 * @param option.reverse	遍历子节点时，是否将子节点反向，默认false，目前仅支持depthDown遍历
 	 * @return {{each: each, leftChildFirst: leftChildFirst, rightChildFirst: rightChildFirst, depthDown: depthDown}}
 	 */
 	Ycc.Tree.prototype.itor = function (option) {
 		var self = this;
+		option = option || {
+			reverse:false
+		};
 
 		/**
 		 * 父代优先遍历
@@ -245,11 +249,14 @@
 				return true;
 			layer=layer||0;
 			layer++;
+			// 待遍历的节点判断反向
+			var itorNodes = option.reverse?reverse(nodes):nodes;
+			// 下一层需要遍历的所有节点
 			var nextNodes = [];
 			// 是否停止遍历下一层的标志位
 			var breakFlag = false;
-			for(var i=0;i<nodes.length;i++) {
-				var rvl = cb.call(self, nodes[i], layer);
+			for(var i=0;i<itorNodes.length;i++) {
+				var rvl = cb.call(self, itorNodes[i], layer);
 				// 如果返回为true，则表示停止遍历下一层
 				// 如果返回为-1，则表示当前节点的所有子孙节点不再遍历
 				if (rvl===true) {
@@ -257,12 +264,27 @@
 					break;
 				}else if(rvl===-1)
 					continue;
-				nextNodes = nextNodes.concat(nodes[i].children);
+				nextNodes = nextNodes.concat(option.reverse?reverse(itorNodes[i].children):itorNodes[i].children);
 			}
 			if(breakFlag){
 				nextNodes = [];
 			}
+			// 是否反向
+			if(option.reverse) nextNodes.reverse();
 			return depthDownByNodes(nextNodes,cb,layer);
+		}
+		
+		/**
+		 * 将list反向
+		 * @param list
+		 * @return {Array}
+		 */
+		function reverse(list){
+			var ls = [];
+			for(var i=list.length-1;i>=0;i--){
+				ls.push(list[i]);
+			}
+			return ls;
 		}
 		
 		return {
