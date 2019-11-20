@@ -346,6 +346,34 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 };
 
 /**
+ * 获取舞台中某个点所对应的最上层UI，不遍历不可见图层
+ * 默认取可见且不是幽灵的UI
+ * @param dot 					{Ycc.Math.Dot}	点坐标，为舞台的绝对坐标
+ * @param options 				{object}	点坐标，为舞台的绝对坐标
+ * @param options.uiIsShow 		{boolean}	UI是否可见
+ * @param options.uiIsGhost 	{boolean}	UI是否未幽灵
+ */
+Ycc.prototype.getUIListFromPointer = function (dot,options) {
+	var self = this;
+	options = options || {
+		uiIsShow:true,
+		uiIsGhost:false
+	};
+	var uiList = [];
+	// 从最末一个图层开始寻找
+	for(var j=self.layerList.length-1;j>=0;j--){
+		var layer = self.layerList[j];
+		//
+		if(!layer.show) continue;
+		var list = layer.getUIListFromPointer(dot);
+		uiList = uiList.concat(list);
+	}
+	uiList = uiList.filter(function(item){return (item.show===options.uiIsShow)&&(item.ghost===options.uiIsGhost);});
+	return uiList;
+
+};
+
+/**
  * 创建canvas，只针对H5端。微信小游戏的canvas为全局变量，直接使用即可
  * @example
  * var ycc = new Ycc();

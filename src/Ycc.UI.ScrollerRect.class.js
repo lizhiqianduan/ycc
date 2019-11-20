@@ -31,11 +31,18 @@
         this.extend(option);
 	
 		/**
-		 * 滚动区的容纳区UI，不可编辑修改属性
+		 * 滚动区的UI容纳区，此区域用于容纳区域内的UI，不可编辑修改属性
 		 * @type {Ycc.UI.Rect}
 		 * @private
 		 */
 		this._wrapper = null;
+	
+		/**
+		 * 滚动区的事件容纳区，此区域用于接收舞台的事件
+		 * @type {Ycc.UI.Rect}
+		 * @private
+		 */
+		this._eventWrapper = null;
 	
 		/**
 		 * 初始化完成的回调
@@ -93,7 +100,7 @@
 		if(this.belongTo) ui.init(this.belongTo);
 
 		// 将子UI加到容器中
-		if(ui===this._wrapper)
+		if(ui===this._wrapper||ui===this._eventWrapper)
 			this.addChildTree(ui);
 		else
 			this._wrapper.addChildTree(ui);
@@ -142,10 +149,12 @@
 	 * @private
 	 */
 	Ycc.UI.ScrollerRect.prototype._initWrapperRect = function () {
-		this._wrapper = new Ycc.UI.Rect({rect:new Ycc.Math.Rect(0,0,this.rect.width,this.rect.height),ghost:false,stopEventBubbleUp:false});
-		console.log('加入warpper',this._wrapper);
+		this._wrapper = new Ycc.UI.Rect({name:'滚动区UI容器',rect:new Ycc.Math.Rect(0,0,this.rect.width,this.rect.height),ghost:true});
+		this._eventWrapper = new Ycc.UI.Rect({name:'滚动区事件容器',rect:new Ycc.Math.Rect(0,0,this.rect.width,this.rect.height),ghost:false,stopEventBubbleUp:false});
 		this._wrapper.ontap = console.log;
+		this._eventWrapper.ontap = console.log;
 		this.addChild(this._wrapper);
+		this.addChild(this._eventWrapper);
 	};
 	
 })(Ycc);

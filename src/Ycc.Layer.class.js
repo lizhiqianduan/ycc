@@ -616,6 +616,23 @@
 		return temp;
 	};
 	
+	/**
+	 * 获取图层中某个点所对应的所有UI，无论显示不显示，无论是否是幽灵，都会获取。
+	 * @param dot {Ycc.Math.Dot}	点坐标，为舞台的绝对坐标
+	 * @return {Ycc.UI[]}
+	 */
+	Ycc.Layer.prototype.getUIListFromPointer = function (dot) {
+		var self = this;
+		var uiList = [];
+		for(var i=0;i<this.uiList.length;i++){
+			// 按树的层次向下遍历
+			this.uiList[i].itor().depthDown(function (child, level) {
+				// 如果位于rect内，并且层级更深，则暂存，此处根据绝对坐标比较
+				if(child.containDot(dot)) uiList.push(child);
+			});
+		}
+		return uiList;
+	};
 	
 	/**
 	 * 根据图层坐标，将图层内某个点的相对坐标（相对于图层），转换为舞台的绝对坐标
