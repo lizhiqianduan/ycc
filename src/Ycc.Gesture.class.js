@@ -156,13 +156,18 @@
 				
 				// 如果触摸点按下期间存在移动行为，且移动范围大于30px，触摸时间在200ms内，则认为该操作是swipe
 				if(!prevent.swipe && life.endTime-life.startTime<300 ){
-					console.log('swipe');
 					var firstMove = life.startTouchEvent;
 					var lastMove = Array.prototype.slice.call(life.moveTouchEventList,-1)[0];
 					if(Math.abs(lastMove.pageX-firstMove.pageX)>30 || Math.abs(lastMove.pageY-firstMove.pageY)>30){
-						var type = 'swipe'+self._getSwipeDirection(firstMove.pageX,firstMove.pageY,lastMove.pageX,lastMove.pageY);
+						var dir = self._getSwipeDirection(firstMove.pageX,firstMove.pageY,lastMove.pageX,lastMove.pageY);
+						var type = 'swipe'+dir;
 						self.triggerListener('log',type);
+						life.endTouchEvent.swipeDirection = dir;
+						// 触发swipeXXX
 						self.triggerListener(type,self._createEventData(life.endTouchEvent,type));
+						// 触发swipe
+						self.triggerListener('swipe',self._createEventData(life.endTouchEvent,'swipe'));
+						console.log('swipe',type);
 					}
 					return this;
 				}
@@ -268,10 +273,18 @@
 				// 如果鼠标按下期间存在移动行为，且移动范围大于30px，按下时间在300ms内，则认为该操作是swipe
 				if(dragStartFlag&&mouseUpEvent.createTime-mouseDownEvent.createTime<300 ){
 					if(Math.abs(mouseUpEvent.pageX-mouseDownEvent.pageX)>30 || Math.abs(mouseUpEvent.pageY-mouseDownEvent.pageY)>30){
-						var type = 'swipe'+self._getSwipeDirection(mouseDownEvent.pageX,mouseDownEvent.pageY,mouseUpEvent.pageX,mouseUpEvent.pageY);
-						console.log('swipe',type);
+						var dir = self._getSwipeDirection(mouseDownEvent.pageX,mouseDownEvent.pageY,mouseUpEvent.pageX,mouseUpEvent.pageY);
+						var type = 'swipe'+dir;
 						self.triggerListener('log',type);
+						mouseDownEvent.swipeDirection = dir;
+						// 触发swipeXXX
 						self.triggerListener(type,self._createEventData(mouseDownEvent,type));
+						// 触发swipe
+						self.triggerListener('swipe',self._createEventData(mouseDownEvent,'swipe'));
+
+						console.log('swipe',type);
+						// self.triggerListener('log',type);
+						// self.triggerListener(type,self._createEventData(mouseDownEvent,type));
 					}
 				}
 				
@@ -360,6 +373,11 @@
 			screenX:0,
 			screenY:0,
 			force:1,
+			
+			/**
+			 * 手势滑动方向，此属性当且仅当type为swipe时有值
+			 */
+			swipeDirection:'',
 
 			/**
 			 * 创建时间
