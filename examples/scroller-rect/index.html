@@ -42,16 +42,18 @@
 		rect:new Ycc.Math.Rect(30,30,240,300),
 		selfRender:true,
 		rectBgColor:'#ff0000',
-		contentW:900,
-		contentH:500
+		contentW:240,
+		contentH:800
 	});
 	layer.addUI(scroller);
 
-	var text = new Ycc.UI.SingleLineText({content:"Hello,Ycc!",rect:new Ycc.Math.Rect(0,0,900,500),xAlign:'center',rectBgColor:'green'});
-	scroller.addChild(text);
+	for(var i=0;i<8;i++){
+		var text = new Ycc.UI.SingleLineText({content:"Hello,Ycc!"+i,rect:new Ycc.Math.Rect(0,100*i,240,100),xAlign:'center',rectBorderColor:'#ccc',rectBorderWidth:1,rectBgColor:'green'});
+		scroller.addChild(text);
+	}
 
-	text.ontap = console.log;
-	scroller.ontap = console.log;
+//	text.ontap = console.log;
+//	scroller.ontap = console.log;
 
 	ycc.layerManager.reRenderAllLayerToStage();
 </script>
