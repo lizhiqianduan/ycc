@@ -167,7 +167,7 @@
 			var dir = e.originEvent.swipeDirection;
 			var dirMap = {left:-1,right:1,up:-1,down:1};
 			var s = 100;
-			var v0 = 20;
+			var v0 = 30;
 			var t = 10;
 			
 			var delta = 100;
