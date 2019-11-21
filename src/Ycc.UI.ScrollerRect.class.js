@@ -197,13 +197,13 @@
 				self.belongTo.yccInstance.layerManager.reRenderAllLayerToStage();
 		});
 
-        this._wrapper.onrenderstart = function () {
+        /*this._wrapper.onrenderstart = function () {
 			self.belongTo.yccInstance.ctx.save();
 			self.belongTo.yccInstance.ctx.clip();
 		};
         this._eventWrapper.onrenderend = function () {
 			self.belongTo.yccInstance.ctx.restore();
-		}
+		}*/
 	};
 	
 	/**
