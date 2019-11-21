@@ -8532,6 +8532,7 @@ Ycc.prototype.createCacheCtx = function () {
 		this._eventWrapper.addListener('swipe',function (e) {
 			console.log('swipe',e);
 			var dir = e.originEvent.swipeDirection;
+			var dirMap = {left:-1,right:1,up:-1,down:1};
 			var s = 100;
 			var v0 = 20;
 			var t = 10;
@@ -8546,7 +8547,8 @@ Ycc.prototype.createCacheCtx = function () {
 					clearInterval(timerid);
 				}
 				
-				self._wrapper.rect.x = endStatus.rect.x+(dir==='left'?-1:1)*delta;
+				if(dir==='left'||dir==='right') self._wrapper.rect.x = endStatus.rect.x+(dirMap[dir])*delta;
+				if(dir==='up'||dir==='down') self._wrapper.rect.y = endStatus.rect.y+(dirMap[dir])*delta;
 				self._checkRangeLimit();
 				self.belongTo.yccInstance.layerManager.reRenderAllLayerToStage();
 			},20);
@@ -8554,12 +8556,12 @@ Ycc.prototype.createCacheCtx = function () {
 		
 		
 		
-	    //拖动开始时的状态
+	    //拖动开始时UI容纳区的状态
 	    var startStatus = {
 	        rect:null,
             startEvent:null
         };
-	    // 拖拽结束时的状态
+	    // 拖拽结束时UI容纳区的状态
 		var endStatus = {
 			rect:null,
 			endEvent:null

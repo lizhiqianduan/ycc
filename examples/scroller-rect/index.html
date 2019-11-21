@@ -42,12 +42,12 @@
 		rect:new Ycc.Math.Rect(30,30,240,300),
 		selfRender:true,
 		rectBgColor:'#ff0000',
-		contentW:400,
+		contentW:900,
 		contentH:500
 	});
 	layer.addUI(scroller);
 
-	var text = new Ycc.UI.SingleLineText({content:"Hello,Ycc!",rect:new Ycc.Math.Rect(0,0,400,500),xAlign:'center',rectBgColor:'green'});
+	var text = new Ycc.UI.SingleLineText({content:"Hello,Ycc!",rect:new Ycc.Math.Rect(0,0,900,500),xAlign:'center',rectBgColor:'green'});
 	scroller.addChild(text);
 
 	text.ontap = console.log;
