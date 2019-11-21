@@ -175,6 +175,7 @@ Ycc.prototype._initStageGestureEvent = function () {
 	gesture.addListener('tap',gestureListener);
 	gesture.addListener('longtap',gestureListener);
 	gesture.addListener('doubletap',gestureListener);
+	gesture.addListener('swipe',gestureListener);
 	gesture.addListener('swipeleft',gestureListener);
 	gesture.addListener('swiperight',gestureListener);
 	gesture.addListener('swipeup',gestureListener);
@@ -8522,6 +8523,15 @@ Ycc.prototype.createCacheCtx = function () {
 			if(list.length===0) return;
 			// 取最后一个触发事件，因为其层级深
 			list.reverse()[0].triggerUIEventBubbleUp('tap',e.x,e.y);
+		});
+		
+		// 监听swipe
+		this._eventWrapper.addListener('swipe',function (e) {
+			console.log('swipe',e);
+			var list = self.belongTo.yccInstance.getUIListFromPointer(e,{uiIsShow:true,uiIsGhost:false});
+			if(list.length===0) return;
+			// 取最后一个触发事件，因为其层级深
+			list.reverse()[0].triggerUIEventBubbleUp('swipe',e.x,e.y);
 		});
 		
 		

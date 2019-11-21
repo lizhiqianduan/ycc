@@ -175,6 +175,7 @@ Ycc.prototype._initStageGestureEvent = function () {
 	gesture.addListener('tap',gestureListener);
 	gesture.addListener('longtap',gestureListener);
 	gesture.addListener('doubletap',gestureListener);
+	gesture.addListener('swipe',gestureListener);
 	gesture.addListener('swipeleft',gestureListener);
 	gesture.addListener('swiperight',gestureListener);
 	gesture.addListener('swipeup',gestureListener);
