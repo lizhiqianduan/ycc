@@ -796,14 +796,15 @@
 	 * @param type
 	 * @param x
 	 * @param y
+	 * @param originEvent ycc事件所对应的原始事件
 	 * @return {Ycc.UI[]}  返回已触发事件的UI列表
 	 */
-	Ycc.UI.Base.prototype.triggerUIEventBubbleUp = function(type,x,y) {
+	Ycc.UI.Base.prototype.triggerUIEventBubbleUp = function(type,x,y,originEvent) {
 		var ui = this;
 		var list = [];
 		if(ui && ui.belongTo && ui.belongTo.enableEventManager){
 			// 触发ui的事件
-			ui.triggerListener(type,new Ycc.Event({x:x,y:y,type:type,target:ui}));
+			ui.triggerListener(type,new Ycc.Event({x:x,y:y,type:type,target:ui,originEvent:originEvent}));
 			// 如果ui阻止了事件冒泡，则不触发其父级的事件
 			if(ui.stopEventBubbleUp) return;
 			
@@ -811,7 +812,7 @@
 			var faList = ui.getParentList().reverse();
 			for(var i=0;i<faList.length;i++){
 				var fa = faList[i];
-				fa.triggerListener(type,new Ycc.Event({x:x,y:y,type:type,target:fa}));
+				fa.triggerListener(type,new Ycc.Event({x:x,y:y,type:type,target:fa,originEvent:originEvent}));
 				list.push(fa);
 				// 如果fa阻止了事件冒泡，则不触发其父级的事件
 				if(fa.stopEventBubbleUp) break;

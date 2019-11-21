@@ -230,7 +230,7 @@ Ycc.prototype._initStageGestureEvent = function () {
 	
 	// 通用监听
 	function gestureListener(e) {
-		// console.log(e);
+		console.log('通用监听',e);
 		// 在canvas中的绝对位置
 		var x = parseInt(e.clientX - self.ctx.canvas.getBoundingClientRect().left),
 			y = parseInt(e.clientY - self.ctx.canvas.getBoundingClientRect().top);
@@ -239,7 +239,7 @@ Ycc.prototype._initStageGestureEvent = function () {
 		// triggerLayerEvent(e.type,x,y);
 		// ui&&ui.belongTo.enableEventManager&&triggerUIEvent(e.type,x,y,ui);
 		if(ui){
-			ui.triggerUIEventBubbleUp(e.type,x,y);
+			ui.triggerUIEventBubbleUp(e.type,x,y,e);
 		}
 		triggerLayerEvent(e.type,x,y);
 	}

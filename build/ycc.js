@@ -230,7 +230,7 @@ Ycc.prototype._initStageGestureEvent = function () {
 	
 	// 通用监听
 	function gestureListener(e) {
-		// console.log(e);
+		console.log('通用监听',e);
 		// 在canvas中的绝对位置
 		var x = parseInt(e.clientX - self.ctx.canvas.getBoundingClientRect().left),
 			y = parseInt(e.clientY - self.ctx.canvas.getBoundingClientRect().top);
@@ -239,7 +239,7 @@ Ycc.prototype._initStageGestureEvent = function () {
 		// triggerLayerEvent(e.type,x,y);
 		// ui&&ui.belongTo.enableEventManager&&triggerUIEvent(e.type,x,y,ui);
 		if(ui){
-			ui.triggerUIEventBubbleUp(e.type,x,y);
+			ui.triggerUIEventBubbleUp(e.type,x,y,e);
 		}
 		triggerLayerEvent(e.type,x,y);
 	}
@@ -6008,14 +6008,15 @@ Ycc.prototype.createCacheCtx = function () {
 	 * @param type
 	 * @param x
 	 * @param y
+	 * @param originEvent ycc事件所对应的原始事件
 	 * @return {Ycc.UI[]}  返回已触发事件的UI列表
 	 */
-	Ycc.UI.Base.prototype.triggerUIEventBubbleUp = function(type,x,y) {
+	Ycc.UI.Base.prototype.triggerUIEventBubbleUp = function(type,x,y,originEvent) {
 		var ui = this;
 		var list = [];
 		if(ui && ui.belongTo && ui.belongTo.enableEventManager){
 			// 触发ui的事件
-			ui.triggerListener(type,new Ycc.Event({x:x,y:y,type:type,target:ui}));
+			ui.triggerListener(type,new Ycc.Event({x:x,y:y,type:type,target:ui,originEvent:originEvent}));
 			// 如果ui阻止了事件冒泡，则不触发其父级的事件
 			if(ui.stopEventBubbleUp) return;
 			
@@ -6023,7 +6024,7 @@ Ycc.prototype.createCacheCtx = function () {
 			var faList = ui.getParentList().reverse();
 			for(var i=0;i<faList.length;i++){
 				var fa = faList[i];
-				fa.triggerListener(type,new Ycc.Event({x:x,y:y,type:type,target:fa}));
+				fa.triggerListener(type,new Ycc.Event({x:x,y:y,type:type,target:fa,originEvent:originEvent}));
 				list.push(fa);
 				// 如果fa阻止了事件冒泡，则不触发其父级的事件
 				if(fa.stopEventBubbleUp) break;
@@ -8525,13 +8526,30 @@ Ycc.prototype.createCacheCtx = function () {
 			list.reverse()[0].triggerUIEventBubbleUp('tap',e.x,e.y);
 		});
 		
+		
 		// 监听swipe
+		var timerid = 0;
 		this._eventWrapper.addListener('swipe',function (e) {
 			console.log('swipe',e);
-			var list = self.belongTo.yccInstance.getUIListFromPointer(e,{uiIsShow:true,uiIsGhost:false});
-			if(list.length===0) return;
-			// 取最后一个触发事件，因为其层级深
-			list.reverse()[0].triggerUIEventBubbleUp('swipe',e.x,e.y);
+			var dir = e.originEvent.swipeDirection;
+			var s = 100;
+			var v0 = 20;
+			var t = 10;
+			
+			var delta = 100;
+			var t0 = 0;
+			timerid = setInterval(function () {
+				t0++;
+				delta = v0*t0-t0*t0;
+				
+				if(t0 === t){
+					clearInterval(timerid);
+				}
+				
+				self._wrapper.rect.x = endStatus.rect.x+(dir==='left'?-1:1)*delta;
+				self._checkRangeLimit();
+				self.belongTo.yccInstance.layerManager.reRenderAllLayerToStage();
+			},20);
 		});
 		
 		
@@ -8539,13 +8557,17 @@ Ycc.prototype.createCacheCtx = function () {
 	    //拖动开始时的状态
 	    var startStatus = {
 	        rect:null,
-            startEvent:null,
-			// 子元素顶点
-			childrenPoints:[]
+            startEvent:null
         };
-        this._eventWrapper.addListener('dragstart',function (e) {
-           startStatus.startEvent = e;
-           startStatus.rect = new Ycc.Math.Rect(self._wrapper.rect);
+	    // 拖拽结束时的状态
+		var endStatus = {
+			rect:null,
+			endEvent:null
+		};
+		this._eventWrapper.addListener('dragstart',function (e) {
+			clearInterval(timerid);
+			startStatus.startEvent = e;
+			startStatus.rect = new Ycc.Math.Rect(self._wrapper.rect);
 		});
         
         this._eventWrapper.addListener('dragging',function (e) {
@@ -8554,23 +8576,18 @@ Ycc.prototype.createCacheCtx = function () {
 			
 			self._wrapper.rect.x = startStatus.rect.x+deltaX;
 			self._wrapper.rect.y = startStatus.rect.y+deltaY;
-	
-			// x、y坐标的极限值
-			var maxX = self.contentW-self.rect.width;
-			var maxY = self.contentH-self.rect.height;
-	
-			// x、y坐标不能大于0
-			self._wrapper.rect.x = self._wrapper.rect.x>=0?0:self._wrapper.rect.x;
-			self._wrapper.rect.y = self._wrapper.rect.y>=0?0:self._wrapper.rect.y;
-	
-			// x、y坐标不能小于极限值
-			self._wrapper.rect.x = self._wrapper.rect.x<-maxX?-maxX:self._wrapper.rect.x;
-			self._wrapper.rect.y = self._wrapper.rect.y<-maxY?-maxY:self._wrapper.rect.y;
+			self._checkRangeLimit();
 			
 			
             if(self.selfRender)
 				self.belongTo.yccInstance.layerManager.reRenderAllLayerToStage();
 		});
+  
+		this._eventWrapper.addListener('dragend',function (e) {
+			endStatus.endEvent = e;
+			endStatus.rect = new Ycc.Math.Rect(self._wrapper.rect);
+		});
+		      
 
         /*this._wrapper.onrenderstart = function () {
 			self.belongTo.yccInstance.ctx.save();
@@ -8593,6 +8610,25 @@ Ycc.prototype.createCacheCtx = function () {
 		this.addChild(this._wrapper);
 		this.addChild(this._eventWrapper);
 	};
+	
+	/**
+	 * 容纳区极限值校正
+	 * @private
+	 */
+	Ycc.UI.ScrollerRect.prototype._checkRangeLimit = function(){
+		var self = this;
+		// x、y坐标的极限值
+		var maxX = self.contentW-self.rect.width;
+		var maxY = self.contentH-self.rect.height;
+		
+		// x、y坐标不能大于0
+		self._wrapper.rect.x = self._wrapper.rect.x>=0?0:self._wrapper.rect.x;
+		self._wrapper.rect.y = self._wrapper.rect.y>=0?0:self._wrapper.rect.y;
+		
+		// x、y坐标不能小于极限值
+		self._wrapper.rect.x = self._wrapper.rect.x<-maxX?-maxX:self._wrapper.rect.x;
+		self._wrapper.rect.y = self._wrapper.rect.y<-maxY?-maxY:self._wrapper.rect.y;
+	}
 	
 })(Ycc);;/**
  * @file    Ycc.UI.ComponentButton.class.js
