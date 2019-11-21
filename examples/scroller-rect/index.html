@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 	<meta charset="UTF-8">
-	<title>Hello,Ycc!</title>
+	<title>滚动区域</title>
 	<link rel="stylesheet" href="../style.css">
 </head>
 <body>
@@ -37,10 +37,16 @@
 	document.body.appendChild(stage);
 	var layer = ycc.layerManager.newLayer({enableEventManager:true});
 
-	var scroller = new Ycc.UI.ScrollerRect({rect:new Ycc.Math.Rect(20,20,100,100),selfRender:true,rectBgColor:'transparent'});
+	var scroller = new Ycc.UI.ScrollerRect({
+		rect:new Ycc.Math.Rect(30,30,240,300),
+		selfRender:true,
+		rectBgColor:'#ff0000',
+		contentW:400,
+		contentH:500
+	});
 	layer.addUI(scroller);
 
-	var text = new Ycc.UI.SingleLineText({content:"Hello,Ycc!",rect:new Ycc.Math.Rect(0,0,200,50),xAlign:'center',rectBgColor:'green'});
+	var text = new Ycc.UI.SingleLineText({content:"Hello,Ycc!",rect:new Ycc.Math.Rect(0,0,400,500),xAlign:'center',rectBgColor:'green'});
 	scroller.addChild(text);
 
 	text.ontap = console.log;

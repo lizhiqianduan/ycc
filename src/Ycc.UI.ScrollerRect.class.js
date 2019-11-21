@@ -15,6 +15,8 @@
      * @param option	            {object}		所有可配置的配置项
 	 * @param option.rect	        {Ycc.Math.Rect}	容纳区。
 	 * @param option.selfRender	    {Boolean}	    是否自身实时渲染
+	 * @param option.contentW	    {number}	    滚动内容的宽
+	 * @param option.contentH	    {number}	    滚动内容的高
      * @constructor
      * @extends Ycc.UI.Polygon
      */
@@ -27,6 +29,18 @@
 		 * @type {boolean}
 		 */
 		this.selfRender = false;
+	
+		/**
+		 * 滚动内容的宽
+		 * @type {number}
+		 */
+		this.contentW = 0;
+		
+		/**
+		 * 滚动内容的高
+		 * @type {number}
+		 */
+		this.contentH = 0;
         
         this.extend(option);
 	
@@ -151,7 +165,23 @@
 			
 			
             // this.rect.y = startStatus.rect.y+deltaY;
+			self._wrapper.rect.x = startStatus.rect.x+deltaX;
 			self._wrapper.rect.y = startStatus.rect.y+deltaY;
+	
+			// x、y坐标的极限值
+			var maxX = self.contentW-self.rect.width;
+			var maxY = self.contentH-self.rect.height;
+	
+			console.log('test',self._wrapper.rect.x,maxX);
+			// x、y坐标不能大于0
+			self._wrapper.rect.x = self._wrapper.rect.x>=0?0:self._wrapper.rect.x;
+			self._wrapper.rect.y = self._wrapper.rect.y>=0?0:self._wrapper.rect.y;
+	
+			// x、y坐标不能小于极限值
+			self._wrapper.rect.x = self._wrapper.rect.x<-maxX?-maxX:self._wrapper.rect.x;
+			self._wrapper.rect.y = self._wrapper.rect.y<-maxY?-maxY:self._wrapper.rect.y;
+			
+			
             if(self.selfRender)
 				self.belongTo.yccInstance.layerManager.reRenderAllLayerToStage();
 		});
