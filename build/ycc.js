@@ -8498,7 +8498,7 @@ Ycc.prototype.createCacheCtx = function () {
 		var self = this;
 		
 		
-		
+		// 监听tap事件，向wrapper内部UI传递
 		this._eventWrapper.addListener('tap',function (e) {
 			var list = self.belongTo.yccInstance.getUIListFromPointer(e,{uiIsShow:true,uiIsGhost:false});
 			if(list.length===0) return;
@@ -8515,9 +8515,7 @@ Ycc.prototype.createCacheCtx = function () {
 			// 子元素顶点
 			childrenPoints:[]
         };
-	    console.log('init event',this);
         this._eventWrapper.addListener('dragstart',function (e) {
-           console.log(e);
            startStatus.startEvent = e;
            startStatus.rect = new Ycc.Math.Rect(self._wrapper.rect);
 		});
@@ -8526,10 +8524,6 @@ Ycc.prototype.createCacheCtx = function () {
 			var deltaX = e.x-startStatus.startEvent.x;
 			var deltaY = e.y-startStatus.startEvent.y;
 			
-			// this.children.
-			
-			
-            // this.rect.y = startStatus.rect.y+deltaY;
 			self._wrapper.rect.x = startStatus.rect.x+deltaX;
 			self._wrapper.rect.y = startStatus.rect.y+deltaY;
 	
@@ -8537,7 +8531,6 @@ Ycc.prototype.createCacheCtx = function () {
 			var maxX = self.contentW-self.rect.width;
 			var maxY = self.contentH-self.rect.height;
 	
-			console.log('test',self._wrapper.rect.x,maxX);
 			// x、y坐标不能大于0
 			self._wrapper.rect.x = self._wrapper.rect.x>=0?0:self._wrapper.rect.x;
 			self._wrapper.rect.y = self._wrapper.rect.y>=0?0:self._wrapper.rect.y;
