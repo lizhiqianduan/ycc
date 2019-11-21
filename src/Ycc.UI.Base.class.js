@@ -790,4 +790,34 @@
 		}
 	};
 	
+	
+	/**
+	 * 冒泡触发UI的事件
+	 * @param type
+	 * @param x
+	 * @param y
+	 * @return {Ycc.UI[]}  返回已触发事件的UI列表
+	 */
+	Ycc.UI.Base.prototype.triggerUIEventBubbleUp = function(type,x,y) {
+		var ui = this;
+		var list = [];
+		if(ui && ui.belongTo && ui.belongTo.enableEventManager){
+			// 触发ui的事件
+			ui.triggerListener(type,new Ycc.Event({x:x,y:y,type:type,target:ui}));
+			// 如果ui阻止了事件冒泡，则不触发其父级的事件
+			if(ui.stopEventBubbleUp) return;
+			
+			// 触发父级ui的事件
+			var faList = ui.getParentList().reverse();
+			for(var i=0;i<faList.length;i++){
+				var fa = faList[i];
+				fa.triggerListener(type,new Ycc.Event({x:x,y:y,type:type,target:fa}));
+				list.push(fa);
+				// 如果fa阻止了事件冒泡，则不触发其父级的事件
+				if(fa.stopEventBubbleUp) break;
+			}
+		}
+		return list;
+	}
+	
 })(Ycc);

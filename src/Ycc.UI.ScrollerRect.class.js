@@ -59,6 +59,12 @@
 		this._eventWrapper = null;
 	
 		/**
+		 * 不阻止事件传递
+		 * @type {boolean}
+		 */
+		this.stopEventBubbleUp = false;
+	
+		/**
 		 * 初始化完成的回调
 		 * @override
 		 * @private
@@ -143,6 +149,18 @@
 	 */
 	Ycc.UI.ScrollerRect.prototype._initEvent = function () {
 		var self = this;
+		
+		
+		
+		this._eventWrapper.addListener('tap',function (e) {
+			var list = self.belongTo.yccInstance.getUIListFromPointer(e,{uiIsShow:true,uiIsGhost:false});
+			if(list.length===0) return;
+			// 取最后一个触发事件，因为其层级深
+			list.reverse()[0].triggerUIEventBubbleUp('tap',e.x,e.y);
+		});
+		
+		
+		
 	    //拖动开始时的状态
 	    var startStatus = {
 	        rect:null,
@@ -201,7 +219,7 @@
 	 */
 	Ycc.UI.ScrollerRect.prototype._initWrapperRect = function () {
 		this._wrapper = new Ycc.UI.Rect({name:'滚动区UI容器',opacity:0,rect:new Ycc.Math.Rect(0,0,this.rect.width,this.rect.height),ghost:true});
-		this._eventWrapper = new Ycc.UI.Rect({name:'滚动区事件容器',opacity:0,rect:new Ycc.Math.Rect(0,0,this.rect.width,this.rect.height),ghost:false,stopEventBubbleUp:false});
+		this._eventWrapper = new Ycc.UI.Rect({name:'滚动区事件容器',opacity:0,rect:new Ycc.Math.Rect(0,0,this.rect.width,this.rect.height),ghost:false});
 		this._wrapper.ontap = console.log;
 		this._eventWrapper.ontap = console.log;
 		this.addChild(this._wrapper);
