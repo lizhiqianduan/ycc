@@ -8529,9 +8529,11 @@ Ycc.prototype.createCacheCtx = function () {
 		// 监听tap事件，向wrapper内部UI传递
 		this._eventWrapper.addListener('tap',function (e) {
 			var list = self.belongTo.yccInstance.getUIListFromPointer(e,{uiIsShow:true,uiIsGhost:false});
-			if(list.length===0) return;
-			// 取最后一个触发事件，因为其层级深
-			list.reverse()[0].triggerUIEventBubbleUp('tap',e.x,e.y);
+			// console.log('点击的列表',list);
+			if(list.length<=1) return;
+			// console.log('倒数第二个',list[list.length-2]);
+			// 最后一个UI为_eventWrapper自身，这里取倒数第二个触发事件，因为其层级深
+			list[list.length-2].triggerUIEventBubbleUp('tap',e.x,e.y);
 		});
 		
 		
