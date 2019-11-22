@@ -17,7 +17,10 @@
 
 	<h3>示例说明：</h3>
 	<div>
-		这个示例是教程里最简单的一个，仅仅显示了一个居中文本"Hello,Ycc!"。
+		1、这个示例展示系统的滚动区UI。 <br>
+		2、绿色区域为滚动区，可以上下拖动。 <br>
+		3、滚动区内有50条数据，点击他们可以改变色值。 <br>
+		4、需要注意：滚动区内的点击事件和滚动区的滑动事件是有重叠的，故滚动区内应该尽量避免存在大范围的可点击区域。
 	</div>
 	<br><br>
 </div>
@@ -51,15 +54,14 @@
 		var text = new Ycc.UI.SingleLineText({content:"Hello,Ycc!"+i,rect:new Ycc.Math.Rect(0,100*i,240,100),xAlign:'center',rectBorderColor:'#ccc',rectBorderWidth:1,rectBgColor:'green'});
 		text.ontap = function (){
 			console.log(this.content);
-		}
+			this.rectBgColor = this.rectBgColor==='green'?'blue':'green';
+			ycc.layerManager.reRenderAllLayerToStage();
+		};
 		scroller.addChild(text);
 	}
 
 
-	layer.addUI(new Ycc.UI.Rect({rect:new Ycc.Math.Rect(0,0,200,200),fill:true,color:'red'}));
-
-//	text.ontap = console.log;
-//	scroller.ontap = console.log;
+	layer.addUI(new Ycc.UI.SingleLineText({content:'测试：覆盖的UI',xAlign:'center',yAlign:'center',rect:new Ycc.Math.Rect(0,0,120,100),rectBgColor:'red'}));
 
 	ycc.layerManager.reRenderAllLayerToStage();
 </script>
