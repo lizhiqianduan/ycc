@@ -483,12 +483,15 @@
 		ui.itor().each(function (child) {
 			child.init(self);
 		});
-		if(!beforeUI)
-			return this.uiList.push(ui);
 		var index = this.uiList.indexOf(beforeUI);
-		if(index===-1)
-			return this.uiList.push(ui);
+		if(!beforeUI||index===-1){
+			this.uiList.push(ui);
+			ui._onAdded&&ui._onAdded();
+			return;
+		}
 		this.uiList.splice(index,0,ui);
+		ui._onAdded&&ui._onAdded();
+
 		// 更新缓存
 		this.updateCache();
 	};
@@ -707,6 +710,8 @@
 				}else
 					return -1;
 			});
+			// 触发此UI所有子UI渲染完成后的回调
+			this.uiList[i]._onChildrenRendered&&this.uiList[i]._onChildrenRendered();
 		}
 		var rect = this.ctxCacheRect;
 		if(this.useCache&&rect&&this.renderCacheRect){

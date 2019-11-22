@@ -230,7 +230,7 @@ Ycc.prototype._initStageGestureEvent = function () {
 	
 	// 通用监听
 	function gestureListener(e) {
-		console.log('通用监听',e);
+		// console.log('通用监听',e);
 		// 在canvas中的绝对位置
 		var x = parseInt(e.clientX - self.ctx.canvas.getBoundingClientRect().left),
 			y = parseInt(e.clientY - self.ctx.canvas.getBoundingClientRect().top);
@@ -4296,12 +4296,15 @@ Ycc.prototype.createCacheCtx = function () {
 		ui.itor().each(function (child) {
 			child.init(self);
 		});
-		if(!beforeUI)
-			return this.uiList.push(ui);
 		var index = this.uiList.indexOf(beforeUI);
-		if(index===-1)
-			return this.uiList.push(ui);
+		if(!beforeUI||index===-1){
+			this.uiList.push(ui);
+			ui._onAdded&&ui._onAdded();
+			return;
+		}
 		this.uiList.splice(index,0,ui);
+		ui._onAdded&&ui._onAdded();
+
 		// 更新缓存
 		this.updateCache();
 	};
@@ -4520,6 +4523,8 @@ Ycc.prototype.createCacheCtx = function () {
 				}else
 					return -1;
 			});
+			// 触发此UI所有子UI渲染完成后的回调
+			this.uiList[i]._onChildrenRendered&&this.uiList[i]._onChildrenRendered();
 		}
 		var rect = this.ctxCacheRect;
 		if(this.useCache&&rect&&this.renderCacheRect){
@@ -5411,6 +5416,18 @@ Ycc.prototype.createCacheCtx = function () {
 		 * @private
 		 */
 		this._afterInit = null;
+		/**
+		 * UI被加入舞台的回调，只会在addUI的时候触发
+		 * @type {null}
+		 * @private
+		 */
+		this._onAdded = null;
+		/**
+		 * UI的所有子UI渲染完成后的回调，只会在UI为顶级UI时才会触发
+		 * @type {null}
+		 * @private
+		 */
+		this._onChildrenRendered = null;
 
 		/**
 		 * 计算属性前的hook
@@ -8379,6 +8396,7 @@ Ycc.prototype.createCacheCtx = function () {
 
     /**
      * 滚动区域UI
+	 * 此UI只能为顶级UI
      * @param option	            {object}		所有可配置的配置项
 	 * @param option.rect	        {Ycc.Math.Rect}	容纳区。
 	 * @param option.selfRender	    {Boolean}	    是否自身实时渲染
@@ -8432,14 +8450,22 @@ Ycc.prototype.createCacheCtx = function () {
 		this.stopEventBubbleUp = false;
 	
 		/**
-		 * 初始化完成的回调
+		 * 加入舞台后的回调
 		 * @override
 		 * @private
 		 */
-		this._afterInit = function () {
+		this._onAdded = function () {
 			this._initWrapperRect();
 			this._initEvent();
-		}
+		};
+
+		/**
+		 * 所有子UI渲染完毕后，需要恢复裁剪区
+		 * @private
+		 */
+		this._onChildrenRendered = function () {
+			this.ctx.restore();
+		};
 		
     };
     // 继承prototype
@@ -8467,28 +8493,10 @@ Ycc.prototype.createCacheCtx = function () {
     Ycc.UI.ScrollerRect.prototype.render = function (ctx) {
         var self = this;
         ctx = ctx || self.ctxCache;
-        // if(!ctx){
-        //     console.error("[Ycc error]:","ctx is null !");
-        //     return;
-        // }
 
-        console.log('不需要更新渲染');
         ctx.save();
-        // ctx.beginPath();
-		// ctx.rect(10,10,50,50);
-		// // ctx.stroke();
-
         this.renderPath(ctx);
 		ctx.clip();
-		// ctx.closePath();
-
-		ctx.beginPath();
-
-		ctx.rect(10,10,300,50);
-		ctx.stroke();
-		// ctx.closePath();
-
-        // ctx.restore();
     };
 	
 	
@@ -8530,7 +8538,7 @@ Ycc.prototype.createCacheCtx = function () {
 		// 监听swipe
 		var timerid = 0;
 		this._eventWrapper.addListener('swipe',function (e) {
-			console.log('swipe',e);
+			// console.log('swipe',e);
 			var dir = e.originEvent.swipeDirection;
 			var dirMap = {left:-1,right:1,up:-1,down:1};
 			var s = 100;
@@ -8606,11 +8614,11 @@ Ycc.prototype.createCacheCtx = function () {
 	 */
 	Ycc.UI.ScrollerRect.prototype._initWrapperRect = function () {
 		this._wrapper = new Ycc.UI.Rect({name:'滚动区UI容器',opacity:0,rect:new Ycc.Math.Rect(0,0,this.rect.width,this.rect.height),ghost:true});
-		this._eventWrapper = new Ycc.UI.Rect({name:'滚动区事件容器',opacity:0,rect:new Ycc.Math.Rect(0,0,this.rect.width,this.rect.height),ghost:false});
-		this._wrapper.ontap = console.log;
-		this._eventWrapper.ontap = console.log;
+		this._eventWrapper = new Ycc.UI.Rect({name:'滚动区事件容器',opacity:0,rect:new Ycc.Math.Rect(this.rect.x,this.rect.y,this.rect.width,this.rect.height),ghost:false});
+		// this._wrapper.ontap = console.log;
+		// this._eventWrapper.ontap = console.log;
 		this.addChild(this._wrapper);
-		this.addChild(this._eventWrapper);
+		this.belongTo.addUI(this._eventWrapper);
 	};
 	
 	/**

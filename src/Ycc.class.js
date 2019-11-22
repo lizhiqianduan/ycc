@@ -230,7 +230,7 @@ Ycc.prototype._initStageGestureEvent = function () {
 	
 	// 通用监听
 	function gestureListener(e) {
-		console.log('通用监听',e);
+		// console.log('通用监听',e);
 		// 在canvas中的绝对位置
 		var x = parseInt(e.clientX - self.ctx.canvas.getBoundingClientRect().left),
 			y = parseInt(e.clientY - self.ctx.canvas.getBoundingClientRect().top);

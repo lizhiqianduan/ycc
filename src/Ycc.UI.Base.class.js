@@ -199,6 +199,18 @@
 		 * @private
 		 */
 		this._afterInit = null;
+		/**
+		 * UI被加入舞台的回调，只会在addUI的时候触发
+		 * @type {null}
+		 * @private
+		 */
+		this._onAdded = null;
+		/**
+		 * UI的所有子UI渲染完成后的回调，只会在UI为顶级UI时才会触发
+		 * @type {null}
+		 * @private
+		 */
+		this._onChildrenRendered = null;
 
 		/**
 		 * 计算属性前的hook
