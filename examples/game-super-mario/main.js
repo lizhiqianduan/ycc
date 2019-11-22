@@ -74,15 +74,15 @@ function createYcc() {
 	stageH = ycc.getStageHeight()/ycc.dpi;
 	
 	
-	ycc.debugger.addField('帧间隔',function () {return ycc.ticker.deltaTime;});
-	ycc.debugger.addField('总帧数',function () {return ycc.ticker.frameAllCount;});
-	ycc.debugger.addField('总UI数',function () {return currentScene&&currentScene.layer.uiCountRecursion;});
-	ycc.debugger.addField('画面位置',function () {return currentScene&&currentScene.layer.x;});
-	ycc.debugger.addField('渲染时间',function () {return t2-t1;});
-	ycc.debugger.addField('update时间',function () {return t3-t2;});
-	ycc.debugger.addField('debug时间',function () {return t4-t3;});
-	ycc.debugger.addField('自定义',function () {return __log;});
-	ycc.debugger.showDebugPanel();
+	// ycc.debugger.addField('帧间隔',function () {return ycc.ticker.deltaTime;});
+	// ycc.debugger.addField('总帧数',function () {return ycc.ticker.frameAllCount;});
+	// ycc.debugger.addField('总UI数',function () {return currentScene&&currentScene.layer.uiCountRecursion;});
+	// ycc.debugger.addField('画面位置',function () {return currentScene&&currentScene.layer.x;});
+	// ycc.debugger.addField('渲染时间',function () {return t2-t1;});
+	// ycc.debugger.addField('update时间',function () {return t3-t2;});
+	// ycc.debugger.addField('debug时间',function () {return t4-t3;});
+	// ycc.debugger.addField('自定义',function () {return __log;});
+	// ycc.debugger.showDebugPanel();
 
 
 
@@ -97,7 +97,7 @@ function createYcc() {
 		t2 = Date.now();
 
 		currentScene && currentScene.update && currentScene.update();
-		ycc.debugger.layer.reRender();
+		// ycc.debugger.layer.reRender();
 		t3 = Date.now();
 
 		// 绘制刚体的方框
