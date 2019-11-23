@@ -8428,6 +8428,12 @@ Ycc.prototype.createCacheCtx = function () {
 		this.contentH = 0;
         
         this.extend(option);
+
+		/**
+		 * 此区域默认为幽灵
+		 * @type {boolean}
+		 */
+		this.ghost = true;
 	
 		/**
 		 * 滚动区的UI容纳区，此区域用于容纳区域内的UI，不可编辑修改属性
@@ -8528,7 +8534,8 @@ Ycc.prototype.createCacheCtx = function () {
 		
 		// 监听tap事件，向wrapper内部UI传递
 		this._eventWrapper.addListener('tap',function (e) {
-			var list = self.belongTo.yccInstance.getUIListFromPointer(e,{uiIsShow:true,uiIsGhost:false});
+			var list = self.belongTo.getUIListFromPointer(e,{uiIsShow:true,uiIsGhost:false});
+			list = list.filter(function(item){return item.show&&!item.ghost;})
 			// console.log('点击的列表',list);
 			if(list.length<=1) return;
 			// console.log('倒数第二个',list[list.length-2]);
@@ -8560,7 +8567,7 @@ Ycc.prototype.createCacheCtx = function () {
 				if(dir==='left'||dir==='right') self._wrapper.rect.x = endStatus.rect.x+(dirMap[dir])*delta;
 				if(dir==='up'||dir==='down') self._wrapper.rect.y = endStatus.rect.y+(dirMap[dir])*delta;
 				self._checkRangeLimit();
-				self.belongTo.yccInstance.layerManager.reRenderAllLayerToStage();
+				if(self.selfRender) self.belongTo.yccInstance.layerManager.reRenderAllLayerToStage();
 			},20);
 		});
 		
@@ -8591,8 +8598,7 @@ Ycc.prototype.createCacheCtx = function () {
 			self._checkRangeLimit();
 			
 			
-            if(self.selfRender)
-				self.belongTo.yccInstance.layerManager.reRenderAllLayerToStage();
+            if(self.selfRender) self.belongTo.yccInstance.layerManager.reRenderAllLayerToStage();
 		});
   
 		this._eventWrapper.addListener('dragend',function (e) {
