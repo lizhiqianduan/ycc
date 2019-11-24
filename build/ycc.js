@@ -8646,6 +8646,9 @@ Ycc.prototype.createCacheCtx = function () {
 		// x、y坐标不能小于极限值
 		self._wrapper.rect.x = self._wrapper.rect.x<-maxX?-maxX:self._wrapper.rect.x;
 		self._wrapper.rect.y = self._wrapper.rect.y<-maxY?-maxY:self._wrapper.rect.y;
+
+		if(self.contentW<=self.rect.width) self._wrapper.rect.x = 0;
+		if(self.contentH<=self.rect.height) self._wrapper.rect.y = 0;
 	}
 	
 })(Ycc);;/**
