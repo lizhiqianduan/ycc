@@ -42,6 +42,26 @@
 		 * @type {number}
 		 */
 		this.contentH = 0;
+
+		/**
+		 * 是否禁用滑动事件
+		 * @type {boolean}
+		 */
+		this.enableSwipe = false;
+
+		/**
+		 * 滑动事件持续的帧数
+		 * @type {number}
+		 */
+		this.swipeFrameCount = 10;
+
+		/**
+		 * 滑动事件初始速度
+		 * 满足公式 s = (swipeInitSpeed - swipeFrameCount)*swipeFrameCount
+		 * @type {number}
+		 */
+		this.swipeInitSpeed = 20;
+
         
         this.extend(option);
 
@@ -146,8 +166,20 @@
 	 */
 	Ycc.UI.ScrollerRect.prototype._initEvent = function () {
 		var self = this;
-		
-		
+		var ticker = self.belongTo.yccInstance.ticker;
+		//拖动开始时UI容纳区的状态
+		var startStatus = {
+			rect:null,
+			startEvent:null,
+			// 是否已启用ticker模块
+			tickerIsRunning:false
+		};
+		// 拖拽结束时UI容纳区的状态
+		var endStatus = {
+			rect:null,
+			endEvent:null
+		};
+
 		// 监听tap事件，向wrapper内部UI传递
 		this._eventWrapper.addListener('tap',function (e) {
 			var list = self.belongTo.getUIListFromPointer(e,{uiIsShow:true,uiIsGhost:false});
@@ -158,49 +190,18 @@
 			// 最后一个UI为_eventWrapper自身，这里取倒数第二个触发事件，因为其层级深
 			list[list.length-2].triggerUIEventBubbleUp('tap',e.x,e.y);
 		});
-		
-		
-		// 监听swipe
-		var timerid = 0;
-		this._eventWrapper.addListener('swipe',function (e) {
-			// console.log('swipe',e);
-			var dir = e.originEvent.swipeDirection;
-			var dirMap = {left:-1,right:1,up:-1,down:1};
-			var v0 = 10;
-			var t = 8;
-			
-			var delta = 0;
-			var t0 = 0;
-			timerid = setInterval(function () {
-				t0++;
-				delta = v0*t0-t0*t0;
-				
-				if(t0 >= t || delta<=0){
-					return clearInterval(timerid);
-				}
-				
-				if(dir==='left'||dir==='right') self._wrapper.rect.x = endStatus.rect.x+(dirMap[dir])*delta;
-				if(dir==='up'||dir==='down') self._wrapper.rect.y = endStatus.rect.y+(dirMap[dir])*delta;
-				self._checkRangeLimit();
-			},20);
-		});
-		
-		
-		
-	    //拖动开始时UI容纳区的状态
-	    var startStatus = {
-	        rect:null,
-            startEvent:null
-        };
-	    // 拖拽结束时UI容纳区的状态
-		var endStatus = {
-			rect:null,
-			endEvent:null
-		};
+
 		this._eventWrapper.addListener('dragstart',function (e) {
-			clearInterval(timerid);
+			//记录初始值
+			startStatus.tickerIsRunning = ticker._isRunning;
 			startStatus.startEvent = e;
 			startStatus.rect = new Ycc.Math.Rect(self._wrapper.rect);
+
+			// 若没启用ticker则启用
+			ticker.start();
+			// 拖拽
+			ticker.addFrameListener(draggingListen);
+
 		});
         
         this._eventWrapper.addListener('dragging',function (e) {
@@ -215,23 +216,60 @@
 		this._eventWrapper.addListener('dragend',function (e) {
 			endStatus.endEvent = e;
 			endStatus.rect = new Ycc.Math.Rect(self._wrapper.rect);
+			// console.log('dragend',self.selfRender,startStatus);
+			//移除监听
+			ticker.removeFrameListener(draggingListen);
+		});
+
+		//拖拽的监听函数，拖拽开始时加入，结束时移除
+		function draggingListen(){
+			if(self.selfRender) self.belongTo.yccInstance.layerManager.reRenderAllLayerToStage();
+		}
+
+		// 监听swipe
+		this._eventWrapper.addListener('swipe',function (e) {
+			if(self.enableSwipe) return;
+			// console.log('swipe',e);
+			var dir = e.originEvent.swipeDirection;
+			var dirMap = {left:-1,right:1,up:-1,down:1};
+
+			// 初速度
+			var v0 = self.swipeInitSpeed;
+			// 动画执行的最大帧数
+			var tMax = self.swipeFrameCount;
+			// 当前帧移动的距离
+			var delta = 0;
+			// 帧数差
+			var t0=0;
+
+			ticker.addFrameListener(onFrameComing);
+			function onFrameComing(){
+				// 帧数差
+				t0++;
+				// 距离差
+				delta = t0*(v0-t0);
+				// console.log(t0,delta);
+
+				if(t0 >= tMax || delta<=0){
+					// 去除监听
+					ticker.removeFrameListener(onFrameComing);
+					return;
+				}
+				if(dir==='left'||dir==='right') self._wrapper.rect.x = endStatus.rect.x+(dirMap[dir])*delta;
+				if(dir==='up'||dir==='down') self._wrapper.rect.y = endStatus.rect.y+(dirMap[dir])*delta;
+				self._checkRangeLimit();
+				self.belongTo.yccInstance.layerManager.reRenderAllLayerToStage();
+			}
 		});
 
 
-		if(self.selfRender){
-			self.belongTo.yccInstance.ticker.start();
-			self.belongTo.yccInstance.ticker.addFrameListener(function () {
-				self.belongTo.yccInstance.layerManager.reRenderAllLayerToStage();
-			});
-		}
-
-        /*this._wrapper.onrenderstart = function () {
-			self.belongTo.yccInstance.ctx.save();
-			self.belongTo.yccInstance.ctx.clip();
-		};
+		/*this._wrapper.onrenderstart = function () {
+            self.belongTo.yccInstance.ctx.save();
+            self.belongTo.yccInstance.ctx.clip();
+        };
         this._eventWrapper.onrenderend = function () {
-			self.belongTo.yccInstance.ctx.restore();
-		}*/
+            self.belongTo.yccInstance.ctx.restore();
+        }*/
 	};
 	
 	/**
