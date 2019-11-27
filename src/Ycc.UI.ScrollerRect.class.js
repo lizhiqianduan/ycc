@@ -56,6 +56,11 @@
 		this.swipeFrameCount = 10;
 
 		/**
+		 * 滑动事件加速度
+		 * @type {number}
+		 */
+		this.swipeAcceleration = 0.5;
+		/**
 		 * 滑动事件初始速度
 		 * 满足公式 s = (swipeInitSpeed - swipeFrameCount)*swipeFrameCount
 		 * @type {number}
@@ -247,7 +252,7 @@
 				// 帧数差
 				t0++;
 				// 距离差
-				delta = t0*(v0-t0);
+				delta = t0*(v0 - self.swipeAcceleration*t0);
 				// console.log(t0,delta);
 
 				if(t0 >= tMax || delta<=0){
