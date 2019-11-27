@@ -166,24 +166,22 @@
 			// console.log('swipe',e);
 			var dir = e.originEvent.swipeDirection;
 			var dirMap = {left:-1,right:1,up:-1,down:1};
-			var s = 100;
-			var v0 = 30;
-			var t = 10;
+			var v0 = 10;
+			var t = 8;
 			
-			var delta = 100;
+			var delta = 0;
 			var t0 = 0;
 			timerid = setInterval(function () {
 				t0++;
 				delta = v0*t0-t0*t0;
 				
-				if(t0 === t){
-					clearInterval(timerid);
+				if(t0 >= t || delta<=0){
+					return clearInterval(timerid);
 				}
 				
 				if(dir==='left'||dir==='right') self._wrapper.rect.x = endStatus.rect.x+(dirMap[dir])*delta;
 				if(dir==='up'||dir==='down') self._wrapper.rect.y = endStatus.rect.y+(dirMap[dir])*delta;
 				self._checkRangeLimit();
-				if(self.selfRender) self.belongTo.yccInstance.layerManager.reRenderAllLayerToStage();
 			},20);
 		});
 		
@@ -212,16 +210,20 @@
 			self._wrapper.rect.x = startStatus.rect.x+deltaX;
 			self._wrapper.rect.y = startStatus.rect.y+deltaY;
 			self._checkRangeLimit();
-			
-			
-            if(self.selfRender) self.belongTo.yccInstance.layerManager.reRenderAllLayerToStage();
 		});
   
 		this._eventWrapper.addListener('dragend',function (e) {
 			endStatus.endEvent = e;
 			endStatus.rect = new Ycc.Math.Rect(self._wrapper.rect);
 		});
-		      
+
+
+		if(self.selfRender){
+			self.belongTo.yccInstance.ticker.start();
+			self.belongTo.yccInstance.ticker.addFrameListener(function () {
+				self.belongTo.yccInstance.layerManager.reRenderAllLayerToStage();
+			});
+		}
 
         /*this._wrapper.onrenderstart = function () {
 			self.belongTo.yccInstance.ctx.save();

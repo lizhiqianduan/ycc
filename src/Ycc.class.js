@@ -170,7 +170,9 @@ Ycc.prototype._initStageGestureEvent = function () {
 	//var dragstartUI = null;
 	// 鼠标/触摸点开始拖拽时，所指向的UI对象map，用于多个触摸点的情况
 	var dragstartUIMap = {};
-	
+	// 拖拽时的上一个坐标，用于判断是否下发dragging事件
+	var draggingLastXY = '';
+
 	var gesture = new Ycc.Gesture({target:this.ctx.canvas});
 	gesture.addListener('tap',gestureListener);
 	gesture.addListener('longtap',gestureListener);
@@ -192,7 +194,8 @@ Ycc.prototype._initStageGestureEvent = function () {
 		// 在canvas中的绝对位置
 		var x = parseInt(e.clientX - self.ctx.canvas.getBoundingClientRect().left),
 			y = parseInt(e.clientY - self.ctx.canvas.getBoundingClientRect().top);
-		
+		// 重置位置
+		draggingLastXY = '';
 		var dragstartUI = self.getUIFromPointer(new Ycc.Math.Dot(x,y));
 		if(dragstartUI){
 			dragstartUIMap[e.identifier]=dragstartUI;
@@ -205,7 +208,10 @@ Ycc.prototype._initStageGestureEvent = function () {
 		// 在canvas中的绝对位置
 		var x = parseInt(e.clientX - self.ctx.canvas.getBoundingClientRect().left),
 			y = parseInt(e.clientY - self.ctx.canvas.getBoundingClientRect().top);
-		
+		// 位置在一个像素内，不下发dragging事件
+		if(draggingLastXY===x+'_'+y) return;
+
+		draggingLastXY = x+'_'+y;
 		var dragstartUI = dragstartUIMap[e.identifier];
 		if(dragstartUI){
 			dragstartUIMap[e.identifier]=dragstartUI;
