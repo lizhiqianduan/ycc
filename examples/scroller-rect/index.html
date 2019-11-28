@@ -63,5 +63,9 @@
 
 	layer.addUI(new Ycc.UI.SingleLineText({content:'测试：覆盖的UI',xAlign:'center',yAlign:'center',rect:new Ycc.Math.Rect(0,0,120,100),rectBgColor:'red'}));
 
-	ycc.layerManager.reRenderAllLayerToStage();
+	ycc.ticker.start();
+	ycc.ticker.addFrameListener(function (frame) {
+		ycc.layerManager.reRenderAllLayerToStage();
+	});
+
 </script>

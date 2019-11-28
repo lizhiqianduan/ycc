@@ -1955,6 +1955,12 @@ Ycc.prototype.createCacheCtx = function (options) {
 		this.yccInstance = yccInstance;
 		
 		/**
+		 * 当前帧
+		 * @type {Frame}
+		 */
+		this.currentFrame = null;
+		
+		/**
 		 * 启动时间戳
 		 * @type {number}
 		 */
@@ -2095,11 +2101,11 @@ Ycc.prototype.createCacheCtx = function (options) {
 				// 设置 上一帧刷新时的心跳数
 				self.lastFrameTickerCount = self.timerTickCount;
 				// 构造一帧
-				var frame = new Frame(self);
+				self.currentFrame = new Frame(self);
 				// 执行所有自定义的帧监听函数
-				self.broadcastFrameEvent(frame);
+				self.broadcastFrameEvent(self.currentFrame);
 				// 执行所有图层的帧监听函数
-				self.broadcastToLayer(frame);
+				self.broadcastToLayer(self.currentFrame);
 			}
 			
 			// 递归调用心跳函数
@@ -2192,6 +2198,13 @@ Ycc.prototype.createCacheCtx = function (options) {
 		 * @type {number}
 		 */
 		this.frameCount = ticker.frameAllCount;
+		
+		/**
+		 * 当前帧是否已全部绘制，ticker回调函数可根据此字段判断
+		 * 以此避免一帧内的重复绘制
+		 * @type {boolean}
+		 */
+		this.isRendered = false;
 	}
 	
 })(Ycc);;/**
@@ -4758,6 +4771,9 @@ Ycc.prototype.createCacheCtx = function (options) {
 	 * 若非强制更新，对于使用缓存的图层，只会绘制缓存至舞台
 	 */
 	Ycc.LayerManager.prototype.reRenderAllLayerToStage = function (forceUpdate) {
+		var ycc = this.yccInstance;
+		if(ycc.ticker.currentFrame && ycc.ticker.currentFrame.isRendered) return console.log('frame is rendered！');
+		
 		var t1 = Date.now();
 		this.renderUiCount = 0;
 		this.yccInstance.clearStage();
@@ -4771,6 +4787,8 @@ Ycc.prototype.createCacheCtx = function (options) {
 
 		this.renderTime = Date.now()-t1;
 		this.maxRenderTime=this.renderTime>this.maxRenderTime?this.renderTime:this.maxRenderTime;
+		
+		if(ycc.ticker.currentFrame) ycc.ticker.currentFrame.isRendered = true;
 	};
 	
 	

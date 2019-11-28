@@ -94,6 +94,9 @@
 	 * 若非强制更新，对于使用缓存的图层，只会绘制缓存至舞台
 	 */
 	Ycc.LayerManager.prototype.reRenderAllLayerToStage = function (forceUpdate) {
+		var ycc = this.yccInstance;
+		if(ycc.ticker.currentFrame && ycc.ticker.currentFrame.isRendered) return console.log('frame is rendered！');
+		
 		var t1 = Date.now();
 		this.renderUiCount = 0;
 		this.yccInstance.clearStage();
@@ -107,6 +110,8 @@
 
 		this.renderTime = Date.now()-t1;
 		this.maxRenderTime=this.renderTime>this.maxRenderTime?this.renderTime:this.maxRenderTime;
+		
+		if(ycc.ticker.currentFrame) ycc.ticker.currentFrame.isRendered = true;
 	};
 	
 	
