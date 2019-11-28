@@ -184,6 +184,7 @@
 		var self = this;
 		var ycc = self.belongTo.yccInstance;
 		var ticker = self.belongTo.yccInstance.ticker;
+		var dpi = ycc.dpi;
 		
 		//拖动开始时UI容纳区的状态
 		var startStatus = {
@@ -204,7 +205,7 @@
 			
 		// 监听tap事件，向wrapper内部UI传递
 		this.addListener('tap',function (e) {
-			var dot = new Ycc.Math.Dot(e.x-this.scrollerPosition.x-this._absolutePosition.x,e.y-this.scrollerPosition.y-this._absolutePosition.y);
+			var dot = new Ycc.Math.Dot(e.x-this.scrollerPosition.x/dpi-this._absolutePosition.x,e.y-this.scrollerPosition.y/dpi-this._absolutePosition.y);
 			var ui = self._cacheLayer.getUIFromPointer(dot);
 			// console.log('ui',ui,dot);
 			
@@ -226,7 +227,8 @@
 		this.addListener('dragging',function (e) {
 			var deltaX = e.x-startStatus.startEvent.x;
 			var deltaY = e.y-startStatus.startEvent.y;
-			
+			deltaX*=dpi;
+			deltaY*=dpi;
 			self.scrollerPosition.x = startStatus.position.x+deltaX;
 			self.scrollerPosition.y = startStatus.position.y+deltaY;
 			self._checkRangeLimit();
@@ -299,7 +301,8 @@
 		// x、y坐标的极限值
 		var maxX = self.contentW-self.rect.width;
 		var maxY = self.contentH-self.rect.height;
-		
+		maxX*=this.dpi;
+		maxY*=this.dpi;
 		// x、y坐标不能大于0
 		self.scrollerPosition.x = self.scrollerPosition.x>=0?0:self.scrollerPosition.x;
 		self.scrollerPosition.y = self.scrollerPosition.y>=0?0:self.scrollerPosition.y;
