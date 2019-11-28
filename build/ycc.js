@@ -8986,9 +8986,11 @@ Ycc.prototype.createCacheCtx = function (options) {
 			//移除监听
 			ticker.removeFrameListener(draggingListen);
 		});
-		
+		var flag = 0;
 		//拖拽的监听函数，拖拽开始时加入，结束时移除
 		function draggingListen(){
+			flag++;
+			if(flag%2!==1) return;
 			// self._cacheLayer.updateCache();
 			if(self.selfRender) self.belongTo.yccInstance.layerManager.reRenderAllLayerToStage();
 		}
