@@ -79,13 +79,30 @@
 		this._uiWrapper = null;
 		
 		/**
+		 * 绝对位置
+		 * @type {null}
+		 * @private
+		 */
+		this._absolutePosition = null;
+		
+		/**
 		 * 加入舞台后的回调
 		 * @override
 		 * @private
 		 */
 		this._onAdded = function () {
+			this.computeUIProps();
 			this._initCacheLayer();
 			this._initEvent();
+			this._absolutePosition = this.getAbsolutePositionRect();
+		};
+		/**
+		 * 所有子UI渲染完毕后，渲染一次当前滚动区
+		 * @private
+		 */
+		this._onChildrenRendered = function () {
+			this._cacheLayer.updateCache();
+			this.render();
 		};
 		
 		this.extend(option);
@@ -118,9 +135,10 @@
 		
 		ctx.save();
 		// todo 这里的每次绘制都强制更新缓存画布，并绘制整张画布，存在一定优化空间
-		this._cacheLayer.updateCache();
-		var drawRect = this.getAbsolutePositionRect();
-		ctx.drawImage(this._cacheLayer.ctxCache.canvas,drawRect.x,drawRect.y,drawRect.width*this.dpi,drawRect.height*this.dpi,drawRect.x,drawRect.y,drawRect.width*this.dpi,drawRect.height*this.dpi);
+		// this._cacheLayer.updateCache();
+		// var drawRect = this.getAbsolutePositionRect();
+		var drawRect = this._absolutePosition;
+		ctx.drawImage(this._cacheLayer.ctxCache.canvas,drawRect.x*this.dpi,drawRect.y*this.dpi,drawRect.width*this.dpi,drawRect.height*this.dpi,drawRect.x*this.dpi,drawRect.y*this.dpi,drawRect.width*this.dpi,drawRect.height*this.dpi);
 		ctx.restore();
 	};
 	
@@ -178,7 +196,8 @@
 		this.addListener('tap',function (e) {
 			var ui = self._cacheLayer.getUIFromPointer(e);
 			// console.log('ui',ui);
-			ui.triggerUIEventBubbleUp('tap',e.x,e.y);
+			
+			ui&&ui.triggerUIEventBubbleUp('tap',e.x,e.y);
 		});
 		
 		this.addListener('dragstart',function (e) {
@@ -212,6 +231,7 @@
 		
 		//拖拽的监听函数，拖拽开始时加入，结束时移除
 		function draggingListen(){
+			self._cacheLayer.updateCache();
 			if(self.selfRender) self.belongTo.yccInstance.layerManager.reRenderAllLayerToStage();
 		}
 		
@@ -250,6 +270,7 @@
 				
 				// console.log('onFrameComing',self._cacheLayer.x,self._cacheLayer.y);
 				
+				self._cacheLayer.updateCache();
 				if(self.selfRender) self.belongTo.yccInstance.layerManager.reRenderAllLayerToStage();
 			}
 		});
