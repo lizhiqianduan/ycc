@@ -11,7 +11,6 @@
  * 该canvas元素会被添加至HTML结构中，作为应用的显示舞台。
  * @param config {Object} 整个ycc的配置项
  * @param config.debugDrawContainer {Boolean} 是否显示所有UI的容纳区域
- * @param config.useGesture {Boolean} 是否启用系统的手势库，默认启用
  * 若开启，所有UI都会创建一个属于自己的离屏canvas，大小与舞台一致
  * @constructor
  */
@@ -75,14 +74,19 @@ var Ycc = function Ycc(config){
 	 * @type {Ycc.UI}
 	 */
 	this.baseUI = null;
-	
+
+	/**
+	 * 系统的手势模块
+	 * @type {null}
+	 */
+	this.gesture = null;
+
 	/**
 	 * 整个ycc的配置项
-	 * @type {{debugDrawContainer:boolean,useGesture:boolean}}
+	 * @type {{debugDrawContainer:boolean}}
 	 */
 	this.config = Ycc.utils.extend({
-		debugDrawContainer:false,
-		useGesture:true
+		debugDrawContainer:false
 	},config||{});
 	
 	/**
@@ -138,7 +142,7 @@ Ycc.prototype.bindCanvas = function (canvas) {
 	this.debugger = new Ycc.Debugger(this);
 	
 	this.baseUI = new Ycc.UI(this);
-	
+
 	this.init();
 	
 	return this;
@@ -148,10 +152,10 @@ Ycc.prototype.bindCanvas = function (canvas) {
  * 类初始化
  */
 Ycc.prototype.init = function () {
-	// ticker默认启动，10帧每刷新
+	//初始化手势库
+	this._initStageGestureEvent();
+	// 心跳模块初始化 ticker默认启动，10帧每刷新
 	this.ticker.start(6);
-	if(true===this.config.useGesture)
-		this._initStageGestureEvent();
 };
 
 /**
@@ -176,6 +180,7 @@ Ycc.prototype._initStageGestureEvent = function () {
 	var draggingLastXY = '';
 
 	var gesture = new Ycc.Gesture({target:this.ctx.canvas});
+	this.gesture = gesture;
 	gesture.addListener('tap',gestureListener);
 	gesture.addListener('longtap',gestureListener);
 	gesture.addListener('doubletap',gestureListener);

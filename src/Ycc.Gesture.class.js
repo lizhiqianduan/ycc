@@ -14,14 +14,24 @@
 	 *
 	 * @param option
 	 * @param option.target 手势触发的HTML对象
+	 * @param option.useMulti {boolean} 是否启用多点触控。对于无多点触控的项目，关闭多点触控，可节省性能消耗。默认启用
 	 * @extends Ycc.Listener
 	 * @constructor
 	 */
 	Ycc.Gesture = function (option) {
 		Ycc.Listener.call(this);
 		this.yccClass = Ycc.Gesture;
-		
-		this.option = option;
+		option = option||{};
+		/**
+		 *
+		 * @type {{useMulti: boolean, target: null}}
+		 */
+		this.option = {
+			target:null,
+			useMulti:true
+		};
+		// 合并参数
+		Ycc.utils.extend(this.option,option);
 		
 		/**
 		 * 长按事件的定时器id
@@ -71,6 +81,9 @@
 
 			// 多个触摸点的情况
 			if(tracer.currentLifeList.length>1){
+				// 判断是否启用多点触控
+				if(!self.option.useMulti) return;
+
 				self.triggerListener('log','multi touch start ...');
 				self.triggerListener('multistart',tracer.currentLifeList);
 				
@@ -98,6 +111,8 @@
 			});
 			
 			if(tracer.currentLifeList.length>1){
+				// 判断是否启用多点触控
+				if(!self.option.useMulti) return;
 				prevent.tap=true;
 				prevent.swipe=true;
 				self.triggerListener('log','multi touch move ...');
@@ -432,6 +447,15 @@
 			rate:vector1.getLength()/vector0.getLength(),
 			angle:angle*(vector1.cross(vector0).z>0?-1:1)
 		};//(new Ycc.Math.Vector(x1move-x0move,y1move-y0move).getLength())/(new Ycc.Math.Vector(x1-x0,y1-y0).getLength());
+	};
+
+
+	/**
+	 * 设置是否启用多点触控
+	 * @param enable
+	 */
+	Ycc.Gesture.prototype.enableMutiTouch = function (enable) {
+		this.option.useMulti = false;
 	};
 
 

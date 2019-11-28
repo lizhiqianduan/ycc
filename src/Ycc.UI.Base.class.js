@@ -628,7 +628,7 @@
 	
 	
 	/**
-	 * 合并参数
+	 * 合并参数，只会合并对象中已存在的key
 	 * @param option
 	 * @return {Ycc.UI}
 	 */

@@ -11,7 +11,6 @@
  * 该canvas元素会被添加至HTML结构中，作为应用的显示舞台。
  * @param config {Object} 整个ycc的配置项
  * @param config.debugDrawContainer {Boolean} 是否显示所有UI的容纳区域
- * @param config.useGesture {Boolean} 是否启用系统的手势库，默认启用
  * 若开启，所有UI都会创建一个属于自己的离屏canvas，大小与舞台一致
  * @constructor
  */
@@ -75,14 +74,19 @@ var Ycc = function Ycc(config){
 	 * @type {Ycc.UI}
 	 */
 	this.baseUI = null;
-	
+
+	/**
+	 * 系统的手势模块
+	 * @type {null}
+	 */
+	this.gesture = null;
+
 	/**
 	 * 整个ycc的配置项
-	 * @type {{debugDrawContainer:boolean,useGesture:boolean}}
+	 * @type {{debugDrawContainer:boolean}}
 	 */
 	this.config = Ycc.utils.extend({
-		debugDrawContainer:false,
-		useGesture:true
+		debugDrawContainer:false
 	},config||{});
 	
 	/**
@@ -138,7 +142,7 @@ Ycc.prototype.bindCanvas = function (canvas) {
 	this.debugger = new Ycc.Debugger(this);
 	
 	this.baseUI = new Ycc.UI(this);
-	
+
 	this.init();
 	
 	return this;
@@ -148,10 +152,10 @@ Ycc.prototype.bindCanvas = function (canvas) {
  * 类初始化
  */
 Ycc.prototype.init = function () {
-	// ticker默认启动，10帧每刷新
+	//初始化手势库
+	this._initStageGestureEvent();
+	// 心跳模块初始化 ticker默认启动，10帧每刷新
 	this.ticker.start(6);
-	if(true===this.config.useGesture)
-		this._initStageGestureEvent();
 };
 
 /**
@@ -176,6 +180,7 @@ Ycc.prototype._initStageGestureEvent = function () {
 	var draggingLastXY = '';
 
 	var gesture = new Ycc.Gesture({target:this.ctx.canvas});
+	this.gesture = gesture;
 	gesture.addListener('tap',gestureListener);
 	gesture.addListener('longtap',gestureListener);
 	gesture.addListener('doubletap',gestureListener);
@@ -3449,14 +3454,24 @@ Ycc.prototype.createCacheCtx = function (options) {
 	 *
 	 * @param option
 	 * @param option.target 手势触发的HTML对象
+	 * @param option.useMulti {boolean} 是否启用多点触控。对于无多点触控的项目，关闭多点触控，可节省性能消耗。默认启用
 	 * @extends Ycc.Listener
 	 * @constructor
 	 */
 	Ycc.Gesture = function (option) {
 		Ycc.Listener.call(this);
 		this.yccClass = Ycc.Gesture;
-		
-		this.option = option;
+		option = option||{};
+		/**
+		 *
+		 * @type {{useMulti: boolean, target: null}}
+		 */
+		this.option = {
+			target:null,
+			useMulti:true
+		};
+		// 合并参数
+		Ycc.utils.extend(this.option,option);
 		
 		/**
 		 * 长按事件的定时器id
@@ -3506,6 +3521,9 @@ Ycc.prototype.createCacheCtx = function (options) {
 
 			// 多个触摸点的情况
 			if(tracer.currentLifeList.length>1){
+				// 判断是否启用多点触控
+				if(!self.option.useMulti) return;
+
 				self.triggerListener('log','multi touch start ...');
 				self.triggerListener('multistart',tracer.currentLifeList);
 				
@@ -3533,6 +3551,8 @@ Ycc.prototype.createCacheCtx = function (options) {
 			});
 			
 			if(tracer.currentLifeList.length>1){
+				// 判断是否启用多点触控
+				if(!self.option.useMulti) return;
 				prevent.tap=true;
 				prevent.swipe=true;
 				self.triggerListener('log','multi touch move ...');
@@ -3867,6 +3887,15 @@ Ycc.prototype.createCacheCtx = function (options) {
 			rate:vector1.getLength()/vector0.getLength(),
 			angle:angle*(vector1.cross(vector0).z>0?-1:1)
 		};//(new Ycc.Math.Vector(x1move-x0move,y1move-y0move).getLength())/(new Ycc.Math.Vector(x1-x0,y1-y0).getLength());
+	};
+
+
+	/**
+	 * 设置是否启用多点触控
+	 * @param enable
+	 */
+	Ycc.Gesture.prototype.enableMutiTouch = function (enable) {
+		this.option.useMulti = false;
 	};
 
 
@@ -5921,7 +5950,7 @@ Ycc.prototype.createCacheCtx = function (options) {
 	
 	
 	/**
-	 * 合并参数
+	 * 合并参数，只会合并对象中已存在的key
 	 * @param option
 	 * @return {Ycc.UI}
 	 */
