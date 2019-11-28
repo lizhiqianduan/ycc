@@ -348,6 +348,8 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 	// 从最末一个图层开始寻找
 	for(var j=self.layerList.length-1;j>=0;j--){
 		var layer = self.layerList[j];
+		// 幽灵图层，直接跳过
+		if(layer.ghost) continue;
 		if(uiIsShow&&!layer.show) continue;
 		var ui = layer.getUIFromPointer(dot,uiIsShow);
 		if(ui)

@@ -139,6 +139,12 @@
 		this.show = true;
 		
 		/**
+		 * 图层是否幽灵，幽灵状态的图层，getUIFromPointer 会直接跳过整个图层
+		 * @type {boolean}
+		 */
+		this.ghost = false;
+		
+		/**
 		 * 是否监听舞台的事件。用于控制舞台事件是否广播至图层。默认关闭
 		 * @type {boolean}
 		 */

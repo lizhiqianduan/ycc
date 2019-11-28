@@ -348,6 +348,8 @@ Ycc.prototype.getUIFromPointer = function (dot,uiIsShow) {
 	// 从最末一个图层开始寻找
 	for(var j=self.layerList.length-1;j>=0;j--){
 		var layer = self.layerList[j];
+		// 幽灵图层，直接跳过
+		if(layer.ghost) continue;
 		if(uiIsShow&&!layer.show) continue;
 		var ui = layer.getUIFromPointer(dot,uiIsShow);
 		if(ui)
@@ -3963,6 +3965,12 @@ Ycc.prototype.createCacheCtx = function (options) {
 		 * 图层是否显示
 		 */
 		this.show = true;
+		
+		/**
+		 * 图层是否幽灵，幽灵状态的图层，getUIFromPointer 会直接跳过整个图层
+		 * @type {boolean}
+		 */
+		this.ghost = false;
 		
 		/**
 		 * 是否监听舞台的事件。用于控制舞台事件是否广播至图层。默认关闭
@@ -8749,10 +8757,32 @@ Ycc.prototype.createCacheCtx = function (options) {
 		this.contentH = 0;
 		
 		/**
-		 * 是否禁用滑动事件
+		 * 是否启用swipe滑动事件
 		 * @type {boolean}
 		 */
-		this.enableSwipe = false;
+		this.enableSwipe = true;
+		/**
+		 * 滑动事件持续的帧数
+		 * @type {number}
+		 */
+		this.swipeFrameCount = 10;
+		
+		/**
+		 * 滑动事件加速度
+		 * @type {number}
+		 */
+		this.swipeAcceleration = 0.5;
+		/**
+		 * 滑动事件初始速度
+		 * 满足公式 s = (swipeInitSpeed - swipeFrameCount)*swipeFrameCount
+		 * @type {number}
+		 */
+		this.swipeInitSpeed = 20;
+		/**
+		 * 拖拽中是否重绘
+		 * @type {boolean}
+		 */
+		this.selfRender = false;
 		
 		/**
 		 * 离屏canvas缓存图层
@@ -8760,6 +8790,13 @@ Ycc.prototype.createCacheCtx = function (options) {
 		 * @private
 		 */
 		this._cacheLayer = null;
+		
+		/**
+		 * UI的容纳区
+		 * @type {null}
+		 * @private
+		 */
+		this._uiWrapper = null;
 		
 		/**
 		 * 加入舞台后的回调
@@ -8798,21 +8835,38 @@ Ycc.prototype.createCacheCtx = function (options) {
 		var self = this;
 		ctx = ctx || self.ctxCache;
 		
+		
 		ctx.save();
-		// this.renderPath(ctx);
+		// todo 这里的每次绘制都强制更新缓存画布，并绘制整张画布，存在一定优化空间
+		this._cacheLayer.updateCache();
+		var drawRect = this.getAbsolutePositionRect();
+		ctx.drawImage(this._cacheLayer.ctxCache.canvas,drawRect.x,drawRect.y,drawRect.width*this.dpi,drawRect.height*this.dpi,drawRect.x,drawRect.y,drawRect.width*this.dpi,drawRect.height*this.dpi);
 		ctx.restore();
 	};
 	
+	/**
+	 * 重载基类方法
+	 * @param ui
+	 */
+	Ycc.UI.ScrollerView.prototype.addChild = function (ui) {
+		if(this.belongTo) ui.init(this.belongTo);
+		return this._uiWrapper.addChild(ui);
+	};
 	
 	/**
 	 * 初始化离屏canvas
 	 * @private
 	 */
 	Ycc.UI.ScrollerView.prototype._initCacheLayer = function () {
-		this._cacheLayer = this.belongTo.yccInstance.layerManager.newLayer({name:'滚动区缓存图层'});
+		this._cacheLayer = this.belongTo.yccInstance.layerManager.newLayer({name:'滚动区缓存图层',ghost:true,show:false,enableEventManager:true,useCache:true});
+		
+		this._uiWrapper = this._cacheLayer.addUI(new Ycc.UI.Rect({rect:this.rect}));
 		
 		// 添加一个与滚动区等大的矩形
-		this._eventWrapper = this._cacheLayer.addUI(new Ycc.UI.Rect({rect:new Ycc.Math.Rect(this.rect),color:'blue'}));
+		// this._eventWrapper = this.belongTo.addUI(new Ycc.UI.Rect({rect:new Ycc.Math.Rect(this.rect),color:'blue',name:'事件矩形容纳区'}));
+		
+		// debug
+		// this._cacheLayer.addUI(new Ycc.UI.Rect({rect:new Ycc.Math.Rect(this.rect),color:'pink',name:'test'}));
 		
 	};
 	
@@ -8838,18 +8892,17 @@ Ycc.prototype.createCacheCtx = function (options) {
 			endEvent:null
 		};
 		
+
+			
 		// 监听tap事件，向wrapper内部UI传递
 		this.addListener('tap',function (e) {
-			var list = self.belongTo.getUIListFromPointer(e,{uiIsShow:true,uiIsGhost:false});
-			list = list.filter(function(item){return item.show&&!item.ghost;})
-			// console.log('点击的列表',list);
-			if(list.length<=1) return;
-			// console.log('倒数第二个',list[list.length-2]);
-			// 最后一个UI为_eventWrapper自身，这里取倒数第二个触发事件，因为其层级深
-			list[list.length-2].triggerUIEventBubbleUp('tap',e.x,e.y);
+			var ui = self._cacheLayer.getUIFromPointer(e);
+			// console.log('ui',ui);
+			ui.triggerUIEventBubbleUp('tap',e.x,e.y);
 		});
 		
 		this.addListener('dragstart',function (e) {
+			// console.log(e.type);
 			startStatus.startEvent = e;
 			startStatus.position = new Ycc.Math.Dot(self._cacheLayer.x,self._cacheLayer.y);
 			
@@ -8857,17 +8910,16 @@ Ycc.prototype.createCacheCtx = function (options) {
 			if(!ticker._isRunning) ticker.start();
 			// 拖拽
 			ticker.addFrameListener(draggingListen);
-			
 		});
 		
 		this.addListener('dragging',function (e) {
 			var deltaX = e.x-startStatus.startEvent.x;
 			var deltaY = e.y-startStatus.startEvent.y;
 			
-			self._cacheLayer.x = startStatus.rect.x+deltaX;
-			self._cacheLayer.y = startStatus.rect.y+deltaY;
+			self._cacheLayer.x = startStatus.position.x+deltaX;
+			self._cacheLayer.y = startStatus.position.y+deltaY;
 			self._checkRangeLimit();
-			console.log('dragging',self._cacheLayer);
+			// console.log('dragging',self._cacheLayer.x,self._cacheLayer.y);
 		});
 		
 		this.addListener('dragend',function (e) {
@@ -8884,8 +8936,8 @@ Ycc.prototype.createCacheCtx = function (options) {
 		}
 		
 		// 监听swipe 暂不监听
-		this.addListener('swipe111',function (e) {
-			if(self.enableSwipe) return;
+		this.addListener('swipe',function (e) {
+			if(!self.enableSwipe) return console.log('滚动区禁用swipe');
 			// console.log('swipe',e);
 			var dir = e.originEvent.swipeDirection;
 			var dirMap = {left:-1,right:1,up:-1,down:1};
@@ -8912,10 +8964,13 @@ Ycc.prototype.createCacheCtx = function (options) {
 					ticker.removeFrameListener(onFrameComing);
 					return;
 				}
-				if(dir==='left'||dir==='right') self._wrapper.rect.x = endStatus.rect.x+(dirMap[dir])*delta;
-				if(dir==='up'||dir==='down') self._wrapper.rect.y = endStatus.rect.y+(dirMap[dir])*delta;
+				if(dir==='left'||dir==='right') self._cacheLayer.x = endStatus.position.x+(dirMap[dir])*delta;
+				if(dir==='up'||dir==='down') self._cacheLayer.y = endStatus.position.y+(dirMap[dir])*delta;
 				self._checkRangeLimit();
-				self.belongTo.yccInstance.layerManager.reRenderAllLayerToStage();
+				
+				// console.log('onFrameComing',self._cacheLayer.x,self._cacheLayer.y);
+				
+				if(self.selfRender) self.belongTo.yccInstance.layerManager.reRenderAllLayerToStage();
 			}
 		});
 	};
