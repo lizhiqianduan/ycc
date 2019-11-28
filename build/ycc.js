@@ -8688,6 +8688,7 @@ Ycc.prototype.createCacheCtx = function (options) {
 	 */
 	Ycc.UI.ScrollerRect.prototype._initEvent = function () {
 		var self = this;
+		if(!self.belongTo) return console.log('scroller need add to stage!');
 		var ticker = self.belongTo.yccInstance.ticker;
 		//拖动开始时UI容纳区的状态
 		var startStatus = {
@@ -8745,7 +8746,7 @@ Ycc.prototype.createCacheCtx = function (options) {
 
 		//拖拽的监听函数，拖拽开始时加入，结束时移除
 		function draggingListen(){
-			if(self.selfRender) self.belongTo.yccInstance.layerManager.reRenderAllLayerToStage();
+			if(self.selfRender &&self.belongTo&&self.belongTo.yccInstance) self.belongTo.yccInstance.layerManager.reRenderAllLayerToStage();
 		}
 
 		// 监听swipe
@@ -8780,7 +8781,7 @@ Ycc.prototype.createCacheCtx = function (options) {
 				if(dir==='left'||dir==='right') self._wrapper.rect.x = endStatus.rect.x+(dirMap[dir])*delta;
 				if(dir==='up'||dir==='down') self._wrapper.rect.y = endStatus.rect.y+(dirMap[dir])*delta;
 				self._checkRangeLimit();
-				self.belongTo.yccInstance.layerManager.reRenderAllLayerToStage();
+				if(self.selfRender &&self.belongTo&&self.belongTo.yccInstance) self.belongTo.yccInstance.layerManager.reRenderAllLayerToStage();
 			}
 		});
 
