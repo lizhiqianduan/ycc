@@ -163,7 +163,7 @@
 		
 		
 		function onSuccess() {
-			console.log('loader:',curRes.name,'success');
+			// console.log('loader:',curRes.name,'success');
 			clearTimeout(timerId);
 			if(curRes.type==='image' || ("undefined"!==typeof wx && curRes.type==='audio' )){
 				curRes.res.removeEventListener(successEvent,onSuccess);

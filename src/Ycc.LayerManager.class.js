@@ -95,7 +95,8 @@
 	 */
 	Ycc.LayerManager.prototype.reRenderAllLayerToStage = function (forceUpdate) {
 		var ycc = this.yccInstance;
-		if(ycc.ticker.currentFrame && ycc.ticker.currentFrame.isRendered) return console.log('stop overdraw！');
+		//防止一帧内过度绘制 stop overdraw！
+		if(ycc.ticker.currentFrame && ycc.ticker.currentFrame.isRendered) return console.log('stop overdraw!');
 		
 		var t1 = Date.now();
 		this.renderUiCount = 0;

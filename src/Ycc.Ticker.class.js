@@ -132,11 +132,14 @@
 	 * 可取值有[60,30,20,15]
 	 */
 	Ycc.Ticker.prototype.start = function (frameRate) {
-		var self = this;
-		if(self._isRunning){
-			return;
-		}
 		var timer = requestAnimationFrame || webkitRequestAnimationFrame || mozRequestAnimationFrame || oRequestAnimationFrame || msRequestAnimationFrame;
+		var self = this;
+
+		//重置状态
+		self.currentFrame = null;
+		self.timerTickCount = 0;
+		self.lastFrameTickerCount = 0;
+
 		// 正常设置的帧率
 		frameRate = frameRate?frameRate:self.defaultFrameRate;
 		// 每帧之间的心跳间隔，默认为1
@@ -148,6 +151,13 @@
 		// 初始帧数量设为0
 		self.frameAllCount = 0;
 
+		// 启动时间
+		self.startTime = performance.now();
+
+		// 正在进行中 不再启动心跳
+		if(self._isRunning) return;
+
+
 		// timer兼容
 		timer || (timer = function(callback) {
 				return setTimeout(function () {
@@ -155,8 +165,6 @@
 				}, 1e3 / 60);
 			}
 		);
-		// 启动时间
-		self.startTime = performance.now();
 		// 启动心跳
 		// self._timerId = timer.call(window, cb);
 		self._timerId = timer(cb);
@@ -203,6 +211,7 @@
 		});
 		stop(this._timerId);
 		this._isRunning = false;
+		this.currentFrame = null;
 	};
 	
 	
