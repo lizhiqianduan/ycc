@@ -148,6 +148,8 @@ Ycc.prototype.bindCanvas = function (canvas) {
  * 类初始化
  */
 Ycc.prototype.init = function () {
+	// ticker默认启动，10帧每刷新
+	this.ticker.start(6);
 	if(true===this.config.useGesture)
 		this._initStageGestureEvent();
 };

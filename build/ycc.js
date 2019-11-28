@@ -148,6 +148,8 @@ Ycc.prototype.bindCanvas = function (canvas) {
  * 类初始化
  */
 Ycc.prototype.init = function () {
+	// ticker默认启动，10帧每刷新
+	this.ticker.start(6);
 	if(true===this.config.useGesture)
 		this._initStageGestureEvent();
 };
@@ -4772,7 +4774,7 @@ Ycc.prototype.createCacheCtx = function (options) {
 	 */
 	Ycc.LayerManager.prototype.reRenderAllLayerToStage = function (forceUpdate) {
 		var ycc = this.yccInstance;
-		if(ycc.ticker.currentFrame && ycc.ticker.currentFrame.isRendered) return console.log('frame is rendered！');
+		if(ycc.ticker.currentFrame && ycc.ticker.currentFrame.isRendered) return console.log('stop overdraw！');
 		
 		var t1 = Date.now();
 		this.renderUiCount = 0;
