@@ -2094,10 +2094,12 @@ Ycc.prototype.createCacheCtx = function (options) {
 				self.lastFrameTime += self.deltaTime;
 				// 设置 上一帧刷新时的心跳数
 				self.lastFrameTickerCount = self.timerTickCount;
+				// 构造一帧
+				var frame = new Frame(self);
 				// 执行所有自定义的帧监听函数
-				self.broadcastFrameEvent();
+				self.broadcastFrameEvent(frame);
 				// 执行所有图层的帧监听函数
-				self.broadcastToLayer();
+				self.broadcastToLayer(frame);
 			}
 			
 			// 递归调用心跳函数
@@ -2143,27 +2145,54 @@ Ycc.prototype.createCacheCtx = function (options) {
 	/**
 	 * 执行所有自定义的帧监听函数
 	 */
-	Ycc.Ticker.prototype.broadcastFrameEvent = function () {
+	Ycc.Ticker.prototype.broadcastFrameEvent = function (frame) {
 		for(var i =0;i<this.frameListenerList.length;i++){
 			var listener = this.frameListenerList[i];
-			Ycc.utils.isFn(listener) && listener();
+			Ycc.utils.isFn(listener) && listener(frame);
 		}
 	};
 	
 	/**
 	 * 执行所有图层的监听函数
 	 */
-	Ycc.Ticker.prototype.broadcastToLayer = function () {
+	Ycc.Ticker.prototype.broadcastToLayer = function (frame) {
 		for(var i = 0;i<this.yccInstance.layerList.length;i++){
 			var layer = this.yccInstance.layerList[i];
-			layer.show && layer.enableFrameEvent && layer.onFrameComing();
+			layer.show && layer.enableFrameEvent && layer.onFrameComing(frame);
 		}
 	};
 	
 	
-	
-	
-	
+	/**
+	 * 帧 私有类
+	 * @constructor
+	 * @param ticker {Ycc.Ticker}
+	 */
+	function Frame(ticker){
+		/**
+		 * 帧创建时间
+		 * @type {number}
+		 */
+		this.createTime = Date.now();
+		
+		/**
+		 * 与上一帧的时间差
+		 * @type {number}
+		 */
+		this.deltaTime = ticker.deltaTime;
+		
+		/**
+		 * 实时帧率
+		 * @type {number}
+		 */
+		this.fps = parseInt(1000/this.deltaTime);
+		
+		/**
+		 * 帧下标，表示第几帧
+		 * @type {number}
+		 */
+		this.frameCount = ticker.frameAllCount;
+	}
 	
 })(Ycc);;/**
  * @file    Ycc.Debugger.class.js
