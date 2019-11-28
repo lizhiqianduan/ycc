@@ -455,7 +455,8 @@ Ycc.prototype.createCacheCtx = function (options) {
 	}).getContext('2d');
 
 	// debug
-	// document.body.appendChild(ctxCache.canvas);
+	// console.log('create cache ctx',options);
+	document.body.appendChild(ctxCache.canvas);
 	return ctxCache;
 };;/**
  * @file        Ycc.utils.js
@@ -4065,7 +4066,10 @@ Ycc.prototype.createCacheCtx = function (options) {
 		// 初始化图层属性
 		this.ctx = this.yccInstance.ctx;
 		// useCache参数判断
-		this.ctxCache = this.useCache?this.yccInstance.createCacheCtx():this.ctx;
+		this.ctxCache = this.useCache?this.yccInstance.createCacheCtx({
+			width:this.width*this.yccInstance.dpi,
+			height:this.height*this.yccInstance.dpi
+		}):this.ctx;
 		
 		// 初始化画布属性
 		self._setCtxProps();
@@ -4623,7 +4627,8 @@ Ycc.prototype.createCacheCtx = function (options) {
 	 * 清空缓存画布、缓存区域
 	 */
 	Ycc.Layer.prototype.clearCache = function () {
-		this.ctxCache.canvas.width = this.ctx.canvas.width;
+		var w = this.ctxCache.canvas.width;
+		this.ctxCache.canvas.width = w;
 		// 清空缓存区域
 		this.ctxCacheRect = null;
 	};
@@ -5639,6 +5644,22 @@ Ycc.prototype.createCacheCtx = function (options) {
 			|| (absolute.y+absolute.height<0);
 	};
 	
+	/**
+	 * 判断当前区域在某个区域外
+	 * @param rect {Ycc.Math.Rect}
+	 */
+	Ycc.UI.Base.prototype.isOutOfRect = function (rect) {
+		var x = rect.x;
+		var y = rect.y;
+		var w = rect.width;
+		var h = rect.height;
+		var absolute = this.getAbsolutePositionRect();
+		return absolute.x>w
+			|| (absolute.x+absolute.width<x)
+			|| absolute.y>h
+			|| (absolute.y+absolute.height<y);
+	};
+	
 	
 	/**
 	 * 递归释放内存，等待GC
@@ -5777,10 +5798,12 @@ Ycc.prototype.createCacheCtx = function (options) {
 		if(error) return error;
 		
 		// 超出舞台时，不予渲染，此步骤挪到外面做判断，不再重复判断
-		if(this.isOutOfStage())
+		if(!this.belongTo.useCache&&this.isOutOfStage())
 			return {message:'UI超出舞台！'};
-
-
+		if(this.belongTo.useCache&&this.isOutOfRect(new Ycc.Math.Rect(0,0,this.ctxCache.canvas.width*this.dpi,this.ctxCache.canvas.height*this.dpi)))
+			return {message:'UI超出离屏Canvas！'};
+		
+		
 		// 绘制前的处理
 		this._processBeforeRender();
 
@@ -8806,6 +8829,12 @@ Ycc.prototype.createCacheCtx = function (options) {
 		this._absolutePosition = null;
 		
 		/**
+		 * 滚动的x,y坐标
+		 * @type {Ycc.Math.Dot}
+		 */
+		this.scrollerPosition = new Ycc.Math.Dot(0,0);
+		
+		/**
 		 * 加入舞台后的回调
 		 * @override
 		 * @private
@@ -8858,7 +8887,7 @@ Ycc.prototype.createCacheCtx = function (options) {
 		// this._cacheLayer.updateCache();
 		// var drawRect = this.getAbsolutePositionRect();
 		var drawRect = this._absolutePosition;
-		ctx.drawImage(this._cacheLayer.ctxCache.canvas,drawRect.x*this.dpi,drawRect.y*this.dpi,drawRect.width*this.dpi,drawRect.height*this.dpi,drawRect.x*this.dpi,drawRect.y*this.dpi,drawRect.width*this.dpi,drawRect.height*this.dpi);
+		ctx.drawImage(this._cacheLayer.ctxCache.canvas,-this.scrollerPosition.x,-this.scrollerPosition.y,this.rect.width*this.dpi,this.rect.height*this.dpi,drawRect.x*this.dpi,drawRect.y*this.dpi,drawRect.width*this.dpi,drawRect.height*this.dpi);
 		ctx.restore();
 	};
 	
@@ -8876,9 +8905,10 @@ Ycc.prototype.createCacheCtx = function (options) {
 	 * @private
 	 */
 	Ycc.UI.ScrollerView.prototype._initCacheLayer = function () {
-		this._cacheLayer = this.belongTo.yccInstance.layerManager.newLayer({name:'滚动区缓存图层',ghost:true,show:false,enableEventManager:true,useCache:true});
+		// var cacheH = this.contentH;
+		this._cacheLayer = this.belongTo.yccInstance.layerManager.newLayer({name:'滚动区缓存图层',ghost:true,show:false,enableEventManager:true,useCache:true,width:this.contentW,height:this.contentH});
 		
-		this._uiWrapper = this._cacheLayer.addUI(new Ycc.UI.Rect({rect:this.rect}));
+		this._uiWrapper = this._cacheLayer.addUI(new Ycc.UI.Rect({rect:new Ycc.Math.Rect(0,0,1,1)}));
 		
 		// 添加一个与滚动区等大的矩形
 		// this._eventWrapper = this.belongTo.addUI(new Ycc.UI.Rect({rect:new Ycc.Math.Rect(this.rect),color:'blue',name:'事件矩形容纳区'}));
@@ -8895,17 +8925,20 @@ Ycc.prototype.createCacheCtx = function (options) {
 	 */
 	Ycc.UI.ScrollerView.prototype._initEvent = function () {
 		var self = this;
+		var ycc = self.belongTo.yccInstance;
 		var ticker = self.belongTo.yccInstance.ticker;
 		
 		//拖动开始时UI容纳区的状态
 		var startStatus = {
-			//拖拽开始时，离屏canvas的位置
+			//拖拽开始时，scrollerPosition的位置
 			position:new Ycc.Math.Dot(0,0),
+			//拖拽开始时，cacheLayer的x，y位置
+			cacheLayerPosition:new Ycc.Math.Dot(0,0),
 			startEvent:null
 		};
 		// 拖拽结束时UI容纳区的状态
 		var endStatus = {
-			//拖拽结束时，离屏canvas的位置
+			//拖拽结束时，scrollerPosition的位置
 			position:null,
 			endEvent:null
 		};
@@ -8914,16 +8947,18 @@ Ycc.prototype.createCacheCtx = function (options) {
 			
 		// 监听tap事件，向wrapper内部UI传递
 		this.addListener('tap',function (e) {
-			var ui = self._cacheLayer.getUIFromPointer(e);
-			// console.log('ui',ui);
+			var dot = new Ycc.Math.Dot(e.x-this.scrollerPosition.x-this._absolutePosition.x,e.y-this.scrollerPosition.y-this._absolutePosition.y);
+			var ui = self._cacheLayer.getUIFromPointer(dot);
+			// console.log('ui',ui,dot);
 			
-			ui&&ui.triggerUIEventBubbleUp('tap',e.x,e.y);
+			ui&&ui.triggerUIEventBubbleUp('tap',dot.x,dot.y);
 		});
 		
 		this.addListener('dragstart',function (e) {
 			// console.log(e.type);
 			startStatus.startEvent = e;
-			startStatus.position = new Ycc.Math.Dot(self._cacheLayer.x,self._cacheLayer.y);
+			startStatus.position = new Ycc.Math.Dot(self.scrollerPosition.x,self.scrollerPosition.y);
+			startStatus.cacheLayerPosition = new Ycc.Math.Dot(self._cacheLayer.x,self._cacheLayer.y);
 			
 			// 若没启用ticker则启用
 			if(!ticker._isRunning) ticker.start();
@@ -8935,15 +8970,16 @@ Ycc.prototype.createCacheCtx = function (options) {
 			var deltaX = e.x-startStatus.startEvent.x;
 			var deltaY = e.y-startStatus.startEvent.y;
 			
-			self._cacheLayer.x = startStatus.position.x+deltaX;
-			self._cacheLayer.y = startStatus.position.y+deltaY;
+			self.scrollerPosition.x = startStatus.position.x+deltaX;
+			self.scrollerPosition.y = startStatus.position.y+deltaY;
 			self._checkRangeLimit();
+			
 			// console.log('dragging',self._cacheLayer.x,self._cacheLayer.y);
 		});
 		
 		this.addListener('dragend',function (e) {
 			endStatus.endEvent = e;
-			endStatus.position = new Ycc.Math.Dot(self._cacheLayer.x,self._cacheLayer.y);
+			endStatus.position = new Ycc.Math.Dot(self.scrollerPosition.x,self.scrollerPosition.y);
 			// console.log('dragend',self.selfRender,startStatus);
 			//移除监听
 			ticker.removeFrameListener(draggingListen);
@@ -8951,7 +8987,7 @@ Ycc.prototype.createCacheCtx = function (options) {
 		
 		//拖拽的监听函数，拖拽开始时加入，结束时移除
 		function draggingListen(){
-			self._cacheLayer.updateCache();
+			// self._cacheLayer.updateCache();
 			if(self.selfRender) self.belongTo.yccInstance.layerManager.reRenderAllLayerToStage();
 		}
 		
@@ -8984,13 +9020,13 @@ Ycc.prototype.createCacheCtx = function (options) {
 					ticker.removeFrameListener(onFrameComing);
 					return;
 				}
-				if(dir==='left'||dir==='right') self._cacheLayer.x = endStatus.position.x+(dirMap[dir])*delta;
-				if(dir==='up'||dir==='down') self._cacheLayer.y = endStatus.position.y+(dirMap[dir])*delta;
+				if(dir==='left'||dir==='right') self.scrollerPosition.x = endStatus.position.x+(dirMap[dir])*delta;
+				if(dir==='up'||dir==='down') self.scrollerPosition.y = endStatus.position.y+(dirMap[dir])*delta;
 				self._checkRangeLimit();
 				
 				// console.log('onFrameComing',self._cacheLayer.x,self._cacheLayer.y);
 				
-				self._cacheLayer.updateCache();
+				// self._cacheLayer.updateCache();
 				if(self.selfRender) self.belongTo.yccInstance.layerManager.reRenderAllLayerToStage();
 			}
 		});
@@ -9008,16 +9044,16 @@ Ycc.prototype.createCacheCtx = function (options) {
 		var maxY = self.contentH-self.rect.height;
 		
 		// x、y坐标不能大于0
-		self._cacheLayer.x = self._cacheLayer.x>=0?0:self._cacheLayer.x;
-		self._cacheLayer.y = self._cacheLayer.y>=0?0:self._cacheLayer.y;
+		self.scrollerPosition.x = self.scrollerPosition.x>=0?0:self.scrollerPosition.x;
+		self.scrollerPosition.y = self.scrollerPosition.y>=0?0:self.scrollerPosition.y;
 		
 		// x、y坐标不能小于极限值
-		self._cacheLayer.x = self._cacheLayer.x<-maxX?-maxX:self._cacheLayer.x;
-		self._cacheLayer.y = self._cacheLayer.y<-maxY?-maxY:self._cacheLayer.y;
+		self.scrollerPosition.x = self.scrollerPosition.x<-maxX?-maxX:self.scrollerPosition.x;
+		self.scrollerPosition.y = self.scrollerPosition.y<-maxY?-maxY:self.scrollerPosition.y;
 		
 		// 若内容没达到滚动的高宽，不能滚动
-		if(self.contentW<=self.rect.width) self._cacheLayer.x = 0;
-		if(self.contentH<=self.rect.height) self._cacheLayer.y = 0;
+		if(self.contentW<=self.rect.width) self.scrollerPosition.x = 0;
+		if(self.contentH<=self.rect.height) self.scrollerPosition.y = 0;
 	}
 	
 })(Ycc);;/**

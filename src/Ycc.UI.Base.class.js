@@ -400,6 +400,22 @@
 			|| (absolute.y+absolute.height<0);
 	};
 	
+	/**
+	 * 判断当前区域在某个区域外
+	 * @param rect {Ycc.Math.Rect}
+	 */
+	Ycc.UI.Base.prototype.isOutOfRect = function (rect) {
+		var x = rect.x;
+		var y = rect.y;
+		var w = rect.width;
+		var h = rect.height;
+		var absolute = this.getAbsolutePositionRect();
+		return absolute.x>w
+			|| (absolute.x+absolute.width<x)
+			|| absolute.y>h
+			|| (absolute.y+absolute.height<y);
+	};
+	
 	
 	/**
 	 * 递归释放内存，等待GC
@@ -538,10 +554,12 @@
 		if(error) return error;
 		
 		// 超出舞台时，不予渲染，此步骤挪到外面做判断，不再重复判断
-		if(this.isOutOfStage())
+		if(!this.belongTo.useCache&&this.isOutOfStage())
 			return {message:'UI超出舞台！'};
-
-
+		if(this.belongTo.useCache&&this.isOutOfRect(new Ycc.Math.Rect(0,0,this.ctxCache.canvas.width*this.dpi,this.ctxCache.canvas.height*this.dpi)))
+			return {message:'UI超出离屏Canvas！'};
+		
+		
 		// 绘制前的处理
 		this._processBeforeRender();
 

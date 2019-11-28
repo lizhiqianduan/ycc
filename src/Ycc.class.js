@@ -455,6 +455,7 @@ Ycc.prototype.createCacheCtx = function (options) {
 	}).getContext('2d');
 
 	// debug
-	// document.body.appendChild(ctxCache.canvas);
+	// console.log('create cache ctx',options);
+	document.body.appendChild(ctxCache.canvas);
 	return ctxCache;
 };

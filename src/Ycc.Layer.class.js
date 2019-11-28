@@ -237,7 +237,10 @@
 		// 初始化图层属性
 		this.ctx = this.yccInstance.ctx;
 		// useCache参数判断
-		this.ctxCache = this.useCache?this.yccInstance.createCacheCtx():this.ctx;
+		this.ctxCache = this.useCache?this.yccInstance.createCacheCtx({
+			width:this.width*this.yccInstance.dpi,
+			height:this.height*this.yccInstance.dpi
+		}):this.ctx;
 		
 		// 初始化画布属性
 		self._setCtxProps();
@@ -795,7 +798,8 @@
 	 * 清空缓存画布、缓存区域
 	 */
 	Ycc.Layer.prototype.clearCache = function () {
-		this.ctxCache.canvas.width = this.ctx.canvas.width;
+		var w = this.ctxCache.canvas.width;
+		this.ctxCache.canvas.width = w;
 		// 清空缓存区域
 		this.ctxCacheRect = null;
 	};
