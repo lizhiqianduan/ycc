@@ -487,13 +487,14 @@
 		if(!beforeUI||index===-1){
 			this.uiList.push(ui);
 			ui._onAdded&&ui._onAdded();
-			return;
+			return ui;
 		}
 		this.uiList.splice(index,0,ui);
 		ui._onAdded&&ui._onAdded();
 
 		// 更新缓存
 		this.updateCache();
+		return ui;
 	};
 	
 	/**

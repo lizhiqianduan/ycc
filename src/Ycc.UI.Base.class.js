@@ -355,7 +355,7 @@
 		if(this.belongTo)
 			ui.init(this.belongTo);
 		this.addChildTree(ui);
-		return this;
+		return ui;
 	};
 	
 	/**

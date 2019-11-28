@@ -437,12 +437,19 @@ Ycc.prototype.getSystemInfo = function () {
 };
 
 /**
- * 创建一个离屏的绘图空间，大小与舞台等同
+ * 创建一个离屏的绘图空间，默认大小与舞台等同
+ * @param options
+ * @param options.width
+ * @param options.height
  */
-Ycc.prototype.createCacheCtx = function () {
-	var ctxCache = this.createCanvas({
+Ycc.prototype.createCacheCtx = function (options) {
+	options = options || {
 		width:this.getStageWidth(),
 		height:this.getStageHeight()
+	};
+	var ctxCache = this.createCanvas({
+		width:options.width,
+		height:options.height
 	}).getContext('2d');
 
 	// debug
