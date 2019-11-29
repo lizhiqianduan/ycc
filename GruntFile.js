@@ -83,7 +83,8 @@ module.exports = function(grunt){
 		}
 		
 		,clean:{
-			contents:["docs","build"]
+        	// 清除对应版本的docs目录
+			contents:['docs/v'+packageJSON.version,"build"]
 		}
         
         ,watch:{
