@@ -186,6 +186,9 @@
 			endEvent:null
 		};
 
+		// 是否取消swipe效果，用于结束动画
+		var cancelSwipeAnimate = false;
+
 		// 监听tap事件，向wrapper内部UI传递
 		this._eventWrapper.addListener('tap',function (e) {
 			var list = self.belongTo.getUIListFromPointer(e,{uiIsShow:true,uiIsGhost:false});
@@ -202,6 +205,7 @@
 			startStatus.tickerIsRunning = ticker._isRunning;
 			startStatus.startEvent = e;
 			startStatus.rect = new Ycc.Math.Rect(self._wrapper.rect);
+			cancelSwipeAnimate = true; //结束上一次动画
 
 			// 若没启用ticker则启用
 			ticker.start();
@@ -213,7 +217,8 @@
         this._eventWrapper.addListener('dragging',function (e) {
 			var deltaX = e.x-startStatus.startEvent.x;
 			var deltaY = e.y-startStatus.startEvent.y;
-			
+			cancelSwipeAnimate = true; //结束上一次动画
+
 			self._wrapper.rect.x = startStatus.rect.x+deltaX;
 			self._wrapper.rect.y = startStatus.rect.y+deltaY;
 			self._checkRangeLimit();
@@ -247,7 +252,7 @@
 			var delta = 0;
 			// 帧数差
 			var t0=0;
-
+			cancelSwipeAnimate = false; //开始动画
 			ticker.addFrameListener(onFrameComing);
 			function onFrameComing(){
 				// 帧数差
@@ -255,8 +260,8 @@
 				// 距离差
 				delta = t0*(v0 - self.swipeAcceleration*t0);
 				// console.log(t0,delta);
-
-				if(t0 >= tMax || delta<=0){
+				// 是否已达最大时间 是否已达最大距离 是否已取消
+				if(t0 >= tMax || delta<=0 || cancelSwipeAnimate){
 					// 去除监听
 					ticker.removeFrameListener(onFrameComing);
 					return;
