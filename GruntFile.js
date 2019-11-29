@@ -76,9 +76,9 @@ module.exports = function(grunt){
 			options: {
 				verbose: true,
 				destination: 'docs/v'+packageJSON.version,
-				private:true,
+				private:false,
 				template:"./lib/jaguarjs-jsdoc",
-				configure: "jsdoc-conf.json"
+				configure: "jsdoc.config.js"
 			}
 		}
 		
