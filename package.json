@@ -21,9 +21,10 @@
   "author": "xiaohei",
   "license": "ISC",
   "keywords": [
-    "ycc-engine",
     "ycc.js",
+    "yccjs",
     "ycc",
+    "ycc-engine",
     "engine",
     "canvas"
   ],
