@@ -160,7 +160,7 @@
 		else
 			this._wrapper.addChildTree(ui);
 
-		return this;
+		return ui;
 	};
 	
 	
