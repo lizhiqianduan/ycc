@@ -5645,6 +5645,7 @@ Ycc.prototype.createCacheCtx = function (options) {
 		
 		var ctx = this.ctxCache;
 		ctx.save();
+		ctx.setLineDash([0]);
 		ctx.strokeStyle = this.rectBorderColor;
 		ctx.strokeWidth = this.rectBorderWidth;
 		ctx.beginPath();
