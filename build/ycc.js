@@ -5613,10 +5613,8 @@ Ycc.prototype.createCacheCtx = function (options) {
 	/**
 	 * 渲染容纳区rect的背景色
 	 * <br> 开启离屏canvas后，此过程只会发生在离屏canvas中
-	 * @param absoluteRect	{Ycc.Math.Rect}	容纳区的绝对位置
 	 */
-	Ycc.UI.Base.prototype.renderRectBgColor = function (absoluteRect) {
-		var rect = absoluteRect;
+	Ycc.UI.Base.prototype.renderRectBgColor = function () {
 		var dots = this.getAbsolutePositionPolygon();
 		if(!dots||dots.length===0) return console.log(new Ycc.Debugger.Log("no polygon coordirates!").message);
 
@@ -5632,30 +5630,30 @@ Ycc.prototype.createCacheCtx = function (options) {
 		ctx.closePath();
 		ctx.fill();
 		ctx.restore();
-		rect = null;
 	};
 	
 	/**
 	 * 渲染容纳区rect的边框
 	 * <br> 开启离屏canvas后，此过程只会发生在离屏canvas中
-	 * @param absoluteRect	{Ycc.Math.Rect}	容纳区的绝对位置
 	 */
-	Ycc.UI.Base.prototype.renderRectBorder = function (absoluteRect) {
+	Ycc.UI.Base.prototype.renderRectBorder = function () {
 		// console.log('绘制边框');
 		// 边框宽度为0，不渲染
 		if(this.rectBorderWidth<=0) return;
+		var dots = this.getAbsolutePositionPolygon();
+		if(!dots||dots.length===0) return console.log(new Ycc.Debugger.Log("no polygon coordirates!").message);
+		
 		var ctx = this.ctxCache;
-
-		var rect = absoluteRect;
 		ctx.save();
 		ctx.strokeStyle = this.rectBorderColor;
 		ctx.strokeWidth = this.rectBorderWidth;
 		ctx.beginPath();
-		ctx.rect(rect.x*this.dpi,rect.y*this.dpi,rect.width*this.dpi,rect.height*this.dpi);
+		ctx.moveTo(dots[0].x*this.dpi,dots[0].y*this.dpi);
+		for(var i=1;i<dots.length-1;i++)
+			ctx.lineTo(dots[i].x*this.dpi,dots[i].y*this.dpi);
 		ctx.closePath();
 		ctx.stroke();
 		ctx.restore();
-		rect = null;
 	};
 	
 	/**
@@ -8498,9 +8496,9 @@ Ycc.prototype.createCacheCtx = function (options) {
 		// this.scaleAndRotate();
 		// 坐标系旋转
 		var absoluteAnchor = this.transformToAbsolute({x:this.anchorX,y:this.anchorY});
-		ctx.translate(absoluteAnchor.x,absoluteAnchor.y);
+		ctx.translate(absoluteAnchor.x*this.dpi,absoluteAnchor.y*this.dpi);
 		ctx.rotate(this.rotation*Math.PI/180);
-		ctx.translate(-absoluteAnchor.x,-absoluteAnchor.y);
+		ctx.translate(-absoluteAnchor.x*this.dpi,-absoluteAnchor.y*this.dpi);
 		
 		ctx.fillStyle = option.color;
 		ctx.strokeStyle = option.color;
