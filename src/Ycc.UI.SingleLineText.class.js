@@ -187,9 +187,9 @@
 		// this.scaleAndRotate();
 		// 坐标系旋转
 		var absoluteAnchor = this.transformToAbsolute({x:this.anchorX,y:this.anchorY});
-		ctx.translate(absoluteAnchor.x,absoluteAnchor.y);
+		ctx.translate(absoluteAnchor.x*this.dpi,absoluteAnchor.y*this.dpi);
 		ctx.rotate(this.rotation*Math.PI/180);
-		ctx.translate(-absoluteAnchor.x,-absoluteAnchor.y);
+		ctx.translate(-absoluteAnchor.x*this.dpi,-absoluteAnchor.y*this.dpi);
 		
 		ctx.fillStyle = option.color;
 		ctx.strokeStyle = option.color;
