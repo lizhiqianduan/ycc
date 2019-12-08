@@ -99,7 +99,7 @@
 		
 		ctx.save();
 		// 虚线
-		ctx.setLineDash([10]);
+		ctx.setLineDash&&ctx.setLineDash([10]);
 		ctx.beginPath();
 		this.ctx.arc(
 			point.x,

@@ -161,7 +161,7 @@
 		this.ctx.closePath();
 		
 		this.ctx.strokeStyle = this.color;
-		this.ctx.setLineDash([10]);
+		this.ctx.setLineDash&&this.ctx.setLineDash([10]);
 
 		this.ctx.stroke();
 		

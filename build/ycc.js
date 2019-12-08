@@ -6389,7 +6389,7 @@ Ycc.prototype.createCacheCtx = function (options) {
 		
 		ctx.save();
 		// 虚线
-		ctx.setLineDash([10]);
+		ctx.setLineDash&&ctx.setLineDash([10]);
 		ctx.beginPath();
 		ctx.moveTo(start.x*this.dpi,start.y*this.dpi);
 		for(var i=0;i<self.coordinates.length-1;i++){
@@ -6639,7 +6639,7 @@ Ycc.prototype.createCacheCtx = function (options) {
 		this.ctx.closePath();
 		
 		this.ctx.strokeStyle = this.color;
-		this.ctx.setLineDash([10]);
+		this.ctx.setLineDash&&this.ctx.setLineDash([10]);
 
 		this.ctx.stroke();
 		
@@ -6747,7 +6747,7 @@ Ycc.prototype.createCacheCtx = function (options) {
 		
 		ctx.save();
 		// 虚线
-		ctx.setLineDash([10]);
+		ctx.setLineDash&&ctx.setLineDash([10]);
 		ctx.beginPath();
 		this.ctx.arc(
 			point.x,

@@ -205,7 +205,7 @@
 		
 		ctx.save();
 		// 虚线
-		ctx.setLineDash([10]);
+		ctx.setLineDash&&ctx.setLineDash([10]);
 		ctx.beginPath();
 		ctx.moveTo(start.x*this.dpi,start.y*this.dpi);
 		for(var i=0;i<self.coordinates.length-1;i++){
