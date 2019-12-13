@@ -6664,6 +6664,7 @@ Ycc.prototype.createCacheCtx = function (options) {
 	 * @param option.fill=true {boolean}	填充or描边
 	 * @param option.color=black {string} 圆的颜色
 	 * @param option.point {Ycc.Math.Dot} 圆心位置，相对坐标
+	 * @param option.lineWidth {Number} 非填充时的线宽
 	 * @param option.r=10 {number} 圆的半径
 	 * @constructor
 	 * @extends Ycc.UI.Polygon
@@ -6676,7 +6677,8 @@ Ycc.prototype.createCacheCtx = function (options) {
 		this.r = 10;
 		this.color = "black";
 		this.fill = true;
-		
+		this.lineWidth = 1;
+
 		this.extend(option);
 	};
 	// 继承prototype
@@ -6717,6 +6719,7 @@ Ycc.prototype.createCacheCtx = function (options) {
 		ctx.beginPath();
 		ctx.fillStyle = this.color;
 		ctx.strokeStyle = this.color;
+		ctx.lineWidth = this.lineWidth;
 		
 		ctx.arc(
 			point.x*this.dpi,
