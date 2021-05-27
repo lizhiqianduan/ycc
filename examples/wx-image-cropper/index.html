@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name=viewport content="width=device-width,initial-scale=1,user-scalable=0,viewport-fit=cover">
+	<title>UI事件的示例</title>
+	<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<div class="return-btn">
+	<a href="../">
+		返回首页
+	</a>
+</div>
+<!-- <div class="tip">
+	<h3>示例说明：</h3>
+	<div>
+		1、这个示例是一个可以拖拽的文本UI，用于展示UI的事件。<br>
+		2、PC端可以在拖动鼠标改变文本的位置，移动端可以拖拽改变文本的位置。<br>
+	</div>
+	<br><br>
+</div> -->
+
+
+<div id="canvas">
+    
+</div>
+
+
+</body>
+</html>
+
+<script src="../common.js"></script>
+
+<script src="../../build/ycc.js"></script>
+<script src="./lib.js"></script>
+
+
+<script>
+
+	// var canvas = ycc.createCanvas({width:300,height:800,dpiAdaptation:true});
+    
+    var cropper = new Cropper('http://datagetter.cn:9000/datagetter.cn/public/original/wx_test_kid_oXWPn5V5YxiQVoSyK3IDFQ2XnqhM_.jpg_1621776883437_4289396_wx_test_kid_oXWPn5V5YxiQVoSyK3IDFQ2XnqhM_.jpg',{
+        wrapW:300,
+        wrapH:600,
+    });
+
+   
+    document.getElementById("canvas").appendChild(cropper.ycc.canvasDom);
+	
+
+</script>

@@ -170,7 +170,7 @@
 
 	var demo5 = new Ycc.Gesture({target:document.getElementById('demo5')});
 	demo5._angle = 0;
-	demo5.onrotate = function (angle) {
+	demo5.onrotate = function (e,angle) {
 		angle=parseInt(angle)+demo5._angle;
 		var style = '-webkit-transform: rotate('+angle+'deg);'+'transform: rotate('+angle+'deg);';
 		demo5.option.target.style=style;
@@ -182,7 +182,7 @@
 
 
 	var demo6 = new Ycc.Gesture({target:document.getElementById('demo6')});
-	demo6.onzoom = function (rate) {
+	demo6.onzoom = function (e,rate) {
 		var style = '-webkit-transform: scale('+rate+');'+'transform: scale('+rate+');';
 		demo6.option.target.style=style;
 	};
