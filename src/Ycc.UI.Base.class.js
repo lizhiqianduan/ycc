@@ -315,7 +315,7 @@
 		ctx.save();
 		ctx.setLineDash&&ctx.setLineDash([0]);
 		ctx.strokeStyle = this.rectBorderColor;
-		ctx.strokeWidth = this.rectBorderWidth;
+		ctx.lineWidth = this.rectBorderWidth;
 		ctx.beginPath();
 		ctx.moveTo(dots[0].x*this.dpi,dots[0].y*this.dpi);
 		for(var i=1;i<dots.length-1;i++)
