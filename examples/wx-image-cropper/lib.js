@@ -5,6 +5,8 @@
  * @param {*} options 配置参数
  * @param {*} options.wrapW 可视区宽度
  * @param {*} options.wrapH 可视区高度
+ * @param {*} options.cropW 裁剪区的高
+ * @param {*} options.cropH 裁剪区高度
  * @param {*} options.callback 完成/取消裁剪的回调
  */
 function Cropper(imageUrl,options){
@@ -12,6 +14,9 @@ function Cropper(imageUrl,options){
     options = Ycc.utils.extend({
         wrapW:800,
         wrapH:600,
+        cropW:200,
+        cropH:200,
+        maskColor:'rgba(0,0,0,0.6)',
         callback: function(){}
     },options);
 
@@ -20,6 +25,10 @@ function Cropper(imageUrl,options){
     this.ycc = new Ycc();
     this.ycc.bindCanvas(this.ycc.createCanvas({width:options.wrapW,height:options.wrapH,dpiAdaptation:true}));
     this.layer = this.ycc.layerManager.newLayer({enableEventManager:true});
+
+    // 图片UI
+    this.imageUI = null;
+
 
     this.init();
 }
@@ -41,7 +50,57 @@ Cropper.prototype.init = function(){
 }
 
 Cropper.prototype._onImageLoad = function(image){
+    this._addImage(image);
+    this._addCrop();
+}
+
+Cropper.prototype._addCrop = function(){
+    // var ycc = this.ycc;
+    var layer = this.layer;
+    layer.addUI(new Ycc.UI.Rect({
+        rect:new Ycc.Math.Rect(0,0,this.options.wrapW,this.options.wrapH/2-this.options.cropH/2),
+        color:this.options.maskColor,
+        ghost:true,
+    }));
+
+    layer.addUI(new Ycc.UI.Rect({
+        rect:new Ycc.Math.Rect(0,this.options.wrapH-(this.options.wrapH/2-this.options.cropH/2),this.options.wrapW,this.options.wrapH/2-this.options.cropH/2),
+        color:this.options.maskColor,
+        ghost:true,
+    }));
+
+    layer.addUI(new Ycc.UI.Rect({
+        rect:new Ycc.Math.Rect(0,this.options.wrapH/2-this.options.cropH/2,this.options.wrapW/2-this.options.cropW/2,this.options.cropH),
+        color:this.options.maskColor,
+        ghost:true,
+    }));
+    layer.addUI(new Ycc.UI.Rect({
+        rect:new Ycc.Math.Rect(this.options.wrapW-(this.options.wrapW/2-this.options.cropW/2),this.options.wrapH/2-this.options.cropH/2,this.options.wrapW/2-this.options.cropW/2,this.options.cropH),
+        color:this.options.maskColor,
+        ghost:true,
+    }));
+
+    // 边框
+    layer.addUI(new Ycc.UI.Rect({
+        rect:new Ycc.Math.Rect((this.options.wrapW/2-this.options.cropW/2),this.options.wrapH/2-this.options.cropH/2,this.options.cropW,this.options.cropH),
+        rectBorderWidth:4,
+        rectBorderColor:'#ccc',
+        color:'transparent',
+        ghost:true,
+    }));
+
+    // layer.addUI(new Ycc.UI.Rect({
+    //     rect:new Ycc.Math.Rect(0,0,100,100),
+    //     color:'rgba(255,0,0,0.1)',
+    //     ghost:true
+    // }));
+}
+
+
+// 添加图片
+Cropper.prototype._addImage = function(image){
     var ycc = this.ycc;
+    var cropper = this;
 
 
     var ratioW = image.res.width/this.options.wrapW;
@@ -58,47 +117,50 @@ Cropper.prototype._onImageLoad = function(image){
     }
 
     console.log('scaleRatio',scaleRatio,ratioW<ratioH)
-    // scaleRatio = 5;
-	// 添加图片至图层
-    this.layer.addUI(new Ycc.UI.Image({
+    this.imageUI = new Ycc.UI.Image({
         rect:imageRect,
         fillMode:'scale',
         res:image.res,
-        ondragging,
-        ondragstart        
-    }));
+        ondragging:function(e) {
+            if(this.belongTo.yccInstance.gesture.ismutiltouching) return;
+            if(!this.userData) return;
 
-    this.ycc.gesture.onzoom = onzoom;
-    
-    var initRect = new Ycc.Math.Rect(imageRect); 
-    function onzoom(e,rate){
-        // console.log(e);
-        if(rate<1) rate = 1;
-        imageRect.width = initRect.width*rate;
-        imageRect.height = initRect.height*rate;
-    }
+            console.log("我是",this.yccClass.name,"我",e.type,e);
+            var startPos = this.userData.startPos;
+            var startRect = this.userData.startRect;
+            let deltaX = (e.x-startPos.x);
+            let deltaY = (e.y-startPos.y);
+            this.rect.x = startRect.x+deltaX;
+            this.rect.y = startRect.y+deltaY;
+        },
+        ondragstart:function(e) {
+            this.userData = {
+                startPos:new Ycc.Math.Dot(e),
+                startRect:new Ycc.Math.Rect(this.rect)
+            }
+        }
+    });
+	// 添加图片至图层
+    this.layer.addUI(this.imageUI);
+
+    // 缩放前的临时区域
+    var tempRect = null;
+    this.ycc.gesture.onmultistart = function(){
+        tempRect = new Ycc.Math.Rect(cropper.imageUI.rect); 
+        // 将userdata设置成null 阻止缩放后立即响应拖拽
+        cropper.imageUI.userData = null;
+    };
+    // 绑定缩放事件
+    this.ycc.gesture.onzoom = function(e){
+        var rate = e.zoomRate;
+        imageRect.width = tempRect.width*rate;
+        imageRect.height =tempRect.height*rate;
+
+        imageRect.x = tempRect.x-(imageRect.width-tempRect.width)/2;
+        imageRect.y = tempRect.y-(imageRect.height-tempRect.height)/2;
+    };
 }
 
-
-
-
-
-function ondragstart(e) {
-    this.userData = {
-        startPos:new Ycc.Math.Dot(e),
-        startRect:new Ycc.Math.Rect(this.rect)
-    }
-};
-function ondragging(e) {
-    if(this.belongTo.yccInstance.gesture.ismutiltouching) return;
-    console.log("我是",this.yccClass.name,"我",e.type,e);
-    var startPos = this.userData.startPos;
-    var startRect = this.userData.startRect;
-    let deltaX = (e.x-startPos.x);
-    let deltaY = (e.y-startPos.y);
-    this.rect.x = startRect.x+deltaX;
-    this.rect.y = startRect.y+deltaY;
-};
 
 
 window.onerror = function(e){

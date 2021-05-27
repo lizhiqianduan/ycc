@@ -3580,11 +3580,16 @@ Ycc.prototype.createCacheCtx = function (options) {
 				var rateAndAngle = self.getZoomRateAndRotateAngle(preLife,curLife);
 				
 				if(Ycc.utils.isNum(rateAndAngle.rate)){
-					self.triggerListener('zoom',self._createEventData(preLife.startTouchEvent,'zoom'),rateAndAngle.rate);
+					var e = self._createEventData(preLife.startTouchEvent,'zoom');
+					e.zoomRate = rateAndAngle.rate;
+					self.triggerListener('zoom',self._createEventData(e,'zoom'));
 					self.triggerListener('log','zoom triggered',rateAndAngle.rate);
 				}
 				if(Ycc.utils.isNum(rateAndAngle.angle)){
-					self.triggerListener('rotate',self._createEventData(preLife.startTouchEvent,'rotate'),rateAndAngle.angle);
+					var e = self._createEventData(preLife.startTouchEvent,'rotate');
+					e.angle = rateAndAngle.angle;
+					self.triggerListener('rotate',self._createEventData(e,'rotate'));
+					// self.triggerListener('rotate',self._createEventData(preLife.startTouchEvent,'rotate'),rateAndAngle.angle);
 					self.triggerListener('log','rotate triggered',rateAndAngle.angle);
 				}
 				return this;
@@ -3856,6 +3861,15 @@ Ycc.prototype.createCacheCtx = function (options) {
 			 * 手势滑动方向，此属性当且仅当type为swipe时有值
 			 */
 			swipeDirection:'',
+
+			/**
+			 * 缩放比例 仅当事件为zoom时可用
+			 */
+			zoomRate:1,
+			/**
+			 * 旋转角度 仅当事件为rotate时可用
+			 */
+			angle:0,
 
 			/**
 			 * 创建时间
@@ -5661,7 +5675,7 @@ Ycc.prototype.createCacheCtx = function (options) {
 		ctx.save();
 		ctx.setLineDash&&ctx.setLineDash([0]);
 		ctx.strokeStyle = this.rectBorderColor;
-		ctx.strokeWidth = this.rectBorderWidth;
+		ctx.lineWidth = this.rectBorderWidth;
 		ctx.beginPath();
 		ctx.moveTo(dots[0].x*this.dpi,dots[0].y*this.dpi);
 		for(var i=1;i<dots.length-1;i++)

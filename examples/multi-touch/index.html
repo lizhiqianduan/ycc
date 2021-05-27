@@ -170,9 +170,9 @@
 
 	var demo5 = new Ycc.Gesture({target:document.getElementById('demo5')});
 	demo5._angle = 0;
-	demo5.onrotate = function (e,angle) {
-		angle=parseInt(angle)+demo5._angle;
-		var style = '-webkit-transform: rotate('+angle+'deg);'+'transform: rotate('+angle+'deg);';
+	demo5.onrotate = function (e) {
+		angle=parseInt(e.angle)+demo5._angle;
+		var style = '-webkit-transform: rotate('+e.angle+'deg);'+'transform: rotate('+e.angle+'deg);';
 		demo5.option.target.style=style;
 	};
 	demo5.onmultiend=function (preLife,curLife) {
@@ -182,8 +182,8 @@
 
 
 	var demo6 = new Ycc.Gesture({target:document.getElementById('demo6')});
-	demo6.onzoom = function (e,rate) {
-		var style = '-webkit-transform: scale('+rate+');'+'transform: scale('+rate+');';
+	demo6.onzoom = function (e) {
+		var style = '-webkit-transform: scale('+e.zoomRate+');'+'transform: scale('+e.zoomRate+');';
 		demo6.option.target.style=style;
 	};
 	demo6.onmultiend=function (preLife,curLife) {
