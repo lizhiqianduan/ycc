@@ -26,4 +26,17 @@ if("undefined"!== typeof wx){
 			return Date.now();
 		};
 	}
+
+	Ycc.prototype.getSystemInfo = function () {
+		var info = wx.getSystemInfoSync();
+		return {
+			"model":info.model,
+			"pixelRatio":info.pixelRatio,
+			"windowWidth":info.windowWidth,
+			"windowHeight":info.windowHeight,
+			"screenWidth":info.screenWidth,
+			"screenHeight":info.screenHeight,
+			"devicePixelRatio":info.devicePixelRatio||1
+		};
+	};
 };

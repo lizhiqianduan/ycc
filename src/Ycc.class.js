@@ -402,6 +402,7 @@ Ycc.prototype.getUIListFromPointer = function (dot,options) {
  * ycc.bindCanvas(stage);
  *
  * @param options
+ * @param options.canvasDom 传入canvasDom
  * @param options.width
  * @param options.height
  * @param options.dpiAdaptation		是否根据dpi适配canvas大小
@@ -410,11 +411,12 @@ Ycc.prototype.getUIListFromPointer = function (dot,options) {
 Ycc.prototype.createCanvas = function (options) {
 	options = options||{};
 	var option = Ycc.utils.mergeObject({
-		width:window.innerWidth,
-		height:window.innerHeight,
-		dpiAdaptation:false
+		width:this.getSystemInfo().windowWidth,
+		height:this.getSystemInfo().windowHeight,
+		dpiAdaptation:false,
+		canvasDom:null
 	},options);
-	var canvas = document.createElement("canvas");
+	var canvas = option.canvasDom || document.createElement("canvas");
 	var dpi = this.getSystemInfo().devicePixelRatio;
 	if(option.dpiAdaptation){
 		canvas.width = option.width*dpi;
