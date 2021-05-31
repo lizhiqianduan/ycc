@@ -50,7 +50,7 @@
 	Ycc.Loader.prototype.loadResParallel = function (resArr, endCb, progressCb,endResArr,endResMap) {
 		endResArr = endResArr || [];
 		endResMap = endResMap || {};
-		
+		var self = this;
 		for(var i=0;i<resArr.length;i++){
 			var curRes = resArr[i];
 			var successEvent = "load";
@@ -59,7 +59,7 @@
 			
 			if(curRes.type==='image'){
 				// curRes.res = new Image();
-				curRes.res = self._creaateImage();
+				curRes.res = self._createImage();
 				curRes.res.src = curRes.url;
 				curRes.res.crossOrigin = curRes.crossOrigin||'';
 			}
@@ -124,7 +124,7 @@
 			
 			if(curRes.type==='image'){
 				// curRes.res = new Image();
-				curRes.res = self._creaateImage();
+				curRes.res = self._createImage();
 				curRes.res.src = fullPath;
 				
 				// curRes.res.addEventListener(successEvent,onSuccess);
@@ -222,9 +222,9 @@
 	/**
 	 * 创建图片 兼容处理
 	 */
-	Ycc.Loader.prototype._creaateImage = function(){
-		if(this.yccInstance.config.appenv==='wxapp') return this.yccInstance.canvasDom.createImage();
-		return Image();
+	Ycc.Loader.prototype._createImage = function(){
+		if(this.yccInstance && this.yccInstance.config.appenv==='wxapp') return this.yccInstance.canvasDom.createImage();
+		return new Image();
 	}
 	
 	

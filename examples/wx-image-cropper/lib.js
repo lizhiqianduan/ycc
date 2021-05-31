@@ -18,6 +18,7 @@
     function Cropper(imageUrl,options){
         // 默认参数
         options = Ycc.utils.extend({
+            canvasDom:null,
             wrapW:800,
             wrapH:600,
             cropW:200,
@@ -64,13 +65,13 @@
         // var ycc = this.ycc;
         var layer = this.layer;
         layer.addUI(new Ycc.UI.Rect({
-            rect:new Ycc.Math.Rect(0,0,this.options.wrapW,this.options.wrapH/2-this.options.cropH/2),
+            rect:new Ycc.Math.Rect(0,0,this.options.wrapW,this.options.wrapH/2-this.options.cropH/2+1),
             color:this.options.maskColor,
             ghost:true,
         }));
 
         layer.addUI(new Ycc.UI.Rect({
-            rect:new Ycc.Math.Rect(0,this.options.wrapH-(this.options.wrapH/2-this.options.cropH/2),this.options.wrapW,this.options.wrapH/2-this.options.cropH/2),
+            rect:new Ycc.Math.Rect(0,this.options.wrapH-(this.options.wrapH/2-this.options.cropH/2)-1,this.options.wrapW,this.options.wrapH/2-this.options.cropH/2),
             color:this.options.maskColor,
             ghost:true,
         }));
@@ -151,13 +152,15 @@
 
         // 缩放前的临时区域
         var tempRect = null;
-        this.ycc.gesture.onmultistart = function(){
+        this.ycc.gesture.onmultistart = function(e){
+            // alert(11111);
             tempRect = new Ycc.Math.Rect(cropper.imageUI.rect); 
             // 将userdata设置成null 阻止缩放后立即响应拖拽
             cropper.imageUI.userData = null;
         };
         // 绑定缩放事件
         this.ycc.gesture.onzoom = function(e){
+            // alert('zoom '+e.zoomRate);
             var rate = e.zoomRate;
             imageRect.width = tempRect.width*rate;
             imageRect.height =tempRect.height*rate;
@@ -168,7 +171,11 @@
     
     }
 
-    
+
+    Cropper.prototype.getCropImage = function(){
+        var ycc = this.ycc;
+        return ycc.ctx.getImageData((this.options.wrapW/2-this.options.cropW/2),this.options.wrapH/2-this.options.cropH/2,this.options.cropW,this.options.cropH)
+    }
 
 
 
@@ -176,18 +183,24 @@
 
 
     ;if(typeof exports==="object"&&typeof module!=="undefined"){
-        module.exports=Cropper;
+        module.exports=moduleRequire;
     }else if(typeof define==="function"){
-        define("Cropper",YcCropperc)
+        define("Cropper",moduleRequire)
     }else{
         var g;
         if(typeof window!=="undefined"){g=window}
         else if(typeof global!=="undefined"){g=global}
         else if(typeof self!=="undefined"){g=self}
         else{g=this}
-        g.Cropper = Cropper;
+        g.Cropper = moduleRequire;
     }
-}(Ycc))
+
+    // 依赖项函数
+    function moduleRequire(_Ycc){
+        Ycc = _Ycc;
+        return Cropper;
+    }
+}())
 
 
 

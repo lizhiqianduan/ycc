@@ -22,9 +22,9 @@
 </div> -->
 
 
-<div id="canvas">
-    
-</div>
+<canvas id="canvas"></canvas>
+<div id="log"></div>
+<!-- <div id="canvas"></div> -->
 
 
 </body>
@@ -32,21 +32,22 @@
 
 <script src="../common.js"></script>
 
-<script src="../../build/ycc.js"></script>
-<script src="./lib.js"></script>
+<script src="../../build/ycc.js?a=1"></script>
+<script src="./lib.js?a=1"></script>
 
 
 <script>
 
 	// var canvas = ycc.createCanvas({width:300,height:800,dpiAdaptation:true});
     
-    var cropper = new Cropper('http://datagetter.cn:9000/datagetter.cn/public/original/wx_test_kid_oXWPn5V5YxiQVoSyK3IDFQ2XnqhM_.jpg_1621776883437_4289396_wx_test_kid_oXWPn5V5YxiQVoSyK3IDFQ2XnqhM_.jpg',{
-        wrapW:document.documentElement.clientWidth,
-        wrapH:document.documentElement.clientHeight,
+    var cropper = new (Cropper(Ycc))('http://datagetter.cn:9000/datagetter.cn/public/original/wx_test_kid_oXWPn5V5YxiQVoSyK3IDFQ2XnqhM_.jpg_1621776883437_4289396_wx_test_kid_oXWPn5V5YxiQVoSyK3IDFQ2XnqhM_.jpg',{
+        wrapW:document.documentElement.clientWidth-50,
+        wrapH:document.documentElement.clientHeight-200,
+        canvasDom:document.getElementById("canvas")
     });
 
    
-    document.getElementById("canvas").appendChild(cropper.ycc.canvasDom);
+    // document.getElementById("canvas").appendChild(cropper.ycc.canvasDom);
 	
 
 </script>

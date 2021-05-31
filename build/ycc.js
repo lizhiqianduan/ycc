@@ -10,6 +10,7 @@
  * 应用启动入口类，每个实例都与一个canvas绑定。
  * 该canvas元素会被添加至HTML结构中，作为应用的显示舞台。
  * @param config {Object} 整个ycc的配置项
+ * @param config.appenv {String} 整个应用所运行的环境 默认：h5 <br> h5-普通web应用、wxapp-微信小程序、wxgame-微信小游戏
  * @param config.debugDrawContainer {Boolean} 是否显示所有UI的容纳区域
  * 若开启，所有UI都会创建一个属于自己的离屏canvas，大小与舞台一致
  * @constructor
@@ -61,7 +62,7 @@ var Ycc = function Ycc(config){
 	 * 资源加载器
 	 * @type {Ycc.Loader}
 	 */
-	this.loader = new Ycc.Loader();
+	this.loader = new Ycc.Loader(this);
 	
 	/**
 	 * 异步请求的封装
@@ -86,7 +87,8 @@ var Ycc = function Ycc(config){
 	 * @type {{debugDrawContainer:boolean}}
 	 */
 	this.config = Ycc.utils.extend({
-		debugDrawContainer:false
+		debugDrawContainer:false,
+		appenv:'h5'
 	},config||{});
 	
 	/**
@@ -130,6 +132,8 @@ Ycc.prototype.bindCanvas = function (canvas) {
 	this.canvasDom = canvas;
 	
 	this.ctx = canvas.getContext('2d');
+	// 适配wxapp 默认返回{left:0,top:0} @todo 待优化
+	this.ctx.canvas.getBoundingClientRect = this.ctx.canvas.getBoundingClientRect?this.ctx.canvas.getBoundingClientRect:function(){return{left:0,top:0}};
 	
 	this.layerList = [];
 	
@@ -402,6 +406,7 @@ Ycc.prototype.getUIListFromPointer = function (dot,options) {
  * ycc.bindCanvas(stage);
  *
  * @param options
+ * @param options.canvasDom 传入canvasDom
  * @param options.width
  * @param options.height
  * @param options.dpiAdaptation		是否根据dpi适配canvas大小
@@ -410,22 +415,23 @@ Ycc.prototype.getUIListFromPointer = function (dot,options) {
 Ycc.prototype.createCanvas = function (options) {
 	options = options||{};
 	var option = Ycc.utils.mergeObject({
-		width:window.innerWidth,
-		height:window.innerHeight,
-		dpiAdaptation:false
+		width:this.getSystemInfo().windowWidth,
+		height:this.getSystemInfo().windowHeight,
+		dpiAdaptation:false,
+		canvasDom:null
 	},options);
-	var canvas = document.createElement("canvas");
+	var canvas = option.canvasDom || document.createElement("canvas");
 	var dpi = this.getSystemInfo().devicePixelRatio;
 	if(option.dpiAdaptation){
 		canvas.width = option.width*dpi;
 		canvas.height = option.height*dpi;
-		canvas.style.width=option.width+'px';
+		if(canvas.style) canvas.style.width=option.width+'px';
 	}else{
 		canvas.width = option.width;
 		canvas.height = option.height;
 	}
 	// 去除5px inline-block偏差
-	canvas.style.display='block';
+	if(canvas.style) canvas.style.display='block';
 	return canvas;
 };
 
@@ -1971,7 +1977,7 @@ Ycc.prototype.createCacheCtx = function (options) {
 		 * 启动时间戳
 		 * @type {number}
 		 */
-		this.startTime = performance.now();
+		this.startTime = Date.now();
 		
 		/**
 		 * 上一帧刷新的时间戳
@@ -2061,7 +2067,8 @@ Ycc.prototype.createCacheCtx = function (options) {
 	 * 可取值有[60,30,20,15]
 	 */
 	Ycc.Ticker.prototype.start = function (frameRate) {
-		var timer = requestAnimationFrame || webkitRequestAnimationFrame || mozRequestAnimationFrame || oRequestAnimationFrame || msRequestAnimationFrame;
+		// 兼容wxapp处理
+		var timer = this.yccInstance.canvasDom.requestAnimationFrame? this.yccInstance.canvasDom.requestAnimationFrame : (requestAnimationFrame || webkitRequestAnimationFrame || mozRequestAnimationFrame || oRequestAnimationFrame || msRequestAnimationFrame);
 		var self = this;
 
 		//重置状态
@@ -2081,7 +2088,7 @@ Ycc.prototype.createCacheCtx = function (options) {
 		self.frameAllCount = 0;
 
 		// 启动时间
-		self.startTime = performance.now();
+		self.startTime = Date.now();
 
 		// 正在进行中 不再启动心跳
 		if(self._isRunning) return;
@@ -2432,11 +2439,16 @@ Ycc.prototype.createCacheCtx = function (options) {
 	
 	/**
 	 * ycc实例的资源加载类
+	 * @param yccInstance {Ycc} ycc实例
 	 * @constructor
 	 */
-	Ycc.Loader = function () {
+	Ycc.Loader = function (yccInstance) {
 		this.yccClass = Ycc.Loader;
-		
+		/**
+		 * ycc实例
+		 * @type {Ycc}
+		 */
+		this.yccInstance = yccInstance;
 		/**
 		 * 异步模块
 		 * @type {Ycc.Ajax}
@@ -2466,7 +2478,7 @@ Ycc.prototype.createCacheCtx = function (options) {
 	Ycc.Loader.prototype.loadResParallel = function (resArr, endCb, progressCb,endResArr,endResMap) {
 		endResArr = endResArr || [];
 		endResMap = endResMap || {};
-		
+		var self = this;
 		for(var i=0;i<resArr.length;i++){
 			var curRes = resArr[i];
 			var successEvent = "load";
@@ -2474,7 +2486,8 @@ Ycc.prototype.createCacheCtx = function (options) {
 			curRes.type = curRes.type || 'image';
 			
 			if(curRes.type==='image'){
-				curRes.res = new Image();
+				// curRes.res = new Image();
+				curRes.res = self._createImage();
 				curRes.res.src = curRes.url;
 				curRes.res.crossOrigin = curRes.crossOrigin||'';
 			}
@@ -2486,9 +2499,10 @@ Ycc.prototype.createCacheCtx = function (options) {
 				curRes.res.crossOrigin = curRes.crossOrigin||'';
 			}
 			
-			curRes.res.addEventListener(successEvent,listener(curRes,i,true));
-			curRes.res.addEventListener(errorEvent,listener(curRes,i,false));
-			
+			// curRes.res.addEventListener(successEvent,listener(curRes,i,true));
+			// curRes.res.addEventListener(errorEvent,listener(curRes,i,false));
+			curRes.res['on'+successEvent] = listener(curRes,i,true);
+			curRes.res['on'+errorEvent] = listener(curRes,i,false);			
 			
 			function listener(curRes,index,error) {
 				return function () {
@@ -2537,16 +2551,21 @@ Ycc.prototype.createCacheCtx = function (options) {
 		polyfillWx(self.basePath + curRes.url,function (fullPath) {
 			
 			if(curRes.type==='image'){
-				curRes.res = new Image();
+				// curRes.res = new Image();
+				curRes.res = self._createImage();
 				curRes.res.src = fullPath;
 				
-				curRes.res.addEventListener(successEvent,onSuccess);
-				curRes.res.addEventListener(errorEvent,onError);
+				// curRes.res.addEventListener(successEvent,onSuccess);
+				// curRes.res.addEventListener(errorEvent,onError);
+				curRes.res['on'+successEvent] = onSuccess;
+				curRes.res['on'+errorEvent] = onError;
 				
 				// 超时提示只针对图片
 				timerId = setTimeout(function () {
-					curRes.res.removeEventListener(successEvent,onSuccess);
-					curRes.res.removeEventListener(errorEvent,onSuccess);
+					curRes.res['on'+successEvent] = null;
+					curRes.res['on'+errorEvent] = null;
+					// curRes.res.removeEventListener(successEvent,onSuccess);
+					// curRes.res.removeEventListener(errorEvent,onSuccess);
 					onError({message:"获取资源超时！"});
 				},curRes.timeout||10000);
 				
@@ -2587,8 +2606,8 @@ Ycc.prototype.createCacheCtx = function (options) {
 			// console.log('loader:',curRes.name,'success');
 			clearTimeout(timerId);
 			if(curRes.type==='image' || ("undefined"!==typeof wx && curRes.type==='audio' )){
-				curRes.res.removeEventListener(successEvent,onSuccess);
-				curRes.res.removeEventListener(errorEvent,onError);
+				// curRes.res.removeEventListener(successEvent,onSuccess);
+				// curRes.res.removeEventListener(errorEvent,onError);
 			}
 
 			endResArr.push(curRes);
@@ -2627,6 +2646,14 @@ Ycc.prototype.createCacheCtx = function (options) {
 		}
 		return null;
 	};
+
+	/**
+	 * 创建图片 兼容处理
+	 */
+	Ycc.Loader.prototype._createImage = function(){
+		if(this.yccInstance && this.yccInstance.config.appenv==='wxapp') return this.yccInstance.canvasDom.createImage();
+		return new Image();
+	}
 	
 	
 	
@@ -3000,6 +3027,37 @@ Ycc.prototype.createCacheCtx = function (options) {
 		 * @type {function}
 		 */
 		this.ontap = null;
+
+		/**
+		 * 缩放事件 的监听。默认为null
+		 * @type {function}
+		 */
+		this.onzoom = null;
+
+		/**
+		 * 旋转事件 的监听。默认为null
+		 * @type {function}
+		 */
+		this.onrotate = null;
+
+		/**
+		 * 多点触控开始 的监听。默认为null
+		 * @type {function}
+		 */
+		this.onmultistart = null;
+
+		/**
+		 * 多点触控变化 的监听。默认为null
+		 * @type {function}
+		 */
+		this.onmultichange = null;
+
+		/**
+		 * 多点触控结束 的监听。默认为null
+		 * @type {function}
+		 */
+		this.onmultiend = null;
+		
 	};
 	
 	
@@ -3365,49 +3423,61 @@ Ycc.prototype.createCacheCtx = function (options) {
 		 * 初始化
 		 */
 		this.init = function () {
-			var self = this;
-			this.target.addEventListener("touchstart",function (e) {
-				e.preventDefault();
-				self.syncTouches(e);
-				var life = new TouchLife();
-				life.startTouchEvent = e.changedTouches[0];
-				self.addLife(life);
-				self.currentLifeList.push(life);
-				// self.onlifestart && self.onlifestart(life);
-				self.triggerListener('lifestart',life);
-			});
-			
-			this.target.addEventListener('touchmove',function (e) {
-				e.preventDefault();
-				self.syncTouches(e);
-				var touches = e.changedTouches;
-				for(var i=0;i<touches.length;i++){
-					var touch = touches[i];
-					var life = self.findCurrentLifeByTouchID(touch.identifier);
-					var index = self.indexOfTouchFromMoveTouchEventList(life.moveTouchEventList,touch);
-					if(index===-1)
-						life.moveTouchEventList.push(touch);
-					else
-						life.moveTouchEventList[index]=touch;
-					// self.onlifechange && self.onlifechange(life);
-					self.triggerListener('lifechange',life);
-				}
-			});
-			this.target.addEventListener('touchend',function (e) {
-				e.preventDefault();
-				self.syncTouches(e);
-				var touch = e.changedTouches[0];
-				var life = self.findCurrentLifeByTouchID(touch.identifier);
-				life.endTouchEvent = touch;
-				life.endTime = Date.now();
-				self.deleteCurrentLifeByTouchID(touch.identifier);
-				// self.onlifeend && self.onlifeend(life);
-				self.triggerListener('lifeend',life);
-			});
+			if(!this.target.addEventListener) return console.error('addEventListener undefined');
+			this.target.addEventListener("touchstart",this.touchstart.bind(this));
+			this.target.addEventListener('touchmove',this.touchmove.bind(this));
+			this.target.addEventListener('touchend',this.touchend.bind(this));
 		};
 		
 		this.init();
 	};
+
+	Ycc.TouchLifeTracer.prototype.touchstart = function (e) {
+		console.log('touchstart',e);
+		var self = this;
+		if(e.preventDefault) e.preventDefault();
+		self.syncTouches(e);
+		var life = new TouchLife();
+		life.startTouchEvent = e.changedTouches[0];
+		self.addLife(life);
+		self.currentLifeList.push(life);
+		// console.log('push life',self.currentLifeList,self._lifeList)
+		// self.onlifestart && self.onlifestart(life);
+		self.triggerListener('lifestart',life);
+	};
+
+	Ycc.TouchLifeTracer.prototype.touchmove = function (e) {
+		var self = this;
+		if(e.preventDefault) e.preventDefault();
+		self.syncTouches(e);
+		var touches = e.changedTouches;
+		for(var i=0;i<touches.length;i++){
+			var touch = touches[i];
+			var life = self.findCurrentLifeByTouchID(touch.identifier);
+			var index = self.indexOfTouchFromMoveTouchEventList(life.moveTouchEventList,touch);
+			if(index===-1)
+				life.moveTouchEventList.push(touch);
+			else
+				life.moveTouchEventList[index]=touch;
+			// self.onlifechange && self.onlifechange(life);
+			self.triggerListener('lifechange',life);
+		}
+	}
+
+	Ycc.TouchLifeTracer.prototype.touchend = function (e) {
+		var self = this;
+		if(e.preventDefault) e.preventDefault();
+		self.syncTouches(e);
+		var touch = e.changedTouches[0];
+		var life = self.findCurrentLifeByTouchID(touch.identifier);
+		life.endTouchEvent = touch;
+		life.endTime = Date.now();
+		self.deleteCurrentLifeByTouchID(touch.identifier);
+		// self.onlifeend && self.onlifeend(life);
+		self.triggerListener('lifeend',life);
+	}
+	
+
 	
 	// 继承prototype
 	Ycc.utils.mergeObject(Ycc.TouchLifeTracer.prototype,Ycc.Listener.prototype);
@@ -3424,14 +3494,27 @@ Ycc.prototype.createCacheCtx = function (options) {
 		var touches=[];
 		touches = e.touches;
 		for(i=0;i<touches.length;i++){
+			touches[i].pageX = touches[i].pageX || touches[i].x;
+			touches[i].pageY = touches[i].pageY || touches[i].y;
+
+			touches[i].clientX = touches[i].clientX || touches[i].x;
+			touches[i].clientY = touches[i].clientY || touches[i].y;
 			this.touches.push(touches[i]);
 		}
 		touches = e.changedTouches;
-		for(i=0;i<e.changedTouches.length;i++){
+		for(i=0;i<touches.length;i++){
+			touches[i].pageX = touches[i].pageX || touches[i].x;
+			touches[i].pageY = touches[i].pageY || touches[i].y;
+			touches[i].clientX = touches[i].clientX || touches[i].x;
+			touches[i].clientY = touches[i].clientY || touches[i].y;
 			this.changedTouches.push(touches[i]);
 		}
-		touches = e.targetTouches;
-		for(i=0;i<e.targetTouches.length;i++){
+		touches = e.targetTouches||e.touches; //wxapp没有targetTouches 用touches代替
+		for(i=0;i<touches.length;i++){
+			touches[i].pageX = touches[i].pageX || touches[i].x;
+			touches[i].pageY = touches[i].pageY || touches[i].y;
+			touches[i].clientX = touches[i].clientX || touches[i].x;
+			touches[i].clientY = touches[i].clientY || touches[i].y;
 			this.targetTouches.push(touches[i]);
 		}
 	};
@@ -3495,6 +3578,11 @@ Ycc.prototype.createCacheCtx = function (options) {
 		 * @private
 		 */
 		this.ismutiltouching = false;
+
+		/**
+		 * 生命追踪
+		 */
+		this.touchLifeTracer = null;
 		
 		this._init();
 	};
@@ -3520,6 +3608,7 @@ Ycc.prototype.createCacheCtx = function (options) {
 	Ycc.Gesture.prototype._initForMobile = function () {
 		var self = this;
 		var tracer = new Ycc.TouchLifeTracer({target:this.option.target});
+		this.touchLifeTracer = tracer;
 		// 上一次触摸、当前触摸
 		var preLife,curLife;
 		// 是否阻止事件
@@ -3849,6 +3938,10 @@ Ycc.prototype.createCacheCtx = function (options) {
 			 */
 			identifier:-1,
 			
+			// x、y兼容微信端，web端其值等于pageX、pageY
+			x:0,
+			y:0,
+
 			clientX:0,
 			clientY:0,
 			pageX:0,
@@ -9016,6 +9109,19 @@ if("undefined"!== typeof wx){
 			return Date.now();
 		};
 	}
+
+	Ycc.prototype.getSystemInfo = function () {
+		var info = wx.getSystemInfoSync();
+		return {
+			"model":info.model,
+			"pixelRatio":info.pixelRatio,
+			"windowWidth":info.windowWidth,
+			"windowHeight":info.windowHeight,
+			"screenWidth":info.screenWidth,
+			"screenHeight":info.screenHeight,
+			"devicePixelRatio":info.devicePixelRatio||1
+		};
+	};
 };;/**
  * @file    Ycc.polyfill.export.js
  * @author  xiaohei

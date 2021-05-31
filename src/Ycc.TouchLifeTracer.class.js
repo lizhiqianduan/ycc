@@ -184,7 +184,7 @@
 		life.startTouchEvent = e.changedTouches[0];
 		self.addLife(life);
 		self.currentLifeList.push(life);
-		console.log('push life',self.currentLifeList,self._lifeList)
+		// console.log('push life',self.currentLifeList,self._lifeList)
 		// self.onlifestart && self.onlifestart(life);
 		self.triggerListener('lifestart',life);
 	};
@@ -197,7 +197,6 @@
 		for(var i=0;i<touches.length;i++){
 			var touch = touches[i];
 			var life = self.findCurrentLifeByTouchID(touch.identifier);
-			console.log('move findCurrentLifeByTouchID',life.moveTouchEventList.map(item=>item.identifier),this.currentLifeList)
 			var index = self.indexOfTouchFromMoveTouchEventList(life.moveTouchEventList,touch);
 			if(index===-1)
 				life.moveTouchEventList.push(touch);
