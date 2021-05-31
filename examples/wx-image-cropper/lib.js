@@ -18,18 +18,20 @@
     function Cropper(imageUrl,options){
         // 默认参数
         options = Ycc.utils.extend({
+            appenv:'h5',
             canvasDom:null,
             wrapW:800,
             wrapH:600,
             cropW:200,
             cropH:200,
             maskColor:'rgba(0,0,0,0.6)',
+            lineColor:'#fff',
             callback: function(){}
         },options);
 
         this.options = options;
         this.imageUrl = imageUrl;
-        this.ycc = new Ycc();
+        this.ycc = new Ycc({appenv:options.appenv});
         this.ycc.bindCanvas(this.ycc.createCanvas({canvasDom:options.canvasDom,width:options.wrapW,height:options.wrapH,dpiAdaptation:true}));
         this.layer = this.ycc.layerManager.newLayer({enableEventManager:true});
 
@@ -65,13 +67,13 @@
         // var ycc = this.ycc;
         var layer = this.layer;
         layer.addUI(new Ycc.UI.Rect({
-            rect:new Ycc.Math.Rect(0,0,this.options.wrapW,this.options.wrapH/2-this.options.cropH/2+1),
+            rect:new Ycc.Math.Rect(0,0,this.options.wrapW,this.options.wrapH/2-this.options.cropH/2),
             color:this.options.maskColor,
             ghost:true,
         }));
 
         layer.addUI(new Ycc.UI.Rect({
-            rect:new Ycc.Math.Rect(0,this.options.wrapH-(this.options.wrapH/2-this.options.cropH/2)-1,this.options.wrapW,this.options.wrapH/2-this.options.cropH/2),
+            rect:new Ycc.Math.Rect(0,this.options.wrapH-(this.options.wrapH/2-this.options.cropH/2),this.options.wrapW,this.options.wrapH/2-this.options.cropH/2),
             color:this.options.maskColor,
             ghost:true,
         }));
@@ -87,11 +89,36 @@
             ghost:true,
         }));
 
+        // 横纵线条 1
+        layer.addUI(new Ycc.UI.Rect({
+            rect:new Ycc.Math.Rect(0,this.options.wrapH/2-this.options.cropH/2,this.options.wrapW,1),
+            color:this.options.lineColor,
+            ghost:true,
+        }));
+        // 横纵线条 2
+        layer.addUI(new Ycc.UI.Rect({
+            rect:new Ycc.Math.Rect(this.options.wrapW/2-this.options.cropW/2,0,1,this.options.wrapH),
+            color:this.options.lineColor,
+            ghost:true,
+        }));
+        // 横纵线条 3
+        layer.addUI(new Ycc.UI.Rect({
+            rect:new Ycc.Math.Rect(this.options.wrapW/2+this.options.cropW/2,0,1,this.options.wrapH),
+            color:this.options.lineColor,
+            ghost:true,
+        }));
+        // 横纵线条 4
+        layer.addUI(new Ycc.UI.Rect({
+            rect:new Ycc.Math.Rect(0,this.options.wrapH/2+this.options.cropH/2,this.options.wrapW,1),
+            color:this.options.lineColor,
+            ghost:true,
+        }));
+
         // 边框
         layer.addUI(new Ycc.UI.Rect({
             rect:new Ycc.Math.Rect((this.options.wrapW/2-this.options.cropW/2),this.options.wrapH/2-this.options.cropH/2,this.options.cropW,this.options.cropH),
-            rectBorderWidth:4,
-            rectBorderColor:'#ccc',
+            rectBorderWidth:1,
+            rectBorderColor:this.options.lineColor,
             color:'transparent',
             ghost:true,
         }));
