@@ -107,6 +107,37 @@
 		 * @type {function}
 		 */
 		this.ontap = null;
+
+		/**
+		 * 缩放事件 的监听。默认为null
+		 * @type {function}
+		 */
+		this.onzoom = null;
+
+		/**
+		 * 旋转事件 的监听。默认为null
+		 * @type {function}
+		 */
+		this.onrotate = null;
+
+		/**
+		 * 多点触控开始 的监听。默认为null
+		 * @type {function}
+		 */
+		this.onmultistart = null;
+
+		/**
+		 * 多点触控变化 的监听。默认为null
+		 * @type {function}
+		 */
+		this.onmultichange = null;
+
+		/**
+		 * 多点触控结束 的监听。默认为null
+		 * @type {function}
+		 */
+		this.onmultiend = null;
+		
 	};
 	
 	

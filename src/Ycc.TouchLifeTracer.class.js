@@ -166,49 +166,62 @@
 		 * 初始化
 		 */
 		this.init = function () {
-			var self = this;
-			this.target.addEventListener("touchstart",function (e) {
-				e.preventDefault();
-				self.syncTouches(e);
-				var life = new TouchLife();
-				life.startTouchEvent = e.changedTouches[0];
-				self.addLife(life);
-				self.currentLifeList.push(life);
-				// self.onlifestart && self.onlifestart(life);
-				self.triggerListener('lifestart',life);
-			});
-			
-			this.target.addEventListener('touchmove',function (e) {
-				e.preventDefault();
-				self.syncTouches(e);
-				var touches = e.changedTouches;
-				for(var i=0;i<touches.length;i++){
-					var touch = touches[i];
-					var life = self.findCurrentLifeByTouchID(touch.identifier);
-					var index = self.indexOfTouchFromMoveTouchEventList(life.moveTouchEventList,touch);
-					if(index===-1)
-						life.moveTouchEventList.push(touch);
-					else
-						life.moveTouchEventList[index]=touch;
-					// self.onlifechange && self.onlifechange(life);
-					self.triggerListener('lifechange',life);
-				}
-			});
-			this.target.addEventListener('touchend',function (e) {
-				e.preventDefault();
-				self.syncTouches(e);
-				var touch = e.changedTouches[0];
-				var life = self.findCurrentLifeByTouchID(touch.identifier);
-				life.endTouchEvent = touch;
-				life.endTime = Date.now();
-				self.deleteCurrentLifeByTouchID(touch.identifier);
-				// self.onlifeend && self.onlifeend(life);
-				self.triggerListener('lifeend',life);
-			});
+			if(!this.target.addEventListener) return console.error('addEventListener undefined');
+			this.target.addEventListener("touchstart",this.touchstart.bind(this));
+			this.target.addEventListener('touchmove',this.touchmove.bind(this));
+			this.target.addEventListener('touchend',this.touchend.bind(this));
 		};
 		
 		this.init();
 	};
+
+	Ycc.TouchLifeTracer.prototype.touchstart = function (e) {
+		console.log('touchstart',e);
+		var self = this;
+		if(e.preventDefault) e.preventDefault();
+		self.syncTouches(e);
+		var life = new TouchLife();
+		life.startTouchEvent = e.changedTouches[0];
+		self.addLife(life);
+		self.currentLifeList.push(life);
+		console.log('push life',self.currentLifeList,self._lifeList)
+		// self.onlifestart && self.onlifestart(life);
+		self.triggerListener('lifestart',life);
+	};
+
+	Ycc.TouchLifeTracer.prototype.touchmove = function (e) {
+		var self = this;
+		if(e.preventDefault) e.preventDefault();
+		self.syncTouches(e);
+		var touches = e.changedTouches;
+		for(var i=0;i<touches.length;i++){
+			var touch = touches[i];
+			var life = self.findCurrentLifeByTouchID(touch.identifier);
+			console.log('move findCurrentLifeByTouchID',life.moveTouchEventList.map(item=>item.identifier),this.currentLifeList)
+			var index = self.indexOfTouchFromMoveTouchEventList(life.moveTouchEventList,touch);
+			if(index===-1)
+				life.moveTouchEventList.push(touch);
+			else
+				life.moveTouchEventList[index]=touch;
+			// self.onlifechange && self.onlifechange(life);
+			self.triggerListener('lifechange',life);
+		}
+	}
+
+	Ycc.TouchLifeTracer.prototype.touchend = function (e) {
+		var self = this;
+		if(e.preventDefault) e.preventDefault();
+		self.syncTouches(e);
+		var touch = e.changedTouches[0];
+		var life = self.findCurrentLifeByTouchID(touch.identifier);
+		life.endTouchEvent = touch;
+		life.endTime = Date.now();
+		self.deleteCurrentLifeByTouchID(touch.identifier);
+		// self.onlifeend && self.onlifeend(life);
+		self.triggerListener('lifeend',life);
+	}
+	
+
 	
 	// 继承prototype
 	Ycc.utils.mergeObject(Ycc.TouchLifeTracer.prototype,Ycc.Listener.prototype);
@@ -225,14 +238,27 @@
 		var touches=[];
 		touches = e.touches;
 		for(i=0;i<touches.length;i++){
+			touches[i].pageX = touches[i].pageX || touches[i].x;
+			touches[i].pageY = touches[i].pageY || touches[i].y;
+
+			touches[i].clientX = touches[i].clientX || touches[i].x;
+			touches[i].clientY = touches[i].clientY || touches[i].y;
 			this.touches.push(touches[i]);
 		}
 		touches = e.changedTouches;
-		for(i=0;i<e.changedTouches.length;i++){
+		for(i=0;i<touches.length;i++){
+			touches[i].pageX = touches[i].pageX || touches[i].x;
+			touches[i].pageY = touches[i].pageY || touches[i].y;
+			touches[i].clientX = touches[i].clientX || touches[i].x;
+			touches[i].clientY = touches[i].clientY || touches[i].y;
 			this.changedTouches.push(touches[i]);
 		}
-		touches = e.targetTouches;
-		for(i=0;i<e.targetTouches.length;i++){
+		touches = e.targetTouches||e.touches; //wxapp没有targetTouches 用touches代替
+		for(i=0;i<touches.length;i++){
+			touches[i].pageX = touches[i].pageX || touches[i].x;
+			touches[i].pageY = touches[i].pageY || touches[i].y;
+			touches[i].clientX = touches[i].clientX || touches[i].x;
+			touches[i].clientY = touches[i].clientY || touches[i].y;
 			this.targetTouches.push(touches[i]);
 		}
 	};

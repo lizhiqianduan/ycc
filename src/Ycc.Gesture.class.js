@@ -46,6 +46,11 @@
 		 * @private
 		 */
 		this.ismutiltouching = false;
+
+		/**
+		 * 生命追踪
+		 */
+		this.touchLifeTracer = null;
 		
 		this._init();
 	};
@@ -71,6 +76,7 @@
 	Ycc.Gesture.prototype._initForMobile = function () {
 		var self = this;
 		var tracer = new Ycc.TouchLifeTracer({target:this.option.target});
+		this.touchLifeTracer = tracer;
 		// 上一次触摸、当前触摸
 		var preLife,curLife;
 		// 是否阻止事件
@@ -400,6 +406,10 @@
 			 */
 			identifier:-1,
 			
+			// x、y兼容微信端，web端其值等于pageX、pageY
+			x:0,
+			y:0,
+
 			clientX:0,
 			clientY:0,
 			pageX:0,

@@ -42,7 +42,7 @@
 		 * 启动时间戳
 		 * @type {number}
 		 */
-		this.startTime = performance.now();
+		this.startTime = Date.now();
 		
 		/**
 		 * 上一帧刷新的时间戳
@@ -132,7 +132,8 @@
 	 * 可取值有[60,30,20,15]
 	 */
 	Ycc.Ticker.prototype.start = function (frameRate) {
-		var timer = requestAnimationFrame || webkitRequestAnimationFrame || mozRequestAnimationFrame || oRequestAnimationFrame || msRequestAnimationFrame;
+		// 兼容wxapp处理
+		var timer = this.yccInstance.canvasDom.requestAnimationFrame? this.yccInstance.canvasDom.requestAnimationFrame : (requestAnimationFrame || webkitRequestAnimationFrame || mozRequestAnimationFrame || oRequestAnimationFrame || msRequestAnimationFrame);
 		var self = this;
 
 		//重置状态
@@ -152,7 +153,7 @@
 		self.frameAllCount = 0;
 
 		// 启动时间
-		self.startTime = performance.now();
+		self.startTime = Date.now();
 
 		// 正在进行中 不再启动心跳
 		if(self._isRunning) return;
