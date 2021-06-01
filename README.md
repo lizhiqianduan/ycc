@@ -37,8 +37,8 @@ UI：只能位于图层内的显示对象
 ````
 你也可以通过模块工具npm、bower来安装
 ```
-bower install ycc.js
-npm install ycc.js
+bower install @datagetter.cn/ycc
+npm install @datagetter.cn/ycc
 ```
 #### 开始使用
 
