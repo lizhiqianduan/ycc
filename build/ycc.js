@@ -2489,8 +2489,8 @@ Ycc.prototype.createCacheCtx = function (options) {
 			if(curRes.type==='image'){
 				// curRes.res = new Image();
 				curRes.res = self._createImage();
+				if(curRes.res.setAttribute) curRes.res.setAttribute('crossOrigin',curRes.crossOrigin||'');
 				curRes.res.src = curRes.url;
-				curRes.res.crossOrigin = curRes.crossOrigin||'';
 			}
 			if(curRes.type==='audio'){
 				successEvent = 'loadedmetadata';
@@ -2554,6 +2554,7 @@ Ycc.prototype.createCacheCtx = function (options) {
 			if(curRes.type==='image'){
 				// curRes.res = new Image();
 				curRes.res = self._createImage();
+				if(curRes.res.setAttribute) curRes.res.setAttribute('crossOrigin',curRes.crossOrigin||'');
 				curRes.res.src = fullPath;
 				
 				// curRes.res.addEventListener(successEvent,onSuccess);
