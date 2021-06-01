@@ -2141,7 +2141,8 @@ Ycc.prototype.createCacheCtx = function (options) {
 	 * 停止心跳
 	 */
 	Ycc.Ticker.prototype.stop = function () {
-		var stop = cancelAnimationFrame || webkitCancelAnimationFrame || mozCancelAnimationFrame || oCancelAnimationFrame;
+		// 兼容wxapp处理
+		var stop = this.yccInstance.canvasDom.cancelAnimationFrame? this.yccInstance.canvasDom.cancelAnimationFrame :( cancelAnimationFrame || webkitCancelAnimationFrame || mozCancelAnimationFrame || oCancelAnimationFrame);
 		stop || (stop = function (id) {
 			return clearTimeout(id);
 		});

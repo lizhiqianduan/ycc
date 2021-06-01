@@ -154,36 +154,39 @@
         this.imageUI = new Ycc.UI.Image({
             rect:imageRect,
             fillMode:'scale',
-            res:image.res,
-            ondragging:function(e) {
-                if(this.belongTo.yccInstance.gesture.ismutiltouching) return;
-                if(!this.userData) return;
-
-                console.log("我是",this.yccClass.name,"我",e.type,e);
-                var startPos = this.userData.startPos;
-                var startRect = this.userData.startRect;
-                let deltaX = (e.x-startPos.x);
-                let deltaY = (e.y-startPos.y);
-                this.rect.x = startRect.x+deltaX;
-                this.rect.y = startRect.y+deltaY;
-            },
-            ondragstart:function(e) {
-                this.userData = {
-                    startPos:new Ycc.Math.Dot(e),
-                    startRect:new Ycc.Math.Rect(this.rect)
-                }
-            }
+            res:image.res
         });
         // 添加图片至图层
         this.layer.addUI(this.imageUI);
 
+
         // 缩放前的临时区域
         var tempRect = null;
+        // 监听手势事件
+        this.ycc.gesture.ondragstart = function(e) {
+            console.log(e,1111);
+            this.userData = {
+                startPos:new Ycc.Math.Dot(e),
+                startRect:new Ycc.Math.Rect(cropper.imageUI.rect)
+            }
+        };
+        this.ycc.gesture.ondragging = function(e){
+            if(this.ismutiltouching) return;
+            if(!this.userData) return;
+
+            // console.log("我是",this.yccClass.name,"我",e.type,e);
+            var startPos = this.userData.startPos;
+            var startRect = this.userData.startRect;
+            let deltaX = (e.x-startPos.x);
+            let deltaY = (e.y-startPos.y);
+            cropper.imageUI.rect.x = startRect.x+deltaX;
+            cropper.imageUI.rect.y = startRect.y+deltaY;
+        }
         this.ycc.gesture.onmultistart = function(e){
             // alert(11111);
             tempRect = new Ycc.Math.Rect(cropper.imageUI.rect); 
             // 将userdata设置成null 阻止缩放后立即响应拖拽
-            cropper.imageUI.userData = null;
+            this.userData = null;
         };
         // 绑定缩放事件
         this.ycc.gesture.onzoom = function(e){
@@ -198,11 +201,42 @@
     
     }
 
+    /**
+     * 获取imagedata
+     * @param {*} canvasId canvas的ID 仅当appenv为wxapp时需要
+     */
+    Cropper.prototype.getCropImage = function(canvasId){
+        var x = (this.options.wrapW/2-this.options.cropW/2);
+        var y = this.options.wrapH/2-this.options.cropH/2;
+        var width = this.options.cropW;
+        var height = this.options.cropH;
 
-    Cropper.prototype.getCropImage = function(){
+        if(this.options.appenv==='wxapp') return wx.canvasToTempFilePath({
+            canvasId:canvasId,
+            canvas:this.ycc.canvasDom,
+            x:x,
+            y:y,
+            width:width,
+            height:height,
+            destWidth:width,
+            destHeight:height,
+            fileType:'jpg',
+            quality:1
+        })
+
+
         var ycc = this.ycc;
-        return ycc.ctx.getImageData((this.options.wrapW/2-this.options.cropW/2),this.options.wrapH/2-this.options.cropH/2,this.options.cropW,this.options.cropH)
+        return ycc.ctx.getImageData(x,y,width,height);
+    };
+
+    /**
+     * 清空画布
+     */
+    Cropper.prototype.clear = function(){
+        this.ycc.layerManager.deleteAllLayer();
+        this.ycc.ticker.stop();
     }
+
 
 
 
