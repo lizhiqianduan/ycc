@@ -1,6 +1,6 @@
 {
   "name": "@datagetter.cn/ycc",
-  "version": "0.0.10",
+  "version": "0.0.11",
   "description": "Mini and powerful canvas engine for creating App or Game.",
   "main": "./build/ycc.min.js",
   "scripts": {

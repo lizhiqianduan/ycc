@@ -3440,7 +3440,7 @@ Ycc.prototype.createCacheCtx = function (options) {
 		if(e.preventDefault) e.preventDefault();
 		self.syncTouches(e);
 		var life = new TouchLife();
-		life.startTouchEvent = e.changedTouches[0];
+		life.startTouchEvent = self.changedTouches[0];
 		self.addLife(life);
 		self.currentLifeList.push(life);
 		// console.log('push life',self.currentLifeList,self._lifeList)
@@ -3452,7 +3452,7 @@ Ycc.prototype.createCacheCtx = function (options) {
 		var self = this;
 		if(e.preventDefault) e.preventDefault();
 		self.syncTouches(e);
-		var touches = e.changedTouches;
+		var touches = self.changedTouches;
 		for(var i=0;i<touches.length;i++){
 			var touch = touches[i];
 			var life = self.findCurrentLifeByTouchID(touch.identifier);
@@ -3470,7 +3470,7 @@ Ycc.prototype.createCacheCtx = function (options) {
 		var self = this;
 		if(e.preventDefault) e.preventDefault();
 		self.syncTouches(e);
-		var touch = e.changedTouches[0];
+		var touch = self.changedTouches[0];
 		var life = self.findCurrentLifeByTouchID(touch.identifier);
 		life.endTouchEvent = touch;
 		life.endTime = Date.now();
@@ -3498,6 +3498,8 @@ Ycc.prototype.createCacheCtx = function (options) {
 		for(i=0;i<touches.length;i++){
 			touches[i].pageX = touches[i].pageX || touches[i].x;
 			touches[i].pageY = touches[i].pageY || touches[i].y;
+			touches[i].x = touches[i].x || touches[i].pageX;
+			touches[i].y = touches[i].y || touches[i].pageY;
 
 			touches[i].clientX = touches[i].clientX || touches[i].x;
 			touches[i].clientY = touches[i].clientY || touches[i].y;
@@ -3507,6 +3509,8 @@ Ycc.prototype.createCacheCtx = function (options) {
 		for(i=0;i<touches.length;i++){
 			touches[i].pageX = touches[i].pageX || touches[i].x;
 			touches[i].pageY = touches[i].pageY || touches[i].y;
+			touches[i].x = touches[i].x || touches[i].pageX;
+			touches[i].y = touches[i].y || touches[i].pageY;
 			touches[i].clientX = touches[i].clientX || touches[i].x;
 			touches[i].clientY = touches[i].clientY || touches[i].y;
 			this.changedTouches.push(touches[i]);
@@ -3515,6 +3519,8 @@ Ycc.prototype.createCacheCtx = function (options) {
 		for(i=0;i<touches.length;i++){
 			touches[i].pageX = touches[i].pageX || touches[i].x;
 			touches[i].pageY = touches[i].pageY || touches[i].y;
+			touches[i].x = touches[i].x || touches[i].pageX;
+			touches[i].y = touches[i].y || touches[i].pageY;
 			touches[i].clientX = touches[i].clientX || touches[i].x;
 			touches[i].clientY = touches[i].clientY || touches[i].y;
 			this.targetTouches.push(touches[i]);
