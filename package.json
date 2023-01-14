@@ -4,14 +4,11 @@
   "description": "Mini and powerful canvas engine for creating App or Game.",
   "main": "./build/ycc.min.js",
   "scripts": {
+    "test":"esbuild test/ycc/test.ts --outfile=./test/ycc/test.js --sourcemap  --bundle --watch",
     "start": "grunt",
     "build": "grunt build",
     "build:game_super_mario": "grunt build:game_super_mario",
     "doc": "grunt jsdoc",
-    "clean": "grunt clean",
-    "min": "grunt uglify",
-    "concat": "grunt concat",
-    "release": "grunt release",
     "example": "start http://localhost:7777/examples/index.html & http-server -p 7777"
   },
   "repository": {
@@ -33,15 +30,15 @@
   },
   "homepage": "https://github.com/lizhiqianduan/ycc",
   "devDependencies": {
-    "grunt": "^0.4.5",
-    "grunt-cli": "^1.2.0",
-    "grunt-contrib-clean": "^1.1.0",
-    "grunt-contrib-concat": "^1.0.0",
-    "grunt-contrib-copy": "^1.0.0",
-    "grunt-contrib-uglify": "^1.0.1",
-    "grunt-contrib-watch": "^1.0.0",
-    "grunt-jsdoc": "^2.1.1",
+    "@typescript-eslint/eslint-plugin": "^5.0.0",
+    "esbuild": "^0.16.17",
+    "eslint": "^8.0.1",
+    "eslint-config-standard-with-typescript": "^27.0.1",
+    "eslint-plugin-import": "^2.25.2",
+    "eslint-plugin-n": "^15.0.0",
+    "eslint-plugin-promise": "^6.0.0",
+    "http-server": "^0.11.1",
     "matter-js": "^0.14.2",
-    "http-server": "^0.11.1"
+    "typescript": "*"
   }
 }

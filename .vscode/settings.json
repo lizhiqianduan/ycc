@@ -1,0 +1,14 @@
+{
+    "editor.tabSize": 2,
+    "editor.codeActionsOnSave": {
+        "source.fixAll.eslint": true
+    },
+    // "eslint.alwaysShowStatus": true,
+    // "eslint.format.enable": true,
+    // "eslint.workingDirectories": [
+    //     ".eslintrc.js",
+    //     {
+    //         "mode": "auto"
+    //     }
+    // ],
+}
