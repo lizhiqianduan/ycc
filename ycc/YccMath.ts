@@ -5,9 +5,9 @@
 export class YccMathDot {
   x: number
   y: number
-  constructor (x: number, y: number) {
-    this.x = x
-    this.y = y
+  constructor (x?: number, y?: number) {
+    this.x = x ?? 0
+    this.y = y ?? 0
   }
 
   isEqual (dot: YccMathDot) {
@@ -70,27 +70,27 @@ export class YccMathRect {
   width: number
   height: number
 
-  constructor () {
+  constructor (x?: number, y?: number, width?: number, height?: number) {
     /**
      * 左上角x坐标
      * @type {number}
      */
-    this.x = 0
+    this.x = x ?? 0
     /**
       * 左上角y坐标
       * @type {number}
       */
-    this.y = 0
+    this.y = y ?? 0
     /**
       * 区域宽
       * @type {number}
       */
-    this.width = 0
+    this.width = width ?? 0
     /**
       * 区域高
       * @type {number}
       */
-    this.height = 0
+    this.height = height ?? 0
   }
 
   /**

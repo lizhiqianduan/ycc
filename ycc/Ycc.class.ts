@@ -1,6 +1,15 @@
 import YccLayer from './YccLayer.class'
-import Polyfill from './YccPolyfill.class'
+import YccPolyfill from './YccPolyfill.class'
 import YccStage from './YccStage.class'
+import YccUI from './YccUI.class'
+
+export * from './YccMath'
+
+export {
+  YccLayer,
+  YccStage,
+  YccUI
+}
 
 /**
  * 整个Ycc应用的配置项
@@ -22,24 +31,31 @@ export default class Ycc {
   /**
    * 初始配置
    */
-  config: YccConfig = {
-    appenv: 'h5',
-    debugDrawContainer: false
-  }
+  config: YccConfig
 
-  layerList: YccLayer[]
+  /**
+   * 舞台，唯一，一个`Ycc`对应一个`Stage`
+   */
   stage: YccStage
 
-  constructor (config?: Partial<YccConfig>) {
-    this.config.appenv = config?.appenv ?? 'h5'
-    this.config.debugDrawContainer = config?.debugDrawContainer ?? false
+  /**
+   * 兼容模块，兼容wx和h5
+   */
+  polyfill: YccPolyfill
 
-    	/**
-	 * Layer对象数组。包含所有的图层
-	 * @type {Array}
-	 */
-    this.layerList = []
+  constructor (config?: Partial<YccConfig>) {
+    this.config = {
+      appenv: config?.appenv ?? 'h5',
+      debugDrawContainer: config?.debugDrawContainer ?? false
+    }
+    this.polyfill = new YccPolyfill(this)
 
     this.stage = new YccStage(this)
   }
+
+  /**
+   * 应用的入口
+   * @overwrite
+   */
+  main () {}
 }

@@ -3,8 +3,10 @@
     "editor.codeActionsOnSave": {
         "source.fixAll.eslint": true
     },
+    // "editor.formatOnSave": true,
+    "editor.defaultFormatter": "vscode.typescript-language-features",
     // "eslint.alwaysShowStatus": true,
-    // "eslint.format.enable": true,
+    "eslint.format.enable": true,
     // "eslint.workingDirectories": [
     //     ".eslintrc.js",
     //     {

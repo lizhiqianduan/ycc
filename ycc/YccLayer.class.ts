@@ -1,33 +1,50 @@
-import Ycc from './Ycc.class'
-import YccPolyfill from './YccPolyfill.class'
+import { YccMathDot } from './YccMath'
+import { YccStage } from './Ycc.class'
 import YccUI from './YccUI.class'
 
-export default class YccLayer extends YccPolyfill {
-  yccClass: any
+/**
+ * 图层的外部属性
+ */
+interface LayerOpt {
+  /**
+   * 图层的名称
+   */
+  name: string
+  /**
+   * 图层的类型，默认为'ui'
+   */
+  type?: 'ui' | 'debug'
+
+  /**
+   * 是否允许帧动画事件的监听
+   */
+  enableFrameEvent: boolean
+}
+
+export default class YccLayer {
+  /**
+   * 相对于舞台的位置，以左上角为准
+   */
+  position = new YccMathDot()
+
   uiList: YccUI[]
-  uiCountRecursion: number
-  uiCountRendered: number
-  ctx: null
-  useCache: boolean
-  ctxCache: null
-  ctxCacheRect: null
-  renderCacheRect: boolean
+  ctx: CanvasRenderingContext2D
   id: number
-  type: string
-  textValue: string
-  name: any
-  x: number
-  y: number
-  width: any
-  height: any
+  type: 'ui' | 'debug'
+  name: string
+
   show: boolean
   ghost: boolean
   enableEventManager: boolean
   enableFrameEvent: boolean
   onFrameComing: () => void
+  stage: YccStage
 
-  constructor (ycc: Ycc) {
-    super(ycc)
+  constructor (stage: YccStage, option?: LayerOpt) {
+    /**
+     * 图层所属的舞台
+     */
+    this.stage = stage
 
     /**
      * 存储图层中的所有UI。UI的顺序，即为图层中的渲染顺序。
@@ -35,45 +52,10 @@ export default class YccLayer extends YccPolyfill {
     this.uiList = []
 
     /**
-     * 该图层ui的总数（只在渲染之后赋值）
-     * @type {number}
-     */
-    this.uiCountRecursion = 0
-
-    /**
-     * 该图层渲染的ui总数(只在渲染之后赋值）
-     * @type {number}
-     */
-    this.uiCountRendered = 0
-
-    /**
      * 当前图层的绘图环境
      * @type {CanvasRenderingContext2D}
      */
-    this.ctx = null
-
-    /**
-     * 是否使用独立的缓存canvas
-     * @type {boolean}
-     */
-    this.useCache = false
-
-    /**
-     * 图层的缓存绘图环境
-     */
-    this.ctxCache = null
-
-    /**
-     * 缓存时drawImage所绘制的最小区域
-     * @type {Ycc.Math.Rect}
-     */
-    this.ctxCacheRect = null
-
-    /**
-     * 是否以红色方框框选缓存的最小区域，调试时可使用
-     * @type {boolean}
-     */
-    this.renderCacheRect = false
+    this.ctx = stage.createCanvasByStage().getContext('2d')!
 
     /**
      * 图层id
@@ -88,39 +70,10 @@ export default class YccLayer extends YccPolyfill {
     this.type = 'ui'
 
     /**
-     * 图层中的文字。仅当图层type为text时有值。
-     * @type {string}
-     */
-    this.textValue = ''
-
-    /**
      * 图层名称
      * @type {string}
      */
-    this.name = option.name ? option.name : '图层_' + this.type + '_' + this.id
-
-    /**
-     * 图层位置的x坐标。默认与舞台左上角重合
-     * @type {number}
-     */
-    this.x = 0
-
-    /**
-     * 图层位置的Y坐标。默认与舞台左上角重合
-     * @type {number}
-     */
-    this.y = 0
-
-    /**
-     * 图层宽
-     * @type {number}
-     */
-    this.width = yccInstance.getStageWidth()
-    /**
-     * 图层高
-     * @type {number}
-     */
-    this.height = yccInstance.getStageHeight()
+    this.name = ((option?.name) != null) ? option?.name : ('图层_' + this.type + '_' + this.id.toString())
 
     /**
      * 图层是否显示
@@ -151,4 +104,56 @@ export default class YccLayer extends YccPolyfill {
      */
     this.onFrameComing = function () { }
   }
+
+  /**
+ * 添加一个UI图形至图层
+ */
+  addUI (ui: YccUI) {
+    // 建立ui与layer的互相引用关系
+    ui.props.belongTo = this
+    this.uiList.push(ui)
+
+    return ui
+  }
+}
+
+// 图层的自增id
+let layerIndex = 0
+// 创建的所有图层
+const layerList: YccLayer[] = []
+
+/**
+ * 创建一个图层
+ * @param {YccStage} stage 舞台
+ * @param opt
+ */
+export function createLayer (stage: YccStage, opt?: LayerOpt) {
+  const layer = new YccLayer(stage, opt)
+  layerList.push(layer)
+  return layer
+}
+
+/**
+   * 释放layer的内存，等待GC
+   * 将所有引用属性置为null
+   * @param layer
+   */
+export function releaseLayer (layer: YccLayer) {
+  layer.uiList = []
+
+  layer.show = false
+
+  layer.enableEventManager = false
+
+  layer.enableFrameEvent = false
+
+  layer.onFrameComing = () => { }
+}
+
+/**
+ * 获取所有已创建的图层
+ * @returns
+ */
+export function getAllLayer () {
+  return layerList
 }

@@ -6,6 +6,9 @@
 import Ycc from './Ycc.class'
 
 export default class YccPolyfill {
+  /**
+   * 应用的实例
+   */
   yccInstance: Ycc
 
   constructor (ycc: Ycc) {
@@ -18,8 +21,30 @@ export default class YccPolyfill {
    */
   _createImage (): HTMLImageElement {
     if (this.yccInstance.config.appenv === 'wxapp') {
-      return this.yccInstance.canvasDom.createImage()
+      return this.yccInstance.stage.stageCanvas.createImage()
     }
     return new Image()
+  }
+
+  /**
+ * 新创建canvas
+ * @param options
+ * @param options.width
+ * @param options.height
+ * @param options.dpi 像素比
+ */
+  createCanvas (options: { width: number, height: number, dpi?: number }) {
+    const canvas = document.createElement('canvas')
+    const dpi = options.dpi ?? 2
+
+    // 设置dpi
+    canvas.width = options.width * dpi
+    canvas.height = options.height * dpi
+    canvas.style.width = options.width.toString() + 'px'
+
+    // 去除5px inline-block偏差
+    canvas.style.display = 'block'
+    // 返回值
+    return canvas
   }
 }

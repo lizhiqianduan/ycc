@@ -29,6 +29,15 @@ module.exports = {
     '@typescript-eslint/explicit-function-return-type':0,
 
     // 允许this的别名，即 let self=this这种写法
-    "@typescript-eslint/no-this-alias": 0
+    "@typescript-eslint/no-this-alias": 0,
+
+    // 可以对非空值进行断言
+    "@typescript-eslint/no-non-null-assertion": 0,
+
+    // 允许非boolean类型的if判断
+    "@typescript-eslint/strict-boolean-expressions":0,
+
+    // 允许`xx as Type`这种写法
+    "@typescript-eslint/consistent-type-assertions":0 
   }
 }
