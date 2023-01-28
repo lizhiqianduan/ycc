@@ -39,8 +39,17 @@ export default class YccStage {
     this.defaultLayer = createLayer(this, { name: '舞台默认图层', enableFrameEvent: true })
   }
 
-  clearStage () {
+  /**
+   * 清空舞台
+   * @param withLayerCanvas 是否连带图层的canvas一起清空
+   */
+  clearStage (withLayerCanvas: boolean = true) {
     this.stageCanvasCtx.clearRect(0, 0, this.stageInfo.width, this.stageInfo.height)
+    if (withLayerCanvas) {
+      getAllLayer().forEach(layer => {
+        layer.ctx.clearRect(0, 0, this.stageInfo.width, this.stageInfo.height)
+      })
+    }
   }
 
   /**
@@ -89,8 +98,6 @@ export default class YccStage {
    * 绘制所有图层的所有元素
    */
   renderAll () {
-    // 先清空舞台
-    this.clearStage()
     // 遍历所有图层
     getAllLayer().forEach(layer => {
       layer.uiList.forEach(ui => {

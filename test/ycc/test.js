@@ -187,9 +187,8 @@
     * @param options.dpi 像素比
     */
     createCanvas(options) {
-      var _a;
       const canvas = document.createElement("canvas");
-      const dpi = (_a = options.dpi) != null ? _a : 2;
+      const dpi = 1;
       canvas.width = options.width * dpi;
       canvas.height = options.height * dpi;
       canvas.style.width = options.width.toString() + "px";
@@ -210,8 +209,17 @@
       this.stageCanvasCtx = this.stageCanvas.getContext("2d");
       this.defaultLayer = createLayer(this, { name: "\u821E\u53F0\u9ED8\u8BA4\u56FE\u5C42", enableFrameEvent: true });
     }
-    clearStage() {
+    /**
+     * 清空舞台
+     * @param withLayerCanvas 是否连带图层的canvas一起清空
+     */
+    clearStage(withLayerCanvas = true) {
       this.stageCanvasCtx.clearRect(0, 0, this.stageInfo.width, this.stageInfo.height);
+      if (withLayerCanvas) {
+        getAllLayer().forEach((layer) => {
+          layer.ctx.clearRect(0, 0, this.stageInfo.width, this.stageInfo.height);
+        });
+      }
     }
     /**
      * 根据舞台信息，创建一个覆盖全舞台的canvas
@@ -255,7 +263,6 @@
      * 绘制所有图层的所有元素
      */
     renderAll() {
-      this.clearStage();
       getAllLayer().forEach((layer) => {
         layer.uiList.forEach((ui) => {
           ui.render();
@@ -263,6 +270,131 @@
         this.stageCanvasCtx.drawImage(layer.ctx.canvas, 0, 0, this.stageInfo.width, this.stageInfo.height, 0, 0, this.stageInfo.width, this.stageInfo.height);
       });
     }
+  };
+
+  // ycc/YccUtils.ts
+  var isFn = function(str) {
+    return typeof str === "function";
+  };
+
+  // ycc/YccTicker.class.ts
+  var Frame = class {
+    constructor(ticker) {
+      this.createTime = Date.now();
+      this.deltaTime = ticker.deltaTime;
+      this.fps = parseInt(`${1e3 / this.deltaTime}`);
+      this.frameCount = ticker.frameAllCount;
+      this.isRendered = false;
+    }
+  };
+  var YccTicker = class {
+    constructor(yccInstance) {
+      this.yccInstance = yccInstance;
+      this.currentFrame = void 0;
+      this.startTime = Date.now();
+      this.lastFrameTime = this.startTime;
+      this.lastFrameTickerCount = 0;
+      this.deltaTime = 0;
+      this.deltaTimeExpect = 0;
+      this.deltaTimeRatio = 1;
+      this.frameListenerList = [];
+      this.defaultFrameRate = 60;
+      this.defaultDeltaTime = 1e3 / this.defaultFrameRate;
+      this.tickerSpace = 1;
+      this.frameAllCount = 0;
+      this.timerTickCount = 0;
+      this._timerId = 0;
+      this._isRunning = false;
+    }
+    /**
+       * 定时器开始
+       * @param [frameRate] 心跳频率，即帧率
+       * 可取值有[60,30,20,15]
+       */
+    start(frameRate) {
+      let timer = this.yccInstance.stage.stageCanvas.requestAnimationFrame ? this.yccInstance.stage.stageCanvas.requestAnimationFrame : requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame || window.oRequestAnimationFrame || window.msRequestAnimationFrame;
+      const self = this;
+      self.currentFrame = void 0;
+      self.timerTickCount = 0;
+      self.lastFrameTickerCount = 0;
+      frameRate = frameRate || self.defaultFrameRate;
+      self.tickerSpace = parseInt(`${60 / frameRate}`) || 1;
+      self.deltaTimeExpect = 1e3 / frameRate;
+      self.frameAllCount = 0;
+      self.startTime = Date.now();
+      if (self._isRunning)
+        return this;
+      timer || (timer = function(callback) {
+        return setTimeout(function() {
+          callback(Date.now());
+        }, 1e3 / 60);
+      });
+      self._timerId = timer(cb);
+      self._isRunning = true;
+      function cb(curTime) {
+        self.timerTickCount++;
+        if (self.timerTickCount - self.lastFrameTickerCount === self.tickerSpace) {
+          self.frameAllCount++;
+          self.deltaTime = curTime - self.lastFrameTime;
+          self.deltaTimeRatio = self.deltaTime / self.deltaTimeExpect;
+          self.lastFrameTime += self.deltaTime;
+          self.lastFrameTickerCount = self.timerTickCount;
+          self.currentFrame = new Frame(self);
+          self._broadcastFrameEvent(self.currentFrame);
+        }
+        self._timerId = timer(cb);
+      }
+      return this;
+    }
+    /**
+       * 停止心跳
+       */
+    stop() {
+      let stop = this.yccInstance.stage.stageCanvas.cancelAnimationFrame ? this.yccInstance.stage.stageCanvas.cancelAnimationFrame : cancelAnimationFrame || window.webkitCancelAnimationFrame || window.mozCancelAnimationFrame || window.oCancelAnimationFrame;
+      stop || (stop = function(id) {
+        clearTimeout(id);
+      });
+      stop(this._timerId);
+      this._isRunning = false;
+      this.currentFrame = void 0;
+    }
+    /**
+       * 给每帧添加自定义的监听函数
+       * @param listener
+       */
+    addFrameListener(listener) {
+      this.frameListenerList.push(listener);
+      return this;
+    }
+    /**
+       * 移除某个监听函数
+       * @param listener
+       */
+    removeFrameListener(listener) {
+      const index = this.frameListenerList.indexOf(listener);
+      if (index !== -1) {
+        this.frameListenerList.splice(index, 1);
+      }
+      return this;
+    }
+    /**
+       * 执行所有自定义的帧监听函数
+       */
+    _broadcastFrameEvent(frame) {
+      for (let i = 0; i < this.frameListenerList.length; i++) {
+        const listener = this.frameListenerList[i];
+        isFn(listener) && listener(frame);
+      }
+    }
+    // /**
+    //    * 执行所有图层的监听函数
+    //    */
+    // broadcastToLayer (frame: Frame) {
+    //   for (let i = 0; i < this.yccInstance.layerList.length; i++) {
+    //     const layer = this.yccInstance.layerList[i]
+    //     layer.show && layer.enableFrameEvent && layer.onFrameComing(frame)
+    //   }
+    // }
   };
 
   // ycc/YccUI.class.ts
@@ -301,6 +433,7 @@
      */
     addToLayer(layer) {
       layer.addUI(this);
+      return this;
     }
     /**
      * 根据coordinates绘制路径
@@ -452,19 +585,38 @@
       this.stage = new YccStage(this);
     }
     /**
+     * 启动
+     */
+    bootstrap() {
+      this.created();
+    }
+    /**
      * 应用的入口
      * @overwrite
      */
-    main() {
+    created() {
+    }
+    /**
+     * 渲染函数
+     * @overwrite
+     */
+    render() {
     }
   };
 
   // test/ycc/test.ts
   var App = class extends Ycc {
-    main() {
+    constructor() {
+      super(...arguments);
+      /**
+       * 应用的状态
+       */
+      this.$state = { testUI: void 0 };
+    }
+    created() {
       var _a;
       (_a = document.getElementById("canvas")) == null ? void 0 : _a.appendChild(this.stage.stageCanvas);
-      new YccUI({
+      this.$state.testUI = new YccUI({
         coordinates: [
           new YccMathDot(10, 10),
           new YccMathDot(200, 10),
@@ -472,9 +624,17 @@
           new YccMathDot(10, 10)
         ]
       }).addToLayer(this.stage.defaultLayer);
+      new YccTicker(this).addFrameListener((frame) => {
+        this.render();
+      }).start(60);
+    }
+    render() {
+      this.stage.clearStage();
+      this.$state.testUI.props.belongTo.position.x++;
+      this.$state.testUI.props.belongTo.position.y++;
       this.stage.renderAll();
     }
   };
-  new App().main();
+  new App().bootstrap();
 })();
 //# sourceMappingURL=test.js.map

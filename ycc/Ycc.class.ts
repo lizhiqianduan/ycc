@@ -1,6 +1,7 @@
 import YccLayer from './YccLayer.class'
 import YccPolyfill from './YccPolyfill.class'
 import YccStage from './YccStage.class'
+import YccTicker from './YccTicker.class'
 import YccUI from './YccUI.class'
 
 export * from './YccMath'
@@ -8,7 +9,8 @@ export * from './YccMath'
 export {
   YccLayer,
   YccStage,
-  YccUI
+  YccUI,
+  YccTicker
 }
 
 /**
@@ -32,6 +34,10 @@ export default class Ycc {
    * 初始配置
    */
   config: YccConfig
+  /**
+   * 数据状态
+   */
+  $state?: object
 
   /**
    * 舞台，唯一，一个`Ycc`对应一个`Stage`
@@ -54,8 +60,21 @@ export default class Ycc {
   }
 
   /**
+   * 启动
+   */
+  bootstrap () {
+    this.created()
+  }
+
+  /**
    * 应用的入口
    * @overwrite
    */
-  main () {}
+  created () {}
+
+  /**
+   * 渲染函数
+   * @overwrite
+   */
+  render () {}
 }

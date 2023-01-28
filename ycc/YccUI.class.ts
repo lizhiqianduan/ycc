@@ -131,6 +131,7 @@ export default class YccUI {
    */
   addToLayer (layer: YccLayer) {
     layer.addUI(this)
+    return this
   }
 
   /**

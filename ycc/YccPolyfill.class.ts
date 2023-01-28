@@ -35,7 +35,8 @@ export default class YccPolyfill {
  */
   createCanvas (options: { width: number, height: number, dpi?: number }) {
     const canvas = document.createElement('canvas')
-    const dpi = options.dpi ?? 2
+    // const dpi = options.dpi ?? 2
+    const dpi = 1
 
     // 设置dpi
     canvas.width = options.width * dpi
