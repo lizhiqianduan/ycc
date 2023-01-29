@@ -112,7 +112,6 @@ export default class YccLayer {
     // 建立ui与layer的互相引用关系
     ui.props.belongTo = this
     this.uiList.push(ui)
-
     return ui
   }
 }

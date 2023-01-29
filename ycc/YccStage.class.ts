@@ -44,10 +44,11 @@ export default class YccStage {
    * @param withLayerCanvas 是否连带图层的canvas一起清空
    */
   clearStage (withLayerCanvas: boolean = true) {
-    this.stageCanvasCtx.clearRect(0, 0, this.stageInfo.width, this.stageInfo.height)
+    const dpi = this.stageInfo.dpi
+    this.stageCanvasCtx.clearRect(0, 0, this.stageInfo.width * dpi, this.stageInfo.height * dpi)
     if (withLayerCanvas) {
       getAllLayer().forEach(layer => {
-        layer.ctx.clearRect(0, 0, this.stageInfo.width, this.stageInfo.height)
+        layer.ctx.clearRect(0, 0, this.stageInfo.width * dpi, this.stageInfo.height * dpi)
       })
     }
   }
@@ -59,6 +60,23 @@ export default class YccStage {
     return this.yccInstance.polyfill.createCanvas({
       ...this.stageInfo
     })
+  }
+
+  /**
+   * 根据ui的名称获取舞台上的ui
+   * @param name
+   * @returns
+   */
+  getElementByName (name: string) {
+    const layers = getAllLayer()
+    for (let index = 0; index < layers.length; index++) {
+      const layer = layers[index]
+      const uiList = layer.uiList
+      for (let i = 0; i < uiList.length; i++) {
+        const ui = uiList[i]
+        if (ui.props.name === name) return ui
+      }
+    }
   }
 
   /**
@@ -98,6 +116,7 @@ export default class YccStage {
    * 绘制所有图层的所有元素
    */
   renderAll () {
+    const { dpi } = this.stageInfo
     // 遍历所有图层
     getAllLayer().forEach(layer => {
       layer.uiList.forEach(ui => {
@@ -105,7 +124,7 @@ export default class YccStage {
       })
 
       // 将离屏图层绘制到舞台来
-      this.stageCanvasCtx.drawImage(layer.ctx.canvas, 0, 0, this.stageInfo.width, this.stageInfo.height, 0, 0, this.stageInfo.width, this.stageInfo.height)
+      this.stageCanvasCtx.drawImage(layer.ctx.canvas, 0, 0, this.stageInfo.width * dpi, this.stageInfo.height * dpi, 0, 0, this.stageInfo.width * dpi, this.stageInfo.height * dpi)
     })
   }
 }

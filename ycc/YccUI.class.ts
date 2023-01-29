@@ -2,9 +2,13 @@ import YccLayer from './YccLayer.class'
 import { YccMathDot, YccMathRect } from './YccMath'
 
 /**
- * UI的属性
+ * UI的公用属性
  */
-interface YccUIProps {
+export interface YccUICommonProps {
+  /**
+   * UI的名称，尽量不要重复
+   */
+  name?: string
   /**
     * UI所属的图层，若UI为加入图层，所有与绘制相关的方法将抛错
     */
@@ -83,14 +87,11 @@ interface YccUIProps {
    * 多边形UI
    * 位置坐标x、y为只读属性，且为相对坐标，默认取多边形的第一个顶点坐标
    * @constructor
-   * @extends Ycc.UI.Base
-   * @param option       {object}         所有可配置的配置项
-   * @param option.fill    {boolean}   是否填充绘制，false表示描边绘制
-   * @param option.coordinates   {Ycc.Math.Dot[]}    多边形点坐标的数组，为保证图形能够闭合，起点和终点必须相等。注意：点列表的坐标为相对坐标
+   * @param {Partial<YccUICommonProps>} option    所有可配置的配置项
    */
-export default class YccUI {
+export default class YccUI<YccUIProps extends YccUICommonProps = YccUICommonProps> {
   /**
-   * UI的属性
+   * UI的属性，默认属性在此设置
    */
   props: YccUIProps
 
@@ -99,16 +100,16 @@ export default class YccUI {
    * @param {Partial<YccUIProps>} option
    */
   constructor (option: Partial<YccUIProps> = {}) {
+    this.props = this.getDefaultProps()
     this.props = this._extendOption(option)
   }
 
   /**
-   * 初始化UI属性
-   * @param option
+   * 设置默认属性，需子类覆盖；若子类没有特殊属性，则不覆盖
+   * @overwrite
    */
-  private _extendOption (option: Partial<YccUIProps>) {
-    // ui的默认值
-    const defaultProps: YccUIProps = {
+  getDefaultProps () {
+    return {
       anchor: new YccMathDot(0, 0),
       coordinates: [],
       fill: true,
@@ -121,8 +122,15 @@ export default class YccUI {
       stopEventBubbleUp: true,
       strokeStyle: 'black',
       worldCoordinates: []
-    }
-    return Object.assign(defaultProps, option)
+    } as unknown as YccUIProps
+  }
+
+  /**
+   * 初始化UI属性
+   * @param option
+   */
+  private _extendOption (option: Partial<YccUIProps>) {
+    return Object.assign(this.props, option)
   }
 
   /**
@@ -135,26 +143,36 @@ export default class YccUI {
   }
 
   /**
+   * 判断UI是否可绘制
+   * @overwrite 若UI有特殊的渲染过程，则子类需重写此方法
+   */
+  isDrawable () {
+    if (!this.props.belongTo) { console.log('该UI未加入图层'); return false }
+    if (this.props.coordinates.length === 0) { console.log('该UI未设置坐标'); return false }
+    if (this.props.coordinates.length < 2) { console.log('该UI坐标为正确设置'); return false }
+    return true
+  }
+
+  /**
    * 根据coordinates绘制路径
    * 只绘制路径，不填充、不描边
-   * 继承的子类若不是多边形，需要重载此方法
    * 此过程只会发生在图层的离屏canvas中
    */
   renderPath () {
-    if (!this.props.belongTo) { console.log('该UI未加入图层'); return }
-
-    if (this.props.coordinates.length === 0) { console.log('该UI未设置坐标'); return }
+    if (!this.isDrawable()) return
 
     // 绘图环境
-    const ctx = this.props.belongTo.ctx
+    const ctx = this.props.belongTo!.ctx
+    // 图层的位置
+    const position = this.props.belongTo!.position
 
     // 旋转后的点
-    const start = this.props.coordinates[0].plus(this.props.belongTo.position).rotate(this.props.rotation, this.props.anchor.plus(this.props.belongTo.position).plus(this.props.coordinates[0]))
+    const start = this.props.coordinates[0].plus(position).rotate(this.props.rotation, this.props.anchor.plus(position).plus(this.props.coordinates[0]))
     ctx.beginPath()
     ctx.moveTo(start.x, start.y)
     for (let i = 0; i < this.props.coordinates.length - 1; i++) {
       // 旋转后的点
-      const dot = this.props.coordinates[i].plus(this.props.belongTo.position).rotate(this.props.rotation, this.props.anchor.plus(this.props.belongTo.position).plus(this.props.coordinates[i]))
+      const dot = this.props.coordinates[i].plus(position).rotate(this.props.rotation, this.props.anchor.plus(position).plus(this.props.coordinates[i]))
       ctx.lineTo(dot.x, dot.y)
     }
     ctx.closePath()
@@ -255,16 +273,15 @@ export default class YccUI {
   }
 
   /**
-   * 渲染至ctx，若UI的渲染过程不同，则此处的render方法需重写
-   * @overwrite
+   * 渲染至离屏ctx
+   * @overwrite 若UI有特殊的渲染过程，则此处的render方法需子类重写
    */
   render () {
     console.log('render ui')
-    if (!this.props.belongTo) { console.log('该UI未加入图层'); return }
-    if (!this.props.coordinates) { console.log('未设置多边形的顶点坐标！'); return }
+    if (!this.isDrawable()) return
     if (!this.props.show) return
 
-    const ctx = this.props.belongTo.ctx
+    const ctx = this.props.belongTo!.ctx
     ctx.save()
     ctx.fillStyle = this.props.fillStyle
     ctx.strokeStyle = this.props.strokeStyle

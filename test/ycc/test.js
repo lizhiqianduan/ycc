@@ -1,6 +1,8 @@
 "use strict";
 (() => {
   var __defProp = Object.defineProperty;
+  var __defProps = Object.defineProperties;
+  var __getOwnPropDescs = Object.getOwnPropertyDescriptors;
   var __getOwnPropSymbols = Object.getOwnPropertySymbols;
   var __hasOwnProp = Object.prototype.hasOwnProperty;
   var __propIsEnum = Object.prototype.propertyIsEnumerable;
@@ -16,6 +18,7 @@
       }
     return a;
   };
+  var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
 
   // ycc/YccMath.ts
   var YccMathDot = class {
@@ -187,8 +190,9 @@
     * @param options.dpi 像素比
     */
     createCanvas(options) {
+      var _a;
       const canvas = document.createElement("canvas");
-      const dpi = 1;
+      const dpi = (_a = options.dpi) != null ? _a : 2;
       canvas.width = options.width * dpi;
       canvas.height = options.height * dpi;
       canvas.style.width = options.width.toString() + "px";
@@ -214,10 +218,11 @@
      * @param withLayerCanvas 是否连带图层的canvas一起清空
      */
     clearStage(withLayerCanvas = true) {
-      this.stageCanvasCtx.clearRect(0, 0, this.stageInfo.width, this.stageInfo.height);
+      const dpi = this.stageInfo.dpi;
+      this.stageCanvasCtx.clearRect(0, 0, this.stageInfo.width * dpi, this.stageInfo.height * dpi);
       if (withLayerCanvas) {
         getAllLayer().forEach((layer) => {
-          layer.ctx.clearRect(0, 0, this.stageInfo.width, this.stageInfo.height);
+          layer.ctx.clearRect(0, 0, this.stageInfo.width * dpi, this.stageInfo.height * dpi);
         });
       }
     }
@@ -226,6 +231,23 @@
      */
     createCanvasByStage() {
       return this.yccInstance.polyfill.createCanvas(__spreadValues({}, this.stageInfo));
+    }
+    /**
+     * 根据ui的名称获取舞台上的ui
+     * @param name
+     * @returns
+     */
+    getElementByName(name) {
+      const layers = getAllLayer();
+      for (let index = 0; index < layers.length; index++) {
+        const layer = layers[index];
+        const uiList = layer.uiList;
+        for (let i = 0; i < uiList.length; i++) {
+          const ui = uiList[i];
+          if (ui.props.name === name)
+            return ui;
+        }
+      }
     }
     /**
      *
@@ -263,11 +285,12 @@
      * 绘制所有图层的所有元素
      */
     renderAll() {
+      const { dpi } = this.stageInfo;
       getAllLayer().forEach((layer) => {
         layer.uiList.forEach((ui) => {
           ui.render();
         });
-        this.stageCanvasCtx.drawImage(layer.ctx.canvas, 0, 0, this.stageInfo.width, this.stageInfo.height, 0, 0, this.stageInfo.width, this.stageInfo.height);
+        this.stageCanvasCtx.drawImage(layer.ctx.canvas, 0, 0, this.stageInfo.width * dpi, this.stageInfo.height * dpi, 0, 0, this.stageInfo.width * dpi, this.stageInfo.height * dpi);
       });
     }
   };
@@ -404,14 +427,15 @@
      * @param {Partial<YccUIProps>} option
      */
     constructor(option = {}) {
+      this.props = this.getDefaultProps();
       this.props = this._extendOption(option);
     }
     /**
-     * 初始化UI属性
-     * @param option
+     * 设置默认属性，需子类覆盖；若子类没有特殊属性，则不覆盖
+     * @overwrite
      */
-    _extendOption(option) {
-      const defaultProps = {
+    getDefaultProps() {
+      return {
         anchor: new YccMathDot(0, 0),
         coordinates: [],
         fill: true,
@@ -425,7 +449,13 @@
         strokeStyle: "black",
         worldCoordinates: []
       };
-      return Object.assign(defaultProps, option);
+    }
+    /**
+     * 初始化UI属性
+     * @param option
+     */
+    _extendOption(option) {
+      return Object.assign(this.props, option);
     }
     /**
      * 将此UI添加至图层
@@ -436,26 +466,39 @@
       return this;
     }
     /**
-     * 根据coordinates绘制路径
-     * 只绘制路径，不填充、不描边
-     * 继承的子类若不是多边形，需要重载此方法
-     * 此过程只会发生在图层的离屏canvas中
+     * 判断UI是否可绘制
+     * @overwrite 若UI有特殊的渲染过程，则子类需重写此方法
      */
-    renderPath() {
+    isDrawable() {
       if (!this.props.belongTo) {
         console.log("\u8BE5UI\u672A\u52A0\u5165\u56FE\u5C42");
-        return;
+        return false;
       }
       if (this.props.coordinates.length === 0) {
         console.log("\u8BE5UI\u672A\u8BBE\u7F6E\u5750\u6807");
-        return;
+        return false;
       }
+      if (this.props.coordinates.length < 2) {
+        console.log("\u8BE5UI\u5750\u6807\u4E3A\u6B63\u786E\u8BBE\u7F6E");
+        return false;
+      }
+      return true;
+    }
+    /**
+     * 根据coordinates绘制路径
+     * 只绘制路径，不填充、不描边
+     * 此过程只会发生在图层的离屏canvas中
+     */
+    renderPath() {
+      if (!this.isDrawable())
+        return;
       const ctx = this.props.belongTo.ctx;
-      const start = this.props.coordinates[0].plus(this.props.belongTo.position).rotate(this.props.rotation, this.props.anchor.plus(this.props.belongTo.position).plus(this.props.coordinates[0]));
+      const position = this.props.belongTo.position;
+      const start = this.props.coordinates[0].plus(position).rotate(this.props.rotation, this.props.anchor.plus(position).plus(this.props.coordinates[0]));
       ctx.beginPath();
       ctx.moveTo(start.x, start.y);
       for (let i = 0; i < this.props.coordinates.length - 1; i++) {
-        const dot = this.props.coordinates[i].plus(this.props.belongTo.position).rotate(this.props.rotation, this.props.anchor.plus(this.props.belongTo.position).plus(this.props.coordinates[i]));
+        const dot = this.props.coordinates[i].plus(position).rotate(this.props.rotation, this.props.anchor.plus(position).plus(this.props.coordinates[i]));
         ctx.lineTo(dot.x, dot.y);
       }
       ctx.closePath();
@@ -548,19 +591,13 @@
       return noneZeroMode === 1 ? leftCount - rightCount !== 0 : crossNum % 2 === 1;
     }
     /**
-     * 渲染至ctx，若UI的渲染过程不同，则此处的render方法需重写
-     * @overwrite
+     * 渲染至离屏ctx
+     * @overwrite 若UI有特殊的渲染过程，则此处的render方法需子类重写
      */
     render() {
       console.log("render ui");
-      if (!this.props.belongTo) {
-        console.log("\u8BE5UI\u672A\u52A0\u5165\u56FE\u5C42");
+      if (!this.isDrawable())
         return;
-      }
-      if (!this.props.coordinates) {
-        console.log("\u672A\u8BBE\u7F6E\u591A\u8FB9\u5F62\u7684\u9876\u70B9\u5750\u6807\uFF01");
-        return;
-      }
       if (!this.props.show)
         return;
       const ctx = this.props.belongTo.ctx;
@@ -604,6 +641,33 @@
     }
   };
 
+  // ycc/ui/YccUI.Text.class.ts
+  var YccUIText = class extends YccUI {
+    /**
+     * @overwrite
+     * @returns
+     */
+    getDefaultProps() {
+      return __spreadProps(__spreadValues({}, super.getDefaultProps()), {
+        coordinates: [
+          new YccMathDot(0, 0),
+          new YccMathDot(0, 0)
+        ],
+        value: ""
+      });
+    }
+    render() {
+      var _a, _b, _c, _d;
+      const ctx = this.props.belongTo.ctx;
+      ctx.save();
+      ctx.fillStyle = (_b = (_a = this.props.style) == null ? void 0 : _a.color) != null ? _b : this.props.fillStyle;
+      ctx.textBaseline = "top";
+      ctx.font = `${((_d = (_c = this.props.style) == null ? void 0 : _c.fontSize) != null ? _d : 16) * this.props.belongTo.stage.stageInfo.dpi}px Arial`;
+      ctx.fillText(this.props.value, this.props.anchor.x, this.props.anchor.y);
+      ctx.restore();
+    }
+  };
+
   // test/ycc/test.ts
   var App = class extends Ycc {
     constructor() {
@@ -616,7 +680,8 @@
     created() {
       var _a;
       (_a = document.getElementById("canvas")) == null ? void 0 : _a.appendChild(this.stage.stageCanvas);
-      this.$state.testUI = new YccUI({
+      new YccUI({
+        name: "\u81EA\u5B9A\u4E49UI",
         coordinates: [
           new YccMathDot(10, 10),
           new YccMathDot(200, 10),
@@ -624,14 +689,22 @@
           new YccMathDot(10, 10)
         ]
       }).addToLayer(this.stage.defaultLayer);
+      new YccUIText({
+        value: "sfsdfsdf",
+        style: {
+          fontSize: 16,
+          color: "red"
+        }
+      }).addToLayer(this.stage.defaultLayer);
       new YccTicker(this).addFrameListener((frame) => {
         this.render();
       }).start(60);
+      this.render();
     }
     render() {
       this.stage.clearStage();
-      this.$state.testUI.props.belongTo.position.x++;
-      this.$state.testUI.props.belongTo.position.y++;
+      this.stage.getElementByName("\u81EA\u5B9A\u4E49UI").props.belongTo.position.x++;
+      this.stage.getElementByName("\u81EA\u5B9A\u4E49UI").props.belongTo.position.y++;
       this.stage.renderAll();
     }
   };
