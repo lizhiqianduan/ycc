@@ -44,6 +44,7 @@ export default class YccUIText extends YccUI<YccUITextProps> {
     ctx.fillStyle = this.props.style?.color ?? this.props.fillStyle
     ctx.textBaseline = 'top'
     ctx.font = `${(this.props.style?.fontSize ?? 16) * this.props.belongTo!.stage.stageInfo.dpi}px Arial`
+    // ctx.measureText(this.props.value).fontBoundingBoxAscent
     ctx.fillText(this.props.value, this.props.anchor.x, this.props.anchor.y)
     ctx.restore()
   }

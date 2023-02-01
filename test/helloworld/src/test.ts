@@ -1,5 +1,5 @@
-import YccUIText from '../../ycc/ui/YccUI.Text.class'
-import Ycc, { YccMathDot, YccTicker, YccUI } from '../../ycc/Ycc.class'
+import YccUIText from '../../../src/ui/YccUI.Text.class'
+import Ycc, { YccMathDot, YccTicker, YccUI } from '../../../src/Ycc.class'
 
 /**
  * 应用的状态

@@ -1,4 +1,3 @@
-"use strict";
 (() => {
   var __defProp = Object.defineProperty;
   var __defProps = Object.defineProperties;
@@ -20,7 +19,7 @@
   };
   var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
 
-  // ycc/YccMath.ts
+  // src/YccMath.ts
   var YccMathDot = class {
     constructor(x, y) {
       this.x = x != null ? x : 0;
@@ -127,7 +126,7 @@
     }
   };
 
-  // ycc/YccLayer.class.ts
+  // src/YccLayer.class.ts
   var YccLayer = class {
     constructor(stage, option) {
       /**
@@ -167,7 +166,7 @@
     return layerList;
   }
 
-  // ycc/YccPolyfill.class.ts
+  // src/YccPolyfill.class.ts
   var YccPolyfill = class {
     constructor(ycc) {
       this.yccInstance = ycc;
@@ -201,7 +200,7 @@
     }
   };
 
-  // ycc/YccStage.class.ts
+  // src/YccStage.class.ts
   var YccStage = class {
     constructor(ycc) {
       /**
@@ -295,12 +294,12 @@
     }
   };
 
-  // ycc/YccUtils.ts
+  // src/YccUtils.ts
   var isFn = function(str) {
     return typeof str === "function";
   };
 
-  // ycc/YccTicker.class.ts
+  // src/YccTicker.class.ts
   var Frame = class {
     constructor(ticker) {
       this.createTime = Date.now();
@@ -420,7 +419,7 @@
     // }
   };
 
-  // ycc/YccUI.class.ts
+  // src/YccUI.class.ts
   var YccUI = class {
     /**
      * UI的构造函数
@@ -610,7 +609,7 @@
     }
   };
 
-  // ycc/Ycc.class.ts
+  // src/Ycc.class.ts
   var Ycc = class {
     constructor(config) {
       var _a, _b;
@@ -641,7 +640,7 @@
     }
   };
 
-  // ycc/ui/YccUI.Text.class.ts
+  // src/ui/YccUI.Text.class.ts
   var YccUIText = class extends YccUI {
     /**
      * @overwrite
@@ -668,7 +667,7 @@
     }
   };
 
-  // test/ycc/test.ts
+  // test/helloworld/src/test.ts
   var App = class extends Ycc {
     constructor() {
       super(...arguments);
@@ -678,8 +677,7 @@
       this.$state = { testUI: void 0 };
     }
     created() {
-      var _a;
-      (_a = document.getElementById("canvas")) == null ? void 0 : _a.appendChild(this.stage.stageCanvas);
+      document.getElementById("canvas")?.appendChild(this.stage.stageCanvas);
       new YccUI({
         name: "\u81EA\u5B9A\u4E49UI",
         coordinates: [

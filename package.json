@@ -4,7 +4,7 @@
   "description": "Mini and powerful canvas engine for creating App or Game.",
   "main": "./build/ycc.min.js",
   "scripts": {
-    "test":"esbuild test/ycc/test.ts --outfile=./test/ycc/test.js --sourcemap  --bundle --watch",
+    "test":"esbuild test/helloworld/src/test.ts --outfile=./test/helloworld/build/test.js --sourcemap  --bundle --watch",
     "start": "grunt",
     "build": "grunt build",
     "build:game_super_mario": "grunt build:game_super_mario",
