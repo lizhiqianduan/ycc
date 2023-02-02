@@ -3,7 +3,7 @@
  * 方法名全部小写
  */
 
-import Ycc from './Ycc.class'
+import Ycc from './Ycc'
 
 export default class YccPolyfill {
   /**

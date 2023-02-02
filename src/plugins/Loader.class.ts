@@ -1,5 +1,5 @@
-import Polyfill from '../YccPolyfill.class'
-import Ycc from '../Ycc.class'
+import Polyfill from '../YccPolyfill'
+import Ycc from '../Ycc'
 
 interface Resource {
   name?: string

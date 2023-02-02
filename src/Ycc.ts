@@ -1,15 +1,13 @@
-import YccLayer from './YccLayer.class'
-import YccPolyfill from './YccPolyfill.class'
-import YccStage from './YccStage.class'
-import YccTicker from './YccTicker.class'
-import YccUI from './YccUI.class'
+import YccLayer from './YccLayer'
+import YccPolyfill from './YccPolyfill'
+import YccStage from './YccStage'
+import YccTicker from './YccTicker'
 
 export * from './YccMath'
 
 export {
   YccLayer,
   YccStage,
-  YccUI,
   YccTicker
 }
 

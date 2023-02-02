@@ -1,6 +1,6 @@
 import { YccMathDot } from './YccMath'
-import { YccStage } from './Ycc.class'
-import YccUI from './YccUI.class'
+import { YccStage } from './Ycc'
+import YccUI from './ui/YccUI'
 
 /**
  * 图层的外部属性

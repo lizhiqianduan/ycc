@@ -3,8 +3,8 @@
  * 舞台包含多个图层`Layer`
  */
 
-import Ycc, { YccLayer } from './Ycc.class'
-import { createLayer, getAllLayer } from './YccLayer.class'
+import Ycc, { YccLayer } from './Ycc'
+import { createLayer, getAllLayer } from './YccLayer'
 
 export default class YccStage {
   /**
