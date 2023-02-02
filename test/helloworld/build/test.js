@@ -126,7 +126,238 @@
     }
   };
 
-  // src/YccLayer.class.ts
+  // src/ui/YccUI.ts
+  var YccUI = class {
+    /**
+      * UI的构造函数
+      * @param {Partial<YccUIProps>} option
+      */
+    constructor(option = {}) {
+      this.props = this.getDefaultProps();
+      this.props = this._extendOption(option);
+    }
+    /**
+      * 初始化UI属性
+      * @param option
+      */
+    _extendOption(option) {
+      return Object.assign(this.props, option);
+    }
+    /**
+      * 将此UI添加至图层
+      * @param layer
+      */
+    addToLayer(layer) {
+      layer.addUI(this);
+      return this;
+    }
+    /**
+      * 判断UI是否可绘制
+      * 存在`belongTo`且存在`coordinates`则认为此UI可绘制
+      * @overwrite 若UI有特殊的渲染过程，则子类需重写此方法
+      */
+    isDrawable() {
+      if (!this.props.belongTo) {
+        console.log("\u8BE5UI\u672A\u52A0\u5165\u56FE\u5C42");
+        return false;
+      }
+      if (this.props.coordinates.length === 0) {
+        console.log("\u8BE5UI\u672A\u8BBE\u7F6E\u5750\u6807");
+        return false;
+      }
+      if (this.props.coordinates.length < 2) {
+        console.log("\u8BE5UI\u5750\u6807\u672A\u6B63\u786E\u8BBE\u7F6E");
+        return false;
+      }
+      return true;
+    }
+    /**
+      * 根据coordinates绘制路径
+      * 只绘制路径，不填充、不描边
+      * 此过程只会发生在图层的离屏canvas中
+      */
+    renderPath() {
+      if (!this.isDrawable())
+        return;
+      const ctx = this.props.belongTo.ctx;
+      const position = this.props.belongTo.position;
+      const start = this.props.coordinates[0].plus(position).rotate(this.props.rotation, this.props.anchor.plus(position).plus(this.props.coordinates[0]));
+      ctx.beginPath();
+      ctx.moveTo(start.x, start.y);
+      for (let i = 0; i < this.props.coordinates.length - 1; i++) {
+        const dot = this.props.coordinates[i].plus(position).rotate(this.props.rotation, this.props.anchor.plus(position).plus(this.props.coordinates[i]));
+        ctx.lineTo(dot.x, dot.y);
+      }
+      ctx.closePath();
+    }
+    /**
+      * 获取能容纳多边形的最小矩形框
+      * @returns {YccMathRect}
+      */
+    getWorldContainer() {
+      if (!this.props.belongTo) {
+        console.log("\u8BE5UI\u672A\u52A0\u5165\u56FE\u5C42");
+        return;
+      }
+      const start = this.props.coordinates[0].plus(this.props.belongTo.position).rotate(this.props.rotation, this.props.anchor.plus(this.props.belongTo.position).plus(this.props.coordinates[0]));
+      let minx = start.x;
+      let miny = start.y;
+      let maxx = start.x;
+      let maxy = start.y;
+      const worldCoordinates = [];
+      for (let i = 0; i < this.props.coordinates.length - 1; i++) {
+        const dot = this.props.coordinates[i].plus(this.props.belongTo.position).rotate(this.props.rotation, this.props.anchor.plus(this.props.belongTo.position).plus(this.props.coordinates[i]));
+        worldCoordinates.push(dot);
+        if (dot.x < minx)
+          minx = dot.x;
+        if (dot.x >= maxx)
+          maxx = dot.x;
+        if (dot.y < miny)
+          miny = dot.y;
+        if (dot.y >= maxy)
+          maxy = dot.y;
+      }
+      return {
+        worldCoordinates,
+        worldRect: new YccMathRect(minx, miny, maxx - minx, maxy - miny)
+      };
+    }
+    /**
+      * 重载基类的包含某个点的函数，用于点击事件等的响应
+      * 两种方法：
+      * 方法一：经过该点的水平射线与多边形的焦点数，即Ray-casting Algorithm
+      * 方法二：某个点始终位于多边形逆时针向量的左侧、或者顺时针方向的右侧即可判断，算法名忘记了
+      * 此方法采用方法一，并假设该射线平行于x轴，方向为x轴正方向
+      * @param dot {Ycc.Math.Dot} 需要判断的点，绝对坐标（world坐标）
+      * @param noneZeroMode {Number} 是否noneZeroMode 1--启用 2--关闭 默认启用
+      *   从这个点引出一根“射线”，与多边形的任意若干条边相交，计数初始化为0，若相交处被多边形的边从左到右切过，计数+1，若相交处被多边形的边从右到左切过，计数-1，最后检查计数，如果是0，点在多边形外，如果非0，点在多边形内
+      * @return {boolean}
+      */
+    isContainDot(dot, noneZeroMode) {
+      if (!this.props.belongTo) {
+        console.log("\u8BE5UI\u672A\u52A0\u5165\u56FE\u5C42");
+        return;
+      }
+      noneZeroMode = noneZeroMode != null ? noneZeroMode : 1;
+      const _dot = dot;
+      const x = _dot.x;
+      const y = _dot.y;
+      let crossNum = 0;
+      let leftCount = 0;
+      let rightCount = 0;
+      for (let i = 0; i < this.props.coordinates.length - 1; i++) {
+        const start = this.props.coordinates[i].plus(this.props.belongTo.position).rotate(this.props.rotation, this.props.anchor.plus(this.props.belongTo.position).plus(this.props.coordinates[i]));
+        const end = this.props.coordinates[i + 1].plus(this.props.belongTo.position).rotate(this.props.rotation, this.props.anchor.plus(this.props.belongTo.position).plus(this.props.coordinates[i + 1]));
+        if (start.x === end.x) {
+          if (x > start.x)
+            continue;
+          if (end.y > start.y && y >= start.y && y <= end.y) {
+            leftCount++;
+            crossNum++;
+          }
+          if (end.y < start.y && y >= end.y && y <= start.y) {
+            rightCount++;
+            crossNum++;
+          }
+          continue;
+        }
+        const k = (end.y - start.y) / (end.x - start.x);
+        const x0 = (y - start.y) / k + start.x;
+        if (x > x0)
+          continue;
+        if (end.x > start.x && x0 >= start.x && x0 <= end.x) {
+          crossNum++;
+          if (k >= 0)
+            leftCount++;
+          else
+            rightCount++;
+        }
+        if (end.x < start.x && x0 >= end.x && x0 <= start.x) {
+          crossNum++;
+          if (k >= 0)
+            rightCount++;
+          else
+            leftCount++;
+        }
+      }
+      return noneZeroMode === 1 ? leftCount - rightCount !== 0 : crossNum % 2 === 1;
+    }
+    /**
+     * 获取绘图环境
+     */
+    getContext() {
+      var _a;
+      return (_a = this.props.belongTo) == null ? void 0 : _a.ctx;
+    }
+  };
+  function getYccUICommonProps() {
+    return {
+      anchor: new YccMathDot(0, 0),
+      coordinates: [],
+      fill: true,
+      fillStyle: "black",
+      ghost: false,
+      lineWidth: 1,
+      opacity: 1,
+      rotation: 0,
+      show: true,
+      stopEventBubbleUp: true,
+      strokeStyle: "black",
+      worldCoordinates: []
+    };
+  }
+
+  // src/ui/PolygonUI.ts
+  var PolygonUI = class extends YccUI {
+    getDefaultProps() {
+      return __spreadValues({}, getYccUICommonProps());
+    }
+    /**
+     * 绘制函数
+     */
+    render() {
+      if (!this.isDrawable() || !this.props.show)
+        return;
+      const ctx = this.getContext();
+      ctx.save();
+      this.renderPath();
+      this.props.fill ? ctx.fill() : ctx.stroke();
+      ctx.restore();
+    }
+  };
+
+  // src/ui/TextUI.ts
+  var TextUI = class extends YccUI {
+    getDefaultProps() {
+      return __spreadProps(__spreadValues({}, getYccUICommonProps()), {
+        value: "",
+        /**
+         * 此属性只在绘制后生效
+         */
+        coordinates: [
+          new YccMathDot(0),
+          new YccMathDot(0)
+        ]
+      });
+    }
+    /**
+     * 绘制函数
+     */
+    render() {
+      var _a, _b, _c, _d;
+      if (!this.isDrawable() || !this.props.show)
+        return;
+      const ctx = this.getContext();
+      ctx.save();
+      ctx.fillStyle = (_b = (_a = this.props.style) == null ? void 0 : _a.color) != null ? _b : this.props.fillStyle;
+      ctx.textBaseline = "top";
+      ctx.font = `${((_d = (_c = this.props.style) == null ? void 0 : _c.fontSize) != null ? _d : 16) * this.props.belongTo.stage.stageInfo.dpi}px Arial`;
+      ctx.fillText(this.props.value, this.props.anchor.x, this.props.anchor.y);
+      ctx.restore();
+    }
+  };
+
+  // src/YccLayer.ts
   var YccLayer = class {
     constructor(stage, option) {
       /**
@@ -166,7 +397,7 @@
     return layerList;
   }
 
-  // src/YccPolyfill.class.ts
+  // src/YccPolyfill.ts
   var YccPolyfill = class {
     constructor(ycc) {
       this.yccInstance = ycc;
@@ -200,7 +431,7 @@
     }
   };
 
-  // src/YccStage.class.ts
+  // src/YccStage.ts
   var YccStage = class {
     constructor(ycc) {
       /**
@@ -299,7 +530,7 @@
     return typeof str === "function";
   };
 
-  // src/YccTicker.class.ts
+  // src/YccTicker.ts
   var Frame = class {
     constructor(ticker) {
       this.createTime = Date.now();
@@ -419,197 +650,7 @@
     // }
   };
 
-  // src/YccUI.class.ts
-  var YccUI = class {
-    /**
-     * UI的构造函数
-     * @param {Partial<YccUIProps>} option
-     */
-    constructor(option = {}) {
-      this.props = this.getDefaultProps();
-      this.props = this._extendOption(option);
-    }
-    /**
-     * 设置默认属性，需子类覆盖；若子类没有特殊属性，则不覆盖
-     * @overwrite
-     */
-    getDefaultProps() {
-      return {
-        anchor: new YccMathDot(0, 0),
-        coordinates: [],
-        fill: true,
-        fillStyle: "black",
-        ghost: false,
-        lineWidth: 1,
-        opacity: 1,
-        rotation: 0,
-        show: true,
-        stopEventBubbleUp: true,
-        strokeStyle: "black",
-        worldCoordinates: []
-      };
-    }
-    /**
-     * 初始化UI属性
-     * @param option
-     */
-    _extendOption(option) {
-      return Object.assign(this.props, option);
-    }
-    /**
-     * 将此UI添加至图层
-     * @param layer
-     */
-    addToLayer(layer) {
-      layer.addUI(this);
-      return this;
-    }
-    /**
-     * 判断UI是否可绘制
-     * @overwrite 若UI有特殊的渲染过程，则子类需重写此方法
-     */
-    isDrawable() {
-      if (!this.props.belongTo) {
-        console.log("\u8BE5UI\u672A\u52A0\u5165\u56FE\u5C42");
-        return false;
-      }
-      if (this.props.coordinates.length === 0) {
-        console.log("\u8BE5UI\u672A\u8BBE\u7F6E\u5750\u6807");
-        return false;
-      }
-      if (this.props.coordinates.length < 2) {
-        console.log("\u8BE5UI\u5750\u6807\u4E3A\u6B63\u786E\u8BBE\u7F6E");
-        return false;
-      }
-      return true;
-    }
-    /**
-     * 根据coordinates绘制路径
-     * 只绘制路径，不填充、不描边
-     * 此过程只会发生在图层的离屏canvas中
-     */
-    renderPath() {
-      if (!this.isDrawable())
-        return;
-      const ctx = this.props.belongTo.ctx;
-      const position = this.props.belongTo.position;
-      const start = this.props.coordinates[0].plus(position).rotate(this.props.rotation, this.props.anchor.plus(position).plus(this.props.coordinates[0]));
-      ctx.beginPath();
-      ctx.moveTo(start.x, start.y);
-      for (let i = 0; i < this.props.coordinates.length - 1; i++) {
-        const dot = this.props.coordinates[i].plus(position).rotate(this.props.rotation, this.props.anchor.plus(position).plus(this.props.coordinates[i]));
-        ctx.lineTo(dot.x, dot.y);
-      }
-      ctx.closePath();
-    }
-    /**
-     * 获取能容纳多边形的最小矩形框
-     * @returns {YccMathRect}
-     */
-    getWorldContainer() {
-      if (!this.props.belongTo) {
-        console.log("\u8BE5UI\u672A\u52A0\u5165\u56FE\u5C42");
-        return;
-      }
-      const start = this.props.coordinates[0].plus(this.props.belongTo.position).rotate(this.props.rotation, this.props.anchor.plus(this.props.belongTo.position).plus(this.props.coordinates[0]));
-      let minx = start.x;
-      let miny = start.y;
-      let maxx = start.x;
-      let maxy = start.y;
-      for (let i = 0; i < this.props.coordinates.length - 1; i++) {
-        const dot = this.props.coordinates[i].plus(this.props.belongTo.position).rotate(this.props.rotation, this.props.anchor.plus(this.props.belongTo.position).plus(this.props.coordinates[i]));
-        if (dot.x < minx)
-          minx = dot.x;
-        if (dot.x >= maxx)
-          maxx = dot.x;
-        if (dot.y < miny)
-          miny = dot.y;
-        if (dot.y >= maxy)
-          maxy = dot.y;
-      }
-      return new YccMathRect(minx, miny, maxx - minx, maxy - miny);
-    }
-    /**
-     * 重载基类的包含某个点的函数，用于点击事件等的响应
-     * 两种方法：
-     * 方法一：经过该点的水平射线与多边形的焦点数，即Ray-casting Algorithm
-     * 方法二：某个点始终位于多边形逆时针向量的左侧、或者顺时针方向的右侧即可判断，算法名忘记了
-     * 此方法采用方法一，并假设该射线平行于x轴，方向为x轴正方向
-     * @param dot {Ycc.Math.Dot} 需要判断的点，绝对坐标
-     * @param noneZeroMode {Number} 是否noneZeroMode 1--启用 2--关闭 默认启用
-     *   从这个点引出一根“射线”，与多边形的任意若干条边相交，计数初始化为0，若相交处被多边形的边从左到右切过，计数+1，若相交处被多边形的边从右到左切过，计数-1，最后检查计数，如果是0，点在多边形外，如果非0，点在多边形内
-     * @return {boolean}
-     */
-    isContainDot(dot, noneZeroMode) {
-      if (!this.props.belongTo) {
-        console.log("\u8BE5UI\u672A\u52A0\u5165\u56FE\u5C42");
-        return;
-      }
-      noneZeroMode = noneZeroMode != null ? noneZeroMode : 1;
-      const _dot = dot;
-      const x = _dot.x;
-      const y = _dot.y;
-      let crossNum = 0;
-      let leftCount = 0;
-      let rightCount = 0;
-      for (let i = 0; i < this.props.coordinates.length - 1; i++) {
-        const start = this.props.coordinates[i].plus(this.props.belongTo.position).rotate(this.props.rotation, this.props.anchor.plus(this.props.belongTo.position).plus(this.props.coordinates[i]));
-        const end = this.props.coordinates[i + 1].plus(this.props.belongTo.position).rotate(this.props.rotation, this.props.anchor.plus(this.props.belongTo.position).plus(this.props.coordinates[i + 1]));
-        if (start.x === end.x) {
-          if (x > start.x)
-            continue;
-          if (end.y > start.y && y >= start.y && y <= end.y) {
-            leftCount++;
-            crossNum++;
-          }
-          if (end.y < start.y && y >= end.y && y <= start.y) {
-            rightCount++;
-            crossNum++;
-          }
-          continue;
-        }
-        const k = (end.y - start.y) / (end.x - start.x);
-        const x0 = (y - start.y) / k + start.x;
-        if (x > x0)
-          continue;
-        if (end.x > start.x && x0 >= start.x && x0 <= end.x) {
-          crossNum++;
-          if (k >= 0)
-            leftCount++;
-          else
-            rightCount++;
-        }
-        if (end.x < start.x && x0 >= end.x && x0 <= start.x) {
-          crossNum++;
-          if (k >= 0)
-            rightCount++;
-          else
-            leftCount++;
-        }
-      }
-      return noneZeroMode === 1 ? leftCount - rightCount !== 0 : crossNum % 2 === 1;
-    }
-    /**
-     * 渲染至离屏ctx
-     * @overwrite 若UI有特殊的渲染过程，则此处的render方法需子类重写
-     */
-    render() {
-      console.log("render ui");
-      if (!this.isDrawable())
-        return;
-      if (!this.props.show)
-        return;
-      const ctx = this.props.belongTo.ctx;
-      ctx.save();
-      ctx.fillStyle = this.props.fillStyle;
-      ctx.strokeStyle = this.props.strokeStyle;
-      this.renderPath();
-      this.props.fill ? ctx.fill() : ctx.stroke();
-      ctx.restore();
-    }
-  };
-
-  // src/Ycc.class.ts
+  // src/Ycc.ts
   var Ycc = class {
     constructor(config) {
       var _a, _b;
@@ -640,33 +681,6 @@
     }
   };
 
-  // src/ui/YccUI.Text.class.ts
-  var YccUIText = class extends YccUI {
-    /**
-     * @overwrite
-     * @returns
-     */
-    getDefaultProps() {
-      return __spreadProps(__spreadValues({}, super.getDefaultProps()), {
-        coordinates: [
-          new YccMathDot(0, 0),
-          new YccMathDot(0, 0)
-        ],
-        value: ""
-      });
-    }
-    render() {
-      var _a, _b, _c, _d;
-      const ctx = this.props.belongTo.ctx;
-      ctx.save();
-      ctx.fillStyle = (_b = (_a = this.props.style) == null ? void 0 : _a.color) != null ? _b : this.props.fillStyle;
-      ctx.textBaseline = "top";
-      ctx.font = `${((_d = (_c = this.props.style) == null ? void 0 : _c.fontSize) != null ? _d : 16) * this.props.belongTo.stage.stageInfo.dpi}px Arial`;
-      ctx.fillText(this.props.value, this.props.anchor.x, this.props.anchor.y);
-      ctx.restore();
-    }
-  };
-
   // test/helloworld/src/test.ts
   var App = class extends Ycc {
     constructor() {
@@ -678,7 +692,7 @@
     }
     created() {
       document.getElementById("canvas")?.appendChild(this.stage.stageCanvas);
-      new YccUI({
+      new PolygonUI({
         name: "\u81EA\u5B9A\u4E49UI",
         coordinates: [
           new YccMathDot(10, 10),
@@ -687,7 +701,7 @@
           new YccMathDot(10, 10)
         ]
       }).addToLayer(this.stage.defaultLayer);
-      new YccUIText({
+      new TextUI({
         value: "sfsdfsdf",
         style: {
           fontSize: 16,

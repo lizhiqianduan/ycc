@@ -1,11 +1,14 @@
-import YccUIText from '../../../src/ui/YccUI.Text.class'
-import Ycc, { YccMathDot, YccTicker, YccUI } from '../../../src/Ycc.class'
+import PolygonUI from './../../../src/ui/PolygonUI';
+import TextUI from './../../../src/ui/TextUI';
+import Ycc, { YccMathDot, YccTicker } from '../../../src/Ycc'
+
+
 
 /**
  * 应用的状态
  */
 interface AppState {
-  testUI?: YccUI
+  testUI?: PolygonUI
 }
 
 /**
@@ -22,7 +25,7 @@ class App extends Ycc {
     document.getElementById('canvas')?.appendChild(this.stage.stageCanvas)
 
     // 新建一个UI
-    new YccUI({
+    new PolygonUI({
       name: '自定义UI',
       coordinates: [
         new YccMathDot(10, 10),
@@ -33,7 +36,7 @@ class App extends Ycc {
     }).addToLayer(this.stage.defaultLayer)
 
     // 新建一个文本
-    new YccUIText({
+    new TextUI({
       value: 'sfsdfsdf',
       style: {
         fontSize: 16,
