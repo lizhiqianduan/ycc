@@ -1,3 +1,4 @@
+"use strict";
 (() => {
   var __defProp = Object.defineProperty;
   var __defProps = Object.defineProperties;
@@ -683,13 +684,6 @@
 
   // test/helloworld/src/test.ts
   var App = class extends Ycc {
-    constructor() {
-      super(...arguments);
-      /**
-       * 应用的状态
-       */
-      this.$state = { testUI: void 0 };
-    }
     created() {
       document.getElementById("canvas")?.appendChild(this.stage.stageCanvas);
       new PolygonUI({

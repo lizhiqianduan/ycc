@@ -18,7 +18,7 @@ module.exports = {
   parserOptions: {
     ecmaVersion: 'latest',
     sourceType: 'module',
-    project: ['./tsconfig.json']
+    project: ['./tsconfig.json',"./test/helloworld/tsconfig.json"]
   },
   rules: {
     // quotes: ['error', 'single']

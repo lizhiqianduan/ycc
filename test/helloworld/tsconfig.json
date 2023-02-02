@@ -1,8 +1,14 @@
 {
+  "compilerOptions": {
+    "strictNullChecks": true,                         /* When type checking, take into account 'null' and 'undefined'. */
+    "strict": true,                                      /* Enable all strict type-checking options. */
+    "baseUrl": ".",
+    "paths": {
+      "@datagetter.cn/ycc/*":["../../src/*"]
+    }
+  },
   "include": [
-    "../../src/**"
-  ],
-  "references": [
-    {"path": "../../tsconfig.json"}
+    "./src",
+    "../../src"
   ]
 }

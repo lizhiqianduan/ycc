@@ -1,25 +1,13 @@
-import PolygonUI from './../../../src/ui/PolygonUI';
-import TextUI from './../../../src/ui/TextUI';
-import Ycc, { YccMathDot, YccTicker } from '../../../src/Ycc'
-
-
-
-/**
- * 应用的状态
- */
-interface AppState {
-  testUI?: PolygonUI
-}
+import PolygonUI from '@datagetter.cn/ycc/ui/PolygonUI'
+import TextUI from '@datagetter.cn/ycc/ui/TextUI'
+import Ycc from '@datagetter.cn/ycc/Ycc'
+import { YccMathDot } from '@datagetter.cn/ycc/YccMath'
+import YccTicker from '@datagetter.cn/ycc/YccTicker'
 
 /**
  * 新建应用
  */
 class App extends Ycc {
-  /**
-   * 应用的状态
-   */
-  $state: AppState = { testUI: undefined }
-
   created () {
     // 加入到dom中
     document.getElementById('canvas')?.appendChild(this.stage.stageCanvas)
