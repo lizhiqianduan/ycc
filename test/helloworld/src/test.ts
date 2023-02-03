@@ -4,6 +4,7 @@ import Ycc from '@datagetter.cn/ycc/Ycc'
 import { YccMathDot } from '@datagetter.cn/ycc/YccMath'
 import YccTicker from '@datagetter.cn/ycc/YccTicker'
 
+console.log(333)
 /**
  * 新建应用
  */

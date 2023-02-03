@@ -683,9 +683,11 @@
   };
 
   // test/helloworld/src/test.ts
+  console.log(333);
   var App = class extends Ycc {
     created() {
-      document.getElementById("canvas")?.appendChild(this.stage.stageCanvas);
+      var _a;
+      (_a = document.getElementById("canvas")) == null ? void 0 : _a.appendChild(this.stage.stageCanvas);
       new PolygonUI({
         name: "\u81EA\u5B9A\u4E49UI",
         coordinates: [
