@@ -1,21 +1,15 @@
 import YccLayer from './YccLayer'
-import YccPolyfill from './YccPolyfill'
 import YccStage from './YccStage'
-import YccTicker from './YccTicker'
-
-export * from './YccMath'
 
 export {
   YccLayer,
-  YccStage,
-  YccTicker
+  YccStage
 }
 
 /**
  * 整个Ycc应用的配置项
  */
-interface YccConfig {
-
+export interface YccConfig {
   /**
    * 整个应用所运行的环境 默认：h5 <br> h5-普通web应用、wxapp-微信小程序、wxgame-微信小游戏
    */
@@ -24,14 +18,14 @@ interface YccConfig {
   /**
    * 调试参数，是否显示所有UI的容纳区域
    */
-  debugDrawContainer: boolean
+  debugDrawContainer?: boolean
 }
 
 export default class Ycc {
   /**
-   * 初始配置
+   * 启动参数
    */
-  config: YccConfig
+  $config!: YccConfig
   /**
    * 数据状态
    */
@@ -42,17 +36,12 @@ export default class Ycc {
    */
   stage: YccStage
 
-  /**
-   * 兼容模块，兼容wx和h5
-   */
-  polyfill: YccPolyfill
-
   constructor (config?: Partial<YccConfig>) {
-    this.config = {
-      appenv: config?.appenv ?? 'h5',
-      debugDrawContainer: config?.debugDrawContainer ?? false
+    const defaultConfig: YccConfig = {
+      appenv: 'h5',
+      debugDrawContainer: false
     }
-    this.polyfill = new YccPolyfill(this)
+    this.$config = Object.assign(defaultConfig, config)
 
     this.stage = new YccStage(this)
   }

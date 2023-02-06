@@ -3,6 +3,7 @@
  * 舞台包含多个图层`Layer`
  */
 
+import { createCanvas } from './tools/YccPolyfill'
 import Ycc, { YccLayer } from './Ycc'
 import { createLayer, getAllLayer } from './YccLayer'
 
@@ -57,7 +58,7 @@ export default class YccStage {
    * 根据舞台信息，创建一个覆盖全舞台的canvas
    */
   createCanvasByStage () {
-    return this.yccInstance.polyfill.createCanvas({
+    return createCanvas({
       ...this.stageInfo
     })
   }

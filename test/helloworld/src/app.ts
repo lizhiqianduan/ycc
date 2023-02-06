@@ -1,14 +1,14 @@
 import PolygonUI from '@datagetter.cn/ycc/ui/PolygonUI'
 import TextUI from '@datagetter.cn/ycc/ui/TextUI'
 import Ycc from '@datagetter.cn/ycc/Ycc'
-import { YccMathDot } from '@datagetter.cn/ycc/YccMath'
-import YccTicker from '@datagetter.cn/ycc/YccTicker'
+import { YccMathDot } from '@datagetter.cn/ycc/tools/YccMath'
+import YccTicker from '@datagetter.cn/ycc/tools/YccTicker'
 
 console.log(333)
 /**
  * 新建应用
  */
-class App extends Ycc {
+export default class App extends Ycc {
   created () {
     // 加入到dom中
     document.getElementById('canvas')?.appendChild(this.stage.stageCanvas)
@@ -56,5 +56,3 @@ class App extends Ycc {
     this.stage.renderAll()
   }
 }
-
-new App().bootstrap()

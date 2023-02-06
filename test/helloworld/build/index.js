@@ -20,6 +20,86 @@
   };
   var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
 
+  // src/tools/YccGlobalCache.ts
+  var GLOBAL_CACHE = {};
+  var _a;
+  GLOBAL_CACHE = JSON.parse((_a = localStorage.getItem("ycc_global")) != null ? _a : "{}");
+  function YccGlobal(key) {
+    return GLOBAL_CACHE[key];
+  }
+  function SetGlobal(key, value) {
+    GLOBAL_CACHE[key] = value;
+    localStorage.setItem("ycc_global", JSON.stringify(GLOBAL_CACHE));
+  }
+
+  // src/tools/YccLoader.ts
+  function loadResParallel(resArr, endCb, progressCb, endResArr, endResMap) {
+    endResArr = endResArr != null ? endResArr : [];
+    endResMap = endResMap != null ? endResMap : {};
+    let endLen = 0;
+    for (let i = 0; i < resArr.length; i++) {
+      const curRes = resArr[i];
+      loadResource(curRes, (res) => {
+        if (progressCb)
+          progressCb(res, i);
+        endResArr.push(res);
+        endLen++;
+        if (endLen === resArr.length)
+          endCb(endResArr);
+      });
+    }
+  }
+  function loadResource(res, endCb) {
+    if (res.element instanceof HTMLImageElement) {
+      loadImage(res, endCb);
+    }
+    if (res.element instanceof Audio) {
+      loadImage(res, endCb);
+    }
+  }
+  function loadImage(res, endCb) {
+    var _a2;
+    res.success = false;
+    if (!(res.element instanceof HTMLImageElement)) {
+      endCb(res);
+      return;
+    }
+    res.type = "image";
+    if (res.element.setAttribute != null) {
+      res.element.setAttribute("src", res.url);
+      res.element.setAttribute("crossOrigin", (_a2 = res.crossOrigin) != null ? _a2 : "");
+    }
+    res.element.onload = (e) => {
+      res.success = true;
+      endCb(res);
+    };
+    res.element.onerror = (e) => {
+      endCb(res);
+    };
+  }
+
+  // src/tools/YccPolyfill.ts
+  function createCanvas(options) {
+    var _a2;
+    const canvas = document.createElement("canvas");
+    const dpi = (_a2 = options.dpi) != null ? _a2 : 2;
+    canvas.width = options.width * dpi;
+    canvas.height = options.height * dpi;
+    canvas.style.width = options.width.toString() + "px";
+    canvas.style.display = "block";
+    return canvas;
+  }
+  function createImage(ycc) {
+    if (YccGlobal("env") === "wxapp") {
+      if (!ycc) {
+        console.error("ycc\u5B9E\u4F8B\u5FC5\u4F20");
+        return new HTMLImageElement();
+      }
+      return ycc.stage.stageCanvas.createImage();
+    }
+    return new Image();
+  }
+
   // src/tools/YccMath.ts
   var YccMathDot = class {
     constructor(x, y) {
@@ -287,8 +367,8 @@
      * 获取绘图环境
      */
     getContext() {
-      var _a;
-      return (_a = this.props.belongTo) == null ? void 0 : _a.ctx;
+      var _a2;
+      return (_a2 = this.props.belongTo) == null ? void 0 : _a2.ctx;
     }
   };
   function getYccUICommonProps() {
@@ -345,12 +425,12 @@
      * 绘制函数
      */
     render() {
-      var _a, _b, _c, _d;
+      var _a2, _b, _c, _d;
       if (!this.isDrawable() || !this.props.show)
         return;
       const ctx = this.getContext();
       ctx.save();
-      ctx.fillStyle = (_b = (_a = this.props.style) == null ? void 0 : _a.color) != null ? _b : this.props.fillStyle;
+      ctx.fillStyle = (_b = (_a2 = this.props.style) == null ? void 0 : _a2.color) != null ? _b : this.props.fillStyle;
       ctx.textBaseline = "top";
       ctx.font = `${((_d = (_c = this.props.style) == null ? void 0 : _c.fontSize) != null ? _d : 16) * this.props.belongTo.stage.stageInfo.dpi}px Arial`;
       ctx.fillText(this.props.value, this.props.anchor.x, this.props.anchor.y);
@@ -427,7 +507,7 @@
      * 根据舞台信息，创建一个覆盖全舞台的canvas
      */
     createCanvasByStage() {
-      return this.yccInstance.polyfill.createCanvas(__spreadValues({}, this.stageInfo));
+      return createCanvas(__spreadValues({}, this.stageInfo));
     }
     /**
      * 根据ui的名称获取舞台上的ui
@@ -471,11 +551,11 @@
      * @returns
      */
     getSystemInfo() {
-      var _a;
+      var _a2;
       return {
         width: window.innerWidth,
         height: window.innerHeight,
-        dpi: (_a = window.devicePixelRatio) != null ? _a : 1
+        dpi: (_a2 = window.devicePixelRatio) != null ? _a2 : 1
       };
     }
     /**
@@ -492,44 +572,14 @@
     }
   };
 
-  // src/tools/YccPolyfill.ts
-  var YccPolyfill = class {
-    constructor(ycc) {
-      this.yccInstance = ycc;
-    }
-    /**
-     *
-     * @returns
-     */
-    _createImage() {
-      if (this.yccInstance.config.appenv === "wxapp") {
-        return this.yccInstance.stage.stageCanvas.createImage();
-      }
-      return new Image();
-    }
-    /**
-    * 新创建canvas
-    * @param options
-    * @param options.width
-    * @param options.height
-    * @param options.dpi 像素比
-    */
-    createCanvas(options) {
-      var _a;
-      const canvas = document.createElement("canvas");
-      const dpi = (_a = options.dpi) != null ? _a : 2;
-      canvas.width = options.width * dpi;
-      canvas.height = options.height * dpi;
-      canvas.style.width = options.width.toString() + "px";
-      canvas.style.display = "block";
-      return canvas;
-    }
-  };
-
   // src/Ycc.ts
   var Ycc = class {
-    constructor() {
-      this.polyfill = new YccPolyfill(this);
+    constructor(config) {
+      const defaultConfig = {
+        appenv: "h5",
+        debugDrawContainer: false
+      };
+      this.$config = Object.assign(defaultConfig, config);
       this.stage = new YccStage(this);
     }
     /**
@@ -677,12 +727,12 @@
     // }
   };
 
-  // test/helloworld/src/test.ts
+  // test/helloworld/src/app.ts
   console.log(333);
   var App = class extends Ycc {
     created() {
-      var _a;
-      (_a = document.getElementById("canvas")) == null ? void 0 : _a.appendChild(this.stage.stageCanvas);
+      var _a2;
+      (_a2 = document.getElementById("canvas")) == null ? void 0 : _a2.appendChild(this.stage.stageCanvas);
       new PolygonUI({
         name: "\u81EA\u5B9A\u4E49UI",
         coordinates: [
@@ -711,6 +761,22 @@
       this.stage.renderAll();
     }
   };
-  new App().bootstrap();
+
+  // test/helloworld/bootstrap.ts
+  SetGlobal("env", "h5");
+  SetGlobal("frameRate", 60);
+  var app = new App();
+  var resources = [
+    {
+      name: "test",
+      url: "https://smartedu.jnei.cn/upload/files/upload/ce155375-3dc3-479e-b4d4-8690cc906d40_WechatIMG15%402x.a69e9004.png",
+      crossOrigin: "*",
+      element: createImage(app)
+    }
+  ];
+  loadResParallel(resources, () => {
+    console.log("\u8D44\u6E90\u52A0\u8F7D\u7ED3\u675F", resources);
+    app.bootstrap();
+  });
 })();
-//# sourceMappingURL=test.js.map
+//# sourceMappingURL=index.js.map

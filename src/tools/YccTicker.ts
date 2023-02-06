@@ -1,4 +1,4 @@
-import Ycc from './Ycc'
+import Ycc from '../Ycc'
 import { isFn } from './YccUtils'
 
 /**
