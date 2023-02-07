@@ -40,6 +40,15 @@ export class YccMathDot {
   }
 
   /**
+   * 适配dpi，去除dpi的影响，转换为物理像素
+   * @param dpi
+   * @returns
+   */
+  dpi (dpi: number = 1) {
+    return this.divide(new YccMathDot(1 / dpi, 1 / dpi))
+  }
+
+  /**
    * 将当前点绕另外一个点旋转一定度数
    * @param rotation  旋转角度
    * @param anchorDot  锚点坐标
@@ -131,16 +140,24 @@ export class YccMathRect {
   }
 
   /**
+   * 适配dpi，去除dpi的影响，使用物理像素
+   * @param dpi
+   */
+  dpi (dpi: number = 1) {
+    return new YccMathRect(this.x * dpi, this.y * dpi, this.width * dpi, this.height * dpi)
+  }
+
+  /**
    * 根据向量更新区域
    * @param vertices
    */
   updateByVertices (vertices: Array<{ x: number, y: number }>) {
-    if (vertices.length !== 2) { console.error('数组参数有问题！'); return false }
+    if (vertices.length !== 2) { console.error('数组参数有问题！'); return this }
     this.x = vertices[0].x
     this.y = vertices[0].y
     this.width = vertices[1].x - this.x
     this.height = vertices[2].y - this.y
-    return true
+    return this
   }
 }
 

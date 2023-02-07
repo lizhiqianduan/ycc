@@ -24,6 +24,7 @@ interface LayerOpt {
 export default class YccLayer {
   /**
    * 相对于舞台的位置，以左上角为准
+   * @attention 此坐标为实际的物理像素
    */
   position = new YccMathDot()
 
@@ -109,8 +110,6 @@ export default class YccLayer {
  * 添加一个UI图形至图层
  */
   addUI (ui: YccUI) {
-    // 建立ui与layer的互相引用关系
-    ui.props.belongTo = this
     this.uiList.push(ui)
     return ui
   }

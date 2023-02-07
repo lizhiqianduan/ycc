@@ -1,4 +1,5 @@
 import { YccMathRect } from '../tools/YccMath'
+import YccLayer from '../YccLayer'
 import YccUI, { getYccUICommonProps, YccUICommonProps } from './YccUI'
 
 /**
@@ -17,6 +18,12 @@ interface YccUIImageProps extends YccUICommonProps {
 
   /**
    * 填充模式
+   *     <br> none       -- 无填充方式。左上角对齐，超出隐藏，不修改rect大小。
+   *     <br> repeat     -- 重复。左上角对齐，重复平铺图片，不修改rect大小，超出隐藏。
+   *     <br> scale       -- 缩放。左上角对齐，缩放至整个rect区域，不修改rect大小。
+   *     <br> scaleRepeat   -- 先缩放再重复。左上角对齐，缩放至某个rect区域，再重复填充整个rect区域，不修改rect大小。
+   *     <br> auto       -- 自动。左上角对齐，rect大小自动适配图片。若图片超出rect，会动态修改rect大小。
+   *     <br> scale9Grid   -- 9宫格模式填充。左上角对齐，中间区域将拉伸，不允许图片超出rect区域大小，不会修改rect大小。
    */
   fillMode: 'none' | 'repeat' | 'scale' | 'scaleRepeat' | 'auto' | 'scale9Grid'
   /**
@@ -49,6 +56,25 @@ export default class ImageUI extends YccUI<YccUIImageProps> {
     }
   }
 
+  /**
+   * 添加至图层时，重新计算属性
+   * @param layer
+   * @returns
+   */
+  created (layer: YccLayer) {
+    super.created(layer)
+
+    // 初始化容纳区
+    this.props.coordinates = this.props.rect.getCoordinates()
+    // auto模式重新给props赋值
+    if (this.props.fillMode === 'auto') {
+      const img = this.getRes()
+      this.props.rect.width = img.width as number
+      this.props.rect.height = img.height as number
+      this.props.coordinates = this.props.rect.getCoordinates()
+    }
+  }
+
   getRes () {
     const ycc = this.getYcc()!
     return ycc.$resouces.resMap[this.props.name].element as CanvasImageSource
@@ -60,23 +86,25 @@ export default class ImageUI extends YccUI<YccUIImageProps> {
   render (): void {
     if (!this.isDrawable() || !this.props.show) return
     const ctx = this.getContext()!
-    const ycc = this.getYcc()!
-    // 计算过程
-    this.props.coordinates = this.props.rect.getCoordinates()
-    const { worldCoordinates, worldRect } = this.getWorldContainer()!
-    const img = this.getRes()
+    // const ycc = this.getYcc()!
+
+    // 物理坐标转舞台坐标
+    const { worldRect } = this.getWorldContainer()!
+    const rect = this.props.rect // 物理像素
     const { x, y, width, height } = worldRect
+    const img = this.getRes()
+
+    ctx.save()
 
     if (this.props.fillMode === 'none') {
-      ctx.drawImage(img, 0, 0, worldRect.width, worldRect.height, worldRect.x, worldRect.y, worldRect.width, worldRect.height)
+      ctx.drawImage(img, 0, 0, rect.width, rect.height, worldRect.x, worldRect.y, worldRect.width, worldRect.height)
     } else if (this.props.fillMode === 'scale') {
       ctx.drawImage(img, 0, 0, img.width as number, img.height as number, x, y, width, height)
     } else if (this.props.fillMode === 'auto') {
+      console.log(worldRect, img)
       ctx.drawImage(img, 0, 0, img.width as number, img.height as number, x, y, width, height)
     }
 
-    ctx.save()
-    ctx.drawImage(ycc.$resouces.resMap[this.props.name].element as CanvasImageSource, worldCoordinates[0].x, worldCoordinates[0].y)
     ctx.restore()
   }
 }

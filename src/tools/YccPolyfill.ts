@@ -25,6 +25,8 @@ export function createCanvas (options: { width: number, height: number, dpi?: nu
 
   // 去除5px inline-block偏差
   canvas.style.display = 'block'
+  // debug
+  // document.body.appendChild(canvas)
   // 返回值
   return canvas
 }
@@ -38,5 +40,8 @@ export function createImage (ycc: Ycc): HTMLImageElement {
     if (!ycc) { console.error('ycc实例必传'); return new HTMLImageElement() }
     return ycc.stage.stageCanvas.createImage()
   }
-  return new Image()
+  const img = new Image()
+  // debug
+  // document.body.appendChild(img)
+  return img
 }

@@ -51,7 +51,8 @@
       }
       return ycc.stage.stageCanvas.createImage();
     }
-    return new Image();
+    const img = new Image();
+    return img;
   }
 
   // src/tools/YccLoader.ts
@@ -196,6 +197,14 @@
       return new YccMathDot(Math.floor(this.x / dot.x), Math.floor(this.y / dot.y));
     }
     /**
+     * 适配dpi，去除dpi的影响，转换为物理像素
+     * @param dpi
+     * @returns
+     */
+    dpi(dpi = 1) {
+      return this.divide(new YccMathDot(1 / dpi, 1 / dpi));
+    }
+    /**
      * 将当前点绕另外一个点旋转一定度数
      * @param rotation  旋转角度
      * @param anchorDot  锚点坐标
@@ -263,19 +272,26 @@
       ];
     }
     /**
+     * 适配dpi，去除dpi的影响，使用物理像素
+     * @param dpi
+     */
+    dpi(dpi = 1) {
+      return new YccMathRect(this.x * dpi, this.y * dpi, this.width * dpi, this.height * dpi);
+    }
+    /**
      * 根据向量更新区域
      * @param vertices
      */
     updateByVertices(vertices) {
       if (vertices.length !== 2) {
         console.error("\u6570\u7EC4\u53C2\u6570\u6709\u95EE\u9898\uFF01");
-        return false;
+        return this;
       }
       this.x = vertices[0].x;
       this.y = vertices[0].y;
       this.width = vertices[1].x - this.x;
       this.height = vertices[2].y - this.y;
-      return true;
+      return this;
     }
   };
 
@@ -286,8 +302,7 @@
       * @param {Partial<YccUIProps>} option
       */
     constructor(option = {}) {
-      this.props = this.getDefaultProps();
-      this.props = this._extendOption(option);
+      this.initProps = option;
     }
     /**
       * 初始化UI属性
@@ -297,11 +312,21 @@
       return Object.assign(this.props, option);
     }
     /**
+     * 当UI被添加至图层后，会立即触发此hook函数
+     * 当子类有特殊的计算属性时，需重写此方法，在添加至图层时提前计算ui的属性，比如，`ImageUI`
+     */
+    created(layer) {
+      this.props = this.getDefaultProps();
+      this.props = this._extendOption(this.initProps);
+      this.props.belongTo = layer;
+    }
+    /**
       * 将此UI添加至图层
       * @param layer
       */
     addToLayer(layer) {
       layer.addUI(this);
+      this.created(layer);
       return this;
     }
     /**
@@ -329,6 +354,14 @@
       return true;
     }
     /**
+     * 将
+     * 适配dpi
+     */
+    dpiAdaptation() {
+      const { dpi } = this.props.belongTo.stage.getSystemInfo();
+      console.log(dpi);
+    }
+    /**
       * 根据coordinates绘制路径
       * 只绘制路径，不填充、不描边
       * 此过程只会发生在图层的离屏canvas中
@@ -338,6 +371,7 @@
         return;
       const ctx = this.props.belongTo.ctx;
       const { worldCoordinates } = this.getWorldContainer();
+      console.log(worldCoordinates, 111);
       const start = worldCoordinates[0];
       ctx.beginPath();
       ctx.moveTo(start.x, start.y);
@@ -348,23 +382,27 @@
       ctx.closePath();
     }
     /**
-      * 获取能容纳多边形的最小矩形框
-      * @returns {YccMathRect}
+      * 获取能容纳多边形的最小矩形框，返回的坐标已经经过dpi处理，是可直接绘制`stage坐标`
+      * @returns {worldCoordinates,worldRect}
       */
     getWorldContainer() {
       if (!this.props.belongTo) {
         console.log("\u8BE5UI\u672A\u52A0\u5165\u56FE\u5C42");
         return;
       }
-      const position = this.props.belongTo.position;
-      const start = this.props.coordinates[0].divide(this.props.scale).rotate(this.props.rotation, this.props.anchor).plus(this.props.offset).plus(this.props.anchor.plus(position));
+      const dpi = this.getDpi();
+      const position = this.props.belongTo.position.dpi(dpi);
+      const coordinates = this.props.coordinates.map((item) => item.dpi(dpi));
+      const offset = this.props.offset.dpi(dpi);
+      const anchor = this.props.anchor.dpi(dpi);
+      const start = coordinates[0].divide(this.props.scale).rotate(this.props.rotation, anchor).plus(offset).plus(anchor.plus(position));
       let minx = start.x;
       let miny = start.y;
       let maxx = start.x;
       let maxy = start.y;
       const worldCoordinates = [];
-      for (let i = 0; i < this.props.coordinates.length; i++) {
-        const dot = this.props.coordinates[i].divide(this.props.scale).rotate(this.props.rotation, this.props.anchor).plus(this.props.offset).plus(this.props.anchor.plus(position));
+      for (let i = 0; i < coordinates.length; i++) {
+        const dot = coordinates[i].divide(this.props.scale).rotate(this.props.rotation, anchor).plus(offset).plus(anchor.plus(position));
         worldCoordinates.push(dot);
         if (dot.x < minx)
           minx = dot.x;
@@ -376,6 +414,12 @@
           maxy = dot.y;
       }
       return {
+        dpiAdaptation: {
+          position,
+          offset,
+          anchor,
+          coordinates
+        },
         worldCoordinates,
         worldRect: new YccMathRect(minx, miny, maxx - minx, maxy - miny)
       };
@@ -396,6 +440,7 @@
         console.log("\u8BE5UI\u672A\u52A0\u5165\u56FE\u5C42");
         return;
       }
+      const coordinates = this.getWorldContainer().worldCoordinates;
       noneZeroMode = noneZeroMode != null ? noneZeroMode : 1;
       const _dot = dot;
       const x = _dot.x;
@@ -403,9 +448,9 @@
       let crossNum = 0;
       let leftCount = 0;
       let rightCount = 0;
-      for (let i = 0; i < this.props.coordinates.length - 1; i++) {
-        const start = this.props.coordinates[i].rotate(this.props.rotation, this.props.anchor.plus(this.props.belongTo.position));
-        const end = this.props.coordinates[i + 1].rotate(this.props.rotation, this.props.anchor.plus(this.props.belongTo.position));
+      for (let i = 0; i < coordinates.length - 1; i++) {
+        const start = coordinates[i].rotate(this.props.rotation, this.props.anchor.plus(this.props.belongTo.position));
+        const end = coordinates[i + 1].rotate(this.props.rotation, this.props.anchor.plus(this.props.belongTo.position));
         if (start.x === end.x) {
           if (x > start.x)
             continue;
@@ -446,6 +491,14 @@
     getContext() {
       var _a2;
       return (_a2 = this.props.belongTo) == null ? void 0 : _a2.ctx;
+    }
+    /**
+     * 获取dpi
+     * @returns
+     */
+    getDpi() {
+      var _a2, _b;
+      return (_b = (_a2 = this.props.belongTo) == null ? void 0 : _a2.stage.getSystemInfo().dpi) != null ? _b : 1;
     }
     /**
      * 获取当前实例
@@ -548,6 +601,7 @@
     constructor(stage, option) {
       /**
        * 相对于舞台的位置，以左上角为准
+       * @attention 此坐标为实际的物理像素
        */
       this.position = new YccMathDot();
       this.stage = stage;
@@ -567,7 +621,6 @@
     * 添加一个UI图形至图层
     */
     addUI(ui) {
-      ui.props.belongTo = this;
       this.uiList.push(ui);
       return ui;
     }
@@ -720,131 +773,6 @@
     }
   };
 
-  // src/tools/YccUtils.ts
-  var isFn = function(str) {
-    return typeof str === "function";
-  };
-
-  // src/tools/YccTicker.ts
-  var Frame = class {
-    constructor(ticker) {
-      this.createTime = Date.now();
-      this.deltaTime = ticker.deltaTime;
-      this.fps = parseInt(`${1e3 / this.deltaTime}`);
-      this.frameCount = ticker.frameAllCount;
-      this.isRendered = false;
-    }
-  };
-  var YccTicker = class {
-    constructor(yccInstance) {
-      this.yccInstance = yccInstance;
-      this.currentFrame = void 0;
-      this.startTime = Date.now();
-      this.lastFrameTime = this.startTime;
-      this.lastFrameTickerCount = 0;
-      this.deltaTime = 0;
-      this.deltaTimeExpect = 0;
-      this.deltaTimeRatio = 1;
-      this.frameListenerList = [];
-      this.defaultFrameRate = 60;
-      this.defaultDeltaTime = 1e3 / this.defaultFrameRate;
-      this.tickerSpace = 1;
-      this.frameAllCount = 0;
-      this.timerTickCount = 0;
-      this._timerId = 0;
-      this._isRunning = false;
-    }
-    /**
-       * 定时器开始
-       * @param [frameRate] 心跳频率，即帧率
-       * 可取值有[60,30,20,15]
-       */
-    start(frameRate) {
-      let timer = this.yccInstance.stage.stageCanvas.requestAnimationFrame ? this.yccInstance.stage.stageCanvas.requestAnimationFrame : requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame || window.oRequestAnimationFrame || window.msRequestAnimationFrame;
-      const self = this;
-      self.currentFrame = void 0;
-      self.timerTickCount = 0;
-      self.lastFrameTickerCount = 0;
-      frameRate = frameRate || self.defaultFrameRate;
-      self.tickerSpace = parseInt(`${60 / frameRate}`) || 1;
-      self.deltaTimeExpect = 1e3 / frameRate;
-      self.frameAllCount = 0;
-      self.startTime = Date.now();
-      if (self._isRunning)
-        return this;
-      timer || (timer = function(callback) {
-        return setTimeout(function() {
-          callback(Date.now());
-        }, 1e3 / 60);
-      });
-      self._timerId = timer(cb);
-      self._isRunning = true;
-      function cb(curTime) {
-        self.timerTickCount++;
-        if (self.timerTickCount - self.lastFrameTickerCount === self.tickerSpace) {
-          self.frameAllCount++;
-          self.deltaTime = curTime - self.lastFrameTime;
-          self.deltaTimeRatio = self.deltaTime / self.deltaTimeExpect;
-          self.lastFrameTime += self.deltaTime;
-          self.lastFrameTickerCount = self.timerTickCount;
-          self.currentFrame = new Frame(self);
-          self._broadcastFrameEvent(self.currentFrame);
-        }
-        self._timerId = timer(cb);
-      }
-      return this;
-    }
-    /**
-       * 停止心跳
-       */
-    stop() {
-      let stop = this.yccInstance.stage.stageCanvas.cancelAnimationFrame ? this.yccInstance.stage.stageCanvas.cancelAnimationFrame : cancelAnimationFrame || window.webkitCancelAnimationFrame || window.mozCancelAnimationFrame || window.oCancelAnimationFrame;
-      stop || (stop = function(id) {
-        clearTimeout(id);
-      });
-      stop(this._timerId);
-      this._isRunning = false;
-      this.currentFrame = void 0;
-    }
-    /**
-       * 给每帧添加自定义的监听函数
-       * @param listener
-       */
-    addFrameListener(listener) {
-      this.frameListenerList.push(listener);
-      return this;
-    }
-    /**
-       * 移除某个监听函数
-       * @param listener
-       */
-    removeFrameListener(listener) {
-      const index = this.frameListenerList.indexOf(listener);
-      if (index !== -1) {
-        this.frameListenerList.splice(index, 1);
-      }
-      return this;
-    }
-    /**
-       * 执行所有自定义的帧监听函数
-       */
-    _broadcastFrameEvent(frame) {
-      for (let i = 0; i < this.frameListenerList.length; i++) {
-        const listener = this.frameListenerList[i];
-        isFn(listener) && listener(frame);
-      }
-    }
-    // /**
-    //    * 执行所有图层的监听函数
-    //    */
-    // broadcastToLayer (frame: Frame) {
-    //   for (let i = 0; i < this.yccInstance.layerList.length; i++) {
-    //     const layer = this.yccInstance.layerList[i]
-    //     layer.show && layer.enableFrameEvent && layer.onFrameComing(frame)
-    //   }
-    // }
-  };
-
   // src/ui/ImageUI.ts
   var ImageUI = class extends YccUI {
     getDefaultProps() {
@@ -860,6 +788,21 @@
         coordinates: rect.getCoordinates()
       });
     }
+    /**
+     * 添加至图层时，重新计算属性
+     * @param layer
+     * @returns
+     */
+    created(layer) {
+      super.created(layer);
+      this.props.coordinates = this.props.rect.getCoordinates();
+      if (this.props.fillMode === "auto") {
+        const img = this.getRes();
+        this.props.rect.width = img.width;
+        this.props.rect.height = img.height;
+        this.props.coordinates = this.props.rect.getCoordinates();
+      }
+    }
     getRes() {
       const ycc = this.getYcc();
       return ycc.$resouces.resMap[this.props.name].element;
@@ -871,20 +814,19 @@
       if (!this.isDrawable() || !this.props.show)
         return;
       const ctx = this.getContext();
-      const ycc = this.getYcc();
-      this.props.coordinates = this.props.rect.getCoordinates();
-      const { worldCoordinates, worldRect } = this.getWorldContainer();
-      const img = this.getRes();
+      const { worldRect } = this.getWorldContainer();
+      const rect = this.props.rect;
       const { x, y, width, height } = worldRect;
+      const img = this.getRes();
+      ctx.save();
       if (this.props.fillMode === "none") {
-        ctx.drawImage(img, 0, 0, worldRect.width, worldRect.height, worldRect.x, worldRect.y, worldRect.width, worldRect.height);
+        ctx.drawImage(img, 0, 0, rect.width, rect.height, worldRect.x, worldRect.y, worldRect.width, worldRect.height);
       } else if (this.props.fillMode === "scale") {
         ctx.drawImage(img, 0, 0, img.width, img.height, x, y, width, height);
       } else if (this.props.fillMode === "auto") {
+        console.log(worldRect, img);
         ctx.drawImage(img, 0, 0, img.width, img.height, x, y, width, height);
       }
-      ctx.save();
-      ctx.drawImage(ycc.$resouces.resMap[this.props.name].element, worldCoordinates[0].x, worldCoordinates[0].y);
       ctx.restore();
     }
   };
@@ -897,12 +839,12 @@
       (_a2 = document.getElementById("canvas")) == null ? void 0 : _a2.appendChild(this.stage.stageCanvas);
       new PolygonUI({
         name: "\u81EA\u5B9A\u4E49UI",
-        rotation: 20,
+        // rotation: 20,
         coordinates: [
-          new YccMathDot(10, 10),
-          new YccMathDot(200, 10),
-          new YccMathDot(10, 200),
-          new YccMathDot(10, 10)
+          new YccMathDot(0, 0),
+          new YccMathDot(200, 0),
+          new YccMathDot(0, 200),
+          new YccMathDot(0, 0)
         ]
       }).addToLayer(this.stage.defaultLayer);
       new TextUI({
@@ -913,17 +855,14 @@
         }
       }).addToLayer(this.stage.defaultLayer);
       new ImageUI({
-        name: "test"
+        name: "test",
+        fillMode: "auto",
+        rect: new YccMathRect(0, 0, 30, 30)
       }).addToLayer(this.stage.defaultLayer);
-      new YccTicker(this).addFrameListener((frame) => {
-        this.render();
-      }).start(60);
       this.render();
     }
     render() {
       this.stage.clearStage();
-      this.stage.defaultLayer.position.x++;
-      this.stage.defaultLayer.position.y++;
       this.stage.renderAll();
     }
   };

@@ -27,6 +27,7 @@ export interface YccUICommonProps {
      * 锚点坐标，是一个相对坐标，只相对于图层，默认为(0,0)，即图层的左上角
      * 当ui处于旋转、平移、缩放时，将参考此锚点坐标
      * 转换顺序：1、缩放 2、旋转 3、平移
+     * @attention 此坐标为实际的物理像素
      */
   anchor: YccMathDot
   /**
@@ -36,6 +37,7 @@ export interface YccUICommonProps {
   rotation: number
   /**
    * 相对于锚点的平移
+   * @attention 此坐标为实际的物理像素
    */
   offset: YccMathDot
   /**
@@ -46,6 +48,7 @@ export interface YccUICommonProps {
   /**
      * 多边形图形的容纳区，点坐标数组，为保证图形能够闭合，起点和终点必须相等
      * 此属性是一个相对坐标，相对于锚点坐标
+     * @attention 此坐标为实际的物理像素
      */
   coordinates: YccMathDot[]
 
@@ -111,15 +114,19 @@ export default abstract class YccUI<YccUIProps extends YccUICommonProps = YccUIC
   /**
     * UI的属性，默认属性在此设置
     */
-  props: YccUIProps
+  props!: YccUIProps
+
+  /**
+   * 传递给UI的属性列表
+   */
+  readonly initProps: Partial<YccUIProps>
 
   /**
     * UI的构造函数
     * @param {Partial<YccUIProps>} option
     */
   constructor (option: Partial<YccUIProps> = {}) {
-    this.props = this.getDefaultProps()
-    this.props = this._extendOption(option)
+    this.initProps = option
   }
 
   /**
@@ -137,11 +144,22 @@ export default abstract class YccUI<YccUIProps extends YccUICommonProps = YccUIC
   }
 
   /**
+   * 当UI被添加至图层后，会立即触发此hook函数
+   * 当子类有特殊的计算属性时，需重写此方法，在添加至图层时提前计算ui的属性，比如，`ImageUI`
+   */
+  created (layer: YccLayer) {
+    this.props = this.getDefaultProps()
+    this.props = this._extendOption(this.initProps)
+    this.props.belongTo = layer
+  }
+
+  /**
     * 将此UI添加至图层
     * @param layer
     */
   addToLayer (layer: YccLayer) {
     layer.addUI(this)
+    this.created(layer)
     return this
   }
 
@@ -159,6 +177,15 @@ export default abstract class YccUI<YccUIProps extends YccUICommonProps = YccUIC
   }
 
   /**
+   * 将
+   * 适配dpi
+   */
+  dpiAdaptation () {
+    const { dpi } = this.props.belongTo!.stage.getSystemInfo()!
+    console.log(dpi)
+  }
+
+  /**
     * 根据coordinates绘制路径
     * 只绘制路径，不填充、不描边
     * 此过程只会发生在图层的离屏canvas中
@@ -171,6 +198,7 @@ export default abstract class YccUI<YccUIProps extends YccUICommonProps = YccUIC
     // 图层的位置
     const { worldCoordinates } = this.getWorldContainer()!
 
+    console.log(worldCoordinates, 111)
     // 旋转后的点
     const start = worldCoordinates[0]
     ctx.beginPath()
@@ -184,24 +212,30 @@ export default abstract class YccUI<YccUIProps extends YccUICommonProps = YccUIC
   }
 
   /**
-    * 获取能容纳多边形的最小矩形框
-    * @returns {YccMathRect}
+    * 获取能容纳多边形的最小矩形框，返回的坐标已经经过dpi处理，是可直接绘制`stage坐标`
+    * @returns {worldCoordinates,worldRect}
     */
   getWorldContainer () {
     if (!this.props.belongTo) { console.log('该UI未加入图层'); return }
     // 图层的位置
-    const position = this.props.belongTo.position
+    const dpi = this.getDpi()
 
-    const start = this.props.coordinates[0]
-      .divide(this.props.scale).rotate(this.props.rotation, this.props.anchor).plus(this.props.offset)
-      .plus(this.props.anchor.plus(position)) // 缩放、旋转、平移之后，再加上图层的位移
+    // 物理坐标转舞台坐标
+    const position = this.props.belongTo.position.dpi(dpi)
+    const coordinates = this.props.coordinates.map(item => item.dpi(dpi))
+    const offset = this.props.offset.dpi(dpi)
+    const anchor = this.props.anchor.dpi(dpi)
+
+    const start = coordinates[0]
+      .divide(this.props.scale).rotate(this.props.rotation, anchor).plus(offset)
+      .plus(anchor.plus(position)) // 缩放、旋转、平移之后，再加上图层的位移
     let minx = start.x; let miny = start.y; let maxx = start.x; let maxy = start.y
 
     const worldCoordinates: YccMathDot[] = []
-    for (let i = 0; i < this.props.coordinates.length; i++) {
-      const dot = this.props.coordinates[i]
-        .divide(this.props.scale).rotate(this.props.rotation, this.props.anchor).plus(this.props.offset)
-        .plus(this.props.anchor.plus(position))// 缩放、旋转、平移之后，再加上图层的位移
+    for (let i = 0; i < coordinates.length; i++) {
+      const dot = coordinates[i]
+        .divide(this.props.scale).rotate(this.props.rotation, anchor).plus(offset)
+        .plus(anchor.plus(position))// 缩放、旋转、平移之后，再加上图层的位移
       worldCoordinates.push(dot)
       if (dot.x < minx) minx = dot.x
       if (dot.x >= maxx) maxx = dot.x
@@ -210,6 +244,12 @@ export default abstract class YccUI<YccUIProps extends YccUICommonProps = YccUIC
     }
 
     return {
+      dpiAdaptation: {
+        position,
+        offset,
+        anchor,
+        coordinates
+      },
       worldCoordinates,
       worldRect: new YccMathRect(minx, miny, maxx - minx, maxy - miny)
     }
@@ -228,6 +268,8 @@ export default abstract class YccUI<YccUIProps extends YccUICommonProps = YccUIC
     */
   isContainDot (dot: YccMathDot, noneZeroMode?: 1 | 2) {
     if (!this.props.belongTo) { console.log('该UI未加入图层'); return }
+    // 获取ui的绝对坐标
+    const coordinates = this.getWorldContainer()!.worldCoordinates
 
     // 默认启动none zero mode
     noneZeroMode = noneZeroMode ?? 1
@@ -240,9 +282,9 @@ export default abstract class YccUI<YccUIProps extends YccUICommonProps = YccUIC
     let leftCount = 0
     // 点在线段的右侧数目
     let rightCount = 0
-    for (let i = 0; i < this.props.coordinates.length - 1; i++) {
-      const start = this.props.coordinates[i].rotate(this.props.rotation, this.props.anchor.plus(this.props.belongTo.position))
-      const end = this.props.coordinates[i + 1].rotate(this.props.rotation, this.props.anchor.plus(this.props.belongTo.position))
+    for (let i = 0; i < coordinates.length - 1; i++) {
+      const start = coordinates[i].rotate(this.props.rotation, this.props.anchor.plus(this.props.belongTo.position))
+      const end = coordinates[i + 1].rotate(this.props.rotation, this.props.anchor.plus(this.props.belongTo.position))
 
       // 起点、终点斜率不存在的情况
       if (start.x === end.x) {
@@ -293,6 +335,14 @@ export default abstract class YccUI<YccUIProps extends YccUICommonProps = YccUIC
    */
   getContext () {
     return this.props.belongTo?.ctx
+  }
+
+  /**
+   * 获取dpi
+   * @returns
+   */
+  getDpi () {
+    return this.props.belongTo?.stage.getSystemInfo().dpi ?? 1
   }
 
   /**
