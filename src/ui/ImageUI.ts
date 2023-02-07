@@ -35,7 +35,7 @@ interface YccUIImageProps extends YccUICommonProps {
 
 export default class ImageUI extends YccUI<YccUIImageProps> {
   getDefaultProps (): YccUIImageProps {
-    const rect = new YccMathRect(0, 0, 80, 80)
+    const rect = new YccMathRect(0, 0, 60, 60)
     return {
       ...getYccUICommonProps(),
       name: '',
@@ -49,6 +49,11 @@ export default class ImageUI extends YccUI<YccUIImageProps> {
     }
   }
 
+  getRes () {
+    const ycc = this.getYcc()!
+    return ycc.$resouces.resMap[this.props.name].element as CanvasImageSource
+  }
+
   /**
    * 绘制函数
    */
@@ -58,10 +63,20 @@ export default class ImageUI extends YccUI<YccUIImageProps> {
     const ycc = this.getYcc()!
     // 计算过程
     this.props.coordinates = this.props.rect.getCoordinates()
-    this.props.worldCoordinates = this.getWorldContainer()!.worldCoordinates
+    const { worldCoordinates, worldRect } = this.getWorldContainer()!
+    const img = this.getRes()
+    const { x, y, width, height } = worldRect
+
+    if (this.props.fillMode === 'none') {
+      ctx.drawImage(img, 0, 0, worldRect.width, worldRect.height, worldRect.x, worldRect.y, worldRect.width, worldRect.height)
+    } else if (this.props.fillMode === 'scale') {
+      ctx.drawImage(img, 0, 0, img.width as number, img.height as number, x, y, width, height)
+    } else if (this.props.fillMode === 'auto') {
+      ctx.drawImage(img, 0, 0, img.width as number, img.height as number, x, y, width, height)
+    }
 
     ctx.save()
-    ctx.drawImage(ycc.$resouces.resMap[this.props.name].element as CanvasImageSource, this.props.worldCoordinates[0].x, this.props.worldCoordinates[0].y)
+    ctx.drawImage(ycc.$resouces.resMap[this.props.name].element as CanvasImageSource, worldCoordinates[0].x, worldCoordinates[0].y)
     ctx.restore()
   }
 }

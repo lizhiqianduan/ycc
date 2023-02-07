@@ -188,6 +188,14 @@
       return new YccMathDot(this.x + dot.x, this.y + dot.y);
     }
     /**
+     * 缩放比例
+     * @param x x轴的缩放
+     * @param y y轴的缩放
+     */
+    divide(dot) {
+      return new YccMathDot(Math.floor(this.x / dot.x), Math.floor(this.y / dot.y));
+    }
+    /**
      * 将当前点绕另外一个点旋转一定度数
      * @param rotation  旋转角度
      * @param anchorDot  锚点坐标
@@ -329,12 +337,12 @@
       if (!this.isDrawable())
         return;
       const ctx = this.props.belongTo.ctx;
-      const position = this.props.belongTo.position;
-      const start = this.props.coordinates[0].plus(position).rotate(this.props.rotation, this.props.anchor.plus(position).plus(this.props.coordinates[0]));
+      const { worldCoordinates } = this.getWorldContainer();
+      const start = worldCoordinates[0];
       ctx.beginPath();
       ctx.moveTo(start.x, start.y);
-      for (let i = 0; i < this.props.coordinates.length - 1; i++) {
-        const dot = this.props.coordinates[i].plus(position).rotate(this.props.rotation, this.props.anchor.plus(position).plus(this.props.coordinates[i]));
+      for (let i = 0; i < worldCoordinates.length - 1; i++) {
+        const dot = worldCoordinates[i];
         ctx.lineTo(dot.x, dot.y);
       }
       ctx.closePath();
@@ -348,14 +356,15 @@
         console.log("\u8BE5UI\u672A\u52A0\u5165\u56FE\u5C42");
         return;
       }
-      const start = this.props.coordinates[0].plus(this.props.belongTo.position).rotate(this.props.rotation, this.props.anchor.plus(this.props.belongTo.position).plus(this.props.coordinates[0]));
+      const position = this.props.belongTo.position;
+      const start = this.props.coordinates[0].divide(this.props.scale).rotate(this.props.rotation, this.props.anchor).plus(this.props.offset).plus(this.props.anchor.plus(position));
       let minx = start.x;
       let miny = start.y;
       let maxx = start.x;
       let maxy = start.y;
       const worldCoordinates = [];
-      for (let i = 0; i < this.props.coordinates.length - 1; i++) {
-        const dot = this.props.coordinates[i].plus(this.props.belongTo.position).rotate(this.props.rotation, this.props.anchor.plus(this.props.belongTo.position).plus(this.props.coordinates[i]));
+      for (let i = 0; i < this.props.coordinates.length; i++) {
+        const dot = this.props.coordinates[i].divide(this.props.scale).rotate(this.props.rotation, this.props.anchor).plus(this.props.offset).plus(this.props.anchor.plus(position));
         worldCoordinates.push(dot);
         if (dot.x < minx)
           minx = dot.x;
@@ -395,8 +404,8 @@
       let leftCount = 0;
       let rightCount = 0;
       for (let i = 0; i < this.props.coordinates.length - 1; i++) {
-        const start = this.props.coordinates[i].plus(this.props.belongTo.position).rotate(this.props.rotation, this.props.anchor.plus(this.props.belongTo.position).plus(this.props.coordinates[i]));
-        const end = this.props.coordinates[i + 1].plus(this.props.belongTo.position).rotate(this.props.rotation, this.props.anchor.plus(this.props.belongTo.position).plus(this.props.coordinates[i + 1]));
+        const start = this.props.coordinates[i].rotate(this.props.rotation, this.props.anchor.plus(this.props.belongTo.position));
+        const end = this.props.coordinates[i + 1].rotate(this.props.rotation, this.props.anchor.plus(this.props.belongTo.position));
         if (start.x === end.x) {
           if (x > start.x)
             continue;
@@ -446,13 +455,22 @@
       var _a2;
       return (_a2 = this.props.belongTo) == null ? void 0 : _a2.stage.yccInstance;
     }
-    renderBg() {
+    /**
+     * 绘制ui的背景，多用于调试
+     * @returns
+     */
+    renderBg(bgStyle = { color: "#ccc", withBorder: true, borderColor: "red", borderWidth: 4 }) {
       if (!this.isDrawable() || !this.props.show)
         return;
       const ctx = this.getContext();
       ctx.save();
       this.renderPath();
+      ctx.fillStyle = bgStyle.color;
+      ctx.strokeStyle = bgStyle.borderColor;
+      ctx.lineWidth = bgStyle.borderWidth;
       ctx.fill();
+      if (bgStyle.withBorder)
+        ctx.stroke();
       ctx.restore();
     }
   };
@@ -466,10 +484,11 @@
       lineWidth: 1,
       opacity: 1,
       rotation: 0,
+      offset: new YccMathDot(0, 0),
+      scale: new YccMathDot(1, 1),
       show: true,
       stopEventBubbleUp: true,
-      strokeStyle: "black",
-      worldCoordinates: []
+      strokeStyle: "black"
     };
   }
 
@@ -487,6 +506,7 @@
       const ctx = this.getContext();
       ctx.save();
       this.renderPath();
+      ctx.fillStyle = "#000";
       this.props.fill ? ctx.fill() : ctx.stroke();
       ctx.restore();
     }
@@ -651,7 +671,9 @@
       getAllLayer().forEach((layer) => {
         layer.uiList.forEach((ui) => {
           ui.renderBg();
+          this.stageCanvasCtx.drawImage(layer.ctx.canvas, 0, 0, this.stageInfo.width * dpi, this.stageInfo.height * dpi, 0, 0, this.stageInfo.width * dpi, this.stageInfo.height * dpi);
           ui.render();
+          this.stageCanvasCtx.drawImage(layer.ctx.canvas, 0, 0, this.stageInfo.width * dpi, this.stageInfo.height * dpi, 0, 0, this.stageInfo.width * dpi, this.stageInfo.height * dpi);
         });
         this.stageCanvasCtx.drawImage(layer.ctx.canvas, 0, 0, this.stageInfo.width * dpi, this.stageInfo.height * dpi, 0, 0, this.stageInfo.width * dpi, this.stageInfo.height * dpi);
       });
@@ -826,7 +848,7 @@
   // src/ui/ImageUI.ts
   var ImageUI = class extends YccUI {
     getDefaultProps() {
-      const rect = new YccMathRect(0, 0, 80, 80);
+      const rect = new YccMathRect(0, 0, 60, 60);
       return __spreadProps(__spreadValues({}, getYccUICommonProps()), {
         name: "",
         rect,
@@ -838,6 +860,10 @@
         coordinates: rect.getCoordinates()
       });
     }
+    getRes() {
+      const ycc = this.getYcc();
+      return ycc.$resouces.resMap[this.props.name].element;
+    }
     /**
      * 绘制函数
      */
@@ -847,9 +873,18 @@
       const ctx = this.getContext();
       const ycc = this.getYcc();
       this.props.coordinates = this.props.rect.getCoordinates();
-      this.props.worldCoordinates = this.getWorldContainer().worldCoordinates;
+      const { worldCoordinates, worldRect } = this.getWorldContainer();
+      const img = this.getRes();
+      const { x, y, width, height } = worldRect;
+      if (this.props.fillMode === "none") {
+        ctx.drawImage(img, 0, 0, worldRect.width, worldRect.height, worldRect.x, worldRect.y, worldRect.width, worldRect.height);
+      } else if (this.props.fillMode === "scale") {
+        ctx.drawImage(img, 0, 0, img.width, img.height, x, y, width, height);
+      } else if (this.props.fillMode === "auto") {
+        ctx.drawImage(img, 0, 0, img.width, img.height, x, y, width, height);
+      }
       ctx.save();
-      ctx.drawImage(ycc.$resouces.resMap[this.props.name].element, this.props.worldCoordinates[0].x, this.props.worldCoordinates[0].y);
+      ctx.drawImage(ycc.$resouces.resMap[this.props.name].element, worldCoordinates[0].x, worldCoordinates[0].y);
       ctx.restore();
     }
   };
@@ -862,6 +897,7 @@
       (_a2 = document.getElementById("canvas")) == null ? void 0 : _a2.appendChild(this.stage.stageCanvas);
       new PolygonUI({
         name: "\u81EA\u5B9A\u4E49UI",
+        rotation: 20,
         coordinates: [
           new YccMathDot(10, 10),
           new YccMathDot(200, 10),
@@ -886,8 +922,8 @@
     }
     render() {
       this.stage.clearStage();
-      this.stage.getElementByName("\u81EA\u5B9A\u4E49UI").props.belongTo.position.x++;
-      this.stage.getElementByName("\u81EA\u5B9A\u4E49UI").props.belongTo.position.y++;
+      this.stage.defaultLayer.position.x++;
+      this.stage.defaultLayer.position.y++;
       this.stage.renderAll();
     }
   };

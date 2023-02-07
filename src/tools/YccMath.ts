@@ -31,6 +31,15 @@ export class YccMathDot {
   }
 
   /**
+   * 缩放比例
+   * @param x x轴的缩放
+   * @param y y轴的缩放
+   */
+  divide (dot: YccMathDot) {
+    return new YccMathDot(Math.floor(this.x / dot.x), Math.floor(this.y / dot.y))
+  }
+
+  /**
    * 将当前点绕另外一个点旋转一定度数
    * @param rotation  旋转角度
    * @param anchorDot  锚点坐标

@@ -24,7 +24,9 @@ export interface YccUICommonProps {
   userData?: any
 
   /**
-     * 锚点坐标，是一个相对坐标，默认为(0,0)，是`coordinates`的第一个点
+     * 锚点坐标，是一个相对坐标，只相对于图层，默认为(0,0)，即图层的左上角
+     * 当ui处于旋转、平移、缩放时，将参考此锚点坐标
+     * 转换顺序：1、缩放 2、旋转 3、平移
      */
   anchor: YccMathDot
   /**
@@ -32,15 +34,20 @@ export interface YccUICommonProps {
      * @type {number}
      */
   rotation: number
+  /**
+   * 相对于锚点的平移
+   */
+  offset: YccMathDot
+  /**
+    * 自身缩放比例，包含x方向、y方向
+    */
+  scale: YccMathDot
 
   /**
      * 多边形图形的容纳区，点坐标数组，为保证图形能够闭合，起点和终点必须相等
+     * 此属性是一个相对坐标，相对于锚点坐标
      */
   coordinates: YccMathDot[]
-  /**
-      * 经过缩放、旋转、平移后，UI在舞台的真实的坐标
-      */
-  worldCoordinates: YccMathDot[]
 
   /**
        * 是否显示
@@ -85,6 +92,13 @@ export interface YccUICommonProps {
      * 填充样式，默认'black'
      */
   fillStyle: string
+}
+
+interface BgStyle {
+  color: string
+  withBorder: boolean
+  borderColor: string
+  borderWidth: number
 }
 
 /**
@@ -155,15 +169,15 @@ export default abstract class YccUI<YccUIProps extends YccUICommonProps = YccUIC
     // 绘图环境
     const ctx = this.props.belongTo!.ctx
     // 图层的位置
-    const position = this.props.belongTo!.position
+    const { worldCoordinates } = this.getWorldContainer()!
 
     // 旋转后的点
-    const start = this.props.coordinates[0].plus(position).rotate(this.props.rotation, this.props.anchor.plus(position).plus(this.props.coordinates[0]))
+    const start = worldCoordinates[0]
     ctx.beginPath()
     ctx.moveTo(start.x, start.y)
-    for (let i = 0; i < this.props.coordinates.length - 1; i++) {
+    for (let i = 0; i < worldCoordinates.length - 1; i++) {
       // 旋转后的点
-      const dot = this.props.coordinates[i].plus(position).rotate(this.props.rotation, this.props.anchor.plus(position).plus(this.props.coordinates[i]))
+      const dot = worldCoordinates[i]
       ctx.lineTo(dot.x, dot.y)
     }
     ctx.closePath()
@@ -175,13 +189,19 @@ export default abstract class YccUI<YccUIProps extends YccUICommonProps = YccUIC
     */
   getWorldContainer () {
     if (!this.props.belongTo) { console.log('该UI未加入图层'); return }
+    // 图层的位置
+    const position = this.props.belongTo.position
 
-    const start = this.props.coordinates[0].plus(this.props.belongTo.position).rotate(this.props.rotation, this.props.anchor.plus(this.props.belongTo.position).plus(this.props.coordinates[0]))
+    const start = this.props.coordinates[0]
+      .divide(this.props.scale).rotate(this.props.rotation, this.props.anchor).plus(this.props.offset)
+      .plus(this.props.anchor.plus(position)) // 缩放、旋转、平移之后，再加上图层的位移
     let minx = start.x; let miny = start.y; let maxx = start.x; let maxy = start.y
 
     const worldCoordinates: YccMathDot[] = []
-    for (let i = 0; i < this.props.coordinates.length - 1; i++) {
-      const dot = this.props.coordinates[i].plus(this.props.belongTo.position).rotate(this.props.rotation, this.props.anchor.plus(this.props.belongTo.position).plus(this.props.coordinates[i]))
+    for (let i = 0; i < this.props.coordinates.length; i++) {
+      const dot = this.props.coordinates[i]
+        .divide(this.props.scale).rotate(this.props.rotation, this.props.anchor).plus(this.props.offset)
+        .plus(this.props.anchor.plus(position))// 缩放、旋转、平移之后，再加上图层的位移
       worldCoordinates.push(dot)
       if (dot.x < minx) minx = dot.x
       if (dot.x >= maxx) maxx = dot.x
@@ -221,8 +241,8 @@ export default abstract class YccUI<YccUIProps extends YccUICommonProps = YccUIC
     // 点在线段的右侧数目
     let rightCount = 0
     for (let i = 0; i < this.props.coordinates.length - 1; i++) {
-      const start = this.props.coordinates[i].plus(this.props.belongTo.position).rotate(this.props.rotation, this.props.anchor.plus(this.props.belongTo.position).plus(this.props.coordinates[i]))
-      const end = this.props.coordinates[i + 1].plus(this.props.belongTo.position).rotate(this.props.rotation, this.props.anchor.plus(this.props.belongTo.position).plus(this.props.coordinates[i + 1]))
+      const start = this.props.coordinates[i].rotate(this.props.rotation, this.props.anchor.plus(this.props.belongTo.position))
+      const end = this.props.coordinates[i + 1].rotate(this.props.rotation, this.props.anchor.plus(this.props.belongTo.position))
 
       // 起点、终点斜率不存在的情况
       if (start.x === end.x) {
@@ -283,14 +303,21 @@ export default abstract class YccUI<YccUIProps extends YccUICommonProps = YccUIC
     return this.props.belongTo?.stage.yccInstance
   }
 
-  renderBg () {
+  /**
+   * 绘制ui的背景，多用于调试
+   * @returns
+   */
+  renderBg (bgStyle: BgStyle = { color: '#ccc', withBorder: true, borderColor: 'red', borderWidth: 4 }) {
     if (!this.isDrawable() || !this.props.show) return
     const ctx = this.getContext()!
-    // const ycc = this.getYcc()!
 
     ctx.save()
     this.renderPath()
+    ctx.fillStyle = bgStyle.color
+    ctx.strokeStyle = bgStyle.borderColor
+    ctx.lineWidth = bgStyle.borderWidth
     ctx.fill()
+    if (bgStyle.withBorder) ctx.stroke()
     ctx.restore()
   }
 
@@ -314,9 +341,10 @@ export function getYccUICommonProps (): YccUICommonProps {
     lineWidth: 1,
     opacity: 1,
     rotation: 0,
+    offset: new YccMathDot(0, 0),
+    scale: new YccMathDot(1, 1),
     show: true,
     stopEventBubbleUp: true,
-    strokeStyle: 'black',
-    worldCoordinates: [] as YccMathDot[]
+    strokeStyle: 'black'
   }
 }

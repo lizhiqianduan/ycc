@@ -24,6 +24,7 @@ export default class PolygonUI extends YccUI<PolygonUIProps> {
     const ctx = this.getContext()!
     ctx.save()
     this.renderPath()
+    ctx.fillStyle = '#000'
     this.props.fill ? ctx.fill() : ctx.stroke()
     ctx.restore()
   }

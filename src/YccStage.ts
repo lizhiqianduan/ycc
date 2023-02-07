@@ -123,7 +123,11 @@ export default class YccStage {
       layer.uiList.forEach(ui => {
         // 绘制背景
         ui.renderBg()
+        // 将离屏图层绘制到舞台来
+        this.stageCanvasCtx.drawImage(layer.ctx.canvas, 0, 0, this.stageInfo.width * dpi, this.stageInfo.height * dpi, 0, 0, this.stageInfo.width * dpi, this.stageInfo.height * dpi)
         ui.render()
+        // 将离屏图层绘制到舞台来
+        this.stageCanvasCtx.drawImage(layer.ctx.canvas, 0, 0, this.stageInfo.width * dpi, this.stageInfo.height * dpi, 0, 0, this.stageInfo.width * dpi, this.stageInfo.height * dpi)
       })
 
       // 将离屏图层绘制到舞台来
