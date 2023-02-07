@@ -32,52 +32,6 @@
     localStorage.setItem("ycc_global", JSON.stringify(GLOBAL_CACHE));
   }
 
-  // src/tools/YccLoader.ts
-  function loadResParallel(resArr, endCb, progressCb, endResArr, endResMap) {
-    endResArr = endResArr != null ? endResArr : [];
-    endResMap = endResMap != null ? endResMap : {};
-    let endLen = 0;
-    for (let i = 0; i < resArr.length; i++) {
-      const curRes = resArr[i];
-      loadResource(curRes, (res) => {
-        if (progressCb)
-          progressCb(res, i);
-        endResArr.push(res);
-        endLen++;
-        if (endLen === resArr.length)
-          endCb(endResArr);
-      });
-    }
-  }
-  function loadResource(res, endCb) {
-    if (res.element instanceof HTMLImageElement) {
-      loadImage(res, endCb);
-    }
-    if (res.element instanceof Audio) {
-      loadImage(res, endCb);
-    }
-  }
-  function loadImage(res, endCb) {
-    var _a2;
-    res.success = false;
-    if (!(res.element instanceof HTMLImageElement)) {
-      endCb(res);
-      return;
-    }
-    res.type = "image";
-    if (res.element.setAttribute != null) {
-      res.element.setAttribute("src", res.url);
-      res.element.setAttribute("crossOrigin", (_a2 = res.crossOrigin) != null ? _a2 : "");
-    }
-    res.element.onload = (e) => {
-      res.success = true;
-      endCb(res);
-    };
-    res.element.onerror = (e) => {
-      endCb(res);
-    };
-  }
-
   // src/tools/YccPolyfill.ts
   function createCanvas(options) {
     var _a2;
@@ -98,6 +52,116 @@
       return ycc.stage.stageCanvas.createImage();
     }
     return new Image();
+  }
+
+  // src/tools/YccLoader.ts
+  var ParallelLoader = class {
+    constructor(ycc, resArr) {
+      this.bind = (ycc) => {
+        this.ycc = ycc;
+        return this;
+      };
+      this.load = (endCb, progressCb) => {
+        const { ycc, resArr } = this;
+        this.endCb = endCb;
+        this.progressCb = progressCb;
+        const endResArr = [];
+        const endResMap = {};
+        let endLen = 0;
+        let successCnt = 0;
+        for (let i = 0; i < resArr.length; i++) {
+          const curRes = resArr[i];
+          if (curRes.type === "image") {
+            curRes.element = createImage(ycc);
+          }
+          if (curRes.type === "audio") {
+            curRes.element = new Audio();
+          }
+          console.log(curRes.type);
+          loadResource(curRes, (res) => {
+            if (progressCb)
+              progressCb(res, i);
+            endResArr.push(res);
+            endResMap[res.name] = res;
+            endLen++;
+            if (res.success)
+              successCnt++;
+            if (endLen === resArr.length) {
+              if (endCb) {
+                endCb({
+                  totalCnt: resArr.length,
+                  successCnt,
+                  resArr: endResArr,
+                  resMap: endResMap
+                });
+              }
+            }
+          });
+        }
+        return this;
+      };
+      this.end = (endCb) => {
+        this.endCb = endCb;
+        return this;
+      };
+      this.progress = (progressCb) => {
+        this.progressCb = progressCb;
+        return this;
+      };
+      this.ycc = ycc;
+      this.resArr = resArr;
+    }
+  };
+  function loadResource(res, endCb) {
+    if (res.element instanceof HTMLImageElement) {
+      loadImage(res, endCb);
+    }
+    if (res.element instanceof Audio) {
+      loadAudio(res, endCb);
+    }
+  }
+  function loadImage(res, endCb) {
+    var _a2;
+    res.success = false;
+    if (!(res.element instanceof HTMLImageElement)) {
+      endCb(res);
+      return;
+    }
+    res.type = "image";
+    if (res.element.setAttribute != null) {
+      res.element.setAttribute("src", res.url);
+      res.element.setAttribute("crossOrigin", (_a2 = res.crossOrigin) != null ? _a2 : "");
+    }
+    res.element.onload = (e) => {
+      res.success = true;
+      endCb(res);
+    };
+    res.element.onerror = (e) => {
+      res.errorMsg = e.toString();
+      endCb(res);
+    };
+  }
+  function loadAudio(res, endCb) {
+    var _a2;
+    res.success = false;
+    if (!(res.element instanceof Audio)) {
+      endCb(res);
+      return;
+    }
+    res.type = "audio";
+    if (res.element.setAttribute != null) {
+      res.element.setAttribute("src", res.url);
+      res.element.setAttribute("crossOrigin", (_a2 = res.crossOrigin) != null ? _a2 : "");
+      res.element.setAttribute("preload", "load");
+    }
+    res.element.onloadedmetadata = (e) => {
+      res.success = true;
+      endCb(res);
+    };
+    res.element.onerror = (e) => {
+      res.errorMsg = e.toString();
+      endCb(res);
+    };
   }
 
   // src/tools/YccMath.ts
@@ -181,7 +245,7 @@
      * 获取区域的顶点列表
      * @return {YccMathDot[]}
      */
-    getVertices() {
+    getCoordinates() {
       return [
         new YccMathDot(this.x, this.y),
         new YccMathDot(this.x + this.width, this.y),
@@ -191,7 +255,7 @@
       ];
     }
     /**
-     * 根据向量更新顶点数值
+     * 根据向量更新区域
      * @param vertices
      */
     updateByVertices(vertices) {
@@ -240,6 +304,10 @@
     isDrawable() {
       if (!this.props.belongTo) {
         console.log("\u8BE5UI\u672A\u52A0\u5165\u56FE\u5C42");
+        return false;
+      }
+      if (!this.props.belongTo.stage.yccInstance) {
+        console.log("\u56FE\u5C42\u8FD8\u672A\u52A0\u5165\u821E\u53F0");
         return false;
       }
       if (this.props.coordinates.length === 0) {
@@ -369,6 +437,23 @@
     getContext() {
       var _a2;
       return (_a2 = this.props.belongTo) == null ? void 0 : _a2.ctx;
+    }
+    /**
+     * 获取当前实例
+     * @returns
+     */
+    getYcc() {
+      var _a2;
+      return (_a2 = this.props.belongTo) == null ? void 0 : _a2.stage.yccInstance;
+    }
+    renderBg() {
+      if (!this.isDrawable() || !this.props.show)
+        return;
+      const ctx = this.getContext();
+      ctx.save();
+      this.renderPath();
+      ctx.fill();
+      ctx.restore();
     }
   };
   function getYccUICommonProps() {
@@ -565,6 +650,7 @@
       const { dpi } = this.stageInfo;
       getAllLayer().forEach((layer) => {
         layer.uiList.forEach((ui) => {
+          ui.renderBg();
           ui.render();
         });
         this.stageCanvasCtx.drawImage(layer.ctx.canvas, 0, 0, this.stageInfo.width * dpi, this.stageInfo.height * dpi, 0, 0, this.stageInfo.width * dpi, this.stageInfo.height * dpi);
@@ -584,9 +670,19 @@
     }
     /**
      * 启动
+     * @param {Resource[]} resources 已加载完成的资源
      */
-    bootstrap() {
+    bootstrap(resources2) {
+      this.$resouces = resources2;
       this.created();
+    }
+    /**
+     * 根据资源名称获取资源
+     * @param resName
+     */
+    getRes(resName) {
+      const res = this.$resouces.resMap[resName];
+      return res;
     }
     /**
      * 应用的入口
@@ -727,6 +823,37 @@
     // }
   };
 
+  // src/ui/ImageUI.ts
+  var ImageUI = class extends YccUI {
+    getDefaultProps() {
+      const rect = new YccMathRect(0, 0, 80, 80);
+      return __spreadProps(__spreadValues({}, getYccUICommonProps()), {
+        name: "",
+        rect,
+        fillMode: "none",
+        mirror: 0,
+        /**
+         * 顶点转换
+         */
+        coordinates: rect.getCoordinates()
+      });
+    }
+    /**
+     * 绘制函数
+     */
+    render() {
+      if (!this.isDrawable() || !this.props.show)
+        return;
+      const ctx = this.getContext();
+      const ycc = this.getYcc();
+      this.props.coordinates = this.props.rect.getCoordinates();
+      this.props.worldCoordinates = this.getWorldContainer().worldCoordinates;
+      ctx.save();
+      ctx.drawImage(ycc.$resouces.resMap[this.props.name].element, this.props.worldCoordinates[0].x, this.props.worldCoordinates[0].y);
+      ctx.restore();
+    }
+  };
+
   // test/helloworld/src/app.ts
   console.log(333);
   var App = class extends Ycc {
@@ -749,6 +876,9 @@
           color: "red"
         }
       }).addToLayer(this.stage.defaultLayer);
+      new ImageUI({
+        name: "test"
+      }).addToLayer(this.stage.defaultLayer);
       new YccTicker(this).addFrameListener((frame) => {
         this.render();
       }).start(60);
@@ -769,14 +899,20 @@
   var resources = [
     {
       name: "test",
+      type: "image",
       url: "https://smartedu.jnei.cn/upload/files/upload/ce155375-3dc3-479e-b4d4-8690cc906d40_WechatIMG15%402x.a69e9004.png",
-      crossOrigin: "*",
-      element: createImage(app)
+      crossOrigin: "*"
+    },
+    {
+      name: "test2",
+      type: "image",
+      url: "https://smartedu.jnei.cn/upload/files/upload/ce155375-3dc3-479e-b4d4-8690cc906d40_WechatIMG15%402x.a69e9004.png",
+      crossOrigin: "*"
     }
   ];
-  loadResParallel(resources, () => {
-    console.log("\u8D44\u6E90\u52A0\u8F7D\u7ED3\u675F", resources);
-    app.bootstrap();
+  new ParallelLoader(app, resources).load((result) => {
+    console.log("\u8D44\u6E90\u52A0\u8F7D\u7ED3\u675F", resources, result);
+    app.bootstrap(result);
   });
 })();
 //# sourceMappingURL=index.js.map

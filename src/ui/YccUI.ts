@@ -138,6 +138,7 @@ export default abstract class YccUI<YccUIProps extends YccUICommonProps = YccUIC
     */
   isDrawable () {
     if (!this.props.belongTo) { console.log('该UI未加入图层'); return false }
+    if (!this.props.belongTo.stage.yccInstance) { console.log('图层还未加入舞台'); return false }
     if (this.props.coordinates.length === 0) { console.log('该UI未设置坐标'); return false }
     if (this.props.coordinates.length < 2) { console.log('该UI坐标未正确设置'); return false }
     return true
@@ -272,6 +273,25 @@ export default abstract class YccUI<YccUIProps extends YccUICommonProps = YccUIC
    */
   getContext () {
     return this.props.belongTo?.ctx
+  }
+
+  /**
+   * 获取当前实例
+   * @returns
+   */
+  getYcc () {
+    return this.props.belongTo?.stage.yccInstance
+  }
+
+  renderBg () {
+    if (!this.isDrawable() || !this.props.show) return
+    const ctx = this.getContext()!
+    // const ycc = this.getYcc()!
+
+    ctx.save()
+    this.renderPath()
+    ctx.fill()
+    ctx.restore()
   }
 
   /**

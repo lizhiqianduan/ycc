@@ -3,6 +3,8 @@ import TextUI from '@datagetter.cn/ycc/ui/TextUI'
 import Ycc from '@datagetter.cn/ycc/Ycc'
 import { YccMathDot } from '@datagetter.cn/ycc/tools/YccMath'
 import YccTicker from '@datagetter.cn/ycc/tools/YccTicker'
+import ImageUI from '@datagetter.cn/ycc/ui/ImageUI'
+// import ImageUI from '@datagetter.cn/ycc/ui/ImageUI'
 
 console.log(333)
 /**
@@ -31,6 +33,10 @@ export default class App extends Ycc {
         fontSize: 16,
         color: 'red'
       }
+    }).addToLayer(this.stage.defaultLayer)
+
+    new ImageUI({
+      name: 'test'
     }).addToLayer(this.stage.defaultLayer)
 
     // 加入定时器

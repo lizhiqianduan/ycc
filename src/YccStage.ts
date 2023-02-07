@@ -121,6 +121,8 @@ export default class YccStage {
     // 遍历所有图层
     getAllLayer().forEach(layer => {
       layer.uiList.forEach(ui => {
+        // 绘制背景
+        ui.renderBg()
         ui.render()
       })
 

@@ -111,7 +111,7 @@ export class YccMathRect {
    * 获取区域的顶点列表
    * @return {YccMathDot[]}
    */
-  getVertices () {
+  getCoordinates () {
     return [
       new YccMathDot(this.x, this.y),
       new YccMathDot(this.x + this.width, this.y),
@@ -122,7 +122,7 @@ export class YccMathRect {
   }
 
   /**
-   * 根据向量更新顶点数值
+   * 根据向量更新区域
    * @param vertices
    */
   updateByVertices (vertices: Array<{ x: number, y: number }>) {

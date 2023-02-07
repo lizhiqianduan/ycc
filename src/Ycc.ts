@@ -1,3 +1,4 @@
+import { LoaderResult } from './tools/YccLoader'
 import YccLayer from './YccLayer'
 import YccStage from './YccStage'
 
@@ -32,6 +33,11 @@ export default class Ycc {
   $state?: object
 
   /**
+   * 加载的资源
+   */
+  $resouces!: LoaderResult
+
+  /**
    * 舞台，唯一，一个`Ycc`对应一个`Stage`
    */
   stage: YccStage
@@ -48,9 +54,20 @@ export default class Ycc {
 
   /**
    * 启动
+   * @param {Resource[]} resources 已加载完成的资源
    */
-  bootstrap () {
+  bootstrap (resources: LoaderResult) {
+    this.$resouces = resources
     this.created()
+  }
+
+  /**
+   * 根据资源名称获取资源
+   * @param resName
+   */
+  getRes (resName: string) {
+    const res = this.$resouces.resMap[resName]
+    return res
   }
 
   /**
