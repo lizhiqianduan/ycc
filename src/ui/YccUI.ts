@@ -373,15 +373,31 @@ export default abstract class YccUI<YccUIProps extends YccUICommonProps = YccUIC
   renderAnchor () {
     if (!this.isDrawable() || !this.props.show) return
     const ctx = this.getContext()!
-    const world = this.getWorldContainer()
+    const world = this.getWorldContainer()!
 
+    console.log('render anchor')
     ctx.save()
-    this.renderPath()
-    ctx.fillStyle = bgStyle.color
-    ctx.strokeStyle = bgStyle.borderColor
-    ctx.lineWidth = bgStyle.borderWidth
-    ctx.fill()
-    if (bgStyle.withBorder) ctx.stroke()
+    ctx.strokeStyle = 'blue'
+    ctx.lineWidth = 4
+
+    ctx.beginPath()
+    ctx.moveTo(world.worldAnchor.x + 16, world.worldAnchor.y)
+    ctx.lineTo(world.worldAnchor.x - 16, world.worldAnchor.y)
+    ctx.closePath()
+    ctx.stroke()
+
+    ctx.beginPath()
+    ctx.moveTo(world.worldAnchor.x, world.worldAnchor.y + 16)
+    ctx.lineTo(world.worldAnchor.x, world.worldAnchor.y - 16)
+    ctx.closePath()
+    ctx.stroke()
+
+    ctx.beginPath()
+    ctx.arc(world.worldAnchor.x, world.worldAnchor.y, 16, 0, 360)
+    ctx.closePath()
+    ctx.stroke()
+    ctx.closePath()
+
     ctx.restore()
   }
 

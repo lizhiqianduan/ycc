@@ -517,17 +517,17 @@
      * 绘制ui的背景，多用于调试
      * @returns
      */
-    renderBg(bgStyle2 = { color: "#ccc", withBorder: true, borderColor: "red", borderWidth: 4 }) {
+    renderBg(bgStyle = { color: "#ccc", withBorder: true, borderColor: "red", borderWidth: 4 }) {
       if (!this.isDrawable() || !this.props.show)
         return;
       const ctx = this.getContext();
       ctx.save();
       this.renderPath();
-      ctx.fillStyle = bgStyle2.color;
-      ctx.strokeStyle = bgStyle2.borderColor;
-      ctx.lineWidth = bgStyle2.borderWidth;
+      ctx.fillStyle = bgStyle.color;
+      ctx.strokeStyle = bgStyle.borderColor;
+      ctx.lineWidth = bgStyle.borderWidth;
       ctx.fill();
-      if (bgStyle2.withBorder)
+      if (bgStyle.withBorder)
         ctx.stroke();
       ctx.restore();
     }
@@ -539,14 +539,25 @@
         return;
       const ctx = this.getContext();
       const world = this.getWorldContainer();
+      console.log("render anchor");
       ctx.save();
-      this.renderPath();
-      ctx.fillStyle = bgStyle.color;
-      ctx.strokeStyle = bgStyle.borderColor;
-      ctx.lineWidth = bgStyle.borderWidth;
-      ctx.fill();
-      if (bgStyle.withBorder)
-        ctx.stroke();
+      ctx.strokeStyle = "blue";
+      ctx.lineWidth = 4;
+      ctx.beginPath();
+      ctx.moveTo(world.worldAnchor.x + 16, world.worldAnchor.y);
+      ctx.lineTo(world.worldAnchor.x - 16, world.worldAnchor.y);
+      ctx.closePath();
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(world.worldAnchor.x, world.worldAnchor.y + 16);
+      ctx.lineTo(world.worldAnchor.x, world.worldAnchor.y - 16);
+      ctx.closePath();
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.arc(world.worldAnchor.x, world.worldAnchor.y, 16, 0, 360);
+      ctx.closePath();
+      ctx.stroke();
+      ctx.closePath();
       ctx.restore();
     }
   };
@@ -749,6 +760,7 @@
           ui.renderBg();
           this.stageCanvasCtx.drawImage(layer.ctx.canvas, 0, 0, this.stageInfo.width * dpi, this.stageInfo.height * dpi, 0, 0, this.stageInfo.width * dpi, this.stageInfo.height * dpi);
           ui.render();
+          ui.renderAnchor();
           this.stageCanvasCtx.drawImage(layer.ctx.canvas, 0, 0, this.stageInfo.width * dpi, this.stageInfo.height * dpi, 0, 0, this.stageInfo.width * dpi, this.stageInfo.height * dpi);
         });
         this.stageCanvasCtx.drawImage(layer.ctx.canvas, 0, 0, this.stageInfo.width * dpi, this.stageInfo.height * dpi, 0, 0, this.stageInfo.width * dpi, this.stageInfo.height * dpi);

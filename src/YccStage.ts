@@ -126,6 +126,8 @@ export default class YccStage {
         // 将离屏图层绘制到舞台来
         this.stageCanvasCtx.drawImage(layer.ctx.canvas, 0, 0, this.stageInfo.width * dpi, this.stageInfo.height * dpi, 0, 0, this.stageInfo.width * dpi, this.stageInfo.height * dpi)
         ui.render()
+        // debug 绘制锚点
+        ui.renderAnchor()
         // 将离屏图层绘制到舞台来
         this.stageCanvasCtx.drawImage(layer.ctx.canvas, 0, 0, this.stageInfo.width * dpi, this.stageInfo.height * dpi, 0, 0, this.stageInfo.width * dpi, this.stageInfo.height * dpi)
       })
