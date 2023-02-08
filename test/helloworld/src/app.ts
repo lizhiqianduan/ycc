@@ -40,7 +40,7 @@ export default class App extends Ycc {
       anchor: new YccMathDot(50, 50),
       // rotation: 10,
       resName: 'test',
-      fillMode: 'auto',
+      fillMode: 'scale',
       rect: new YccMathRect(-10, -30, 60, 60)
     }).addToLayer(this.stage.defaultLayer)
 

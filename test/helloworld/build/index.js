@@ -971,9 +971,8 @@
         return;
       const ctx = this.getContext();
       this.props.coordinates = this.props.rect.getCoordinates();
-      const { worldRect, worldAnchor: absoluteAnchor } = this.getWorldContainer();
+      const { worldAnchor: absoluteAnchor } = this.getWorldContainer();
       const rect = this.props.rect;
-      const { x, y, width, height } = worldRect;
       const img = this.getRes();
       ctx.save();
       ctx.translate(absoluteAnchor.x, absoluteAnchor.y);
@@ -984,7 +983,7 @@
       if (this.props.fillMode === "none") {
         ctx.drawImage(img, 0, 0, rect.width, rect.height, renderRect.x, renderRect.y, renderRect.width, renderRect.height);
       } else if (this.props.fillMode === "scale") {
-        ctx.drawImage(img, 0, 0, img.width, img.height, absoluteAnchor.x + rectDpi.x, absoluteAnchor.y + rectDpi.y, rectDpi.width, rectDpi.height);
+        ctx.drawImage(img, 0, 0, img.width, img.height, renderRect.x, renderRect.y, renderRect.width, renderRect.height);
       } else if (this.props.fillMode === "auto") {
         ctx.drawImage(img, 0, 0, img.width, img.height, renderRect.x, renderRect.y, renderRect.width, renderRect.height);
       }
@@ -1019,7 +1018,7 @@
         anchor: new YccMathDot(50, 50),
         // rotation: 10,
         resName: "test",
-        fillMode: "auto",
+        fillMode: "scale",
         rect: new YccMathRect(-10, -30, 60, 60)
       }).addToLayer(this.stage.defaultLayer);
       new YccTicker(this).addFrameListener((frame) => {

@@ -1,4 +1,4 @@
-import { YccMathDot, YccMathRect } from '../tools/YccMath'
+import { YccMathRect } from '../tools/YccMath'
 import YccLayer from '../YccLayer'
 import YccUI, { getYccUICommonProps, YccUICommonProps } from './YccUI'
 
@@ -92,9 +92,8 @@ export default class ImageUI extends YccUI<YccUIImageProps> {
     this.props.coordinates = this.props.rect.getCoordinates()
 
     // 物理坐标转舞台坐标
-    const { worldRect, worldAnchor: absoluteAnchor } = this.getWorldContainer()!
+    const { worldAnchor: absoluteAnchor } = this.getWorldContainer()!
     const rect = this.props.rect // 物理像素
-    const { x, y, width, height } = worldRect
     const img = this.getRes()
 
     ctx.save()
@@ -111,7 +110,7 @@ export default class ImageUI extends YccUI<YccUIImageProps> {
     if (this.props.fillMode === 'none') {
       ctx.drawImage(img, 0, 0, rect.width, rect.height, renderRect.x, renderRect.y, renderRect.width, renderRect.height)
     } else if (this.props.fillMode === 'scale') {
-      ctx.drawImage(img, 0, 0, img.width as number, img.height as number, absoluteAnchor.x + rectDpi.x, absoluteAnchor.y + rectDpi.y, rectDpi.width, rectDpi.height)
+      ctx.drawImage(img, 0, 0, img.width as number, img.height as number, renderRect.x, renderRect.y, renderRect.width, renderRect.height)
     } else if (this.props.fillMode === 'auto') {
       ctx.drawImage(img, 0, 0, img.width as number, img.height as number, renderRect.x, renderRect.y, renderRect.width, renderRect.height)
     }
