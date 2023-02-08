@@ -1016,6 +1016,35 @@
         ctx.drawImage(img, 0, 0, img.width, img.height, renderRect.x, renderRect.y, renderRect.width, renderRect.height);
       } else if (this.props.fillMode === "auto") {
         ctx.drawImage(img, 0, 0, img.width, img.height, renderRect.x, renderRect.y, renderRect.width, renderRect.height);
+      } else if (this.props.fillMode === "repeat") {
+        const { x, y } = renderRect;
+        const { width: imgWidth, height: imgHeight } = img;
+        const wCount = Math.ceil(this.props.rect.width / imgWidth);
+        const hCount = Math.ceil(this.props.rect.height / imgHeight);
+        const dpi = this.getDpi();
+        for (let i = 0; i < wCount; i++) {
+          for (let j = 0; j < hCount; j++) {
+            let xRest = img.width;
+            let yRest = img.height;
+            if (i === wCount - 1) {
+              xRest = this.props.rect.width - i * imgWidth;
+            }
+            if (j === hCount - 1) {
+              yRest = this.props.rect.height - j * imgHeight;
+            }
+            ctx.drawImage(
+              img,
+              0,
+              0,
+              xRest,
+              yRest,
+              x + imgWidth * i * dpi,
+              y + imgHeight * j * dpi,
+              xRest * dpi,
+              yRest * dpi
+            );
+          }
+        }
       }
       ctx.restore();
     }
@@ -1046,11 +1075,11 @@
       new ImageUI({
         name: "TestImage",
         anchor: new YccMathDot(50, 50),
-        // rotation: 30,
-        mirror: 2,
+        rotation: 30,
+        mirror: 1,
         resName: "test",
-        fillMode: "scale",
-        rect: new YccMathRect(-10, -30, 60, 60)
+        fillMode: "repeat",
+        rect: new YccMathRect(-10, -30, 300, 300)
       }).addToLayer(this.stage.defaultLayer);
       new YccTicker(this).addFrameListener((frame) => {
         this.render();

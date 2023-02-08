@@ -145,6 +145,28 @@ export default class ImageUI extends YccUI<YccUIImageProps> {
       ctx.drawImage(img, 0, 0, img.width as number, img.height as number, renderRect.x, renderRect.y, renderRect.width, renderRect.height)
     } else if (this.props.fillMode === 'auto') {
       ctx.drawImage(img, 0, 0, img.width as number, img.height as number, renderRect.x, renderRect.y, renderRect.width, renderRect.height)
+    } else if (this.props.fillMode === 'repeat') {
+      const { x, y } = renderRect
+      const { width: imgWidth, height: imgHeight } = img
+      // x,y方向能容纳的img个数
+      const wCount = Math.ceil(this.props.rect.width / (<number>imgWidth))
+      const hCount = Math.ceil(this.props.rect.height / (<number>imgHeight))
+      const dpi = this.getDpi()
+
+      for (let i = 0; i < wCount; i++) {
+        for (let j = 0; j < hCount; j++) {
+          let xRest = <number>img.width
+          let yRest = <number>img.height
+          if (i === wCount - 1) { xRest = this.props.rect.width - i * <number>imgWidth }
+          if (j === hCount - 1) { yRest = this.props.rect.height - j * <number>imgHeight }
+
+          ctx.drawImage(img,
+            0, 0,
+            xRest, yRest,
+            x + <number>imgWidth * i * dpi, y + <number>imgHeight * j * dpi,
+            xRest * dpi, yRest * dpi)
+        }
+      }
     }
 
     ctx.restore()
