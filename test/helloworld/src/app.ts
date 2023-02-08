@@ -38,10 +38,10 @@ export default class App extends Ycc {
     new ImageUI({
       name: 'TestImage',
       anchor: new YccMathDot(50, 50),
-      rotation: 10,
+      // rotation: 10,
       resName: 'test',
-      fillMode: 'scale',
-      rect: new YccMathRect(-30, -30, 60, 60)
+      fillMode: 'none',
+      rect: new YccMathRect(-10, -30, 60, 60)
     }).addToLayer(this.stage.defaultLayer)
 
     // 加入定时器

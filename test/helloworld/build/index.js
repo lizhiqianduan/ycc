@@ -973,15 +973,16 @@
       this.props.coordinates = this.props.rect.getCoordinates();
       const { worldRect, worldAnchor: absoluteAnchor } = this.getWorldContainer();
       const rect = this.props.rect;
-      const rectDpi = this.props.rect.dpi(this.getDpi());
       const { x, y, width, height } = worldRect;
       const img = this.getRes();
       ctx.save();
       ctx.translate(absoluteAnchor.x, absoluteAnchor.y);
       ctx.rotate(this.props.rotation * Math.PI / 180);
       ctx.translate(-absoluteAnchor.x, -absoluteAnchor.y);
+      const rectDpi = this.props.rect.dpi(this.getDpi());
+      const renderRect = new YccMathRect(absoluteAnchor.x + rectDpi.x, absoluteAnchor.y + rectDpi.y, rectDpi.width, rectDpi.height);
       if (this.props.fillMode === "none") {
-        ctx.drawImage(img, 0, 0, rect.width, rect.height, worldRect.x, worldRect.y, rect.width, rect.height);
+        ctx.drawImage(img, 0, 0, rect.width, rect.height, renderRect.x, renderRect.y, renderRect.width, renderRect.height);
       } else if (this.props.fillMode === "scale") {
         ctx.drawImage(img, 0, 0, img.width, img.height, absoluteAnchor.x + rectDpi.x, absoluteAnchor.y + rectDpi.y, rectDpi.width, rectDpi.height);
       } else if (this.props.fillMode === "auto") {
@@ -1016,10 +1017,10 @@
       new ImageUI({
         name: "TestImage",
         anchor: new YccMathDot(50, 50),
-        rotation: 10,
+        // rotation: 10,
         resName: "test",
-        fillMode: "scale",
-        rect: new YccMathRect(-30, -30, 60, 60)
+        fillMode: "none",
+        rect: new YccMathRect(-10, -30, 60, 60)
       }).addToLayer(this.stage.defaultLayer);
       new YccTicker(this).addFrameListener((frame) => {
         this.render();

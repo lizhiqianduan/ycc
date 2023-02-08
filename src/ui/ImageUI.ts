@@ -94,7 +94,6 @@ export default class ImageUI extends YccUI<YccUIImageProps> {
     // 物理坐标转舞台坐标
     const { worldRect, worldAnchor: absoluteAnchor } = this.getWorldContainer()!
     const rect = this.props.rect // 物理像素
-    const rectDpi = this.props.rect.dpi(this.getDpi()) // dpi兼容后的舞台坐标
     const { x, y, width, height } = worldRect
     const img = this.getRes()
 
@@ -105,9 +104,12 @@ export default class ImageUI extends YccUI<YccUIImageProps> {
     ctx.rotate(this.props.rotation * Math.PI / 180)
     ctx.translate(-absoluteAnchor.x, -absoluteAnchor.y)
 
+    // 图片的绘制区域
+    const rectDpi = this.props.rect.dpi(this.getDpi()) // dpi兼容后的舞台坐标
+    const renderRect = new YccMathRect(absoluteAnchor.x + rectDpi.x, absoluteAnchor.y + rectDpi.y, rectDpi.width, rectDpi.height)
+
     if (this.props.fillMode === 'none') {
-      // ctx.drawImage(img, 0, 0, rect.width, rect.height, worldRect.x, worldRect.y, worldRect.width, worldRect.height)
-      ctx.drawImage(img, 0, 0, rect.width, rect.height, worldRect.x, worldRect.y, rect.width, rect.height)
+      ctx.drawImage(img, 0, 0, rect.width, rect.height, renderRect.x, renderRect.y, renderRect.width, renderRect.height)
     } else if (this.props.fillMode === 'scale') {
       ctx.drawImage(img, 0, 0, img.width as number, img.height as number, absoluteAnchor.x + rectDpi.x, absoluteAnchor.y + rectDpi.y, rectDpi.width, rectDpi.height)
     } else if (this.props.fillMode === 'auto') {
