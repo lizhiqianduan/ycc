@@ -41,6 +41,7 @@
     canvas.height = options.height * dpi;
     canvas.style.width = options.width.toString() + "px";
     canvas.style.display = "block";
+    document.body.appendChild(canvas);
     return canvas;
   }
   function createImage(ycc) {
@@ -397,12 +398,11 @@
         return;
       }
       const dpi = this.getDpi();
-      const offset = this.props.offset.dpi(dpi);
       const position = this.props.belongTo.position.dpi(dpi);
       const anchor = this.props.anchor.dpi(dpi).plus(position);
       const coordinates = this.props.coordinates.map(
         (item) => {
-          return item.dpi(dpi).plus(anchor).divide(this.props.scale.x, this.props.scale.y).rotate(this.props.rotation, anchor).plus(offset);
+          return item.dpi(dpi).plus(anchor).rotate(this.props.rotation, anchor);
         }
       );
       const start = coordinates[0];
@@ -423,7 +423,6 @@
       }
       return {
         worldPosition: position,
-        offset,
         worldAnchor: anchor,
         worldCoordinates: coordinates,
         worldRect: new YccMathRect(minx, miny, maxx - minx, maxy - miny)
@@ -539,7 +538,6 @@
         return;
       const ctx = this.getContext();
       const world = this.getWorldContainer();
-      console.log("render anchor");
       ctx.save();
       ctx.strokeStyle = "blue";
       ctx.lineWidth = 4;
@@ -571,8 +569,6 @@
       lineWidth: 1,
       opacity: 1,
       rotation: 0,
-      offset: new YccMathDot(0, 0),
-      scale: new YccMathDot(1, 1),
       show: true,
       stopEventBubbleUp: true,
       strokeStyle: "black"
@@ -975,15 +971,19 @@
         return;
       const ctx = this.getContext();
       this.props.coordinates = this.props.rect.getCoordinates();
-      const { worldRect } = this.getWorldContainer();
+      const { worldRect, worldAnchor: absoluteAnchor } = this.getWorldContainer();
       const rect = this.props.rect;
+      const rectDpi = this.props.rect.dpi(this.getDpi());
       const { x, y, width, height } = worldRect;
       const img = this.getRes();
       ctx.save();
+      ctx.translate(absoluteAnchor.x, absoluteAnchor.y);
+      ctx.rotate(this.props.rotation * Math.PI / 180);
+      ctx.translate(-absoluteAnchor.x, -absoluteAnchor.y);
       if (this.props.fillMode === "none") {
-        ctx.drawImage(img, 0, 0, rect.width, rect.height, worldRect.x, worldRect.y, worldRect.width, worldRect.height);
+        ctx.drawImage(img, 0, 0, rect.width, rect.height, worldRect.x, worldRect.y, rect.width, rect.height);
       } else if (this.props.fillMode === "scale") {
-        ctx.drawImage(img, 0, 0, img.width, img.height, x, y, width, height);
+        ctx.drawImage(img, 0, 0, img.width, img.height, absoluteAnchor.x + rectDpi.x, absoluteAnchor.y + rectDpi.y, rectDpi.width, rectDpi.height);
       } else if (this.props.fillMode === "auto") {
         ctx.drawImage(img, 0, 0, img.width, img.height, x, y, width, height);
       }
@@ -1015,13 +1015,15 @@
       }).addToLayer(this.stage.defaultLayer);
       new ImageUI({
         name: "TestImage",
+        anchor: new YccMathDot(50, 50),
+        rotation: 10,
         resName: "test",
-        fillMode: "auto",
-        rect: new YccMathRect(0, 0, 30, 30)
+        fillMode: "scale",
+        rect: new YccMathRect(-30, -30, 60, 60)
       }).addToLayer(this.stage.defaultLayer);
       new YccTicker(this).addFrameListener((frame) => {
         this.render();
-      }).start(20);
+      }).start(60);
       this.render();
     }
     render() {

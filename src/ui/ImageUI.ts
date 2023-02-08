@@ -1,4 +1,4 @@
-import { YccMathRect } from '../tools/YccMath'
+import { YccMathDot, YccMathRect } from '../tools/YccMath'
 import YccLayer from '../YccLayer'
 import YccUI, { getYccUICommonProps, YccUICommonProps } from './YccUI'
 
@@ -92,17 +92,24 @@ export default class ImageUI extends YccUI<YccUIImageProps> {
     this.props.coordinates = this.props.rect.getCoordinates()
 
     // 物理坐标转舞台坐标
-    const { worldRect } = this.getWorldContainer()!
+    const { worldRect, worldAnchor: absoluteAnchor } = this.getWorldContainer()!
     const rect = this.props.rect // 物理像素
+    const rectDpi = this.props.rect.dpi(this.getDpi()) // dpi兼容后的舞台坐标
     const { x, y, width, height } = worldRect
     const img = this.getRes()
 
     ctx.save()
 
+    /// /// 处理旋转参数：旋转的中心点为UI的锚点
+    ctx.translate(absoluteAnchor.x, absoluteAnchor.y)
+    ctx.rotate(this.props.rotation * Math.PI / 180)
+    ctx.translate(-absoluteAnchor.x, -absoluteAnchor.y)
+
     if (this.props.fillMode === 'none') {
-      ctx.drawImage(img, 0, 0, rect.width, rect.height, worldRect.x, worldRect.y, worldRect.width, worldRect.height)
+      // ctx.drawImage(img, 0, 0, rect.width, rect.height, worldRect.x, worldRect.y, worldRect.width, worldRect.height)
+      ctx.drawImage(img, 0, 0, rect.width, rect.height, worldRect.x, worldRect.y, rect.width, rect.height)
     } else if (this.props.fillMode === 'scale') {
-      ctx.drawImage(img, 0, 0, img.width as number, img.height as number, x, y, width, height)
+      ctx.drawImage(img, 0, 0, img.width as number, img.height as number, absoluteAnchor.x + rectDpi.x, absoluteAnchor.y + rectDpi.y, rectDpi.width, rectDpi.height)
     } else if (this.props.fillMode === 'auto') {
       ctx.drawImage(img, 0, 0, img.width as number, img.height as number, x, y, width, height)
     }

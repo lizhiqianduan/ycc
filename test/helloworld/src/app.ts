@@ -37,15 +37,17 @@ export default class App extends Ycc {
 
     new ImageUI({
       name: 'TestImage',
+      anchor: new YccMathDot(50, 50),
+      rotation: 10,
       resName: 'test',
-      fillMode: 'auto',
-      rect: new YccMathRect(0, 0, 30, 30)
+      fillMode: 'scale',
+      rect: new YccMathRect(-30, -30, 60, 60)
     }).addToLayer(this.stage.defaultLayer)
 
     // 加入定时器
     new YccTicker(this).addFrameListener(frame => {
       this.render()
-    }).start(20)
+    }).start(60)
 
     this.render()
   }

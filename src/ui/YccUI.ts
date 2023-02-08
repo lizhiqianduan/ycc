@@ -35,15 +35,6 @@ export interface YccUICommonProps {
      * @type {number}
      */
   rotation: number
-  /**
-   * 相对于锚点的平移
-   * @attention 此坐标为实际的物理像素
-   */
-  offset: YccMathDot
-  /**
-    * 自身缩放比例，包含x方向、y方向
-    */
-  scale: YccMathDot
 
   /**
      * 多边形图形的容纳区，点坐标数组，为保证图形能够闭合，起点和终点必须相等
@@ -220,14 +211,13 @@ export default abstract class YccUI<YccUIProps extends YccUICommonProps = YccUIC
     const dpi = this.getDpi()
 
     // 物理坐标转舞台坐标
-    const offset = this.props.offset.dpi(dpi) // offset是个长度单位，不用换算坐标
     const position = this.props.belongTo.position.dpi(dpi)
     const anchor = this.props.anchor.dpi(dpi).plus(position)
     const coordinates = this.props.coordinates.map(
       item => {
         return item.dpi(dpi).plus(anchor)
-        // 缩放、旋转、平移
-          .divide(this.props.scale.x, this.props.scale.y).rotate(this.props.rotation, anchor).plus(offset)
+        // 旋转、平移
+          .rotate(this.props.rotation, anchor)
       }
     )
 
@@ -244,7 +234,6 @@ export default abstract class YccUI<YccUIProps extends YccUICommonProps = YccUIC
 
     return {
       worldPosition: position,
-      offset,
       worldAnchor: anchor,
       worldCoordinates: coordinates,
       worldRect: new YccMathRect(minx, miny, maxx - minx, maxy - miny)
@@ -375,7 +364,6 @@ export default abstract class YccUI<YccUIProps extends YccUICommonProps = YccUIC
     const ctx = this.getContext()!
     const world = this.getWorldContainer()!
 
-    console.log('render anchor')
     ctx.save()
     ctx.strokeStyle = 'blue'
     ctx.lineWidth = 4
@@ -421,8 +409,6 @@ export function getYccUICommonProps (): YccUICommonProps {
     lineWidth: 1,
     opacity: 1,
     rotation: 0,
-    offset: new YccMathDot(0, 0),
-    scale: new YccMathDot(1, 1),
     show: true,
     stopEventBubbleUp: true,
     strokeStyle: 'black'
