@@ -113,7 +113,7 @@ export default class ImageUI extends YccUI<YccUIImageProps> {
     } else if (this.props.fillMode === 'scale') {
       ctx.drawImage(img, 0, 0, img.width as number, img.height as number, absoluteAnchor.x + rectDpi.x, absoluteAnchor.y + rectDpi.y, rectDpi.width, rectDpi.height)
     } else if (this.props.fillMode === 'auto') {
-      ctx.drawImage(img, 0, 0, img.width as number, img.height as number, x, y, width, height)
+      ctx.drawImage(img, 0, 0, img.width as number, img.height as number, renderRect.x, renderRect.y, renderRect.width, renderRect.height)
     }
 
     ctx.restore()

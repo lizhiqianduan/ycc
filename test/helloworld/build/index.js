@@ -986,7 +986,7 @@
       } else if (this.props.fillMode === "scale") {
         ctx.drawImage(img, 0, 0, img.width, img.height, absoluteAnchor.x + rectDpi.x, absoluteAnchor.y + rectDpi.y, rectDpi.width, rectDpi.height);
       } else if (this.props.fillMode === "auto") {
-        ctx.drawImage(img, 0, 0, img.width, img.height, x, y, width, height);
+        ctx.drawImage(img, 0, 0, img.width, img.height, renderRect.x, renderRect.y, renderRect.width, renderRect.height);
       }
       ctx.restore();
     }
@@ -1019,7 +1019,7 @@
         anchor: new YccMathDot(50, 50),
         // rotation: 10,
         resName: "test",
-        fillMode: "none",
+        fillMode: "auto",
         rect: new YccMathRect(-10, -30, 60, 60)
       }).addToLayer(this.stage.defaultLayer);
       new YccTicker(this).addFrameListener((frame) => {
