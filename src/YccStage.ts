@@ -106,10 +106,13 @@ export default class YccStage {
    * @returns
    */
   getSystemInfo () {
+    const dpi = window.devicePixelRatio ?? 1
     return {
       width: window.innerWidth,
       height: window.innerHeight,
-      dpi: window.devicePixelRatio ?? 1
+      dpi,
+      renderWidth: window.innerWidth * dpi,
+      renderHeight: window.innerWidth * dpi
     }
   }
 

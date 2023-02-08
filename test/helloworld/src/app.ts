@@ -38,7 +38,8 @@ export default class App extends Ycc {
     new ImageUI({
       name: 'TestImage',
       anchor: new YccMathDot(50, 50),
-      // rotation: 10,
+      // rotation: 30,
+      mirror: 2,
       resName: 'test',
       fillMode: 'scale',
       rect: new YccMathRect(-10, -30, 60, 60)
@@ -59,8 +60,8 @@ export default class App extends Ycc {
 
     // 这里可以做点动画
     // 比如，改变一下UI的位置
-    const TestPolygon = this.stage.getElementByName('TestPolygon')
-    TestPolygon!.props.rotation++
+    // const TestPolygon = this.stage.getElementByName('TestPolygon')
+    // TestPolygon!.props.rotation++
 
     const TestImage = this.stage.getElementByName('TestImage')
     TestImage!.props.rotation++

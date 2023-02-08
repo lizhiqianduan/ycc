@@ -740,10 +740,13 @@
      */
     getSystemInfo() {
       var _a2;
+      const dpi = (_a2 = window.devicePixelRatio) != null ? _a2 : 1;
       return {
         width: window.innerWidth,
         height: window.innerHeight,
-        dpi: (_a2 = window.devicePixelRatio) != null ? _a2 : 1
+        dpi,
+        renderWidth: window.innerWidth * dpi,
+        renderHeight: window.innerWidth * dpi
       };
     }
     /**
@@ -959,9 +962,35 @@
         this.props.coordinates = this.props.rect.getCoordinates();
       }
     }
+    /**
+     * 获取资源
+     * @returns
+     */
     getRes() {
       const ycc = this.getYcc();
       return ycc.$resouces.resMap[this.props.resName].element;
+    }
+    /**
+     * 处理镜像
+     * @param renderRect {YccMathRect} 计算之后的图片容纳区
+     * @private
+     */
+    _processMirror(renderRect) {
+      const mirror = this.props.mirror;
+      const ctx = this.getContext();
+      const { x, y, width, height } = renderRect;
+      if (mirror === 1) {
+        ctx.scale(-1, 1);
+        ctx.translate(-x * 2 - width, 0);
+      }
+      if (mirror === 2) {
+        ctx.scale(1, -1);
+        ctx.translate(0, -y * 2 - height);
+      }
+      if (mirror === 3) {
+        ctx.scale(-1, -1);
+        ctx.translate(-x * 2 - width, -y * 2 - height);
+      }
     }
     /**
      * 绘制函数
@@ -974,12 +1003,13 @@
       const { worldAnchor: absoluteAnchor } = this.getWorldContainer();
       const rect = this.props.rect;
       const img = this.getRes();
+      const rectDpi = this.props.rect.dpi(this.getDpi());
+      const renderRect = new YccMathRect(absoluteAnchor.x + rectDpi.x, absoluteAnchor.y + rectDpi.y, rectDpi.width, rectDpi.height);
       ctx.save();
       ctx.translate(absoluteAnchor.x, absoluteAnchor.y);
       ctx.rotate(this.props.rotation * Math.PI / 180);
       ctx.translate(-absoluteAnchor.x, -absoluteAnchor.y);
-      const rectDpi = this.props.rect.dpi(this.getDpi());
-      const renderRect = new YccMathRect(absoluteAnchor.x + rectDpi.x, absoluteAnchor.y + rectDpi.y, rectDpi.width, rectDpi.height);
+      this._processMirror(renderRect);
       if (this.props.fillMode === "none") {
         ctx.drawImage(img, 0, 0, rect.width, rect.height, renderRect.x, renderRect.y, renderRect.width, renderRect.height);
       } else if (this.props.fillMode === "scale") {
@@ -1016,7 +1046,8 @@
       new ImageUI({
         name: "TestImage",
         anchor: new YccMathDot(50, 50),
-        // rotation: 10,
+        // rotation: 30,
+        mirror: 2,
         resName: "test",
         fillMode: "scale",
         rect: new YccMathRect(-10, -30, 60, 60)
@@ -1028,8 +1059,6 @@
     }
     render() {
       this.stage.clearStage();
-      const TestPolygon = this.stage.getElementByName("TestPolygon");
-      TestPolygon.props.rotation++;
       const TestImage = this.stage.getElementByName("TestImage");
       TestImage.props.rotation++;
       this.stage.renderAll();

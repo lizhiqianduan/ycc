@@ -77,9 +77,37 @@ export default class ImageUI extends YccUI<YccUIImageProps> {
     }
   }
 
+  /**
+   * 获取资源
+   * @returns
+   */
   getRes () {
     const ycc = this.getYcc()!
     return ycc.$resouces.resMap[this.props.resName].element as CanvasImageSource
+  }
+
+  /**
+   * 处理镜像
+   * @param renderRect {YccMathRect} 计算之后的图片容纳区
+   * @private
+   */
+  private _processMirror (renderRect: YccMathRect) {
+    const mirror = this.props.mirror
+    const ctx = this.getContext()!
+    const { x, y, width, height } = renderRect
+
+    if (mirror === 1) {
+      ctx.scale(-1, 1)
+      ctx.translate(-x * 2 - width, 0)
+    }
+    if (mirror === 2) {
+      ctx.scale(1, -1)
+      ctx.translate(0, -y * 2 - height)
+    }
+    if (mirror === 3) {
+      ctx.scale(-1, -1)
+      ctx.translate(-x * 2 - width, -y * 2 - height)
+    }
   }
 
   /**
@@ -95,18 +123,22 @@ export default class ImageUI extends YccUI<YccUIImageProps> {
     const { worldAnchor: absoluteAnchor } = this.getWorldContainer()!
     const rect = this.props.rect // 物理像素
     const img = this.getRes()
+    // dpi兼容后的舞台坐标
+    const rectDpi = this.props.rect.dpi(this.getDpi())
+    // 图片的绘制区域
+    const renderRect = new YccMathRect(absoluteAnchor.x + rectDpi.x, absoluteAnchor.y + rectDpi.y, rectDpi.width, rectDpi.height)
 
     ctx.save()
 
-    /// /// 处理旋转参数：旋转的中心点为UI的锚点
+    // 处理旋转：旋转的中心点为UI的锚点
     ctx.translate(absoluteAnchor.x, absoluteAnchor.y)
     ctx.rotate(this.props.rotation * Math.PI / 180)
     ctx.translate(-absoluteAnchor.x, -absoluteAnchor.y)
 
-    // 图片的绘制区域
-    const rectDpi = this.props.rect.dpi(this.getDpi()) // dpi兼容后的舞台坐标
-    const renderRect = new YccMathRect(absoluteAnchor.x + rectDpi.x, absoluteAnchor.y + rectDpi.y, rectDpi.width, rectDpi.height)
+    // 处理镜像
+    this._processMirror(renderRect)
 
+    // 根据不同绘制模式，开始绘制
     if (this.props.fillMode === 'none') {
       ctx.drawImage(img, 0, 0, rect.width, rect.height, renderRect.x, renderRect.y, renderRect.width, renderRect.height)
     } else if (this.props.fillMode === 'scale') {
