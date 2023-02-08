@@ -189,12 +189,19 @@
       return new YccMathDot(this.x + dot.x, this.y + dot.y);
     }
     /**
+     * 点的减法
+     * @param dot
+     */
+    sub(dot) {
+      return new YccMathDot(this.x - dot.x, this.y - dot.y);
+    }
+    /**
      * 缩放比例
      * @param x x轴的缩放
      * @param y y轴的缩放
      */
-    divide(dot) {
-      return new YccMathDot(Math.floor(this.x / dot.x), Math.floor(this.y / dot.y));
+    divide(x, y = 1) {
+      return new YccMathDot(Math.floor(this.x / x), Math.floor(this.y / y));
     }
     /**
      * 适配dpi，去除dpi的影响，转换为物理像素
@@ -202,7 +209,7 @@
      * @returns
      */
     dpi(dpi = 1) {
-      return this.divide(new YccMathDot(1 / dpi, 1 / dpi));
+      return this.divide(1 / dpi, 1 / dpi);
     }
     /**
      * 将当前点绕另外一个点旋转一定度数
@@ -371,7 +378,6 @@
         return;
       const ctx = this.props.belongTo.ctx;
       const { worldCoordinates } = this.getWorldContainer();
-      console.log(worldCoordinates, 111);
       const start = worldCoordinates[0];
       ctx.beginPath();
       ctx.moveTo(start.x, start.y);
@@ -391,19 +397,21 @@
         return;
       }
       const dpi = this.getDpi();
-      const position = this.props.belongTo.position.dpi(dpi);
-      const coordinates = this.props.coordinates.map((item) => item.dpi(dpi));
       const offset = this.props.offset.dpi(dpi);
-      const anchor = this.props.anchor.dpi(dpi);
-      const start = coordinates[0].divide(this.props.scale).rotate(this.props.rotation, anchor).plus(offset).plus(anchor.plus(position));
+      const position = this.props.belongTo.position.dpi(dpi);
+      const anchor = this.props.anchor.dpi(dpi).plus(position);
+      const coordinates = this.props.coordinates.map(
+        (item) => {
+          return item.dpi(dpi).plus(anchor).divide(this.props.scale.x, this.props.scale.y).rotate(this.props.rotation, anchor).plus(offset);
+        }
+      );
+      const start = coordinates[0];
       let minx = start.x;
       let miny = start.y;
       let maxx = start.x;
       let maxy = start.y;
-      const worldCoordinates = [];
       for (let i = 0; i < coordinates.length; i++) {
-        const dot = coordinates[i].divide(this.props.scale).rotate(this.props.rotation, anchor).plus(offset).plus(anchor.plus(position));
-        worldCoordinates.push(dot);
+        const dot = coordinates[i];
         if (dot.x < minx)
           minx = dot.x;
         if (dot.x >= maxx)
@@ -414,13 +422,10 @@
           maxy = dot.y;
       }
       return {
-        dpiAdaptation: {
-          position,
-          offset,
-          anchor,
-          coordinates
-        },
-        worldCoordinates,
+        worldPosition: position,
+        offset,
+        worldAnchor: anchor,
+        worldCoordinates: coordinates,
         worldRect: new YccMathRect(minx, miny, maxx - minx, maxy - miny)
       };
     }
@@ -512,10 +517,28 @@
      * 绘制ui的背景，多用于调试
      * @returns
      */
-    renderBg(bgStyle = { color: "#ccc", withBorder: true, borderColor: "red", borderWidth: 4 }) {
+    renderBg(bgStyle2 = { color: "#ccc", withBorder: true, borderColor: "red", borderWidth: 4 }) {
       if (!this.isDrawable() || !this.props.show)
         return;
       const ctx = this.getContext();
+      ctx.save();
+      this.renderPath();
+      ctx.fillStyle = bgStyle2.color;
+      ctx.strokeStyle = bgStyle2.borderColor;
+      ctx.lineWidth = bgStyle2.borderWidth;
+      ctx.fill();
+      if (bgStyle2.withBorder)
+        ctx.stroke();
+      ctx.restore();
+    }
+    /**
+     * 绘制UI的锚点，多用于调试
+     */
+    renderAnchor() {
+      if (!this.isDrawable() || !this.props.show)
+        return;
+      const ctx = this.getContext();
+      const world = this.getWorldContainer();
       ctx.save();
       this.renderPath();
       ctx.fillStyle = bgStyle.color;
@@ -773,12 +796,137 @@
     }
   };
 
+  // src/tools/YccUtils.ts
+  var isFn = function(str) {
+    return typeof str === "function";
+  };
+
+  // src/tools/YccTicker.ts
+  var Frame = class {
+    constructor(ticker) {
+      this.createTime = Date.now();
+      this.deltaTime = ticker.deltaTime;
+      this.fps = parseInt(`${1e3 / this.deltaTime}`);
+      this.frameCount = ticker.frameAllCount;
+      this.isRendered = false;
+    }
+  };
+  var YccTicker = class {
+    constructor(yccInstance) {
+      this.yccInstance = yccInstance;
+      this.currentFrame = void 0;
+      this.startTime = Date.now();
+      this.lastFrameTime = this.startTime;
+      this.lastFrameTickerCount = 0;
+      this.deltaTime = 0;
+      this.deltaTimeExpect = 0;
+      this.deltaTimeRatio = 1;
+      this.frameListenerList = [];
+      this.defaultFrameRate = 60;
+      this.defaultDeltaTime = 1e3 / this.defaultFrameRate;
+      this.tickerSpace = 1;
+      this.frameAllCount = 0;
+      this.timerTickCount = 0;
+      this._timerId = 0;
+      this._isRunning = false;
+    }
+    /**
+       * 定时器开始
+       * @param [frameRate] 心跳频率，即帧率
+       * 可取值有[60,30,20,15]
+       */
+    start(frameRate) {
+      let timer = this.yccInstance.stage.stageCanvas.requestAnimationFrame ? this.yccInstance.stage.stageCanvas.requestAnimationFrame : requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame || window.oRequestAnimationFrame || window.msRequestAnimationFrame;
+      const self = this;
+      self.currentFrame = void 0;
+      self.timerTickCount = 0;
+      self.lastFrameTickerCount = 0;
+      frameRate = frameRate || self.defaultFrameRate;
+      self.tickerSpace = parseInt(`${60 / frameRate}`) || 1;
+      self.deltaTimeExpect = 1e3 / frameRate;
+      self.frameAllCount = 0;
+      self.startTime = Date.now();
+      if (self._isRunning)
+        return this;
+      timer || (timer = function(callback) {
+        return setTimeout(function() {
+          callback(Date.now());
+        }, 1e3 / 60);
+      });
+      self._timerId = timer(cb);
+      self._isRunning = true;
+      function cb(curTime) {
+        self.timerTickCount++;
+        if (self.timerTickCount - self.lastFrameTickerCount === self.tickerSpace) {
+          self.frameAllCount++;
+          self.deltaTime = curTime - self.lastFrameTime;
+          self.deltaTimeRatio = self.deltaTime / self.deltaTimeExpect;
+          self.lastFrameTime += self.deltaTime;
+          self.lastFrameTickerCount = self.timerTickCount;
+          self.currentFrame = new Frame(self);
+          self._broadcastFrameEvent(self.currentFrame);
+        }
+        self._timerId = timer(cb);
+      }
+      return this;
+    }
+    /**
+       * 停止心跳
+       */
+    stop() {
+      let stop = this.yccInstance.stage.stageCanvas.cancelAnimationFrame ? this.yccInstance.stage.stageCanvas.cancelAnimationFrame : cancelAnimationFrame || window.webkitCancelAnimationFrame || window.mozCancelAnimationFrame || window.oCancelAnimationFrame;
+      stop || (stop = function(id) {
+        clearTimeout(id);
+      });
+      stop(this._timerId);
+      this._isRunning = false;
+      this.currentFrame = void 0;
+    }
+    /**
+       * 给每帧添加自定义的监听函数
+       * @param listener
+       */
+    addFrameListener(listener) {
+      this.frameListenerList.push(listener);
+      return this;
+    }
+    /**
+       * 移除某个监听函数
+       * @param listener
+       */
+    removeFrameListener(listener) {
+      const index = this.frameListenerList.indexOf(listener);
+      if (index !== -1) {
+        this.frameListenerList.splice(index, 1);
+      }
+      return this;
+    }
+    /**
+       * 执行所有自定义的帧监听函数
+       */
+    _broadcastFrameEvent(frame) {
+      for (let i = 0; i < this.frameListenerList.length; i++) {
+        const listener = this.frameListenerList[i];
+        isFn(listener) && listener(frame);
+      }
+    }
+    // /**
+    //    * 执行所有图层的监听函数
+    //    */
+    // broadcastToLayer (frame: Frame) {
+    //   for (let i = 0; i < this.yccInstance.layerList.length; i++) {
+    //     const layer = this.yccInstance.layerList[i]
+    //     layer.show && layer.enableFrameEvent && layer.onFrameComing(frame)
+    //   }
+    // }
+  };
+
   // src/ui/ImageUI.ts
   var ImageUI = class extends YccUI {
     getDefaultProps() {
       const rect = new YccMathRect(0, 0, 60, 60);
       return __spreadProps(__spreadValues({}, getYccUICommonProps()), {
-        name: "",
+        resName: "",
         rect,
         fillMode: "none",
         mirror: 0,
@@ -805,7 +953,7 @@
     }
     getRes() {
       const ycc = this.getYcc();
-      return ycc.$resouces.resMap[this.props.name].element;
+      return ycc.$resouces.resMap[this.props.resName].element;
     }
     /**
      * 绘制函数
@@ -814,6 +962,7 @@
       if (!this.isDrawable() || !this.props.show)
         return;
       const ctx = this.getContext();
+      this.props.coordinates = this.props.rect.getCoordinates();
       const { worldRect } = this.getWorldContainer();
       const rect = this.props.rect;
       const { x, y, width, height } = worldRect;
@@ -824,7 +973,6 @@
       } else if (this.props.fillMode === "scale") {
         ctx.drawImage(img, 0, 0, img.width, img.height, x, y, width, height);
       } else if (this.props.fillMode === "auto") {
-        console.log(worldRect, img);
         ctx.drawImage(img, 0, 0, img.width, img.height, x, y, width, height);
       }
       ctx.restore();
@@ -832,14 +980,13 @@
   };
 
   // test/helloworld/src/app.ts
-  console.log(333);
   var App = class extends Ycc {
     created() {
       var _a2;
       (_a2 = document.getElementById("canvas")) == null ? void 0 : _a2.appendChild(this.stage.stageCanvas);
       new PolygonUI({
-        name: "\u81EA\u5B9A\u4E49UI",
-        // rotation: 20,
+        name: "TestPolygon",
+        anchor: new YccMathDot(200, 200),
         coordinates: [
           new YccMathDot(0, 0),
           new YccMathDot(200, 0),
@@ -855,14 +1002,22 @@
         }
       }).addToLayer(this.stage.defaultLayer);
       new ImageUI({
-        name: "test",
+        name: "TestImage",
+        resName: "test",
         fillMode: "auto",
         rect: new YccMathRect(0, 0, 30, 30)
       }).addToLayer(this.stage.defaultLayer);
+      new YccTicker(this).addFrameListener((frame) => {
+        this.render();
+      }).start(20);
       this.render();
     }
     render() {
       this.stage.clearStage();
+      const TestPolygon = this.stage.getElementByName("TestPolygon");
+      TestPolygon.props.rotation++;
+      const TestImage = this.stage.getElementByName("TestImage");
+      TestImage.props.rotation++;
       this.stage.renderAll();
     }
   };

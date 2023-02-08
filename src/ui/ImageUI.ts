@@ -5,14 +5,16 @@ import YccUI, { getYccUICommonProps, YccUICommonProps } from './YccUI'
 /**
  * Image属性，继承自公用属性
  */
-interface YccUIImageProps extends YccUICommonProps {
+export interface YccUIImageProps extends YccUICommonProps {
   /**
    * 图片资源的名称，对应`Loader`的资源名称
    */
-  name: string
+  resName: string
 
   /**
    * 容纳区
+   * 相对坐标，相对于anchor，其像素为物理像素
+   * 此属性是一个相对坐标，相对于锚点坐标
    */
   rect: YccMathRect
 
@@ -45,7 +47,7 @@ export default class ImageUI extends YccUI<YccUIImageProps> {
     const rect = new YccMathRect(0, 0, 60, 60)
     return {
       ...getYccUICommonProps(),
-      name: '',
+      resName: '',
       rect,
       fillMode: 'none',
       mirror: 0,
@@ -77,7 +79,7 @@ export default class ImageUI extends YccUI<YccUIImageProps> {
 
   getRes () {
     const ycc = this.getYcc()!
-    return ycc.$resouces.resMap[this.props.name].element as CanvasImageSource
+    return ycc.$resouces.resMap[this.props.resName].element as CanvasImageSource
   }
 
   /**
@@ -86,7 +88,8 @@ export default class ImageUI extends YccUI<YccUIImageProps> {
   render (): void {
     if (!this.isDrawable() || !this.props.show) return
     const ctx = this.getContext()!
-    // const ycc = this.getYcc()!
+    // 初始化位置
+    this.props.coordinates = this.props.rect.getCoordinates()
 
     // 物理坐标转舞台坐标
     const { worldRect } = this.getWorldContainer()!
@@ -101,7 +104,6 @@ export default class ImageUI extends YccUI<YccUIImageProps> {
     } else if (this.props.fillMode === 'scale') {
       ctx.drawImage(img, 0, 0, img.width as number, img.height as number, x, y, width, height)
     } else if (this.props.fillMode === 'auto') {
-      console.log(worldRect, img)
       ctx.drawImage(img, 0, 0, img.width as number, img.height as number, x, y, width, height)
     }
 

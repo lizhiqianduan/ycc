@@ -31,12 +31,20 @@ export class YccMathDot {
   }
 
   /**
+   * 点的减法
+   * @param dot
+   */
+  sub (dot: YccMathDot) {
+    return new YccMathDot(this.x - dot.x, this.y - dot.y)
+  }
+
+  /**
    * 缩放比例
    * @param x x轴的缩放
    * @param y y轴的缩放
    */
-  divide (dot: YccMathDot) {
-    return new YccMathDot(Math.floor(this.x / dot.x), Math.floor(this.y / dot.y))
+  divide (x: number, y = 1) {
+    return new YccMathDot(Math.floor(this.x / x), Math.floor(this.y / y))
   }
 
   /**
@@ -45,7 +53,7 @@ export class YccMathDot {
    * @returns
    */
   dpi (dpi: number = 1) {
-    return this.divide(new YccMathDot(1 / dpi, 1 / dpi))
+    return this.divide(1 / dpi, 1 / dpi)
   }
 
   /**

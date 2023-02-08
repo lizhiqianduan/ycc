@@ -198,7 +198,6 @@ export default abstract class YccUI<YccUIProps extends YccUICommonProps = YccUIC
     // 图层的位置
     const { worldCoordinates } = this.getWorldContainer()!
 
-    console.log(worldCoordinates, 111)
     // 旋转后的点
     const start = worldCoordinates[0]
     ctx.beginPath()
@@ -221,22 +220,22 @@ export default abstract class YccUI<YccUIProps extends YccUICommonProps = YccUIC
     const dpi = this.getDpi()
 
     // 物理坐标转舞台坐标
+    const offset = this.props.offset.dpi(dpi) // offset是个长度单位，不用换算坐标
     const position = this.props.belongTo.position.dpi(dpi)
-    const coordinates = this.props.coordinates.map(item => item.dpi(dpi))
-    const offset = this.props.offset.dpi(dpi)
-    const anchor = this.props.anchor.dpi(dpi)
+    const anchor = this.props.anchor.dpi(dpi).plus(position)
+    const coordinates = this.props.coordinates.map(
+      item => {
+        return item.dpi(dpi).plus(anchor)
+        // 缩放、旋转、平移
+          .divide(this.props.scale.x, this.props.scale.y).rotate(this.props.rotation, anchor).plus(offset)
+      }
+    )
 
     const start = coordinates[0]
-      .divide(this.props.scale).rotate(this.props.rotation, anchor).plus(offset)
-      .plus(anchor.plus(position)) // 缩放、旋转、平移之后，再加上图层的位移
     let minx = start.x; let miny = start.y; let maxx = start.x; let maxy = start.y
 
-    const worldCoordinates: YccMathDot[] = []
     for (let i = 0; i < coordinates.length; i++) {
       const dot = coordinates[i]
-        .divide(this.props.scale).rotate(this.props.rotation, anchor).plus(offset)
-        .plus(anchor.plus(position))// 缩放、旋转、平移之后，再加上图层的位移
-      worldCoordinates.push(dot)
       if (dot.x < minx) minx = dot.x
       if (dot.x >= maxx) maxx = dot.x
       if (dot.y < miny) miny = dot.y
@@ -244,13 +243,10 @@ export default abstract class YccUI<YccUIProps extends YccUICommonProps = YccUIC
     }
 
     return {
-      dpiAdaptation: {
-        position,
-        offset,
-        anchor,
-        coordinates
-      },
-      worldCoordinates,
+      worldPosition: position,
+      offset,
+      worldAnchor: anchor,
+      worldCoordinates: coordinates,
       worldRect: new YccMathRect(minx, miny, maxx - minx, maxy - miny)
     }
   }
@@ -360,6 +356,24 @@ export default abstract class YccUI<YccUIProps extends YccUICommonProps = YccUIC
   renderBg (bgStyle: BgStyle = { color: '#ccc', withBorder: true, borderColor: 'red', borderWidth: 4 }) {
     if (!this.isDrawable() || !this.props.show) return
     const ctx = this.getContext()!
+
+    ctx.save()
+    this.renderPath()
+    ctx.fillStyle = bgStyle.color
+    ctx.strokeStyle = bgStyle.borderColor
+    ctx.lineWidth = bgStyle.borderWidth
+    ctx.fill()
+    if (bgStyle.withBorder) ctx.stroke()
+    ctx.restore()
+  }
+
+  /**
+   * 绘制UI的锚点，多用于调试
+   */
+  renderAnchor () {
+    if (!this.isDrawable() || !this.props.show) return
+    const ctx = this.getContext()!
+    const world = this.getWorldContainer()
 
     ctx.save()
     this.renderPath()
