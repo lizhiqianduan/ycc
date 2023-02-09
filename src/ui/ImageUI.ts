@@ -42,6 +42,10 @@ export interface YccUIImageProps extends YccUICommonProps {
   mirror: 0 | 1 | 2 | 3
 }
 
+/**
+ * 图片UI
+ * 图片的尺寸会根据设备的dpi动态调整
+ */
 export default class ImageUI extends YccUI<YccUIImageProps> {
   getDefaultProps (): YccUIImageProps {
     const rect = new YccMathRect(0, 0, 60, 60)
@@ -116,24 +120,29 @@ export default class ImageUI extends YccUI<YccUIImageProps> {
   render (): void {
     if (!this.isDrawable() || !this.props.show) return
     const ctx = this.getContext()!
+    const dpi = this.getDpi()
     // 初始化位置
     this.props.coordinates = this.props.rect.getCoordinates()
 
-    // 物理坐标转舞台坐标
-    const { worldAnchor: absoluteAnchor } = this.getWorldContainer()!
-    const rect = this.props.rect // 物理像素
     const img = this.getRes()
-    // dpi兼容后的舞台坐标
-    const rectDpi = this.props.rect.dpi(this.getDpi())
-    // 图片的绘制区域
-    const renderRect = new YccMathRect(absoluteAnchor.x + rectDpi.x, absoluteAnchor.y + rectDpi.y, rectDpi.width, rectDpi.height)
+    // 绘制尺寸
+    const renderImgWidth = img.width as number
+    const renderImgHeight = img.height as number
+    // 物理尺寸
+    const imgWidth = renderImgWidth / dpi
+    const imgHeight = renderImgHeight / dpi
+
+    // 物理坐标转
+    const transformed = this.getWorldContainer(this.props.rect)!
+    const worldAnchor = transformed.worldAnchor // 锚点
+    const rect = this.props.rect // 物理区
+    const renderRect = transformed.render.renderRect! // 绘制区
 
     ctx.save()
-
     // 处理旋转：旋转的中心点为UI的锚点
-    ctx.translate(absoluteAnchor.x, absoluteAnchor.y)
+    ctx.translate(worldAnchor.x, worldAnchor.y)
     ctx.rotate(this.props.rotation * Math.PI / 180)
-    ctx.translate(-absoluteAnchor.x, -absoluteAnchor.y)
+    ctx.translate(-worldAnchor.x, -worldAnchor.y)
 
     // 处理镜像
     this._processMirror(renderRect)
@@ -147,25 +156,90 @@ export default class ImageUI extends YccUI<YccUIImageProps> {
       ctx.drawImage(img, 0, 0, img.width as number, img.height as number, renderRect.x, renderRect.y, renderRect.width, renderRect.height)
     } else if (this.props.fillMode === 'repeat') {
       const { x, y } = renderRect
-      const { width: imgWidth, height: imgHeight } = img
       // x,y方向能容纳的img个数
-      const wCount = Math.ceil(this.props.rect.width / (<number>imgWidth))
-      const hCount = Math.ceil(this.props.rect.height / (<number>imgHeight))
-      const dpi = this.getDpi()
+      const wCount = Math.ceil(rect.width / (imgWidth))
+      const hCount = Math.ceil(rect.height / (imgHeight))
 
       for (let i = 0; i < wCount; i++) {
         for (let j = 0; j < hCount; j++) {
-          let xRest = <number>img.width
-          let yRest = <number>img.height
-          if (i === wCount - 1) { xRest = this.props.rect.width - i * <number>imgWidth }
-          if (j === hCount - 1) { yRest = this.props.rect.height - j * <number>imgHeight }
+          let xRest = renderImgWidth
+          let yRest = renderImgHeight
+          if (i === wCount - 1) { xRest = renderRect.width - i * renderImgWidth }
+          if (j === hCount - 1) { yRest = renderRect.height - j * renderImgHeight }
 
           ctx.drawImage(img,
-            0, 0,
-            xRest, yRest,
-            x + <number>imgWidth * i * dpi, y + <number>imgHeight * j * dpi,
-            xRest * dpi, yRest * dpi)
+            0, 0, xRest, yRest,
+            x + renderImgWidth * i, y + renderImgHeight * j, xRest, yRest
+          )
         }
+      }
+    } else if (this.props.fillMode === 'scale9Grid') {
+      if (!this.props.scale9GridRect) return
+
+      const rect = this.props.rect
+      const centerRect = this.props.scale9GridRect
+      const imgWidth = img.width as number
+      const imgHeight = img.height as number
+      const grid: Array<{ src?: YccMathRect, dest?: YccMathRect }> = []
+      const dpi = this.getDpi()
+      let src, dest
+
+      // 第1块
+      grid[0] = {}
+      grid[0].src = new YccMathRect(0, 0, centerRect.x, centerRect.y)
+      grid[0].dest = new YccMathRect(rect.x, rect.y, centerRect.x, centerRect.y)
+
+      // 第3块
+      grid[2] = {}
+      grid[2].src = new YccMathRect(centerRect.x + centerRect.width, 0, imgWidth - centerRect.x - centerRect.width, centerRect.y)
+      grid[2].dest = new YccMathRect(rect.width - grid[2].src.width + rect.x, rect.y, grid[2].src.width, grid[2].src.height)
+
+      // 第7块
+      grid[6] = {}
+      grid[6].src = new YccMathRect(0, centerRect.y + centerRect.height, centerRect.x, imgHeight - centerRect.y - centerRect.height)
+      grid[6].dest = new YccMathRect(rect.x, rect.y + rect.height - grid[6].src.height, grid[6].src.width, grid[6].src.height)
+
+      // 第9块
+      grid[8] = {}
+      grid[8].src = new YccMathRect(centerRect.x + centerRect.width, centerRect.y + centerRect.height, imgWidth - centerRect.x - centerRect.width, imgHeight - centerRect.y - centerRect.height)
+      grid[8].dest = new YccMathRect(rect.width - grid[8].src.width + rect.x, rect.y + rect.height - grid[8].src.height, grid[8].src.width, grid[8].src.height)
+
+      // 第2块
+      grid[1] = {}
+      grid[1].src = new YccMathRect(centerRect.x, 0, centerRect.width, centerRect.y)
+      grid[1].dest = new YccMathRect(grid[0].dest.x + grid[0].dest.width, rect.y, rect.width - grid[0].dest.width - grid[2].dest.width, centerRect.y)
+
+      // 第4块
+      grid[3] = {}
+      grid[3].src = new YccMathRect(grid[0].src.x, centerRect.y, grid[0].src.width, centerRect.height)
+      grid[3].dest = new YccMathRect(grid[0].dest.x, grid[0].dest.y + grid[0].dest.height, grid[0].dest.width, rect.height - grid[0].dest.height - grid[6].dest.height)
+
+      // 第6块
+      grid[5] = {}
+      grid[5].src = new YccMathRect(grid[2].src.x, centerRect.y, grid[2].src.width, centerRect.height)
+      grid[5].dest = new YccMathRect(grid[2].dest.x, grid[3].dest.y, grid[2].dest.width, grid[3].dest.height)
+
+      // 第8块
+      grid[7] = {}
+      grid[7].src = new YccMathRect(grid[1].src.x, grid[6].src.y, centerRect.width, grid[6].src.height)
+      grid[7].dest = new YccMathRect(grid[1].dest.x, grid[6].dest.y, grid[1].dest.width, grid[6].dest.height)
+
+      // 第5块
+      grid[4] = {}
+      grid[4].src = new YccMathRect(centerRect.x, centerRect.y, centerRect.width, centerRect.height)
+      grid[4].dest = new YccMathRect(grid[1].dest.x, grid[5].dest.y, grid[1].dest.width, grid[5].dest.height)
+
+      console.log(grid)
+      for (let k = 0; k < grid.length; k++) {
+        if (!grid[k]) continue
+        src = grid[k].src!
+        dest = grid[k].dest!.moveBy()
+        ctx.drawImage(img,
+          // 源
+          src.x, src.y, src.width, src.height,
+          // 目标
+          dest.x * dpi, dest.y * dpi, dest.width * dpi, dest.height * dpi
+        )
       }
     }
 

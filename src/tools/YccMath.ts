@@ -134,6 +134,15 @@ export class YccMathRect {
   }
 
   /**
+   * 更新方块的位置，返回一个新的方块
+   * @param x
+   * @param y
+   */
+  moveBy (x: number = 0, y: number = 0) {
+    return new YccMathRect(this.x + x, this.y + y, this.width, this.height)
+  }
+
+  /**
    * 获取区域的顶点列表
    * @return {YccMathDot[]}
    */

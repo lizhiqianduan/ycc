@@ -203,29 +203,42 @@ export default abstract class YccUI<YccUIProps extends YccUICommonProps = YccUIC
 
   /**
     * 获取能容纳多边形的最小矩形框，返回的坐标已经经过dpi处理，是可直接绘制`stage坐标`
+    * @param {YccMathRect} rect 相对坐标，相对于`anchor`，可直接传递子ui的`props.rect`属性，用于子UI获取容纳区
     * @returns {worldCoordinates,worldRect}
     */
-  getWorldContainer () {
+  getWorldContainer (rect?: YccMathRect) {
     if (!this.props.belongTo) { console.log('该UI未加入图层'); return }
     // 图层的位置
     const dpi = this.getDpi()
 
-    // 物理坐标转舞台坐标
-    const position = this.props.belongTo.position.dpi(dpi)
-    const anchor = this.props.anchor.dpi(dpi).plus(position)
-    const coordinates = this.props.coordinates.map(
+    // dpi处理
+    const dpiPosition = this.props.belongTo.position.dpi(dpi)
+    const dpiAnchor = this.props.anchor.dpi(dpi)
+    const dpiCoordinates = this.props.coordinates.map(item => item.dpi(dpi))
+    const dpiRect = rect?.dpi(dpi)
+
+    // 坐标计算
+    const renderPosition = dpiPosition
+    const renderAnchor = dpiAnchor.plus(dpiPosition)
+    const renderCoordinates = dpiCoordinates.map(item => item.plus(renderAnchor))
+    const renderRect = dpiRect?.moveBy(renderAnchor.x, renderAnchor.y)
+
+    // 舞台坐标变换
+    const worldPosition = renderPosition
+    const worldAnchor = renderAnchor
+    const worldCoordinates = renderCoordinates.map(
       item => {
-        return item.dpi(dpi).plus(anchor)
+        return item
         // 旋转、平移
-          .rotate(this.props.rotation, anchor)
+          .rotate(this.props.rotation, worldAnchor)
       }
     )
 
-    const start = coordinates[0]
+    const start = worldCoordinates[0]
     let minx = start.x; let miny = start.y; let maxx = start.x; let maxy = start.y
 
-    for (let i = 0; i < coordinates.length; i++) {
-      const dot = coordinates[i]
+    for (let i = 0; i < worldCoordinates.length; i++) {
+      const dot = worldCoordinates[i]
       if (dot.x < minx) minx = dot.x
       if (dot.x >= maxx) maxx = dot.x
       if (dot.y < miny) miny = dot.y
@@ -233,10 +246,27 @@ export default abstract class YccUI<YccUIProps extends YccUICommonProps = YccUIC
     }
 
     return {
-      worldPosition: position,
-      worldAnchor: anchor,
-      worldCoordinates: coordinates,
-      worldRect: new YccMathRect(minx, miny, maxx - minx, maxy - miny)
+      // renderPosition与worldPosition一致，因为：Layer不存在变换
+      dpi: {
+        dpiAnchor,
+        dpiPosition,
+        dpiCoordinates,
+        dpiRect
+      },
+      render: {
+        renderPosition,
+        renderAnchor,
+        renderCoordinates,
+        renderRect
+      },
+      /**
+       * `worldRect`是不存在的，因为存在旋转/变换，旋转后的图形无法用`rect`表达，只能由`renderRect`推导出来
+       */
+      worldRect: null,
+      worldPosition,
+      worldAnchor,
+      worldCoordinates,
+      worldContainerRect: new YccMathRect(minx, miny, maxx - minx, maxy - miny)
     }
   }
 

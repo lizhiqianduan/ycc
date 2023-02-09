@@ -267,6 +267,14 @@
       this.height = Math.abs(this.height);
     }
     /**
+     * 更新方块的位置，返回一个新的方块
+     * @param x
+     * @param y
+     */
+    moveBy(x = 0, y = 0) {
+      return new YccMathRect(this.x + x, this.y + y, this.width, this.height);
+    }
+    /**
      * 获取区域的顶点列表
      * @return {YccMathDot[]}
      */
@@ -390,28 +398,37 @@
     }
     /**
       * 获取能容纳多边形的最小矩形框，返回的坐标已经经过dpi处理，是可直接绘制`stage坐标`
+      * @param {YccMathRect} rect 相对坐标，相对于`anchor`，可直接传递子ui的`props.rect`属性，用于子UI获取容纳区
       * @returns {worldCoordinates,worldRect}
       */
-    getWorldContainer() {
+    getWorldContainer(rect) {
       if (!this.props.belongTo) {
         console.log("\u8BE5UI\u672A\u52A0\u5165\u56FE\u5C42");
         return;
       }
       const dpi = this.getDpi();
-      const position = this.props.belongTo.position.dpi(dpi);
-      const anchor = this.props.anchor.dpi(dpi).plus(position);
-      const coordinates = this.props.coordinates.map(
+      const dpiPosition = this.props.belongTo.position.dpi(dpi);
+      const dpiAnchor = this.props.anchor.dpi(dpi);
+      const dpiCoordinates = this.props.coordinates.map((item) => item.dpi(dpi));
+      const dpiRect = rect == null ? void 0 : rect.dpi(dpi);
+      const renderPosition = dpiPosition;
+      const renderAnchor = dpiAnchor.plus(dpiPosition);
+      const renderCoordinates = dpiCoordinates.map((item) => item.plus(renderAnchor));
+      const renderRect = dpiRect == null ? void 0 : dpiRect.moveBy(renderAnchor.x, renderAnchor.y);
+      const worldPosition = renderPosition;
+      const worldAnchor = renderAnchor;
+      const worldCoordinates = renderCoordinates.map(
         (item) => {
-          return item.dpi(dpi).plus(anchor).rotate(this.props.rotation, anchor);
+          return item.rotate(this.props.rotation, worldAnchor);
         }
       );
-      const start = coordinates[0];
+      const start = worldCoordinates[0];
       let minx = start.x;
       let miny = start.y;
       let maxx = start.x;
       let maxy = start.y;
-      for (let i = 0; i < coordinates.length; i++) {
-        const dot = coordinates[i];
+      for (let i = 0; i < worldCoordinates.length; i++) {
+        const dot = worldCoordinates[i];
         if (dot.x < minx)
           minx = dot.x;
         if (dot.x >= maxx)
@@ -422,10 +439,27 @@
           maxy = dot.y;
       }
       return {
-        worldPosition: position,
-        worldAnchor: anchor,
-        worldCoordinates: coordinates,
-        worldRect: new YccMathRect(minx, miny, maxx - minx, maxy - miny)
+        // renderPosition与worldPosition一致，因为：Layer不存在变换
+        dpi: {
+          dpiAnchor,
+          dpiPosition,
+          dpiCoordinates,
+          dpiRect
+        },
+        render: {
+          renderPosition,
+          renderAnchor,
+          renderCoordinates,
+          renderRect
+        },
+        /**
+         * `worldRect`是不存在的，因为存在旋转/变换，旋转后的图形无法用`rect`表达，只能由`renderRect`推导出来
+         */
+        worldRect: null,
+        worldPosition,
+        worldAnchor,
+        worldCoordinates,
+        worldContainerRect: new YccMathRect(minx, miny, maxx - minx, maxy - miny)
       };
     }
     /**
@@ -999,16 +1033,21 @@
       if (!this.isDrawable() || !this.props.show)
         return;
       const ctx = this.getContext();
+      const dpi = this.getDpi();
       this.props.coordinates = this.props.rect.getCoordinates();
-      const { worldAnchor: absoluteAnchor } = this.getWorldContainer();
-      const rect = this.props.rect;
       const img = this.getRes();
-      const rectDpi = this.props.rect.dpi(this.getDpi());
-      const renderRect = new YccMathRect(absoluteAnchor.x + rectDpi.x, absoluteAnchor.y + rectDpi.y, rectDpi.width, rectDpi.height);
+      const renderImgWidth = img.width;
+      const renderImgHeight = img.height;
+      const imgWidth = renderImgWidth / dpi;
+      const imgHeight = renderImgHeight / dpi;
+      const transformed = this.getWorldContainer(this.props.rect);
+      const worldAnchor = transformed.worldAnchor;
+      const rect = this.props.rect;
+      const renderRect = transformed.render.renderRect;
       ctx.save();
-      ctx.translate(absoluteAnchor.x, absoluteAnchor.y);
+      ctx.translate(worldAnchor.x, worldAnchor.y);
       ctx.rotate(this.props.rotation * Math.PI / 180);
-      ctx.translate(-absoluteAnchor.x, -absoluteAnchor.y);
+      ctx.translate(-worldAnchor.x, -worldAnchor.y);
       this._processMirror(renderRect);
       if (this.props.fillMode === "none") {
         ctx.drawImage(img, 0, 0, rect.width, rect.height, renderRect.x, renderRect.y, renderRect.width, renderRect.height);
@@ -1018,19 +1057,17 @@
         ctx.drawImage(img, 0, 0, img.width, img.height, renderRect.x, renderRect.y, renderRect.width, renderRect.height);
       } else if (this.props.fillMode === "repeat") {
         const { x, y } = renderRect;
-        const { width: imgWidth, height: imgHeight } = img;
-        const wCount = Math.ceil(this.props.rect.width / imgWidth);
-        const hCount = Math.ceil(this.props.rect.height / imgHeight);
-        const dpi = this.getDpi();
+        const wCount = Math.ceil(rect.width / imgWidth);
+        const hCount = Math.ceil(rect.height / imgHeight);
         for (let i = 0; i < wCount; i++) {
           for (let j = 0; j < hCount; j++) {
-            let xRest = img.width;
-            let yRest = img.height;
+            let xRest = renderImgWidth;
+            let yRest = renderImgHeight;
             if (i === wCount - 1) {
-              xRest = this.props.rect.width - i * imgWidth;
+              xRest = renderRect.width - i * renderImgWidth;
             }
             if (j === hCount - 1) {
-              yRest = this.props.rect.height - j * imgHeight;
+              yRest = renderRect.height - j * renderImgHeight;
             }
             ctx.drawImage(
               img,
@@ -1038,12 +1075,69 @@
               0,
               xRest,
               yRest,
-              x + imgWidth * i * dpi,
-              y + imgHeight * j * dpi,
-              xRest * dpi,
-              yRest * dpi
+              x + renderImgWidth * i,
+              y + renderImgHeight * j,
+              xRest,
+              yRest
             );
           }
+        }
+      } else if (this.props.fillMode === "scale9Grid") {
+        if (!this.props.scale9GridRect)
+          return;
+        const rect2 = this.props.rect;
+        const centerRect = this.props.scale9GridRect;
+        const imgWidth2 = img.width;
+        const imgHeight2 = img.height;
+        const grid = [];
+        const dpi2 = this.getDpi();
+        let src, dest;
+        grid[0] = {};
+        grid[0].src = new YccMathRect(0, 0, centerRect.x, centerRect.y);
+        grid[0].dest = new YccMathRect(rect2.x, rect2.y, centerRect.x, centerRect.y);
+        grid[2] = {};
+        grid[2].src = new YccMathRect(centerRect.x + centerRect.width, 0, imgWidth2 - centerRect.x - centerRect.width, centerRect.y);
+        grid[2].dest = new YccMathRect(rect2.width - grid[2].src.width + rect2.x, rect2.y, grid[2].src.width, grid[2].src.height);
+        grid[6] = {};
+        grid[6].src = new YccMathRect(0, centerRect.y + centerRect.height, centerRect.x, imgHeight2 - centerRect.y - centerRect.height);
+        grid[6].dest = new YccMathRect(rect2.x, rect2.y + rect2.height - grid[6].src.height, grid[6].src.width, grid[6].src.height);
+        grid[8] = {};
+        grid[8].src = new YccMathRect(centerRect.x + centerRect.width, centerRect.y + centerRect.height, imgWidth2 - centerRect.x - centerRect.width, imgHeight2 - centerRect.y - centerRect.height);
+        grid[8].dest = new YccMathRect(rect2.width - grid[8].src.width + rect2.x, rect2.y + rect2.height - grid[8].src.height, grid[8].src.width, grid[8].src.height);
+        grid[1] = {};
+        grid[1].src = new YccMathRect(centerRect.x, 0, centerRect.width, centerRect.y);
+        grid[1].dest = new YccMathRect(grid[0].dest.x + grid[0].dest.width, rect2.y, rect2.width - grid[0].dest.width - grid[2].dest.width, centerRect.y);
+        grid[3] = {};
+        grid[3].src = new YccMathRect(grid[0].src.x, centerRect.y, grid[0].src.width, centerRect.height);
+        grid[3].dest = new YccMathRect(grid[0].dest.x, grid[0].dest.y + grid[0].dest.height, grid[0].dest.width, rect2.height - grid[0].dest.height - grid[6].dest.height);
+        grid[5] = {};
+        grid[5].src = new YccMathRect(grid[2].src.x, centerRect.y, grid[2].src.width, centerRect.height);
+        grid[5].dest = new YccMathRect(grid[2].dest.x, grid[3].dest.y, grid[2].dest.width, grid[3].dest.height);
+        grid[7] = {};
+        grid[7].src = new YccMathRect(grid[1].src.x, grid[6].src.y, centerRect.width, grid[6].src.height);
+        grid[7].dest = new YccMathRect(grid[1].dest.x, grid[6].dest.y, grid[1].dest.width, grid[6].dest.height);
+        grid[4] = {};
+        grid[4].src = new YccMathRect(centerRect.x, centerRect.y, centerRect.width, centerRect.height);
+        grid[4].dest = new YccMathRect(grid[1].dest.x, grid[5].dest.y, grid[1].dest.width, grid[5].dest.height);
+        console.log(grid);
+        for (let k = 0; k < grid.length; k++) {
+          if (!grid[k])
+            continue;
+          src = grid[k].src;
+          dest = grid[k].dest.moveBy();
+          ctx.drawImage(
+            img,
+            // 源
+            src.x,
+            src.y,
+            src.width,
+            src.height,
+            // 目标
+            dest.x * dpi2,
+            dest.y * dpi2,
+            dest.width * dpi2,
+            dest.height * dpi2
+          );
         }
       }
       ctx.restore();
@@ -1075,11 +1169,12 @@
       new ImageUI({
         name: "TestImage",
         anchor: new YccMathDot(50, 50),
-        rotation: 30,
-        mirror: 1,
+        // rotation: 30,
+        // mirror: 1,
         resName: "test",
         fillMode: "repeat",
-        rect: new YccMathRect(-10, -30, 300, 300)
+        scale9GridRect: new YccMathRect(10, 10, 80, 80),
+        rect: new YccMathRect(-10, -30, 350, 350)
       }).addToLayer(this.stage.defaultLayer);
       new YccTicker(this).addFrameListener((frame) => {
         this.render();

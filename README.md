@@ -44,7 +44,7 @@ npm install @datagetter.cn/ycc
 
 下面是一个最简单的Ycc示例，若运行成功将在舞台中心显示文字`Hello Ycc!`
 
-```javascript
+```ts
 // 新建舞台
 var canvas = document.createElement("canvas");
 canvas.width = 300;
@@ -73,11 +73,27 @@ ycc.layerManager.reRenderAllLayerToStage();
 
 1、UI在舞台的真实属性，只能先绘制后再获取。
 
-2、所有UI都必须继承多边形类Polygon，而Polygon类继承自基类Base（v0.0.2及其之前的版本全都继承自Base），必要时UI可以覆盖父类的方法。
+2、所有UI都必须继承`YccUI`，默认是个多边形，必要时UI可以覆盖父类的方法
 
-3、UI的x,y坐标表示UI的位置，但其值为相对坐标，相对于UI的父级，可以通过方法获取其绝对坐标。
+3、UI的锚点坐标`anchor`表示UI的位置，其值相对于图层
 
-4、UI的锚点坐标也是相对位置，同样也是相对于UI的父级。
+4、UI的容纳区坐标`coordinates`也是相对位置，其值相对于锚点
+
+#### 物理坐标、绘制坐标、世界坐标
+- 物理坐标：由外部传递给UI的坐标，其值基于画布的大小，包括`rect/anchor/coordinates/position`
+
+- 绘制坐标：经过`dpi`对物理坐标进行转换后形成的坐标，一般用于绘制
+
+- 世界坐标：经过坐标变换/旋转等过程之后，绘制到舞台`stage`后的各点的实际坐标
+
+> 注意：坐标运算只能在同类型的坐标间进行
+
+**为什么会有这些区别？**
+因为：
+
+1、不同设备的分辨率不同，但实际物理像素都是统一的
+
+2、UI的绘制过程存在一个转换过程，比如，UI的旋转，旋转之后的点坐标对于开发者来说是未知的
 
 #### 常用命令
 
