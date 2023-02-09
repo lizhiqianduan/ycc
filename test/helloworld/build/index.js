@@ -657,22 +657,29 @@
         coordinates: [
           new YccMathDot(0),
           new YccMathDot(0)
-        ]
+        ],
+        style: {
+          fontSize: 16
+        }
       });
     }
     /**
      * 绘制函数
      */
     render() {
-      var _a2, _b, _c, _d;
+      var _a2, _b, _c;
       if (!this.isDrawable() || !this.props.show)
         return;
       const ctx = this.getContext();
+      const dpi = this.getDpi();
+      const fontSize = (_a2 = this.props.style.fontSize) != null ? _a2 : 16;
       ctx.save();
-      ctx.fillStyle = (_b = (_a2 = this.props.style) == null ? void 0 : _a2.color) != null ? _b : this.props.fillStyle;
+      ctx.fillStyle = (_c = (_b = this.props.style) == null ? void 0 : _b.color) != null ? _c : this.props.fillStyle;
       ctx.textBaseline = "top";
-      ctx.font = `${((_d = (_c = this.props.style) == null ? void 0 : _c.fontSize) != null ? _d : 16) * this.props.belongTo.stage.stageInfo.dpi}px Arial`;
-      ctx.fillText(this.props.value, this.props.anchor.x, this.props.anchor.y);
+      ctx.font = `${fontSize * dpi}px Arial`;
+      this.props.coordinates = new YccMathRect(0, 0, ctx.measureText(this.props.value).width / dpi, fontSize).getCoordinates();
+      const transformed = this.getWorldContainer();
+      ctx.fillText(this.props.value, transformed.worldAnchor.x, transformed.worldAnchor.y);
       ctx.restore();
     }
   };
@@ -1134,13 +1141,11 @@
         grid[4] = {};
         grid[4].src = new YccMathRect(centerRect.x, centerRect.y, centerRect.width, centerRect.height);
         grid[4].dest = new YccMathRect(grid[1].dest.x, grid[5].dest.y, grid[1].dest.width, grid[5].dest.height);
-        console.log(grid);
         for (let k = 0; k < grid.length; k++) {
           if (!grid[k])
             continue;
           src = grid[k].src.scaleBy(dpi2, dpi2, true);
           dest = grid[k].dest.scaleBy(dpi2, dpi2, true);
-          console.log(src, dest);
           ctx.drawImage(
             img,
             // 源
@@ -1177,6 +1182,7 @@
       }).addToLayer(this.stage.defaultLayer);
       new TextUI({
         value: "sfsdfsdf",
+        anchor: new YccMathDot(200, 10),
         style: {
           fontSize: 16,
           color: "red"
@@ -1186,7 +1192,7 @@
         name: "TestImage",
         anchor: new YccMathDot(50, 50),
         // rotation: 30,
-        // mirror: 1,
+        mirror: 1,
         resName: "radius",
         fillMode: "scale9Grid",
         scale9GridRect: new YccMathRect(30, 30, 128 - 30 * 2, 128 - 30 * 2),

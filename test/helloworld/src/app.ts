@@ -29,6 +29,7 @@ export default class App extends Ycc {
     // 新建一个文本
     new TextUI({
       value: 'sfsdfsdf',
+      anchor: new YccMathDot(200, 10),
       style: {
         fontSize: 16,
         color: 'red'
@@ -39,7 +40,7 @@ export default class App extends Ycc {
       name: 'TestImage',
       anchor: new YccMathDot(50, 50),
       // rotation: 30,
-      // mirror: 1,
+      mirror: 1,
       resName: 'radius',
       fillMode: 'scale9Grid',
       scale9GridRect: new YccMathRect(30, 30, 128 - 30 * 2, 128 - 30 * 2),

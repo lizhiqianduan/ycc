@@ -226,12 +226,12 @@ export default class ImageUI extends YccUI<YccUIImageProps> {
       grid[4].src = new YccMathRect(centerRect.x, centerRect.y, centerRect.width, centerRect.height)
       grid[4].dest = new YccMathRect(grid[1].dest.x, grid[5].dest.y, grid[1].dest.width, grid[5].dest.height)
 
-      console.log(grid)
+      // console.log(grid)
       for (let k = 0; k < grid.length; k++) {
         if (!grid[k]) continue
         src = grid[k].src!.scaleBy(dpi, dpi, true)
         dest = grid[k].dest!.scaleBy(dpi, dpi, true)
-        console.log(src, dest)
+        // console.log(src, dest)
         ctx.drawImage(img,
           // 源
           src.x, src.y, src.width, src.height,
