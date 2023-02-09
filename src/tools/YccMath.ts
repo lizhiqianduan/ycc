@@ -143,6 +143,25 @@ export class YccMathRect {
   }
 
   /**
+   * 更新方块的尺寸，返回一个新的方块
+   * @param x
+   * @param y
+   */
+  sizeBy (x: number = 0, y: number = 0) {
+    return new YccMathRect(this.x, this.y, this.width + x, this.height + y)
+  }
+
+  /**
+   * 缩放方块的尺寸，返回一个新的方块
+   * @param x
+   * @param y
+   * @returns
+   */
+  scaleBy (x: number = 1, y: number = 1, withPos?: boolean) {
+    return new YccMathRect(withPos ? this.x * x : this.x, withPos ? this.y * y : this.y, this.width * x, this.height * y)
+  }
+
+  /**
    * 获取区域的顶点列表
    * @return {YccMathDot[]}
    */

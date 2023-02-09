@@ -23,11 +23,10 @@ export interface YccUIImageProps extends YccUICommonProps {
    *     <br> none       -- 无填充方式。左上角对齐，超出隐藏，不修改rect大小。
    *     <br> repeat     -- 重复。左上角对齐，重复平铺图片，不修改rect大小，超出隐藏。
    *     <br> scale       -- 缩放。左上角对齐，缩放至整个rect区域，不修改rect大小。
-   *     <br> scaleRepeat   -- 先缩放再重复。左上角对齐，缩放至某个rect区域，再重复填充整个rect区域，不修改rect大小。
    *     <br> auto       -- 自动。左上角对齐，rect大小自动适配图片。若图片超出rect，会动态修改rect大小。
    *     <br> scale9Grid   -- 9宫格模式填充。左上角对齐，中间区域将拉伸，不允许图片超出rect区域大小，不会修改rect大小。
    */
-  fillMode: 'none' | 'repeat' | 'scale' | 'scaleRepeat' | 'auto' | 'scale9Grid'
+  fillMode: 'none' | 'repeat' | 'scale' | 'auto' | 'scale9Grid'
   /**
    * 9宫格相对于res图片的中间区域，当且仅当fillMode为scale9Grid有效
    */
@@ -178,8 +177,6 @@ export default class ImageUI extends YccUI<YccUIImageProps> {
 
       const rect = this.props.rect
       const centerRect = this.props.scale9GridRect
-      const imgWidth = img.width as number
-      const imgHeight = img.height as number
       const grid: Array<{ src?: YccMathRect, dest?: YccMathRect }> = []
       const dpi = this.getDpi()
       let src, dest
@@ -232,13 +229,14 @@ export default class ImageUI extends YccUI<YccUIImageProps> {
       console.log(grid)
       for (let k = 0; k < grid.length; k++) {
         if (!grid[k]) continue
-        src = grid[k].src!
-        dest = grid[k].dest!.moveBy()
+        src = grid[k].src!.scaleBy(dpi, dpi, true)
+        dest = grid[k].dest!.scaleBy(dpi, dpi, true)
+        console.log(src, dest)
         ctx.drawImage(img,
           // 源
           src.x, src.y, src.width, src.height,
           // 目标
-          dest.x * dpi, dest.y * dpi, dest.width * dpi, dest.height * dpi
+          dest.x + worldAnchor.x, dest.y + worldAnchor.y, dest.width, dest.height
         )
       }
     }

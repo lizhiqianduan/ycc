@@ -20,9 +20,9 @@ const resources = [
     crossOrigin: '*'
   } as Resource,
   {
-    name: 'test2',
+    name: 'radius',
     type: 'image',
-    url: 'https://smartedu.jnei.cn/upload/files/upload/ce155375-3dc3-479e-b4d4-8690cc906d40_WechatIMG15%402x.a69e9004.png',
+    url: 'https://bpic.588ku.com/element_origin_min_pic/01/01/71/9556f3fa9fc2b12.jpg',
     crossOrigin: '*'
   } as Resource
 ]

@@ -40,10 +40,10 @@ export default class App extends Ycc {
       anchor: new YccMathDot(50, 50),
       // rotation: 30,
       // mirror: 1,
-      resName: 'test',
-      fillMode: 'repeat',
-      scale9GridRect: new YccMathRect(10, 10, 80, 80),
-      rect: new YccMathRect(-10, -30, 350, 350)
+      resName: 'radius',
+      fillMode: 'scale9Grid',
+      scale9GridRect: new YccMathRect(30, 30, 128 - 30 * 2, 128 - 30 * 2),
+      rect: new YccMathRect(-10, -30, 180, 180)
     }).addToLayer(this.stage.defaultLayer)
 
     // 加入定时器

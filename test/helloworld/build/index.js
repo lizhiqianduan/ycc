@@ -275,6 +275,23 @@
       return new YccMathRect(this.x + x, this.y + y, this.width, this.height);
     }
     /**
+     * 更新方块的尺寸，返回一个新的方块
+     * @param x
+     * @param y
+     */
+    sizeBy(x = 0, y = 0) {
+      return new YccMathRect(this.x, this.y, this.width + x, this.height + y);
+    }
+    /**
+     * 缩放方块的尺寸，返回一个新的方块
+     * @param x
+     * @param y
+     * @returns
+     */
+    scaleBy(x = 1, y = 1, withPos) {
+      return new YccMathRect(withPos ? this.x * x : this.x, withPos ? this.y * y : this.y, this.width * x, this.height * y);
+    }
+    /**
      * 获取区域的顶点列表
      * @return {YccMathDot[]}
      */
@@ -1087,8 +1104,6 @@
           return;
         const rect2 = this.props.rect;
         const centerRect = this.props.scale9GridRect;
-        const imgWidth2 = img.width;
-        const imgHeight2 = img.height;
         const grid = [];
         const dpi2 = this.getDpi();
         let src, dest;
@@ -1096,13 +1111,13 @@
         grid[0].src = new YccMathRect(0, 0, centerRect.x, centerRect.y);
         grid[0].dest = new YccMathRect(rect2.x, rect2.y, centerRect.x, centerRect.y);
         grid[2] = {};
-        grid[2].src = new YccMathRect(centerRect.x + centerRect.width, 0, imgWidth2 - centerRect.x - centerRect.width, centerRect.y);
+        grid[2].src = new YccMathRect(centerRect.x + centerRect.width, 0, imgWidth - centerRect.x - centerRect.width, centerRect.y);
         grid[2].dest = new YccMathRect(rect2.width - grid[2].src.width + rect2.x, rect2.y, grid[2].src.width, grid[2].src.height);
         grid[6] = {};
-        grid[6].src = new YccMathRect(0, centerRect.y + centerRect.height, centerRect.x, imgHeight2 - centerRect.y - centerRect.height);
+        grid[6].src = new YccMathRect(0, centerRect.y + centerRect.height, centerRect.x, imgHeight - centerRect.y - centerRect.height);
         grid[6].dest = new YccMathRect(rect2.x, rect2.y + rect2.height - grid[6].src.height, grid[6].src.width, grid[6].src.height);
         grid[8] = {};
-        grid[8].src = new YccMathRect(centerRect.x + centerRect.width, centerRect.y + centerRect.height, imgWidth2 - centerRect.x - centerRect.width, imgHeight2 - centerRect.y - centerRect.height);
+        grid[8].src = new YccMathRect(centerRect.x + centerRect.width, centerRect.y + centerRect.height, imgWidth - centerRect.x - centerRect.width, imgHeight - centerRect.y - centerRect.height);
         grid[8].dest = new YccMathRect(rect2.width - grid[8].src.width + rect2.x, rect2.y + rect2.height - grid[8].src.height, grid[8].src.width, grid[8].src.height);
         grid[1] = {};
         grid[1].src = new YccMathRect(centerRect.x, 0, centerRect.width, centerRect.y);
@@ -1123,8 +1138,9 @@
         for (let k = 0; k < grid.length; k++) {
           if (!grid[k])
             continue;
-          src = grid[k].src;
-          dest = grid[k].dest.moveBy();
+          src = grid[k].src.scaleBy(dpi2, dpi2, true);
+          dest = grid[k].dest.scaleBy(dpi2, dpi2, true);
+          console.log(src, dest);
           ctx.drawImage(
             img,
             // 源
@@ -1133,10 +1149,10 @@
             src.width,
             src.height,
             // 目标
-            dest.x * dpi2,
-            dest.y * dpi2,
-            dest.width * dpi2,
-            dest.height * dpi2
+            dest.x + worldAnchor.x,
+            dest.y + worldAnchor.y,
+            dest.width,
+            dest.height
           );
         }
       }
@@ -1171,10 +1187,10 @@
         anchor: new YccMathDot(50, 50),
         // rotation: 30,
         // mirror: 1,
-        resName: "test",
-        fillMode: "repeat",
-        scale9GridRect: new YccMathRect(10, 10, 80, 80),
-        rect: new YccMathRect(-10, -30, 350, 350)
+        resName: "radius",
+        fillMode: "scale9Grid",
+        scale9GridRect: new YccMathRect(30, 30, 128 - 30 * 2, 128 - 30 * 2),
+        rect: new YccMathRect(-10, -30, 180, 180)
       }).addToLayer(this.stage.defaultLayer);
       new YccTicker(this).addFrameListener((frame) => {
         this.render();
@@ -1201,9 +1217,9 @@
       crossOrigin: "*"
     },
     {
-      name: "test2",
+      name: "radius",
       type: "image",
-      url: "https://smartedu.jnei.cn/upload/files/upload/ce155375-3dc3-479e-b4d4-8690cc906d40_WechatIMG15%402x.a69e9004.png",
+      url: "https://bpic.588ku.com/element_origin_min_pic/01/01/71/9556f3fa9fc2b12.jpg",
       crossOrigin: "*"
     }
   ];
