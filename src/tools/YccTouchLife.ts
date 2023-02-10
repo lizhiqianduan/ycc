@@ -1,3 +1,4 @@
+import { YccMathVector } from './YccMath'
 
 export type Mutable<T> = {
   -readonly [K in keyof T]: T[K]
@@ -6,7 +7,7 @@ export type Mutable<T> = {
 /**
  * 系统默认的`Touch`事件全部为只读属性，不方便追踪
  */
-interface YccTouchEvent {
+export interface YccTouchEvent {
   /**
    * Touch事件关联的lifeId
    */
@@ -77,8 +78,11 @@ export class TouchLife {
    * @type {YccTouchEvent}
    */
   moveTouchEventList: YccTouchEvent[]
-  endTime: any
-  startTime: any
+
+  /**
+   * 存活时间
+   */
+  lifeTime = 0
 
   constructor (option?: Partial<TouchLife>) {
     this.id = TouchLife.cacheId++
@@ -90,6 +94,18 @@ export class TouchLife {
     this.moveTouchEventList = option?.moveTouchEventList ?? []
   }
 
+  /**
+   * 获取生命周期开始和结束时的距离
+   */
+  getDistance () {
+    if (this.endTouchEvent && this.startTouchEvent) {
+      return new YccMathVector(this.endTouchEvent?.triggerTouch.pageX - this.startTouchEvent?.triggerTouch.pageX,
+        this.endTouchEvent?.triggerTouch.pageY - this.startTouchEvent?.triggerTouch.pageY).getLength()
+    } else {
+      return 0
+    }
+  }
+
   addStart (ev: YccTouchEvent) {
     ev.lifeId = this.id
     this.startTouchEvent = ev
@@ -99,6 +115,7 @@ export class TouchLife {
   addEnd (ev: YccTouchEvent) {
     ev.lifeId = this.id
     this.endTouchEvent = ev
+    this.lifeTime = ev.triggerTime - this.startTouchEvent!.triggerTime
     return this
   }
 
@@ -248,7 +265,7 @@ export default class TouchLifeTracer {
       type: 'touchstart'
     }))
     self.currentLifeList.push(life)
-    console.log('touchstart', life)
+    // console.log('touchstart', life)
     if (self.onlifestart) self.onlifestart(life)
   }
 
@@ -271,12 +288,11 @@ export default class TouchLifeTracer {
   touchend (e: TouchEvent) {
     const self = this
     if (e.preventDefault) e.preventDefault()
-    // self.syncTouches(e)
-    const touch = e.changedTouches[0]
+    const touch = syncTouches(e.changedTouches)[0]
     const life = self.findCurrentLifeByTouchID(touch.identifier)!
     life.addEnd({
       triggerTime: Date.now(),
-      triggerTouch: { ...touch },
+      triggerTouch: touch,
       type: 'touchend'
     })
     self.deleteCurrentLifeByTouchID(touch.identifier)

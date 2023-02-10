@@ -6,9 +6,52 @@
  * @requires TouchLifeTracer
  */
 
-import { YccMathVector } from './YccMath'
-import TouchLifeTracer, { TouchLife } from './YccTouchLife'
+import { YccMathDot, YccMathVector } from './YccMath'
+import TouchLifeTracer, { TouchLife, YccTouchEvent } from './YccTouchLife'
 import { isMobile, isNum } from './YccUtils'
+
+/**
+ * 手势触发时的事件
+ */
+interface GestureEvent<DataType = any> {
+  /**
+   * 事件类型
+   */
+  type: 'tap' | 'dragstart' | 'dragging' | 'dragend' | 'longtap' | 'multistart' | 'multichange' | 'multiend' | 'zoom' | 'rotate' | 'log' | 'swipe' | 'doubletap'
+
+  /**
+   * 触发事件的触摸点，多点触控时，此值为一个数组
+   */
+  triggerTouch: YccTouchEvent[]
+
+  /**
+   * 事件所携带的数据，根据`DataType`推导，默认为any
+   */
+  data: DataType
+}
+
+interface TapData {
+  position: YccMathDot
+}
+
+interface DragStartData {
+  position: YccMathDot
+}
+
+type LongTapData = TapData
+type DragEndData = TapData
+type DoubleTapData = TapData
+
+interface DraggingData {
+  position: YccMathDot
+}
+
+interface SwipeData {
+  /**
+   * swipe的方向
+   */
+  dir: string
+}
 
 /**
    *
@@ -71,7 +114,7 @@ export default class YccGesture {
      * @param type
      * @param data
      */
-  triggerListener (type: string, data: any, data2?: any) {
+  triggerListener <DataType=any>(type: GestureEvent['type'], data: DataType, data2?: any) {
     console.log(type, data, data2)
   }
 
@@ -145,11 +188,6 @@ export default class YccGesture {
    * @private
    */
   getZoomRateAndRotateAngle (preLife: TouchLife, curLife: TouchLife) {
-    // this.triggerListener('log', 'preLife')
-    // this.triggerListener('log', preLife)
-    // this.triggerListener('log', 'curLife')
-    // this.triggerListener('log', curLife)
-
     const x0 = preLife.startTouchEvent!.triggerTouch.pageX
     const y0 = preLife.startTouchEvent!.triggerTouch.pageY
     const x1 = curLife.startTouchEvent!.triggerTouch.pageX
@@ -181,6 +219,14 @@ export default class YccGesture {
   }
 
   /**
+   * 是否处于多点触控中
+   */
+  isMutilTouching () {
+    if (this.touchLifeTracer) { return this.touchLifeTracer.currentLifeList.length >= 2 }
+    return false
+  }
+
+  /**
    * 初始化移动端的手势
    * @private
    */
@@ -197,11 +243,15 @@ export default class YccGesture {
     }
 
     tracer.onlifestart = function (life) {
-      self.triggerListener('tap', self._createEventData(life.startTouchEvent!, 'tap'))
-      // self.triggerListener('log', 'tap triggered')
+      // 单击事件
+      self.triggerListener<TapData>('tap', {
+        position: new YccMathDot(life.startTouchEvent!.triggerTouch.pageX, life.startTouchEvent!.triggerTouch.pageY)
+      })
 
       // 触发拖拽开始事件
-      self.triggerListener('dragstart', self._createEventData(life.startTouchEvent!, 'dragstart'))
+      self.triggerListener<DragStartData>('dragstart', {
+        position: new YccMathDot(life.startTouchEvent!.triggerTouch.pageX, life.startTouchEvent!.triggerTouch.pageY)
+      })
 
       // 多个触摸点的情况
       if (tracer.currentLifeList.length > 1) {
@@ -226,13 +276,18 @@ export default class YccGesture {
       prevent.swipe = false
       // 长按事件
       self._longTapTimeout = setTimeout(function () {
-        self.triggerListener('longtap', self._createEventData(life.startTouchEvent!, 'longtap'))
+        self.triggerListener<LongTapData>('longtap', {
+          position: new YccMathDot(life.startTouchEvent!.triggerTouch.pageX, life.startTouchEvent!.triggerTouch.pageY)
+        })
       }, 750)
     }
+
     tracer.onlifechange = function (life) {
     // 只要存在移动的接触点，就触发dragging事件
       life.moveTouchEventList.forEach(function (moveEvent) {
-        self.triggerListener('dragging', self._createEventData(moveEvent, 'dragging'))
+        self.triggerListener<DraggingData>('dragging', {
+          position: new YccMathDot(moveEvent.triggerTouch.pageX, moveEvent.triggerTouch.pageY)
+        })
       })
 
       if (tracer.currentLifeList.length > 1) {
@@ -268,16 +323,21 @@ export default class YccGesture {
         self.ismutiltouching = false
         const firstMove = life.startTouchEvent!.triggerTouch
         const lastMove = Array.prototype.slice.call(life.moveTouchEventList, -1)[0]
-        // 如果触摸点按下期间存在移动行为，且移动距离大于10，则认为该操作不是tap、longtap
+
+        // 如果触摸点按下期间存在移动行为，且移动距离大于10，则认为该操作不是longtap
         if (Math.abs(lastMove.pageX - firstMove.pageX) > 10 || Math.abs(lastMove.pageY - firstMove.pageY) > 10) {
-          prevent.tap = true
           clearTimeout(self._longTapTimeout)
         }
       }
     }
+
     tracer.onlifeend = function (life) {
-      self.triggerListener('dragend', self._createEventData(life.endTouchEvent!.triggerTouch, 'dragend'))
+      // 触发事件
+      self.triggerListener<DragEndData>('dragend', {
+        position: new YccMathDot(life.endTouchEvent?.triggerTouch.pageX, life.endTouchEvent?.triggerTouch.pageY)
+      })
       self.ismutiltouching = true
+      console.log('lifeend', life)
 
       // 若某个触摸结束，当前触摸点个数为1，说明之前的操作为多点触控。这里发送多点触控结束事件
       if (tracer.currentLifeList.length === 1) {
@@ -285,40 +345,46 @@ export default class YccGesture {
         self.triggerListener('multiend', preLife, curLife); return
       }
 
+      // 结束时，没有存活的触摸点
       if (tracer.currentLifeList.length === 0) {
-        self.ismutiltouching = false
+        // 取消长按事件，长按时，肯定至少有一个触摸点
+        clearTimeout(self._longTapTimeout)
 
-        // 开始和结束时间在300ms内，认为是tap事件
-        if (!prevent.tap && life.endTime - life.startTime < 300) {
-        // 取消长按事件
-          clearTimeout(self._longTapTimeout)
+        if (life.getDistance() > 10) {
+          // 大于300ms，并且大于10px，什么也不触发
+          if (life.lifeTime > 300) {
+            return this
+          } else {
+          // 小于300ms，并且大于10px，需判断swipe事件
 
-          // 两次点击在300ms内，并且两次点击的范围在10px内，则认为是doubletap事件
-          if (preLife && life.endTime - preLife.endTime < 300 && Math.abs(preLife.endTouchEvent!.triggerTouch.pageX - life.endTouchEvent!.triggerTouch.pageX) < 10 && Math.abs(preLife.endTouchEvent!.triggerTouch.pageY - life.endTouchEvent!.triggerTouch.pageY) < 10) {
-            self.triggerListener('doubletap', self._createEventData(life.endTouchEvent!.triggerTouch, 'doubletap'))
-            self.triggerListener('log', 'doubletap triggered')
-            preLife = null
+            const firstMove = life.startTouchEvent!.triggerTouch
+            const lastMove = life.endTouchEvent!.triggerTouch
+            if (Math.abs(lastMove.pageX - firstMove.pageX) > 30 || Math.abs(lastMove.pageY - firstMove.pageY) > 30) {
+              const dir = self._getSwipeDirection(firstMove.pageX, firstMove.pageY, lastMove.pageX, lastMove.pageY)
+              // 触发swipe
+              self.triggerListener<SwipeData>('swipe', {
+                dir
+              })
+            }
             return this
           }
-          preLife = life
-          return this
-        }
+        } else {
+          // 距离小于10px，并且时间在300ms内
+          if (life.lifeTime < 300) {
+            /// ///// 开始和结束时间在300ms内，并且移动距离在10px以内，认为是tap事件
+            // 此处判断doubletap事件
 
-        // 如果触摸点按下期间存在移动行为，且移动范围大于30px，触摸时间在200ms内，则认为该操作是swipe
-        if (!prevent.swipe && life.endTime - life.startTime < 300) {
-          const firstMove = life.startTouchEvent!.triggerTouch
-          const lastMove = Array.prototype.slice.call(life.moveTouchEventList, -1)[0]
-          if (Math.abs(lastMove.pageX - firstMove.pageX) > 30 || Math.abs(lastMove.pageY - firstMove.pageY) > 30) {
-            const dir = self._getSwipeDirection(firstMove.pageX, firstMove.pageY, lastMove.pageX, lastMove.pageY)
-            const type = 'swipe' + dir
-            self.triggerListener('log', type)
-            // 触发swipeXXX
-            self.triggerListener(type, self._createEventData({ ...life.endTouchEvent!, dir }, type))
-            // 触发swipe
-            self.triggerListener('swipe', self._createEventData({ ...life.endTouchEvent!, dir }, 'swipe'))
-            console.log('swipe', type)
+            // 两次点击在300ms内，并且两次点击的范围在10px内，则认为是doubletap事件
+            if (preLife && life.endTouchEvent!.triggerTime - preLife.endTouchEvent!.triggerTime < 300 && Math.abs(preLife.endTouchEvent!.triggerTouch.pageX - life.endTouchEvent!.triggerTouch.pageX) < 10 && Math.abs(preLife.endTouchEvent!.triggerTouch.pageY - life.endTouchEvent!.triggerTouch.pageY) < 10) {
+              self.triggerListener<DoubleTapData>('doubletap', {
+                position: new YccMathDot(life.endTouchEvent!.triggerTouch.pageX, life.endTouchEvent!.triggerTouch.pageY)
+              })
+              preLife = null
+              return this
+            }
+            preLife = life
+            return this
           }
-          return this
         }
       }
     }

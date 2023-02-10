@@ -1284,11 +1284,29 @@
   }
   var _TouchLife = class {
     constructor(option) {
+      /**
+       * 存活时间
+       */
+      this.lifeTime = 0;
       var _a2, _b, _c;
       this.id = _TouchLife.cacheId++;
       this.startTouchEvent = (_a2 = option == null ? void 0 : option.startTouchEvent) != null ? _a2 : null;
       this.endTouchEvent = (_b = option == null ? void 0 : option.endTouchEvent) != null ? _b : null;
       this.moveTouchEventList = (_c = option == null ? void 0 : option.moveTouchEventList) != null ? _c : [];
+    }
+    /**
+     * 获取生命周期开始和结束时的距离
+     */
+    getDistance() {
+      var _a2, _b, _c, _d;
+      if (this.endTouchEvent && this.startTouchEvent) {
+        return new YccMathVector(
+          ((_a2 = this.endTouchEvent) == null ? void 0 : _a2.triggerTouch.pageX) - ((_b = this.startTouchEvent) == null ? void 0 : _b.triggerTouch.pageX),
+          ((_c = this.endTouchEvent) == null ? void 0 : _c.triggerTouch.pageY) - ((_d = this.startTouchEvent) == null ? void 0 : _d.triggerTouch.pageY)
+        ).getLength();
+      } else {
+        return 0;
+      }
     }
     addStart(ev) {
       ev.lifeId = this.id;
@@ -1298,6 +1316,7 @@
     addEnd(ev) {
       ev.lifeId = this.id;
       this.endTouchEvent = ev;
+      this.lifeTime = ev.triggerTime - this.startTouchEvent.triggerTime;
       return this;
     }
     addMove(ev) {
@@ -1396,7 +1415,6 @@
         type: "touchstart"
       }));
       self.currentLifeList.push(life);
-      console.log("touchstart", life);
       if (self.onlifestart)
         self.onlifestart(life);
     }
@@ -1421,11 +1439,11 @@
       const self = this;
       if (e.preventDefault)
         e.preventDefault();
-      const touch = e.changedTouches[0];
+      const touch = syncTouches(e.changedTouches)[0];
       const life = self.findCurrentLifeByTouchID(touch.identifier);
       life.addEnd({
         triggerTime: Date.now(),
-        triggerTouch: __spreadValues({}, touch),
+        triggerTouch: touch,
         type: "touchend"
       });
       self.deleteCurrentLifeByTouchID(touch.identifier);
@@ -1550,6 +1568,15 @@
       return Math.abs(x1 - x2) >= Math.abs(y1 - y2) ? x1 - x2 > 0 ? "left" : "right" : y1 - y2 > 0 ? "up" : "down";
     }
     /**
+     * 是否处于多点触控中
+     */
+    isMutilTouching() {
+      if (this.touchLifeTracer) {
+        return this.touchLifeTracer.currentLifeList.length >= 2;
+      }
+      return false;
+    }
+    /**
      * 初始化移动端的手势
      * @private
      */
@@ -1563,8 +1590,12 @@
         swipe: false
       };
       tracer.onlifestart = function(life) {
-        self.triggerListener("tap", self._createEventData(life.startTouchEvent, "tap"));
-        self.triggerListener("dragstart", self._createEventData(life.startTouchEvent, "dragstart"));
+        self.triggerListener("tap", {
+          position: new YccMathDot(life.startTouchEvent.triggerTouch.pageX, life.startTouchEvent.triggerTouch.pageY)
+        });
+        self.triggerListener("dragstart", {
+          position: new YccMathDot(life.startTouchEvent.triggerTouch.pageX, life.startTouchEvent.triggerTouch.pageY)
+        });
         if (tracer.currentLifeList.length > 1) {
           self.ismutiltouching = true;
           if (!self.option.useMulti)
@@ -1581,12 +1612,16 @@
         prevent.tap = false;
         prevent.swipe = false;
         self._longTapTimeout = setTimeout(function() {
-          self.triggerListener("longtap", self._createEventData(life.startTouchEvent, "longtap"));
+          self.triggerListener("longtap", {
+            position: new YccMathDot(life.startTouchEvent.triggerTouch.pageX, life.startTouchEvent.triggerTouch.pageY)
+          });
         }, 750);
       };
       tracer.onlifechange = function(life) {
         life.moveTouchEventList.forEach(function(moveEvent) {
-          self.triggerListener("dragging", self._createEventData(moveEvent, "dragging"));
+          self.triggerListener("dragging", {
+            position: new YccMathDot(moveEvent.triggerTouch.pageX, moveEvent.triggerTouch.pageY)
+          });
         });
         if (tracer.currentLifeList.length > 1) {
           self.ismutiltouching = true;
@@ -1613,44 +1648,50 @@
           const firstMove = life.startTouchEvent.triggerTouch;
           const lastMove = Array.prototype.slice.call(life.moveTouchEventList, -1)[0];
           if (Math.abs(lastMove.pageX - firstMove.pageX) > 10 || Math.abs(lastMove.pageY - firstMove.pageY) > 10) {
-            prevent.tap = true;
             clearTimeout(self._longTapTimeout);
           }
         }
       };
       tracer.onlifeend = function(life) {
-        self.triggerListener("dragend", self._createEventData(life.endTouchEvent.triggerTouch, "dragend"));
+        var _a2, _b;
+        self.triggerListener("dragend", {
+          position: new YccMathDot((_a2 = life.endTouchEvent) == null ? void 0 : _a2.triggerTouch.pageX, (_b = life.endTouchEvent) == null ? void 0 : _b.triggerTouch.pageY)
+        });
         self.ismutiltouching = true;
+        console.log("lifeend", life);
         if (tracer.currentLifeList.length === 1) {
           self.ismutiltouching = false;
           self.triggerListener("multiend", preLife, curLife);
           return;
         }
         if (tracer.currentLifeList.length === 0) {
-          self.ismutiltouching = false;
-          if (!prevent.tap && life.endTime - life.startTime < 300) {
-            clearTimeout(self._longTapTimeout);
-            if (preLife && life.endTime - preLife.endTime < 300 && Math.abs(preLife.endTouchEvent.triggerTouch.pageX - life.endTouchEvent.triggerTouch.pageX) < 10 && Math.abs(preLife.endTouchEvent.triggerTouch.pageY - life.endTouchEvent.triggerTouch.pageY) < 10) {
-              self.triggerListener("doubletap", self._createEventData(life.endTouchEvent.triggerTouch, "doubletap"));
-              self.triggerListener("log", "doubletap triggered");
-              preLife = null;
+          clearTimeout(self._longTapTimeout);
+          if (life.getDistance() > 10) {
+            if (life.lifeTime > 300) {
+              return this;
+            } else {
+              const firstMove = life.startTouchEvent.triggerTouch;
+              const lastMove = life.endTouchEvent.triggerTouch;
+              if (Math.abs(lastMove.pageX - firstMove.pageX) > 30 || Math.abs(lastMove.pageY - firstMove.pageY) > 30) {
+                const dir = self._getSwipeDirection(firstMove.pageX, firstMove.pageY, lastMove.pageX, lastMove.pageY);
+                self.triggerListener("swipe", {
+                  dir
+                });
+              }
               return this;
             }
-            preLife = life;
-            return this;
-          }
-          if (!prevent.swipe && life.endTime - life.startTime < 300) {
-            const firstMove = life.startTouchEvent.triggerTouch;
-            const lastMove = Array.prototype.slice.call(life.moveTouchEventList, -1)[0];
-            if (Math.abs(lastMove.pageX - firstMove.pageX) > 30 || Math.abs(lastMove.pageY - firstMove.pageY) > 30) {
-              const dir = self._getSwipeDirection(firstMove.pageX, firstMove.pageY, lastMove.pageX, lastMove.pageY);
-              const type = "swipe" + dir;
-              self.triggerListener("log", type);
-              self.triggerListener(type, self._createEventData(__spreadProps(__spreadValues({}, life.endTouchEvent), { dir }), type));
-              self.triggerListener("swipe", self._createEventData(__spreadProps(__spreadValues({}, life.endTouchEvent), { dir }), "swipe"));
-              console.log("swipe", type);
+          } else {
+            if (life.lifeTime < 300) {
+              if (preLife && life.endTouchEvent.triggerTime - preLife.endTouchEvent.triggerTime < 300 && Math.abs(preLife.endTouchEvent.triggerTouch.pageX - life.endTouchEvent.triggerTouch.pageX) < 10 && Math.abs(preLife.endTouchEvent.triggerTouch.pageY - life.endTouchEvent.triggerTouch.pageY) < 10) {
+                self.triggerListener("doubletap", {
+                  position: new YccMathDot(life.endTouchEvent.triggerTouch.pageX, life.endTouchEvent.triggerTouch.pageY)
+                });
+                preLife = null;
+                return this;
+              }
+              preLife = life;
+              return this;
             }
-            return this;
           }
         }
       };
