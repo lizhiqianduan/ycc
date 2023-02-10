@@ -26,7 +26,7 @@ export function createCanvas (options: { width: number, height: number, dpi?: nu
   // 去除5px inline-block偏差
   canvas.style.display = 'block'
   // debug
-  document.body.appendChild(canvas)
+  // document.body.appendChild(canvas)
   // 返回值
   return canvas
 }

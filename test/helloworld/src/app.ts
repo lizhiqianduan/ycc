@@ -1,9 +1,13 @@
-import PolygonUI from '@datagetter.cn/ycc/ui/PolygonUI'
+// import PolygonUI from '@datagetter.cn/ycc/ui/PolygonUI'
 import TextUI from '@datagetter.cn/ycc/ui/TextUI'
 import Ycc from '@datagetter.cn/ycc/Ycc'
 import { YccMathDot, YccMathRect } from '@datagetter.cn/ycc/tools/YccMath'
 import YccTicker from '@datagetter.cn/ycc/tools/YccTicker'
 import ImageUI from '@datagetter.cn/ycc/ui/ImageUI'
+import LineUI from '@datagetter.cn/ycc/ui/LineUI'
+import PolygonUI from '@datagetter.cn/ycc/ui/PolygonUI'
+import YccGesture from '@datagetter.cn/ycc/tools/YccGesture'
+// import LineUI from '@datagetter.cn/ycc/ui/LineUI'
 // import ImageUI from '@datagetter.cn/ycc/ui/ImageUI'
 
 /**
@@ -13,6 +17,15 @@ export default class App extends Ycc {
   created () {
     // 加入到dom中
     document.getElementById('canvas')?.appendChild(this.stage.stageCanvas)
+    new LineUI({
+      dots: [
+        new YccMathDot(10, 10),
+        new YccMathDot(100, 100)
+      ]
+    }).addToLayer(this.stage.defaultLayer)
+
+    const gesture = new YccGesture({ target: this.stage.stageCanvas, useMulti: true })
+    console.log(gesture)
 
     // 新建一个UI
     new PolygonUI({
@@ -47,8 +60,14 @@ export default class App extends Ycc {
       rect: new YccMathRect(-10, -30, 180, 180)
     }).addToLayer(this.stage.defaultLayer)
 
+    const frameText = new TextUI({
+      value: ''
+    }).addToLayer(this.stage.defaultLayer)
+
     // 加入定时器
-    new YccTicker(this).addFrameListener(frame => {
+    const ticker = new YccTicker(this)
+    ticker.addFrameListener(frame => {
+      frameText.props.value = `${frame.deltaTime.toFixed(2)}ms 平均：${((Date.now() - ticker.startTime) / frame.frameCount).toFixed(2)}ms  绘制尺寸：${this.stage.stageCanvas.width}*${this.stage.stageCanvas.height}px dpi：${this.stage.stageInfo.dpi}`
       this.render()
     }).start(60)
 
