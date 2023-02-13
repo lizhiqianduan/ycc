@@ -1269,10 +1269,10 @@
      */
     getElementByPointer(dot) {
       const layers = getAllLayer();
-      for (let index = 0; index < layers.length; index++) {
+      for (let index = layers.length - 1; index >= 0; index--) {
         const layer = layers[index];
         const uiList = layer.uiList;
-        for (let i = 0; i < uiList.length; i++) {
+        for (let i = uiList.length - 1; i >= 0; i--) {
           const ui = uiList[i];
           if (ui.isContainDot(dot.dpi(ui.getDpi())))
             return ui;
@@ -1339,10 +1339,8 @@
       getAllLayer().forEach((layer) => {
         layer.uiList.forEach((ui) => {
           ui.renderBg();
-          this.stageCanvasCtx.drawImage(layer.ctx.canvas, 0, 0, this.stageInfo.width * dpi, this.stageInfo.height * dpi, 0, 0, this.stageInfo.width * dpi, this.stageInfo.height * dpi);
           ui.render();
           ui.renderAnchor();
-          this.stageCanvasCtx.drawImage(layer.ctx.canvas, 0, 0, this.stageInfo.width * dpi, this.stageInfo.height * dpi, 0, 0, this.stageInfo.width * dpi, this.stageInfo.height * dpi);
         });
         this.stageCanvasCtx.drawImage(layer.ctx.canvas, 0, 0, this.stageInfo.width * dpi, this.stageInfo.height * dpi, 0, 0, this.stageInfo.width * dpi, this.stageInfo.height * dpi);
       });
@@ -1752,8 +1750,16 @@
 
   // test/helloworld/src/app.ts
   var App = class extends Ycc {
+    constructor() {
+      super(...arguments);
+      this.layer = {
+        test1: createLayer(this.stage, { name: "t1", enableFrameEvent: true }),
+        test2: createLayer(this.stage, { name: "t2", enableFrameEvent: true })
+      };
+    }
     created() {
       var _a2;
+      const dpi = this.stage.stageInfo.dpi;
       (_a2 = document.getElementById("canvas")) == null ? void 0 : _a2.appendChild(this.stage.stageCanvas);
       new LineUI({
         dots: [
@@ -1770,7 +1776,7 @@
           new YccMathDot(0, 200),
           new YccMathDot(0, 0)
         ]
-      }).addToLayer(this.stage.defaultLayer);
+      }).addToLayer(this.layer.test1);
       new TextUI({
         value: "sfsdfsdf",
         anchor: new YccMathDot(200, 10),
@@ -1778,7 +1784,7 @@
           fontSize: 16,
           color: "red"
         }
-      }).addToLayer(this.stage.defaultLayer);
+      }).addToLayer(this.layer.test2);
       new ImageUI({
         name: "TestImage",
         anchor: new YccMathDot(50, 50),
@@ -1786,7 +1792,7 @@
         mirror: 1,
         resName: "radius",
         fillMode: "scale9Grid",
-        scale9GridRect: new YccMathRect(30, 30, 128 - 30 * 2, 128 - 30 * 2),
+        scale9GridRect: new YccMathRect(30, 30, 256 / dpi - 30 * 2, 256 / dpi - 30 * 2),
         rect: new YccMathRect(-10, -30, 180, 180)
       }).addToLayer(this.stage.defaultLayer);
       const frameText = new TextUI({

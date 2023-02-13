@@ -70,10 +70,10 @@ export default class YccStage {
    */
   getElementByPointer (dot: YccMathDot) {
     const layers = getAllLayer()
-    for (let index = 0; index < layers.length; index++) {
+    for (let index = layers.length - 1; index >= 0; index--) {
       const layer = layers[index]
       const uiList = layer.uiList
-      for (let i = 0; i < uiList.length; i++) {
+      for (let i = uiList.length - 1; i >= 0; i--) {
         const ui = uiList[i]
 
         if (ui.isContainDot(dot.dpi(ui.getDpi()))) return ui
@@ -145,12 +145,13 @@ export default class YccStage {
         // 绘制背景
         ui.renderBg()
         // 将离屏图层绘制到舞台来
-        this.stageCanvasCtx.drawImage(layer.ctx.canvas, 0, 0, this.stageInfo.width * dpi, this.stageInfo.height * dpi, 0, 0, this.stageInfo.width * dpi, this.stageInfo.height * dpi)
+        // this.stageCanvasCtx.drawImage(layer.ctx.canvas, 0, 0, this.stageInfo.width * dpi, this.stageInfo.height * dpi, 0, 0, this.stageInfo.width * dpi, this.stageInfo.height * dpi)
         ui.render()
         // debug 绘制锚点
         ui.renderAnchor()
+        // console.log(ui, 11)
         // 将离屏图层绘制到舞台来
-        this.stageCanvasCtx.drawImage(layer.ctx.canvas, 0, 0, this.stageInfo.width * dpi, this.stageInfo.height * dpi, 0, 0, this.stageInfo.width * dpi, this.stageInfo.height * dpi)
+        // this.stageCanvasCtx.drawImage(layer.ctx.canvas, 0, 0, this.stageInfo.width * dpi, this.stageInfo.height * dpi, 0, 0, this.stageInfo.width * dpi, this.stageInfo.height * dpi)
       })
 
       // 将离屏图层绘制到舞台来

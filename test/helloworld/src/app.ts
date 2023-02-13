@@ -6,6 +6,7 @@ import YccTicker from '@datagetter.cn/ycc/tools/YccTicker'
 import ImageUI from '@datagetter.cn/ycc/ui/ImageUI'
 import LineUI from '@datagetter.cn/ycc/ui/LineUI'
 import PolygonUI from '@datagetter.cn/ycc/ui/PolygonUI'
+import { createLayer } from '@datagetter.cn/ycc/YccLayer'
 // import LineUI from '@datagetter.cn/ycc/ui/LineUI'
 // import ImageUI from '@datagetter.cn/ycc/ui/ImageUI'
 
@@ -13,7 +14,13 @@ import PolygonUI from '@datagetter.cn/ycc/ui/PolygonUI'
  * 新建应用
  */
 export default class App extends Ycc {
+  layer = {
+    test1: createLayer(this.stage, { name: 't1', enableFrameEvent: true }),
+    test2: createLayer(this.stage, { name: 't2', enableFrameEvent: true })
+  }
+
   created () {
+    const dpi = this.stage.stageInfo.dpi
     // 加入到dom中
     document.getElementById('canvas')?.appendChild(this.stage.stageCanvas)
     new LineUI({
@@ -33,7 +40,7 @@ export default class App extends Ycc {
         new YccMathDot(0, 200),
         new YccMathDot(0, 0)
       ]
-    }).addToLayer(this.stage.defaultLayer)
+    }).addToLayer(this.layer.test1)
 
     // 新建一个文本
     new TextUI({
@@ -43,7 +50,7 @@ export default class App extends Ycc {
         fontSize: 16,
         color: 'red'
       }
-    }).addToLayer(this.stage.defaultLayer)
+    }).addToLayer(this.layer.test2)
 
     new ImageUI({
       name: 'TestImage',
@@ -52,7 +59,7 @@ export default class App extends Ycc {
       mirror: 1,
       resName: 'radius',
       fillMode: 'scale9Grid',
-      scale9GridRect: new YccMathRect(30, 30, 128 - 30 * 2, 128 - 30 * 2),
+      scale9GridRect: new YccMathRect(30, 30, 256 / dpi - 30 * 2, 256 / dpi - 30 * 2),
       rect: new YccMathRect(-10, -30, 180, 180)
     }).addToLayer(this.stage.defaultLayer)
 
