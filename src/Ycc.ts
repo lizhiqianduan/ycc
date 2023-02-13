@@ -1,3 +1,4 @@
+import YccGesture from './tools/YccGesture'
 import { LoaderResult } from './tools/YccLoader'
 import YccLayer from './YccLayer'
 import YccStage from './YccStage'
@@ -42,6 +43,8 @@ export default class Ycc {
    */
   stage: YccStage
 
+  gesture: YccGesture
+
   constructor (config?: Partial<YccConfig>) {
     const defaultConfig: YccConfig = {
       appenv: 'h5',
@@ -49,7 +52,11 @@ export default class Ycc {
     }
     this.$config = Object.assign(defaultConfig, config)
 
+    // 舞台初始化
     this.stage = new YccStage(this)
+
+    // 手势库的支持
+    this.gesture = new YccGesture({ target: this.stage.stageCanvas, useMulti: true })
   }
 
   /**

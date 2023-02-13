@@ -3,6 +3,7 @@
  * 舞台包含多个图层`Layer`
  */
 
+import { YccMathDot } from './tools/YccMath'
 import { createCanvas } from './tools/YccPolyfill'
 import Ycc, { YccLayer } from './Ycc'
 import { createLayer, getAllLayer } from './YccLayer'
@@ -61,6 +62,23 @@ export default class YccStage {
     return createCanvas({
       ...this.stageInfo
     })
+  }
+
+  /**
+   * 根据ui的位置获取舞台上的ui
+   * @param dot
+   */
+  getElementByPointer (dot: YccMathDot) {
+    const layers = getAllLayer()
+    for (let index = 0; index < layers.length; index++) {
+      const layer = layers[index]
+      const uiList = layer.uiList
+      for (let i = 0; i < uiList.length; i++) {
+        const ui = uiList[i]
+
+        if (ui.isContainDot(dot.dpi(ui.getDpi()))) return ui
+      }
+    }
   }
 
   /**

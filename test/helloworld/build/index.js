@@ -537,8 +537,8 @@
       let leftCount = 0;
       let rightCount = 0;
       for (let i = 0; i < coordinates.length - 1; i++) {
-        const start = coordinates[i].rotate(this.props.rotation, this.props.anchor.plus(this.props.belongTo.position));
-        const end = coordinates[i + 1].rotate(this.props.rotation, this.props.anchor.plus(this.props.belongTo.position));
+        const start = coordinates[i];
+        const end = coordinates[i + 1];
         if (start.x === end.x) {
           if (x > start.x)
             continue;
@@ -697,6 +697,501 @@
     }
   };
 
+  // src/tools/YccTouchLife.ts
+  function syncTouches(touches) {
+    const copedList = [];
+    for (let index = 0; index < touches.length; index++) {
+      const touch = touches[index];
+      const coped = {
+        clientX: touch.clientX,
+        clientY: touch.clientY,
+        pageX: touch.pageX,
+        pageY: touch.pageY,
+        identifier: touch.identifier,
+        force: touch.force
+      };
+      copedList.push(coped);
+    }
+    return copedList;
+  }
+  var _TouchLife = class {
+    constructor(option) {
+      /**
+       * 存活时间
+       */
+      this.lifeTime = 0;
+      var _a2, _b, _c;
+      this.id = _TouchLife.cacheId++;
+      this.startTouchEvent = (_a2 = option == null ? void 0 : option.startTouchEvent) != null ? _a2 : null;
+      this.endTouchEvent = (_b = option == null ? void 0 : option.endTouchEvent) != null ? _b : null;
+      this.moveTouchEventList = (_c = option == null ? void 0 : option.moveTouchEventList) != null ? _c : [];
+    }
+    /**
+     * 获取生命周期开始和结束时的距离
+     */
+    getDistance() {
+      var _a2, _b, _c, _d;
+      if (this.endTouchEvent && this.startTouchEvent) {
+        return new YccMathVector(
+          ((_a2 = this.endTouchEvent) == null ? void 0 : _a2.triggerTouch.pageX) - ((_b = this.startTouchEvent) == null ? void 0 : _b.triggerTouch.pageX),
+          ((_c = this.endTouchEvent) == null ? void 0 : _c.triggerTouch.pageY) - ((_d = this.startTouchEvent) == null ? void 0 : _d.triggerTouch.pageY)
+        ).getLength();
+      } else {
+        return 0;
+      }
+    }
+    addStart(ev) {
+      ev.lifeId = this.id;
+      this.startTouchEvent = ev;
+      return this;
+    }
+    addEnd(ev) {
+      ev.lifeId = this.id;
+      this.endTouchEvent = ev;
+      this.lifeTime = ev.triggerTime - this.startTouchEvent.triggerTime;
+      return this;
+    }
+    addMove(ev) {
+      ev.lifeId = this.id;
+      this.moveTouchEventList.push(ev);
+      return this;
+    }
+  };
+  var TouchLife = _TouchLife;
+  /**
+   * 自增ID记录
+   */
+  TouchLife.cacheId = 0;
+  var TouchLifeTracer = class {
+    constructor(target) {
+      this.target = target;
+      this._lifeList = [];
+      this.currentLifeList = [];
+      this.targetTouches = [];
+      this.touches = [];
+      this.changedTouches = [];
+      this.onlifestart = (life) => {
+      };
+      this.onlifechange = (life) => {
+      };
+      this.onlifeend = (life) => {
+      };
+      this.init();
+    }
+    init() {
+      if (!this.target.addEventListener) {
+        console.error("addEventListener undefined");
+        return;
+      }
+      this.target.addEventListener("touchstart", this.touchstart.bind(this));
+      this.target.addEventListener("touchmove", this.touchmove.bind(this));
+      this.target.addEventListener("touchend", this.touchend.bind(this));
+    }
+    /**
+       * 添加生命周期
+       * @param life {TouchLife}  生命周期
+       * @return {*}
+       */
+    addLife(life) {
+      this._lifeList.push(life);
+    }
+    /**
+     * 根据identifier查找生命周期，此方法只能在生命周期内使用
+     * @param identifier
+     * @return {*}
+     */
+    findCurrentLifeByTouchID(identifier) {
+      var _a2;
+      for (let i = 0; i < this.currentLifeList.length; i++) {
+        const life = this.currentLifeList[i];
+        if (((_a2 = life.startTouchEvent) == null ? void 0 : _a2.triggerTouch.identifier) === identifier) {
+          return life;
+        }
+      }
+    }
+    /**
+     * 根据touchID删除当前触摸的生命周期
+     * @param identifier
+     * @return {boolean}
+     */
+    deleteCurrentLifeByTouchID(identifier) {
+      var _a2;
+      for (let i = 0; i < this.currentLifeList.length; i++) {
+        const life = this.currentLifeList[i];
+        if (((_a2 = life.startTouchEvent) == null ? void 0 : _a2.triggerTouch.identifier) === identifier) {
+          this.currentLifeList.splice(i, 1);
+          return true;
+        }
+      }
+      return false;
+    }
+    /**
+     * 寻找移动过的接触点
+     */
+    indexOfTouchFromMoveTouchEventList(moveTouchEventList, touch) {
+      for (let i = 0; i < moveTouchEventList.length; i++) {
+        if (touch.identifier === moveTouchEventList[i].triggerTouch.identifier) {
+          return i;
+        }
+      }
+      return -1;
+    }
+    touchstart(e) {
+      const self = this;
+      if (e.preventDefault)
+        e.preventDefault();
+      const life = new TouchLife();
+      self.addLife(life.addStart({
+        triggerTime: Date.now(),
+        triggerTouch: syncTouches(e.touches)[0],
+        type: "touchstart"
+      }));
+      self.currentLifeList.push(life);
+      if (self.onlifestart)
+        self.onlifestart(life);
+    }
+    touchmove(e) {
+      const self = this;
+      if (e.preventDefault)
+        e.preventDefault();
+      const changedTouches = syncTouches(e.changedTouches);
+      for (let i = 0; i < changedTouches.length; i++) {
+        const touch = changedTouches[i];
+        const life = self.findCurrentLifeByTouchID(touch.identifier);
+        life.addMove({
+          triggerTime: Date.now(),
+          triggerTouch: touch,
+          type: "touchmove"
+        });
+        if (self.onlifechange)
+          self.onlifechange(life);
+      }
+    }
+    touchend(e) {
+      const self = this;
+      if (e.preventDefault)
+        e.preventDefault();
+      const touch = syncTouches(e.changedTouches)[0];
+      const life = self.findCurrentLifeByTouchID(touch.identifier);
+      life.addEnd({
+        triggerTime: Date.now(),
+        triggerTouch: touch,
+        type: "touchend"
+      });
+      self.deleteCurrentLifeByTouchID(touch.identifier);
+      if (self.onlifeend)
+        self.onlifeend(life);
+    }
+  };
+
+  // src/tools/YccUtils.ts
+  var isNum = function(str) {
+    return typeof str === "number";
+  };
+  var isFn = function(str) {
+    return typeof str === "function";
+  };
+  var isMobile = function() {
+    const userAgentInfo = navigator.userAgent;
+    const Agents = [
+      "Android",
+      "iPhone",
+      "SymbianOS",
+      "Windows Phone",
+      "iPad",
+      "iPod"
+    ];
+    let flag = false;
+    for (let v = 0; v < Agents.length; v++) {
+      if (userAgentInfo.indexOf(Agents[v]) > 0) {
+        flag = true;
+        break;
+      }
+    }
+    return flag;
+  };
+
+  // src/tools/YccGesture.ts
+  var YccGesture = class {
+    constructor(option) {
+      /**
+       * 默认的事件监听函数
+       * @param data
+       */
+      this.events = {
+        tap: function(data) {
+        },
+        dragstart: function(data) {
+        },
+        dragging: function(data) {
+        },
+        dragend: function(data) {
+        },
+        longtap: function(data) {
+        },
+        multistart: function(data) {
+        },
+        multichange: function(data) {
+        },
+        multiend: function(data) {
+        },
+        zoom: function(data) {
+        },
+        rotate: function(data) {
+        },
+        log: function(data) {
+        },
+        swipe: function(data) {
+        },
+        doubletap: function(data) {
+        }
+      };
+      this.option = {
+        target: option.target,
+        useMulti: option.useMulti
+      };
+      this._longTapTimeout = 0;
+      this.ismutiltouching = false;
+      this.touchLifeTracer = null;
+      this._init();
+    }
+    _init() {
+      if (isMobile()) {
+        console.log("mobile gesture init...");
+        this._initForMobile();
+      } else {
+        console.log("pc gesture init...");
+      }
+    }
+    /**
+       * 向外部触发事件
+       * @param type
+       * @param data
+       */
+    triggerListener(type, data, data2) {
+      const event = {
+        type,
+        data
+      };
+      this.events[type](event);
+    }
+    /**
+     * 构造筛选事件中的有用信息
+     * @param event  {MouseEvent | TouchEvent}  鼠标事件或者触摸事件
+     * @param [type] {String} 事件类型，可选
+     * @return {{target: null, clientX: number, clientY: number, pageX: number, pageY: number, screenX: number, screenY: number, force: number}}
+     * @private
+     */
+    _createEventData(event, type) {
+      let data = {
+        /**
+           * 事件类型
+           */
+        type: "",
+        /**
+           * 事件触发对象
+           */
+        target: null,
+        /**
+           * 事件的生命周期ID，只在拖拽过程中存在，存在时此值大于-1
+           * PC端表示mousedown直至mouseup整个周期
+           * mobile端表示touchstart直至touchend整个周期
+           */
+        identifier: -1,
+        // x、y兼容微信端，web端其值等于pageX、pageY
+        x: 0,
+        y: 0,
+        clientX: 0,
+        clientY: 0,
+        pageX: 0,
+        pageY: 0,
+        screenX: 0,
+        screenY: 0,
+        force: 1,
+        /**
+           * 手势滑动方向，此属性当且仅当type为swipe时有值
+           */
+        swipeDirection: "",
+        /**
+           * 缩放比例 仅当事件为zoom时可用
+           */
+        zoomRate: 1,
+        /**
+           * 旋转角度 仅当事件为rotate时可用
+           */
+        angle: 0,
+        /**
+           * 创建时间
+           */
+        createTime: Date.now()
+      };
+      data = Object.assign(data, event);
+      data.type = type;
+      return data;
+    }
+    /**
+     * 获取缩放比例
+     * @param preLife
+     * @param curLife
+     * @return {number}
+     * @private
+     */
+    getZoomRateAndRotateAngle(preLife, curLife) {
+      const x0 = preLife.startTouchEvent.triggerTouch.pageX;
+      const y0 = preLife.startTouchEvent.triggerTouch.pageY;
+      const x1 = curLife.startTouchEvent.triggerTouch.pageX;
+      const y1 = curLife.startTouchEvent.triggerTouch.pageY;
+      const preMoveTouch = preLife.moveTouchEventList.length > 0 ? preLife.moveTouchEventList[preLife.moveTouchEventList.length - 1] : preLife.startTouchEvent;
+      const curMoveTouch = curLife.moveTouchEventList.length > 0 ? curLife.moveTouchEventList[curLife.moveTouchEventList.length - 1] : curLife.startTouchEvent;
+      const x0move = preMoveTouch.triggerTouch.pageX;
+      const y0move = preMoveTouch.triggerTouch.pageY;
+      const x1move = curMoveTouch.triggerTouch.pageX;
+      const y1move = curMoveTouch.triggerTouch.pageY;
+      const vector0 = new YccMathVector(x1 - x0, y1 - y0);
+      const vector1 = new YccMathVector(x1move - x0move, y1move - y0move);
+      const angle = Math.acos(vector1.dot(vector0) / (vector1.getLength() * vector0.getLength())) / Math.PI * 180;
+      return {
+        rate: vector1.getLength() / vector0.getLength(),
+        angle: angle * (vector1.cross(vector0).z > 0 ? -1 : 1)
+      };
+    }
+    /**
+     * 获取某个触摸点的swipe方向
+     * @private
+     */
+    _getSwipeDirection(x1, y1, x2, y2) {
+      return Math.abs(x1 - x2) >= Math.abs(y1 - y2) ? x1 - x2 > 0 ? "left" : "right" : y1 - y2 > 0 ? "up" : "down";
+    }
+    /**
+     * 是否处于多点触控中
+     */
+    isMutilTouching() {
+      if (this.touchLifeTracer) {
+        return this.touchLifeTracer.currentLifeList.length >= 2;
+      }
+      return false;
+    }
+    /**
+     * 初始化移动端的手势
+     * @private
+     */
+    _initForMobile() {
+      const self = this;
+      const tracer = new TouchLifeTracer(this.option.target);
+      this.touchLifeTracer = tracer;
+      let preLife, curLife;
+      const prevent = {
+        tap: false,
+        swipe: false
+      };
+      tracer.onlifestart = function(life) {
+        self.triggerListener("tap", {
+          position: new YccMathDot(life.startTouchEvent.triggerTouch.pageX, life.startTouchEvent.triggerTouch.pageY)
+        });
+        self.triggerListener("dragstart", {
+          position: new YccMathDot(life.startTouchEvent.triggerTouch.pageX, life.startTouchEvent.triggerTouch.pageY)
+        });
+        if (tracer.currentLifeList.length > 1) {
+          self.ismutiltouching = true;
+          if (!self.option.useMulti)
+            return;
+          self.triggerListener("multistart", tracer.currentLifeList);
+          prevent.tap = false;
+          prevent.swipe = false;
+          clearTimeout(self._longTapTimeout);
+          preLife = tracer.currentLifeList[0];
+          curLife = tracer.currentLifeList[1];
+          return this;
+        }
+        self.ismutiltouching = false;
+        prevent.tap = false;
+        prevent.swipe = false;
+        self._longTapTimeout = setTimeout(function() {
+          self.triggerListener("longtap", {
+            position: new YccMathDot(life.startTouchEvent.triggerTouch.pageX, life.startTouchEvent.triggerTouch.pageY)
+          });
+        }, 750);
+      };
+      tracer.onlifechange = function(life) {
+        life.moveTouchEventList.forEach(function(moveEvent) {
+          self.triggerListener("dragging", {
+            position: new YccMathDot(moveEvent.triggerTouch.pageX, moveEvent.triggerTouch.pageY)
+          });
+        });
+        if (tracer.currentLifeList.length > 1) {
+          self.ismutiltouching = true;
+          if (!self.option.useMulti)
+            return;
+          prevent.tap = true;
+          prevent.swipe = true;
+          self.triggerListener("multichange", preLife, curLife);
+          const rateAndAngle = self.getZoomRateAndRotateAngle(preLife, curLife);
+          if (isNum(rateAndAngle.rate)) {
+            const e = self._createEventData(preLife.startTouchEvent, "zoom");
+            e.zoomRate = rateAndAngle.rate;
+            self.triggerListener("zoom", self._createEventData(e, "zoom"));
+          }
+          if (isNum(rateAndAngle.angle)) {
+            const e = self._createEventData(preLife.startTouchEvent, "rotate");
+            e.angle = rateAndAngle.angle;
+            self.triggerListener("rotate", self._createEventData(e, "rotate"));
+          }
+          return this;
+        }
+        if (life.moveTouchEventList.length > 0) {
+          self.ismutiltouching = false;
+          const firstMove = life.startTouchEvent.triggerTouch;
+          const lastMove = Array.prototype.slice.call(life.moveTouchEventList, -1)[0];
+          if (Math.abs(lastMove.pageX - firstMove.pageX) > 10 || Math.abs(lastMove.pageY - firstMove.pageY) > 10) {
+            clearTimeout(self._longTapTimeout);
+          }
+        }
+      };
+      tracer.onlifeend = function(life) {
+        var _a2, _b;
+        self.triggerListener("dragend", {
+          position: new YccMathDot((_a2 = life.endTouchEvent) == null ? void 0 : _a2.triggerTouch.pageX, (_b = life.endTouchEvent) == null ? void 0 : _b.triggerTouch.pageY)
+        });
+        self.ismutiltouching = true;
+        if (tracer.currentLifeList.length === 1) {
+          self.ismutiltouching = false;
+          self.triggerListener("multiend", preLife, curLife);
+          return;
+        }
+        if (tracer.currentLifeList.length === 0) {
+          clearTimeout(self._longTapTimeout);
+          if (life.getDistance() > 10) {
+            if (life.lifeTime > 300) {
+              return this;
+            } else {
+              const firstMove = life.startTouchEvent.triggerTouch;
+              const lastMove = life.endTouchEvent.triggerTouch;
+              if (Math.abs(lastMove.pageX - firstMove.pageX) > 30 || Math.abs(lastMove.pageY - firstMove.pageY) > 30) {
+                const dir = self._getSwipeDirection(firstMove.pageX, firstMove.pageY, lastMove.pageX, lastMove.pageY);
+                self.triggerListener("swipe", {
+                  dir
+                });
+              }
+              return this;
+            }
+          } else {
+            if (life.lifeTime < 300) {
+              if (preLife && life.endTouchEvent.triggerTime - preLife.endTouchEvent.triggerTime < 300 && Math.abs(preLife.endTouchEvent.triggerTouch.pageX - life.endTouchEvent.triggerTouch.pageX) < 10 && Math.abs(preLife.endTouchEvent.triggerTouch.pageY - life.endTouchEvent.triggerTouch.pageY) < 10) {
+                self.triggerListener("doubletap", {
+                  position: new YccMathDot(life.endTouchEvent.triggerTouch.pageX, life.endTouchEvent.triggerTouch.pageY)
+                });
+                preLife = null;
+                return this;
+              }
+              preLife = life;
+              return this;
+            }
+          }
+        }
+      };
+    }
+  };
+
   // src/YccLayer.ts
   var YccLayer = class {
     constructor(stage, option) {
@@ -767,6 +1262,22 @@
      */
     createCanvasByStage() {
       return createCanvas(__spreadValues({}, this.stageInfo));
+    }
+    /**
+     * 根据ui的位置获取舞台上的ui
+     * @param dot
+     */
+    getElementByPointer(dot) {
+      const layers = getAllLayer();
+      for (let index = 0; index < layers.length; index++) {
+        const layer = layers[index];
+        const uiList = layer.uiList;
+        for (let i = 0; i < uiList.length; i++) {
+          const ui = uiList[i];
+          if (ui.isContainDot(dot.dpi(ui.getDpi())))
+            return ui;
+        }
+      }
     }
     /**
      * 根据ui的名称获取舞台上的ui
@@ -847,6 +1358,7 @@
       };
       this.$config = Object.assign(defaultConfig, config);
       this.stage = new YccStage(this);
+      this.gesture = new YccGesture({ target: this.stage.stageCanvas, useMulti: true });
     }
     /**
      * 启动
@@ -876,33 +1388,6 @@
      */
     render() {
     }
-  };
-
-  // src/tools/YccUtils.ts
-  var isNum = function(str) {
-    return typeof str === "number";
-  };
-  var isFn = function(str) {
-    return typeof str === "function";
-  };
-  var isMobile = function() {
-    const userAgentInfo = navigator.userAgent;
-    const Agents = [
-      "Android",
-      "iPhone",
-      "SymbianOS",
-      "Windows Phone",
-      "iPad",
-      "iPod"
-    ];
-    let flag = false;
-    for (let v = 0; v < Agents.length; v++) {
-      if (userAgentInfo.indexOf(Agents[v]) > 0) {
-        flag = true;
-        break;
-      }
-    }
-    return flag;
   };
 
   // src/tools/YccTicker.ts
@@ -1265,439 +1750,6 @@
     }
   };
 
-  // src/tools/YccTouchLife.ts
-  function syncTouches(touches) {
-    const copedList = [];
-    for (let index = 0; index < touches.length; index++) {
-      const touch = touches[index];
-      const coped = {
-        clientX: touch.clientX,
-        clientY: touch.clientY,
-        pageX: touch.pageX,
-        pageY: touch.pageY,
-        identifier: touch.identifier,
-        force: touch.force
-      };
-      copedList.push(coped);
-    }
-    return copedList;
-  }
-  var _TouchLife = class {
-    constructor(option) {
-      /**
-       * 存活时间
-       */
-      this.lifeTime = 0;
-      var _a2, _b, _c;
-      this.id = _TouchLife.cacheId++;
-      this.startTouchEvent = (_a2 = option == null ? void 0 : option.startTouchEvent) != null ? _a2 : null;
-      this.endTouchEvent = (_b = option == null ? void 0 : option.endTouchEvent) != null ? _b : null;
-      this.moveTouchEventList = (_c = option == null ? void 0 : option.moveTouchEventList) != null ? _c : [];
-    }
-    /**
-     * 获取生命周期开始和结束时的距离
-     */
-    getDistance() {
-      var _a2, _b, _c, _d;
-      if (this.endTouchEvent && this.startTouchEvent) {
-        return new YccMathVector(
-          ((_a2 = this.endTouchEvent) == null ? void 0 : _a2.triggerTouch.pageX) - ((_b = this.startTouchEvent) == null ? void 0 : _b.triggerTouch.pageX),
-          ((_c = this.endTouchEvent) == null ? void 0 : _c.triggerTouch.pageY) - ((_d = this.startTouchEvent) == null ? void 0 : _d.triggerTouch.pageY)
-        ).getLength();
-      } else {
-        return 0;
-      }
-    }
-    addStart(ev) {
-      ev.lifeId = this.id;
-      this.startTouchEvent = ev;
-      return this;
-    }
-    addEnd(ev) {
-      ev.lifeId = this.id;
-      this.endTouchEvent = ev;
-      this.lifeTime = ev.triggerTime - this.startTouchEvent.triggerTime;
-      return this;
-    }
-    addMove(ev) {
-      ev.lifeId = this.id;
-      this.moveTouchEventList.push(ev);
-      return this;
-    }
-  };
-  var TouchLife = _TouchLife;
-  /**
-   * 自增ID记录
-   */
-  TouchLife.cacheId = 0;
-  var TouchLifeTracer = class {
-    constructor(target) {
-      this.target = target;
-      this._lifeList = [];
-      this.currentLifeList = [];
-      this.targetTouches = [];
-      this.touches = [];
-      this.changedTouches = [];
-      this.onlifestart = (life) => {
-      };
-      this.onlifechange = (life) => {
-      };
-      this.onlifeend = (life) => {
-      };
-      this.init();
-    }
-    init() {
-      if (!this.target.addEventListener) {
-        console.error("addEventListener undefined");
-        return;
-      }
-      this.target.addEventListener("touchstart", this.touchstart.bind(this));
-      this.target.addEventListener("touchmove", this.touchmove.bind(this));
-      this.target.addEventListener("touchend", this.touchend.bind(this));
-    }
-    /**
-       * 添加生命周期
-       * @param life {TouchLife}  生命周期
-       * @return {*}
-       */
-    addLife(life) {
-      this._lifeList.push(life);
-    }
-    /**
-     * 根据identifier查找生命周期，此方法只能在生命周期内使用
-     * @param identifier
-     * @return {*}
-     */
-    findCurrentLifeByTouchID(identifier) {
-      var _a2;
-      for (let i = 0; i < this.currentLifeList.length; i++) {
-        const life = this.currentLifeList[i];
-        if (((_a2 = life.startTouchEvent) == null ? void 0 : _a2.triggerTouch.identifier) === identifier) {
-          return life;
-        }
-      }
-    }
-    /**
-     * 根据touchID删除当前触摸的生命周期
-     * @param identifier
-     * @return {boolean}
-     */
-    deleteCurrentLifeByTouchID(identifier) {
-      var _a2;
-      for (let i = 0; i < this.currentLifeList.length; i++) {
-        const life = this.currentLifeList[i];
-        if (((_a2 = life.startTouchEvent) == null ? void 0 : _a2.triggerTouch.identifier) === identifier) {
-          this.currentLifeList.splice(i, 1);
-          return true;
-        }
-      }
-      return false;
-    }
-    /**
-     * 寻找移动过的接触点
-     */
-    indexOfTouchFromMoveTouchEventList(moveTouchEventList, touch) {
-      for (let i = 0; i < moveTouchEventList.length; i++) {
-        if (touch.identifier === moveTouchEventList[i].triggerTouch.identifier) {
-          return i;
-        }
-      }
-      return -1;
-    }
-    touchstart(e) {
-      const self = this;
-      if (e.preventDefault)
-        e.preventDefault();
-      const life = new TouchLife();
-      self.addLife(life.addStart({
-        triggerTime: Date.now(),
-        triggerTouch: syncTouches(e.touches)[0],
-        type: "touchstart"
-      }));
-      self.currentLifeList.push(life);
-      if (self.onlifestart)
-        self.onlifestart(life);
-    }
-    touchmove(e) {
-      const self = this;
-      if (e.preventDefault)
-        e.preventDefault();
-      const changedTouches = syncTouches(e.changedTouches);
-      for (let i = 0; i < changedTouches.length; i++) {
-        const touch = changedTouches[i];
-        const life = self.findCurrentLifeByTouchID(touch.identifier);
-        life.addMove({
-          triggerTime: Date.now(),
-          triggerTouch: touch,
-          type: "touchmove"
-        });
-        if (self.onlifechange)
-          self.onlifechange(life);
-      }
-    }
-    touchend(e) {
-      const self = this;
-      if (e.preventDefault)
-        e.preventDefault();
-      const touch = syncTouches(e.changedTouches)[0];
-      const life = self.findCurrentLifeByTouchID(touch.identifier);
-      life.addEnd({
-        triggerTime: Date.now(),
-        triggerTouch: touch,
-        type: "touchend"
-      });
-      self.deleteCurrentLifeByTouchID(touch.identifier);
-      if (self.onlifeend)
-        self.onlifeend(life);
-    }
-  };
-
-  // src/tools/YccGesture.ts
-  var YccGesture = class {
-    constructor(option) {
-      this.option = {
-        target: option.target,
-        useMulti: option.useMulti
-      };
-      this._longTapTimeout = 0;
-      this.ismutiltouching = false;
-      this.touchLifeTracer = null;
-      this._init();
-    }
-    _init() {
-      if (isMobile()) {
-        console.log("mobile gesture init...");
-        this._initForMobile();
-      } else {
-        console.log("pc gesture init...");
-      }
-    }
-    /**
-       * 向外部触发事件
-       * @param type
-       * @param data
-       */
-    triggerListener(type, data, data2) {
-      console.log(type, data, data2);
-    }
-    /**
-     * 构造筛选事件中的有用信息
-     * @param event  {MouseEvent | TouchEvent}  鼠标事件或者触摸事件
-     * @param [type] {String} 事件类型，可选
-     * @return {{target: null, clientX: number, clientY: number, pageX: number, pageY: number, screenX: number, screenY: number, force: number}}
-     * @private
-     */
-    _createEventData(event, type) {
-      let data = {
-        /**
-           * 事件类型
-           */
-        type: "",
-        /**
-           * 事件触发对象
-           */
-        target: null,
-        /**
-           * 事件的生命周期ID，只在拖拽过程中存在，存在时此值大于-1
-           * PC端表示mousedown直至mouseup整个周期
-           * mobile端表示touchstart直至touchend整个周期
-           */
-        identifier: -1,
-        // x、y兼容微信端，web端其值等于pageX、pageY
-        x: 0,
-        y: 0,
-        clientX: 0,
-        clientY: 0,
-        pageX: 0,
-        pageY: 0,
-        screenX: 0,
-        screenY: 0,
-        force: 1,
-        /**
-           * 手势滑动方向，此属性当且仅当type为swipe时有值
-           */
-        swipeDirection: "",
-        /**
-           * 缩放比例 仅当事件为zoom时可用
-           */
-        zoomRate: 1,
-        /**
-           * 旋转角度 仅当事件为rotate时可用
-           */
-        angle: 0,
-        /**
-           * 创建时间
-           */
-        createTime: Date.now()
-      };
-      data = Object.assign(data, event);
-      data.type = type;
-      return data;
-    }
-    /**
-     * 获取缩放比例
-     * @param preLife
-     * @param curLife
-     * @return {number}
-     * @private
-     */
-    getZoomRateAndRotateAngle(preLife, curLife) {
-      const x0 = preLife.startTouchEvent.triggerTouch.pageX;
-      const y0 = preLife.startTouchEvent.triggerTouch.pageY;
-      const x1 = curLife.startTouchEvent.triggerTouch.pageX;
-      const y1 = curLife.startTouchEvent.triggerTouch.pageY;
-      const preMoveTouch = preLife.moveTouchEventList.length > 0 ? preLife.moveTouchEventList[preLife.moveTouchEventList.length - 1] : preLife.startTouchEvent;
-      const curMoveTouch = curLife.moveTouchEventList.length > 0 ? curLife.moveTouchEventList[curLife.moveTouchEventList.length - 1] : curLife.startTouchEvent;
-      const x0move = preMoveTouch.triggerTouch.pageX;
-      const y0move = preMoveTouch.triggerTouch.pageY;
-      const x1move = curMoveTouch.triggerTouch.pageX;
-      const y1move = curMoveTouch.triggerTouch.pageY;
-      const vector0 = new YccMathVector(x1 - x0, y1 - y0);
-      const vector1 = new YccMathVector(x1move - x0move, y1move - y0move);
-      const angle = Math.acos(vector1.dot(vector0) / (vector1.getLength() * vector0.getLength())) / Math.PI * 180;
-      return {
-        rate: vector1.getLength() / vector0.getLength(),
-        angle: angle * (vector1.cross(vector0).z > 0 ? -1 : 1)
-      };
-    }
-    /**
-     * 获取某个触摸点的swipe方向
-     * @private
-     */
-    _getSwipeDirection(x1, y1, x2, y2) {
-      return Math.abs(x1 - x2) >= Math.abs(y1 - y2) ? x1 - x2 > 0 ? "left" : "right" : y1 - y2 > 0 ? "up" : "down";
-    }
-    /**
-     * 是否处于多点触控中
-     */
-    isMutilTouching() {
-      if (this.touchLifeTracer) {
-        return this.touchLifeTracer.currentLifeList.length >= 2;
-      }
-      return false;
-    }
-    /**
-     * 初始化移动端的手势
-     * @private
-     */
-    _initForMobile() {
-      const self = this;
-      const tracer = new TouchLifeTracer(this.option.target);
-      this.touchLifeTracer = tracer;
-      let preLife, curLife;
-      const prevent = {
-        tap: false,
-        swipe: false
-      };
-      tracer.onlifestart = function(life) {
-        self.triggerListener("tap", {
-          position: new YccMathDot(life.startTouchEvent.triggerTouch.pageX, life.startTouchEvent.triggerTouch.pageY)
-        });
-        self.triggerListener("dragstart", {
-          position: new YccMathDot(life.startTouchEvent.triggerTouch.pageX, life.startTouchEvent.triggerTouch.pageY)
-        });
-        if (tracer.currentLifeList.length > 1) {
-          self.ismutiltouching = true;
-          if (!self.option.useMulti)
-            return;
-          self.triggerListener("multistart", tracer.currentLifeList);
-          prevent.tap = false;
-          prevent.swipe = false;
-          clearTimeout(self._longTapTimeout);
-          preLife = tracer.currentLifeList[0];
-          curLife = tracer.currentLifeList[1];
-          return this;
-        }
-        self.ismutiltouching = false;
-        prevent.tap = false;
-        prevent.swipe = false;
-        self._longTapTimeout = setTimeout(function() {
-          self.triggerListener("longtap", {
-            position: new YccMathDot(life.startTouchEvent.triggerTouch.pageX, life.startTouchEvent.triggerTouch.pageY)
-          });
-        }, 750);
-      };
-      tracer.onlifechange = function(life) {
-        life.moveTouchEventList.forEach(function(moveEvent) {
-          self.triggerListener("dragging", {
-            position: new YccMathDot(moveEvent.triggerTouch.pageX, moveEvent.triggerTouch.pageY)
-          });
-        });
-        if (tracer.currentLifeList.length > 1) {
-          self.ismutiltouching = true;
-          if (!self.option.useMulti)
-            return;
-          prevent.tap = true;
-          prevent.swipe = true;
-          self.triggerListener("multichange", preLife, curLife);
-          const rateAndAngle = self.getZoomRateAndRotateAngle(preLife, curLife);
-          if (isNum(rateAndAngle.rate)) {
-            const e = self._createEventData(preLife.startTouchEvent, "zoom");
-            e.zoomRate = rateAndAngle.rate;
-            self.triggerListener("zoom", self._createEventData(e, "zoom"));
-          }
-          if (isNum(rateAndAngle.angle)) {
-            const e = self._createEventData(preLife.startTouchEvent, "rotate");
-            e.angle = rateAndAngle.angle;
-            self.triggerListener("rotate", self._createEventData(e, "rotate"));
-          }
-          return this;
-        }
-        if (life.moveTouchEventList.length > 0) {
-          self.ismutiltouching = false;
-          const firstMove = life.startTouchEvent.triggerTouch;
-          const lastMove = Array.prototype.slice.call(life.moveTouchEventList, -1)[0];
-          if (Math.abs(lastMove.pageX - firstMove.pageX) > 10 || Math.abs(lastMove.pageY - firstMove.pageY) > 10) {
-            clearTimeout(self._longTapTimeout);
-          }
-        }
-      };
-      tracer.onlifeend = function(life) {
-        var _a2, _b;
-        self.triggerListener("dragend", {
-          position: new YccMathDot((_a2 = life.endTouchEvent) == null ? void 0 : _a2.triggerTouch.pageX, (_b = life.endTouchEvent) == null ? void 0 : _b.triggerTouch.pageY)
-        });
-        self.ismutiltouching = true;
-        console.log("lifeend", life);
-        if (tracer.currentLifeList.length === 1) {
-          self.ismutiltouching = false;
-          self.triggerListener("multiend", preLife, curLife);
-          return;
-        }
-        if (tracer.currentLifeList.length === 0) {
-          clearTimeout(self._longTapTimeout);
-          if (life.getDistance() > 10) {
-            if (life.lifeTime > 300) {
-              return this;
-            } else {
-              const firstMove = life.startTouchEvent.triggerTouch;
-              const lastMove = life.endTouchEvent.triggerTouch;
-              if (Math.abs(lastMove.pageX - firstMove.pageX) > 30 || Math.abs(lastMove.pageY - firstMove.pageY) > 30) {
-                const dir = self._getSwipeDirection(firstMove.pageX, firstMove.pageY, lastMove.pageX, lastMove.pageY);
-                self.triggerListener("swipe", {
-                  dir
-                });
-              }
-              return this;
-            }
-          } else {
-            if (life.lifeTime < 300) {
-              if (preLife && life.endTouchEvent.triggerTime - preLife.endTouchEvent.triggerTime < 300 && Math.abs(preLife.endTouchEvent.triggerTouch.pageX - life.endTouchEvent.triggerTouch.pageX) < 10 && Math.abs(preLife.endTouchEvent.triggerTouch.pageY - life.endTouchEvent.triggerTouch.pageY) < 10) {
-                self.triggerListener("doubletap", {
-                  position: new YccMathDot(life.endTouchEvent.triggerTouch.pageX, life.endTouchEvent.triggerTouch.pageY)
-                });
-                preLife = null;
-                return this;
-              }
-              preLife = life;
-              return this;
-            }
-          }
-        }
-      };
-    }
-  };
-
   // test/helloworld/src/app.ts
   var App = class extends Ycc {
     created() {
@@ -1709,8 +1761,6 @@
           new YccMathDot(100, 100)
         ]
       }).addToLayer(this.stage.defaultLayer);
-      const gesture = new YccGesture({ target: this.stage.stageCanvas, useMulti: true });
-      console.log(gesture);
       new PolygonUI({
         name: "TestPolygon",
         anchor: new YccMathDot(200, 200),
@@ -1748,6 +1798,14 @@
         this.render();
       }).start(60);
       this.render();
+      this.eventListener();
+    }
+    // 舞台事件监听
+    eventListener() {
+      this.gesture.events.tap = (e) => {
+        const ui = this.stage.getElementByPointer(e.data.position);
+        console.log("\u70B9\u51FBui\uFF1A", ui);
+      };
     }
     render() {
       this.stage.clearStage();

@@ -6,7 +6,6 @@ import YccTicker from '@datagetter.cn/ycc/tools/YccTicker'
 import ImageUI from '@datagetter.cn/ycc/ui/ImageUI'
 import LineUI from '@datagetter.cn/ycc/ui/LineUI'
 import PolygonUI from '@datagetter.cn/ycc/ui/PolygonUI'
-import YccGesture from '@datagetter.cn/ycc/tools/YccGesture'
 // import LineUI from '@datagetter.cn/ycc/ui/LineUI'
 // import ImageUI from '@datagetter.cn/ycc/ui/ImageUI'
 
@@ -23,9 +22,6 @@ export default class App extends Ycc {
         new YccMathDot(100, 100)
       ]
     }).addToLayer(this.stage.defaultLayer)
-
-    const gesture = new YccGesture({ target: this.stage.stageCanvas, useMulti: true })
-    console.log(gesture)
 
     // 新建一个UI
     new PolygonUI({
@@ -72,6 +68,15 @@ export default class App extends Ycc {
     }).start(60)
 
     this.render()
+    this.eventListener()
+  }
+
+  // 舞台事件监听
+  eventListener () {
+    this.gesture.events.tap = e => {
+      const ui = this.stage.getElementByPointer(e.data.position)
+      console.log('点击ui：', ui)
+    }
   }
 
   render () {

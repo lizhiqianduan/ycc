@@ -298,8 +298,10 @@ export default abstract class YccUI<YccUIProps extends YccUICommonProps = YccUIC
     // 点在线段的右侧数目
     let rightCount = 0
     for (let i = 0; i < coordinates.length - 1; i++) {
-      const start = coordinates[i].rotate(this.props.rotation, this.props.anchor.plus(this.props.belongTo.position))
-      const end = coordinates[i + 1].rotate(this.props.rotation, this.props.anchor.plus(this.props.belongTo.position))
+      // const start = coordinates[i].rotate(this.props.rotation, this.props.anchor.plus(this.props.belongTo.position))
+      // const end = coordinates[i + 1].rotate(this.props.rotation, this.props.anchor.plus(this.props.belongTo.position))
+      const start = coordinates[i]
+      const end = coordinates[i + 1]
 
       // 起点、终点斜率不存在的情况
       if (start.x === end.x) {

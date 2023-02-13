@@ -13,7 +13,7 @@ import { isMobile, isNum } from './YccUtils'
 /**
  * 手势触发时的事件
  */
-interface GestureEvent<DataType = any> {
+export interface GestureEvent<DataType = any> {
   /**
    * 事件类型
    */
@@ -22,7 +22,7 @@ interface GestureEvent<DataType = any> {
   /**
    * 触发事件的触摸点，多点触控时，此值为一个数组
    */
-  triggerTouch: YccTouchEvent[]
+  triggerTouch?: YccTouchEvent[]
 
   /**
    * 事件所携带的数据，根据`DataType`推导，默认为any
@@ -66,6 +66,26 @@ export default class YccGesture {
   _longTapTimeout: number
   ismutiltouching: boolean
   touchLifeTracer: TouchLifeTracer | null
+
+  /**
+   * 默认的事件监听函数
+   * @param data
+   */
+  events = {
+    tap: function (data: GestureEvent<TapData>) {},
+    dragstart: function (data: GestureEvent<DragStartData>): void {},
+    dragging: function (data: GestureEvent<DraggingData>): void {},
+    dragend: function (data: GestureEvent<DragEndData>): void {},
+    longtap: function (data: GestureEvent<LongTapData>): void {},
+    multistart: function (data: GestureEvent): void {},
+    multichange: function (data: GestureEvent<TapData>): void {},
+    multiend: function (data: GestureEvent<TapData>): void {},
+    zoom: function (data: GestureEvent<TapData>): void {},
+    rotate: function (data: GestureEvent<TapData>): void {},
+    log: function (data: GestureEvent<TapData>): void {},
+    swipe: function (data: GestureEvent<SwipeData>): void {},
+    doubletap: function (data: GestureEvent<DoubleTapData>): void {}
+  }
 
   constructor (option: { target: HTMLElement, useMulti: boolean }) {
     /**
@@ -115,7 +135,11 @@ export default class YccGesture {
      * @param data
      */
   triggerListener <DataType=any>(type: GestureEvent['type'], data: DataType, data2?: any) {
-    console.log(type, data, data2)
+    const event: GestureEvent = {
+      type,
+      data
+    }
+    this.events[type](event)
   }
 
   /**
@@ -337,7 +361,7 @@ export default class YccGesture {
         position: new YccMathDot(life.endTouchEvent?.triggerTouch.pageX, life.endTouchEvent?.triggerTouch.pageY)
       })
       self.ismutiltouching = true
-      console.log('lifeend', life)
+      // console.log('lifeend', life)
 
       // 若某个触摸结束，当前触摸点个数为1，说明之前的操作为多点触控。这里发送多点触控结束事件
       if (tracer.currentLifeList.length === 1) {
