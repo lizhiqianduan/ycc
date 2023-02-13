@@ -22,6 +22,15 @@ export class YccMathDot {
   }
 
   /**
+   * 两个点之间的距离
+   * @param dot
+   * @returns
+   */
+  distance (dot: YccMathDot) {
+    return new YccMathVector(dot.x - this.x, dot.y - this.y).getLength()
+  }
+
+  /**
    * 点的加法/点的偏移量
    * @param dot {YccMathDot} 加的点
    * @return {YccMathDot} 返回一个新的点

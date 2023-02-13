@@ -1,4 +1,5 @@
-import { YccMathVector } from './YccMath'
+import { YccMathDot, YccMathVector } from './YccMath'
+import YccTicker, { Frame } from './YccTicker'
 
 export type Mutable<T> = {
   -readonly [K in keyof T]: T[K]
@@ -158,8 +159,12 @@ export default class TouchLifeTracer {
   onlifechange: (life: TouchLife) => void
   onlifeend: (life: TouchLife) => void
 
-  constructor (target: HTMLElement) {
-  /**
+  // 帧同步
+  frameTickerSync?: YccTicker
+
+  constructor (target: HTMLElement, frameTickerSync?: YccTicker) {
+    this.frameTickerSync = frameTickerSync
+    /**
      * 追踪的对象
      * */
     this.target = target
@@ -204,8 +209,17 @@ export default class TouchLifeTracer {
   init () {
     if (!this.target.addEventListener) { console.error('addEventListener undefined'); return }
     this.target.addEventListener('touchstart', this.touchstart.bind(this))
-    this.target.addEventListener('touchmove', this.touchmove.bind(this))
     this.target.addEventListener('touchend', this.touchend.bind(this))
+
+    if (this.frameTickerSync) {
+      this.frameTickerSync.addFrameListener(frame => {
+        if (TouchLifeTracer.touchmoveEventCache) {
+          this.touchmoveTrigger(TouchLifeTracer.touchmoveEventCache, frame)
+          TouchLifeTracer.touchmoveEventCache = undefined // 重置
+        }
+      })
+      this.target.addEventListener('touchmove', this.touchmoveSync.bind(this))
+    }
   }
 
   /**
@@ -269,20 +283,65 @@ export default class TouchLifeTracer {
     if (self.onlifestart) self.onlifestart(life)
   }
 
+  /**
+   * 帧同步时，记录touchmove
+   */
+  static touchmoveEventCache?: TouchEvent
+
+  /**
+   * 没有帧同步时，立即触发
+   * @param e
+   */
   touchmove (e: TouchEvent) {
+    this.touchmoveTrigger(e)
+  }
+
+  /**
+   * 存在帧同步时，不立即触发，仅记录
+   */
+  touchmoveSync (e: TouchEvent) {
+    // console.log('记录', e)
+    TouchLifeTracer.touchmoveEventCache = e
+  }
+
+  touchmoveTrigger (e: TouchEvent, frame?: Frame) {
+    // if (e) { console.log(e, frame?.frameCount); return }
+    // console.time(`touchmove ${frame!.frameCount}`)
     const self = this
     if (e.preventDefault) e.preventDefault()
     const changedTouches = syncTouches(e.changedTouches)
     for (let i = 0; i < changedTouches.length; i++) {
       const touch = changedTouches[i]
       const life = self.findCurrentLifeByTouchID(touch.identifier)!
-      life.addMove({
-        triggerTime: Date.now(),
-        triggerTouch: touch,
-        type: 'touchmove'
-      })
-      if (self.onlifechange) self.onlifechange(life)
+      if (!life) continue
+
+      // 不存在上一个移动点时
+      if (!life.moveTouchEventList[life.moveTouchEventList.length - 1]) {
+        life.addMove({
+          triggerTime: Date.now(),
+          triggerTouch: touch,
+          type: 'touchmove'
+        })
+        if (self.onlifechange) self.onlifechange(life)
+        continue
+      }
+
+      const lastMoveEvent = life.moveTouchEventList[life.moveTouchEventList.length - 1]
+      const lastMove = new YccMathDot(life.moveTouchEventList[life.moveTouchEventList.length - 1].triggerTouch.pageX, life.moveTouchEventList[life.moveTouchEventList.length - 1].triggerTouch.pageY)
+      const curMove = new YccMathDot(touch.pageX, touch.pageY)
+
+      // 移动距离大于1，才认为其触发move事件，否则事件触发时会卡死界面
+      // 触发时间大于16ms，才认为其触发move事件，否则事件触发时会卡死界面
+      if (lastMove.distance(curMove) > 1 && Date.now() - lastMoveEvent.triggerTime > 16) {
+        life.addMove({
+          triggerTime: Date.now(),
+          triggerTouch: touch,
+          type: 'touchmove'
+        })
+        if (self.onlifechange) self.onlifechange(life)
+      }
     }
+    // console.timeEnd(`touchmove ${frame!.frameCount}`)
   }
 
   touchend (e: TouchEvent) {

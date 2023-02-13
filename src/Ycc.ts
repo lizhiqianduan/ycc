@@ -1,5 +1,6 @@
 import YccGesture from './tools/YccGesture'
 import { LoaderResult } from './tools/YccLoader'
+import YccTicker from './tools/YccTicker'
 import YccLayer from './YccLayer'
 import YccStage from './YccStage'
 
@@ -43,7 +44,15 @@ export default class Ycc {
    */
   stage: YccStage
 
-  gesture: YccGesture
+  /**
+   * 手势
+   */
+  $gesture: YccGesture
+
+  /**
+   * 时钟
+   */
+  $ticker = new YccTicker(this)
 
   constructor (config?: Partial<YccConfig>) {
     const defaultConfig: YccConfig = {
@@ -54,9 +63,8 @@ export default class Ycc {
 
     // 舞台初始化
     this.stage = new YccStage(this)
-
     // 手势库的支持
-    this.gesture = new YccGesture({ target: this.stage.stageCanvas, useMulti: true })
+    this.$gesture = new YccGesture({ target: this.stage.stageCanvas, frameTickerSync: this.$ticker })
   }
 
   /**

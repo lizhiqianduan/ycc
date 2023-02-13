@@ -7,6 +7,7 @@
  */
 
 import { YccMathDot, YccMathVector } from './YccMath'
+import YccTicker from './YccTicker'
 import TouchLifeTracer, { TouchLife, YccTouchEvent } from './YccTouchLife'
 import { isMobile, isNum } from './YccUtils'
 
@@ -36,14 +37,19 @@ interface TapData {
 
 interface DragStartData {
   position: YccMathDot
+  life: TouchLife
 }
 
 type LongTapData = TapData
-type DragEndData = TapData
+interface DragEndData {
+  position: YccMathDot
+  life: TouchLife
+}
 type DoubleTapData = TapData
 
 interface DraggingData {
   position: YccMathDot
+  life: TouchLife
 }
 
 interface SwipeData {
@@ -62,7 +68,7 @@ interface SwipeData {
    * @constructor
    */
 export default class YccGesture {
-  option: { target: HTMLElement | null, useMulti: boolean }
+  option: { target: HTMLElement | null, useMulti: boolean, frameTickerSync?: YccTicker }
   _longTapTimeout: number
   ismutiltouching: boolean
   touchLifeTracer: TouchLifeTracer | null
@@ -87,14 +93,23 @@ export default class YccGesture {
     doubletap: function (data: GestureEvent<DoubleTapData>): void {}
   }
 
-  constructor (option: { target: HTMLElement, useMulti: boolean }) {
+  /**
+   * 当设置了此参数时，将启用帧同步
+   * 帧同步的含义：
+   * 每帧之间存在一定时间间隔，比如16ms
+   * 在此时间间隔之内产生的事件，将进行合并，直到下一帧开始才触发，且只触发一次
+   */
+  frameTickerSync?: YccTicker
+
+  constructor (option: { target: HTMLElement, frameTickerSync?: YccTicker }) {
     /**
        *
-       * @type {{useMulti: boolean, target: null}}
+       * @type {{useMulti: boolean, frameTickerSync?: YccTicker}}
        */
     this.option = {
       target: option.target,
-      useMulti: option.useMulti
+      useMulti: true,
+      frameTickerSync: option.frameTickerSync
     }
 
     /**
@@ -256,7 +271,7 @@ export default class YccGesture {
    */
   _initForMobile () {
     const self = this
-    const tracer = new TouchLifeTracer(this.option.target!)
+    const tracer = new TouchLifeTracer(this.option.target!, this.option.frameTickerSync)
     this.touchLifeTracer = tracer
     // 上一次触摸、当前触摸
     let preLife: TouchLife | null, curLife: TouchLife | null
@@ -274,7 +289,8 @@ export default class YccGesture {
 
       // 触发拖拽开始事件
       self.triggerListener<DragStartData>('dragstart', {
-        position: new YccMathDot(life.startTouchEvent!.triggerTouch.pageX, life.startTouchEvent!.triggerTouch.pageY)
+        position: new YccMathDot(life.startTouchEvent!.triggerTouch.pageX, life.startTouchEvent!.triggerTouch.pageY),
+        life
       })
 
       // 多个触摸点的情况
@@ -310,7 +326,8 @@ export default class YccGesture {
     // 只要存在移动的接触点，就触发dragging事件
       life.moveTouchEventList.forEach(function (moveEvent) {
         self.triggerListener<DraggingData>('dragging', {
-          position: new YccMathDot(moveEvent.triggerTouch.pageX, moveEvent.triggerTouch.pageY)
+          position: new YccMathDot(moveEvent.triggerTouch.pageX, moveEvent.triggerTouch.pageY),
+          life
         })
       })
 
@@ -358,7 +375,8 @@ export default class YccGesture {
     tracer.onlifeend = function (life) {
       // 触发事件
       self.triggerListener<DragEndData>('dragend', {
-        position: new YccMathDot(life.endTouchEvent?.triggerTouch.pageX, life.endTouchEvent?.triggerTouch.pageY)
+        position: new YccMathDot(life.endTouchEvent?.triggerTouch.pageX, life.endTouchEvent?.triggerTouch.pageY),
+        life
       })
       self.ismutiltouching = true
       // console.log('lifeend', life)

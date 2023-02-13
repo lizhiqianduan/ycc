@@ -181,6 +181,14 @@
       return this.x >= rect.x && this.x <= rect.x + rect.width && this.y >= rect.y && this.y <= rect.y + rect.height;
     }
     /**
+     * 两个点之间的距离
+     * @param dot
+     * @returns
+     */
+    distance(dot) {
+      return new YccMathVector(dot.x - this.x, dot.y - this.y).getLength();
+    }
+    /**
      * 点的加法/点的偏移量
      * @param dot {YccMathDot} 加的点
      * @return {YccMathDot} 返回一个新的点
@@ -763,7 +771,8 @@
    */
   TouchLife.cacheId = 0;
   var TouchLifeTracer = class {
-    constructor(target) {
+    constructor(target, frameTickerSync) {
+      this.frameTickerSync = frameTickerSync;
       this.target = target;
       this._lifeList = [];
       this.currentLifeList = [];
@@ -784,8 +793,16 @@
         return;
       }
       this.target.addEventListener("touchstart", this.touchstart.bind(this));
-      this.target.addEventListener("touchmove", this.touchmove.bind(this));
       this.target.addEventListener("touchend", this.touchend.bind(this));
+      if (this.frameTickerSync) {
+        this.frameTickerSync.addFrameListener((frame) => {
+          if (TouchLifeTracer.touchmoveEventCache) {
+            this.touchmoveTrigger(TouchLifeTracer.touchmoveEventCache, frame);
+            TouchLifeTracer.touchmoveEventCache = void 0;
+          }
+        });
+        this.target.addEventListener("touchmove", this.touchmoveSync.bind(this));
+      }
     }
     /**
        * 添加生命周期
@@ -850,7 +867,20 @@
       if (self.onlifestart)
         self.onlifestart(life);
     }
+    /**
+     * 没有帧同步时，立即触发
+     * @param e
+     */
     touchmove(e) {
+      this.touchmoveTrigger(e);
+    }
+    /**
+     * 存在帧同步时，不立即触发，仅记录
+     */
+    touchmoveSync(e) {
+      TouchLifeTracer.touchmoveEventCache = e;
+    }
+    touchmoveTrigger(e, frame) {
       const self = this;
       if (e.preventDefault)
         e.preventDefault();
@@ -858,13 +888,30 @@
       for (let i = 0; i < changedTouches.length; i++) {
         const touch = changedTouches[i];
         const life = self.findCurrentLifeByTouchID(touch.identifier);
-        life.addMove({
-          triggerTime: Date.now(),
-          triggerTouch: touch,
-          type: "touchmove"
-        });
-        if (self.onlifechange)
-          self.onlifechange(life);
+        if (!life)
+          continue;
+        if (!life.moveTouchEventList[life.moveTouchEventList.length - 1]) {
+          life.addMove({
+            triggerTime: Date.now(),
+            triggerTouch: touch,
+            type: "touchmove"
+          });
+          if (self.onlifechange)
+            self.onlifechange(life);
+          continue;
+        }
+        const lastMoveEvent = life.moveTouchEventList[life.moveTouchEventList.length - 1];
+        const lastMove = new YccMathDot(life.moveTouchEventList[life.moveTouchEventList.length - 1].triggerTouch.pageX, life.moveTouchEventList[life.moveTouchEventList.length - 1].triggerTouch.pageY);
+        const curMove = new YccMathDot(touch.pageX, touch.pageY);
+        if (lastMove.distance(curMove) > 1 && Date.now() - lastMoveEvent.triggerTime > 16) {
+          life.addMove({
+            triggerTime: Date.now(),
+            triggerTouch: touch,
+            type: "touchmove"
+          });
+          if (self.onlifechange)
+            self.onlifechange(life);
+        }
       }
     }
     touchend(e) {
@@ -948,7 +995,8 @@
       };
       this.option = {
         target: option.target,
-        useMulti: option.useMulti
+        useMulti: true,
+        frameTickerSync: option.frameTickerSync
       };
       this._longTapTimeout = 0;
       this.ismutiltouching = false;
@@ -1077,7 +1125,7 @@
      */
     _initForMobile() {
       const self = this;
-      const tracer = new TouchLifeTracer(this.option.target);
+      const tracer = new TouchLifeTracer(this.option.target, this.option.frameTickerSync);
       this.touchLifeTracer = tracer;
       let preLife, curLife;
       const prevent = {
@@ -1089,7 +1137,8 @@
           position: new YccMathDot(life.startTouchEvent.triggerTouch.pageX, life.startTouchEvent.triggerTouch.pageY)
         });
         self.triggerListener("dragstart", {
-          position: new YccMathDot(life.startTouchEvent.triggerTouch.pageX, life.startTouchEvent.triggerTouch.pageY)
+          position: new YccMathDot(life.startTouchEvent.triggerTouch.pageX, life.startTouchEvent.triggerTouch.pageY),
+          life
         });
         if (tracer.currentLifeList.length > 1) {
           self.ismutiltouching = true;
@@ -1115,7 +1164,8 @@
       tracer.onlifechange = function(life) {
         life.moveTouchEventList.forEach(function(moveEvent) {
           self.triggerListener("dragging", {
-            position: new YccMathDot(moveEvent.triggerTouch.pageX, moveEvent.triggerTouch.pageY)
+            position: new YccMathDot(moveEvent.triggerTouch.pageX, moveEvent.triggerTouch.pageY),
+            life
           });
         });
         if (tracer.currentLifeList.length > 1) {
@@ -1150,7 +1200,8 @@
       tracer.onlifeend = function(life) {
         var _a2, _b;
         self.triggerListener("dragend", {
-          position: new YccMathDot((_a2 = life.endTouchEvent) == null ? void 0 : _a2.triggerTouch.pageX, (_b = life.endTouchEvent) == null ? void 0 : _b.triggerTouch.pageY)
+          position: new YccMathDot((_a2 = life.endTouchEvent) == null ? void 0 : _a2.triggerTouch.pageX, (_b = life.endTouchEvent) == null ? void 0 : _b.triggerTouch.pageY),
+          life
         });
         self.ismutiltouching = true;
         if (tracer.currentLifeList.length === 1) {
@@ -1190,6 +1241,126 @@
         }
       };
     }
+  };
+
+  // src/tools/YccTicker.ts
+  var Frame = class {
+    constructor(ticker) {
+      this.createTime = Date.now();
+      this.deltaTime = ticker.deltaTime;
+      this.fps = parseInt(`${1e3 / this.deltaTime}`);
+      this.frameCount = ticker.frameAllCount;
+      this.isRendered = false;
+    }
+  };
+  var YccTicker = class {
+    constructor(yccInstance) {
+      this.yccInstance = yccInstance;
+      this.currentFrame = void 0;
+      this.startTime = Date.now();
+      this.lastFrameTime = this.startTime;
+      this.lastFrameTickerCount = 0;
+      this.deltaTime = 0;
+      this.deltaTimeExpect = 0;
+      this.deltaTimeRatio = 1;
+      this.frameListenerList = [];
+      this.defaultFrameRate = 60;
+      this.defaultDeltaTime = 1e3 / this.defaultFrameRate;
+      this.tickerSpace = 1;
+      this.frameAllCount = 0;
+      this.timerTickCount = 0;
+      this._timerId = 0;
+      this._isRunning = false;
+    }
+    /**
+       * 定时器开始
+       * @param [frameRate] 心跳频率，即帧率
+       * 可取值有[60,30,20,15]
+       */
+    start(frameRate) {
+      let timer = this.yccInstance.stage.stageCanvas.requestAnimationFrame ? this.yccInstance.stage.stageCanvas.requestAnimationFrame : requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame || window.oRequestAnimationFrame || window.msRequestAnimationFrame;
+      const self = this;
+      self.currentFrame = void 0;
+      self.timerTickCount = 0;
+      self.lastFrameTickerCount = 0;
+      frameRate = frameRate || self.defaultFrameRate;
+      self.tickerSpace = parseInt(`${60 / frameRate}`) || 1;
+      self.deltaTimeExpect = 1e3 / frameRate;
+      self.frameAllCount = 0;
+      self.startTime = Date.now();
+      if (self._isRunning)
+        return this;
+      timer || (timer = function(callback) {
+        return setTimeout(function() {
+          callback(Date.now());
+        }, 1e3 / 60);
+      });
+      self._timerId = timer(cb);
+      self._isRunning = true;
+      function cb(curTime) {
+        self.timerTickCount++;
+        if (self.timerTickCount - self.lastFrameTickerCount === self.tickerSpace) {
+          self.frameAllCount++;
+          self.deltaTime = curTime - self.lastFrameTime;
+          self.deltaTimeRatio = self.deltaTime / self.deltaTimeExpect;
+          self.lastFrameTime += self.deltaTime;
+          self.lastFrameTickerCount = self.timerTickCount;
+          self.currentFrame = new Frame(self);
+          self._broadcastFrameEvent(self.currentFrame);
+        }
+        self._timerId = timer(cb);
+      }
+      return this;
+    }
+    /**
+       * 停止心跳
+       */
+    stop() {
+      let stop = this.yccInstance.stage.stageCanvas.cancelAnimationFrame ? this.yccInstance.stage.stageCanvas.cancelAnimationFrame : cancelAnimationFrame || window.webkitCancelAnimationFrame || window.mozCancelAnimationFrame || window.oCancelAnimationFrame;
+      stop || (stop = function(id) {
+        clearTimeout(id);
+      });
+      stop(this._timerId);
+      this._isRunning = false;
+      this.currentFrame = void 0;
+    }
+    /**
+       * 给每帧添加自定义的监听函数
+       * @param listener
+       */
+    addFrameListener(listener) {
+      this.frameListenerList.push(listener);
+      return this;
+    }
+    /**
+       * 移除某个监听函数
+       * @param listener
+       */
+    removeFrameListener(listener) {
+      const index = this.frameListenerList.indexOf(listener);
+      if (index !== -1) {
+        this.frameListenerList.splice(index, 1);
+      }
+      return this;
+    }
+    /**
+       * 执行所有自定义的帧监听函数
+       */
+    _broadcastFrameEvent(frame) {
+      for (let i = 0; i < this.frameListenerList.length; i++) {
+        const listener = this.frameListenerList[i];
+        isFn(listener) && listener(frame);
+      }
+    }
+    // /**
+    //    * 执行所有图层的监听函数
+    //    */
+    // broadcastToLayer (frame: Frame) {
+    //   for (let i = 0; i < this.yccInstance.layerList.length; i++) {
+    //     const layer = this.yccInstance.layerList[i]
+    //     layer.show && layer.enableFrameEvent && layer.onFrameComing(frame)
+    //   }
+    // }
   };
 
   // src/YccLayer.ts
@@ -1350,13 +1521,17 @@
   // src/Ycc.ts
   var Ycc = class {
     constructor(config) {
+      /**
+       * 时钟
+       */
+      this.$ticker = new YccTicker(this);
       const defaultConfig = {
         appenv: "h5",
         debugDrawContainer: false
       };
       this.$config = Object.assign(defaultConfig, config);
       this.stage = new YccStage(this);
-      this.gesture = new YccGesture({ target: this.stage.stageCanvas, useMulti: true });
+      this.$gesture = new YccGesture({ target: this.stage.stageCanvas, frameTickerSync: this.$ticker });
     }
     /**
      * 启动
@@ -1386,126 +1561,6 @@
      */
     render() {
     }
-  };
-
-  // src/tools/YccTicker.ts
-  var Frame = class {
-    constructor(ticker) {
-      this.createTime = Date.now();
-      this.deltaTime = ticker.deltaTime;
-      this.fps = parseInt(`${1e3 / this.deltaTime}`);
-      this.frameCount = ticker.frameAllCount;
-      this.isRendered = false;
-    }
-  };
-  var YccTicker = class {
-    constructor(yccInstance) {
-      this.yccInstance = yccInstance;
-      this.currentFrame = void 0;
-      this.startTime = Date.now();
-      this.lastFrameTime = this.startTime;
-      this.lastFrameTickerCount = 0;
-      this.deltaTime = 0;
-      this.deltaTimeExpect = 0;
-      this.deltaTimeRatio = 1;
-      this.frameListenerList = [];
-      this.defaultFrameRate = 60;
-      this.defaultDeltaTime = 1e3 / this.defaultFrameRate;
-      this.tickerSpace = 1;
-      this.frameAllCount = 0;
-      this.timerTickCount = 0;
-      this._timerId = 0;
-      this._isRunning = false;
-    }
-    /**
-       * 定时器开始
-       * @param [frameRate] 心跳频率，即帧率
-       * 可取值有[60,30,20,15]
-       */
-    start(frameRate) {
-      let timer = this.yccInstance.stage.stageCanvas.requestAnimationFrame ? this.yccInstance.stage.stageCanvas.requestAnimationFrame : requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame || window.oRequestAnimationFrame || window.msRequestAnimationFrame;
-      const self = this;
-      self.currentFrame = void 0;
-      self.timerTickCount = 0;
-      self.lastFrameTickerCount = 0;
-      frameRate = frameRate || self.defaultFrameRate;
-      self.tickerSpace = parseInt(`${60 / frameRate}`) || 1;
-      self.deltaTimeExpect = 1e3 / frameRate;
-      self.frameAllCount = 0;
-      self.startTime = Date.now();
-      if (self._isRunning)
-        return this;
-      timer || (timer = function(callback) {
-        return setTimeout(function() {
-          callback(Date.now());
-        }, 1e3 / 60);
-      });
-      self._timerId = timer(cb);
-      self._isRunning = true;
-      function cb(curTime) {
-        self.timerTickCount++;
-        if (self.timerTickCount - self.lastFrameTickerCount === self.tickerSpace) {
-          self.frameAllCount++;
-          self.deltaTime = curTime - self.lastFrameTime;
-          self.deltaTimeRatio = self.deltaTime / self.deltaTimeExpect;
-          self.lastFrameTime += self.deltaTime;
-          self.lastFrameTickerCount = self.timerTickCount;
-          self.currentFrame = new Frame(self);
-          self._broadcastFrameEvent(self.currentFrame);
-        }
-        self._timerId = timer(cb);
-      }
-      return this;
-    }
-    /**
-       * 停止心跳
-       */
-    stop() {
-      let stop = this.yccInstance.stage.stageCanvas.cancelAnimationFrame ? this.yccInstance.stage.stageCanvas.cancelAnimationFrame : cancelAnimationFrame || window.webkitCancelAnimationFrame || window.mozCancelAnimationFrame || window.oCancelAnimationFrame;
-      stop || (stop = function(id) {
-        clearTimeout(id);
-      });
-      stop(this._timerId);
-      this._isRunning = false;
-      this.currentFrame = void 0;
-    }
-    /**
-       * 给每帧添加自定义的监听函数
-       * @param listener
-       */
-    addFrameListener(listener) {
-      this.frameListenerList.push(listener);
-      return this;
-    }
-    /**
-       * 移除某个监听函数
-       * @param listener
-       */
-    removeFrameListener(listener) {
-      const index = this.frameListenerList.indexOf(listener);
-      if (index !== -1) {
-        this.frameListenerList.splice(index, 1);
-      }
-      return this;
-    }
-    /**
-       * 执行所有自定义的帧监听函数
-       */
-    _broadcastFrameEvent(frame) {
-      for (let i = 0; i < this.frameListenerList.length; i++) {
-        const listener = this.frameListenerList[i];
-        isFn(listener) && listener(frame);
-      }
-    }
-    // /**
-    //    * 执行所有图层的监听函数
-    //    */
-    // broadcastToLayer (frame: Frame) {
-    //   for (let i = 0; i < this.yccInstance.layerList.length; i++) {
-    //     const layer = this.yccInstance.layerList[i]
-    //     layer.show && layer.enableFrameEvent && layer.onFrameComing(frame)
-    //   }
-    // }
   };
 
   // src/ui/ImageUI.ts
@@ -1762,6 +1817,7 @@
       const dpi = this.stage.stageInfo.dpi;
       (_a2 = document.getElementById("canvas")) == null ? void 0 : _a2.appendChild(this.stage.stageCanvas);
       new LineUI({
+        name: "line01",
         dots: [
           new YccMathDot(10, 10),
           new YccMathDot(100, 100)
@@ -1798,7 +1854,7 @@
       const frameText = new TextUI({
         value: ""
       }).addToLayer(this.stage.defaultLayer);
-      const ticker = new YccTicker(this);
+      const ticker = this.$ticker;
       ticker.addFrameListener((frame) => {
         frameText.props.value = `${frame.deltaTime.toFixed(2)}ms \u5E73\u5747\uFF1A${((Date.now() - ticker.startTime) / frame.frameCount).toFixed(2)}ms  \u7ED8\u5236\u5C3A\u5BF8\uFF1A${this.stage.stageCanvas.width}*${this.stage.stageCanvas.height}px dpi\uFF1A${this.stage.stageInfo.dpi}`;
         this.render();
@@ -1808,9 +1864,18 @@
     }
     // 舞台事件监听
     eventListener() {
-      this.gesture.events.tap = (e) => {
+      this.$gesture.events.tap = (e) => {
         const ui = this.stage.getElementByPointer(e.data.position);
         console.log("\u70B9\u51FBui\uFF1A", ui);
+      };
+      this.$gesture.events.dragend = (e) => {
+        console.log("dragend\uFF1A", e);
+      };
+      this.$gesture.events.dragging = (e) => {
+        this.stage.getElementByName("line01").props.dots = e.data.life.moveTouchEventList.map((item) => new YccMathDot(item.triggerTouch.pageX, item.triggerTouch.pageY));
+      };
+      this.$gesture.events.dragstart = (e) => {
+        console.log("dragstart\uFF1A", e);
       };
     }
     render() {

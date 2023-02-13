@@ -2,7 +2,6 @@
 import TextUI from '@datagetter.cn/ycc/ui/TextUI'
 import Ycc from '@datagetter.cn/ycc/Ycc'
 import { YccMathDot, YccMathRect } from '@datagetter.cn/ycc/tools/YccMath'
-import YccTicker from '@datagetter.cn/ycc/tools/YccTicker'
 import ImageUI from '@datagetter.cn/ycc/ui/ImageUI'
 import LineUI from '@datagetter.cn/ycc/ui/LineUI'
 import PolygonUI from '@datagetter.cn/ycc/ui/PolygonUI'
@@ -24,6 +23,7 @@ export default class App extends Ycc {
     // 加入到dom中
     document.getElementById('canvas')?.appendChild(this.stage.stageCanvas)
     new LineUI({
+      name: 'line01',
       dots: [
         new YccMathDot(10, 10),
         new YccMathDot(100, 100)
@@ -68,7 +68,7 @@ export default class App extends Ycc {
     }).addToLayer(this.stage.defaultLayer)
 
     // 加入定时器
-    const ticker = new YccTicker(this)
+    const ticker = this.$ticker
     ticker.addFrameListener(frame => {
       frameText.props.value = `${frame.deltaTime.toFixed(2)}ms 平均：${((Date.now() - ticker.startTime) / frame.frameCount).toFixed(2)}ms  绘制尺寸：${this.stage.stageCanvas.width}*${this.stage.stageCanvas.height}px dpi：${this.stage.stageInfo.dpi}`
       this.render()
@@ -80,9 +80,20 @@ export default class App extends Ycc {
 
   // 舞台事件监听
   eventListener () {
-    this.gesture.events.tap = e => {
+    this.$gesture.events.tap = e => {
       const ui = this.stage.getElementByPointer(e.data.position)
       console.log('点击ui：', ui)
+    }
+
+    this.$gesture.events.dragend = e => {
+      console.log('dragend：', e)
+    }
+    this.$gesture.events.dragging = e => {
+      // console.log('dragging：', e)
+      (this.stage.getElementByName('line01')! as LineUI).props.dots = e.data.life.moveTouchEventList.map(item => new YccMathDot(item.triggerTouch.pageX, item.triggerTouch.pageY))
+    }
+    this.$gesture.events.dragstart = e => {
+      console.log('dragstart：', e)
     }
   }
 

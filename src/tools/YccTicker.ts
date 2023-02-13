@@ -6,7 +6,7 @@ import { isFn } from './YccUtils'
  * @constructor
  * @param ticker {Ycc.Ticker}
  */
-class Frame {
+export class Frame {
   createTime: number
   deltaTime: number
   fps: number
