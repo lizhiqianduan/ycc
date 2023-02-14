@@ -1,5 +1,6 @@
 import { YccMathDot, YccMathVector } from '../math/index'
-import YccTicker, { Frame } from '../ticker/index'
+import { YccFrame } from '../ticker/frame'
+import { YccTicker } from '../ticker/index'
 
 export type Mutable<T> = {
   -readonly [K in keyof T]: T[K]
@@ -304,7 +305,7 @@ export default class TouchLifeTracer {
     TouchLifeTracer.touchmoveEventCache = e
   }
 
-  touchmoveTrigger (e: TouchEvent, frame?: Frame) {
+  touchmoveTrigger (e: TouchEvent, frame?: YccFrame) {
     // if (e) { console.log(e, frame?.frameCount); return }
     // console.time(`touchmove ${frame!.frameCount}`)
     const self = this

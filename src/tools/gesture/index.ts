@@ -7,9 +7,9 @@
  */
 
 import { YccMathDot, YccMathVector } from '../math/index'
-import YccTicker from '../ticker/index'
 import TouchLifeTracer, { TouchLife, YccTouchEvent } from './YccTouchLife'
 import { isMobile, isNum } from '../utils'
+import { YccTicker } from '../ticker/index'
 
 /**
  * 手势触发时的事件

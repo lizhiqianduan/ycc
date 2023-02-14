@@ -6,6 +6,7 @@ import ImageUI from '@datagetter.cn/ycc/ui/ImageUI'
 import LineUI from '@datagetter.cn/ycc/ui/LineUI'
 import PolygonUI from '@datagetter.cn/ycc/ui/PolygonUI'
 import { createLayer } from '@datagetter.cn/ycc/YccLayer'
+import { startTicker, stopTicker } from '@datagetter.cn/ycc/tools/ticker/index'
 // import LineUI from '@datagetter.cn/ycc/ui/LineUI'
 // import ImageUI from '@datagetter.cn/ycc/ui/ImageUI'
 
@@ -68,14 +69,18 @@ export default class App extends Ycc {
     }).addToLayer(this.stage.defaultLayer)
 
     // 加入定时器
-    const ticker = this.$ticker
-    ticker.addFrameListener(frame => {
-      frameText.props.value = `${frame.deltaTime.toFixed(2)}ms 平均：${((Date.now() - ticker.startTime) / frame.frameCount).toFixed(2)}ms  绘制尺寸：${this.stage.stageCanvas.width}*${this.stage.stageCanvas.height}px dpi：${this.stage.stageInfo.dpi}`
+    this.$ticker.addFrameListener(frame => {
+      frameText.props.value = `${frame.deltaTime.toFixed(2)}ms 平均：${((Date.now() - this.$ticker.startTime) / frame.frameCount).toFixed(2)}ms  绘制尺寸：${this.stage.stageCanvas.width}*${this.stage.stageCanvas.height}px dpi：${this.stage.stageInfo.dpi}`
       this.render()
-    }).start(60)
+    })
+    startTicker(this.$ticker, 60)
+
+    setTimeout(() => {
+      stopTicker(this.$ticker)
+    }, 10000)
 
     this.render()
-    this.eventListener()
+    // this.eventListener()
   }
 
   // 舞台事件监听

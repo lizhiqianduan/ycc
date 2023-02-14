@@ -86,7 +86,7 @@ export default class ImageUI extends YccUI<YccUIImageProps> {
    */
   getRes () {
     const ycc = this.getYcc()!
-    return ycc.$resouces.resMap[this.props.resName].element as CanvasImageSource
+    return ycc.$resouces?.resMap[this.props.resName].element as CanvasImageSource
   }
 
   /**
@@ -124,6 +124,7 @@ export default class ImageUI extends YccUI<YccUIImageProps> {
     this.props.coordinates = this.props.rect.getCoordinates()
 
     const img = this.getRes()
+    if (!img) return
     // 绘制尺寸
     const renderImgWidth = img.width as number
     const renderImgHeight = img.height as number

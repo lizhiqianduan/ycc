@@ -1,6 +1,6 @@
 import YccGesture from './tools/gesture/index'
 import { LoaderResult } from './tools/loader/index'
-import YccTicker from './tools/ticker/index'
+import { createTicker, YccTicker } from './tools/ticker/index'
 import YccLayer from './YccLayer'
 import YccStage from './YccStage'
 
@@ -37,7 +37,7 @@ export default class Ycc {
   /**
    * 加载的资源
    */
-  $resouces!: LoaderResult
+  $resouces?: LoaderResult
 
   /**
    * 舞台，唯一，一个`Ycc`对应一个`Stage`
@@ -52,7 +52,7 @@ export default class Ycc {
   /**
    * 时钟
    */
-  $ticker = new YccTicker(this)
+  $ticker: YccTicker
 
   constructor (config?: Partial<YccConfig>) {
     const defaultConfig: YccConfig = {
@@ -63,6 +63,8 @@ export default class Ycc {
 
     // 舞台初始化
     this.stage = new YccStage(this)
+
+    this.$ticker = createTicker(this)
     // 手势库的支持
     this.$gesture = new YccGesture({ target: this.stage.stageCanvas, frameTickerSync: this.$ticker })
   }
@@ -71,9 +73,10 @@ export default class Ycc {
    * 启动
    * @param {Resource[]} resources 已加载完成的资源
    */
-  bootstrap (resources: LoaderResult) {
+  bootstrap (resources?: LoaderResult) {
     this.$resouces = resources
     this.created()
+    return this
   }
 
   /**
@@ -81,7 +84,7 @@ export default class Ycc {
    * @param resName
    */
   getRes (resName: string) {
-    const res = this.$resouces.resMap[resName]
+    const res = this.$resouces?.resMap[resName]
     return res
   }
 

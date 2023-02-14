@@ -1245,125 +1245,105 @@
     }
   };
 
+  // src/tools/ticker/frame.ts
+  function createFrame(lastFrame) {
+    const now = performance.now();
+    if (lastFrame) {
+      const deltaTime = now - lastFrame.createTime;
+      const fps = parseInt(`${1e3 / deltaTime}`);
+      const frameCount = lastFrame.frameCount + 1;
+      return {
+        createTime: now,
+        isRendered: false,
+        tickerCount: 0,
+        deltaTime,
+        frameCount,
+        fps
+      };
+    } else {
+      return {
+        createTime: now,
+        isRendered: false,
+        deltaTime: 0,
+        tickerCount: 0,
+        frameCount: 1,
+        fps: 60
+      };
+    }
+  }
+
   // src/tools/ticker/index.ts
-  var Frame = class {
-    constructor(ticker) {
-      this.createTime = Date.now();
-      this.deltaTime = ticker.deltaTime;
-      this.fps = parseInt(`${1e3 / this.deltaTime}`);
-      this.frameCount = ticker.frameAllCount;
-      this.isRendered = false;
+  function createTicker(ycc) {
+    const startTime = Date.now();
+    const ticker = {
+      ycc,
+      startTime,
+      frameListenerList: [],
+      frameAllCount: 0,
+      isRunning: false,
+      timerTickCount: 0,
+      timerId: -1,
+      addFrameListener,
+      removeFrameListener
+    };
+    return ticker;
+    function addFrameListener(listener) {
+      ticker.frameListenerList.push(listener);
+      return ticker;
     }
-  };
-  var YccTicker = class {
-    constructor(yccInstance) {
-      this.yccInstance = yccInstance;
-      this.currentFrame = void 0;
-      this.startTime = Date.now();
-      this.lastFrameTime = this.startTime;
-      this.lastFrameTickerCount = 0;
-      this.deltaTime = 0;
-      this.deltaTimeExpect = 0;
-      this.deltaTimeRatio = 1;
-      this.frameListenerList = [];
-      this.defaultFrameRate = 60;
-      this.defaultDeltaTime = 1e3 / this.defaultFrameRate;
-      this.tickerSpace = 1;
-      this.frameAllCount = 0;
-      this.timerTickCount = 0;
-      this._timerId = 0;
-      this._isRunning = false;
-    }
-    /**
-       * 定时器开始
-       * @param [frameRate] 心跳频率，即帧率
-       * 可取值有[60,30,20,15]
-       */
-    start(frameRate) {
-      let timer = this.yccInstance.stage.stageCanvas.requestAnimationFrame ? this.yccInstance.stage.stageCanvas.requestAnimationFrame : requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame || window.oRequestAnimationFrame || window.msRequestAnimationFrame;
-      const self = this;
-      self.currentFrame = void 0;
-      self.timerTickCount = 0;
-      self.lastFrameTickerCount = 0;
-      frameRate = frameRate || self.defaultFrameRate;
-      self.tickerSpace = parseInt(`${60 / frameRate}`) || 1;
-      self.deltaTimeExpect = 1e3 / frameRate;
-      self.frameAllCount = 0;
-      self.startTime = Date.now();
-      if (self._isRunning)
-        return this;
-      timer || (timer = function(callback) {
-        return setTimeout(function() {
-          callback(Date.now());
-        }, 1e3 / 60);
-      });
-      self._timerId = timer(cb);
-      self._isRunning = true;
-      function cb(curTime) {
-        self.timerTickCount++;
-        if (self.timerTickCount - self.lastFrameTickerCount === self.tickerSpace) {
-          self.frameAllCount++;
-          self.deltaTime = curTime - self.lastFrameTime;
-          self.deltaTimeRatio = self.deltaTime / self.deltaTimeExpect;
-          self.lastFrameTime += self.deltaTime;
-          self.lastFrameTickerCount = self.timerTickCount;
-          self.currentFrame = new Frame(self);
-          self._broadcastFrameEvent(self.currentFrame);
-        }
-        self._timerId = timer(cb);
-      }
-      return this;
-    }
-    /**
-       * 停止心跳
-       */
-    stop() {
-      let stop = this.yccInstance.stage.stageCanvas.cancelAnimationFrame ? this.yccInstance.stage.stageCanvas.cancelAnimationFrame : cancelAnimationFrame || window.webkitCancelAnimationFrame || window.mozCancelAnimationFrame || window.oCancelAnimationFrame;
-      stop || (stop = function(id) {
-        clearTimeout(id);
-      });
-      stop(this._timerId);
-      this._isRunning = false;
-      this.currentFrame = void 0;
-    }
-    /**
-       * 给每帧添加自定义的监听函数
-       * @param listener
-       */
-    addFrameListener(listener) {
-      this.frameListenerList.push(listener);
-      return this;
-    }
-    /**
-       * 移除某个监听函数
-       * @param listener
-       */
-    removeFrameListener(listener) {
-      const index = this.frameListenerList.indexOf(listener);
+    function removeFrameListener(listener) {
+      const index = ticker.frameListenerList.indexOf(listener);
       if (index !== -1) {
-        this.frameListenerList.splice(index, 1);
+        ticker.frameListenerList.splice(index, 1);
       }
-      return this;
+      return ticker;
     }
-    /**
-       * 执行所有自定义的帧监听函数
-       */
-    _broadcastFrameEvent(frame) {
-      for (let i = 0; i < this.frameListenerList.length; i++) {
-        const listener = this.frameListenerList[i];
+  }
+  function stopTicker(ticker) {
+    let stop = ticker.ycc.stage.stageCanvas.cancelAnimationFrame ? ticker.ycc.stage.stageCanvas.cancelAnimationFrame : cancelAnimationFrame || window.webkitCancelAnimationFrame || window.mozCancelAnimationFrame || window.oCancelAnimationFrame;
+    stop || (stop = function(id) {
+      clearTimeout(id);
+    });
+    stop(ticker.timerId);
+    ticker.isRunning = false;
+  }
+  function startTicker(ticker, frameRate = 60) {
+    const self = ticker;
+    if (self.isRunning)
+      return self;
+    const tickerSpace = parseInt(`${60 / frameRate}`) || 1;
+    let timer = ticker.ycc.stage.stageCanvas.requestAnimationFrame ? ticker.ycc.stage.stageCanvas.requestAnimationFrame : requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame || window.oRequestAnimationFrame || window.msRequestAnimationFrame;
+    self.startTime = Date.now();
+    timer || (timer = function(callback) {
+      return setTimeout(function() {
+        callback(Date.now());
+      }, 1e3 / 60);
+    });
+    ticker.timerId = timer(cb);
+    self.isRunning = true;
+    function cb(curTime) {
+      var _a2, _b, _c, _d;
+      self.timerTickCount++;
+      if (self.timerTickCount - ((_b = (_a2 = self.lastFrame) == null ? void 0 : _a2.tickerCount) != null ? _b : 0) === tickerSpace) {
+        self.frameAllCount++;
+        self.currentFrame = createFrame(self.lastFrame);
+        self.currentFrame.deltaTime = curTime - ((_d = (_c = self.lastFrame) == null ? void 0 : _c.createTime) != null ? _d : 0);
+        self.currentFrame.fps = frameRate;
+        self.currentFrame.frameCount = self.frameAllCount;
+        self.currentFrame.tickerCount = self.timerTickCount;
+        _broadcastFrameEvent(self.currentFrame);
+        console.log(self);
+        self.lastFrame = self.currentFrame;
+      }
+      ticker.timerId = timer(cb);
+    }
+    function _broadcastFrameEvent(frame) {
+      for (let i = 0; i < self.frameListenerList.length; i++) {
+        const listener = self.frameListenerList[i];
         isFn(listener) && listener(frame);
       }
     }
-    // /**
-    //    * 执行所有图层的监听函数
-    //    */
-    // broadcastToLayer (frame: Frame) {
-    //   for (let i = 0; i < this.yccInstance.layerList.length; i++) {
-    //     const layer = this.yccInstance.layerList[i]
-    //     layer.show && layer.enableFrameEvent && layer.onFrameComing(frame)
-    //   }
-    // }
-  };
+  }
 
   // src/YccLayer.ts
   var YccLayer = class {
@@ -1523,16 +1503,13 @@
   // src/Ycc.ts
   var Ycc = class {
     constructor(config) {
-      /**
-       * 时钟
-       */
-      this.$ticker = new YccTicker(this);
       const defaultConfig = {
         appenv: "h5",
         debugDrawContainer: false
       };
       this.$config = Object.assign(defaultConfig, config);
       this.stage = new YccStage(this);
+      this.$ticker = createTicker(this);
       this.$gesture = new YccGesture({ target: this.stage.stageCanvas, frameTickerSync: this.$ticker });
     }
     /**
@@ -1542,13 +1519,15 @@
     bootstrap(resources2) {
       this.$resouces = resources2;
       this.created();
+      return this;
     }
     /**
      * 根据资源名称获取资源
      * @param resName
      */
     getRes(resName) {
-      const res = this.$resouces.resMap[resName];
+      var _a2;
+      const res = (_a2 = this.$resouces) == null ? void 0 : _a2.resMap[resName];
       return res;
     }
     /**
@@ -1600,8 +1579,9 @@
      * @returns
      */
     getRes() {
+      var _a2;
       const ycc = this.getYcc();
-      return ycc.$resouces.resMap[this.props.resName].element;
+      return (_a2 = ycc.$resouces) == null ? void 0 : _a2.resMap[this.props.resName].element;
     }
     /**
      * 处理镜像
@@ -1635,6 +1615,8 @@
       const dpi = this.getDpi();
       this.props.coordinates = this.props.rect.getCoordinates();
       const img = this.getRes();
+      if (!img)
+        return;
       const renderImgWidth = img.width;
       const renderImgHeight = img.height;
       const imgWidth = renderImgWidth / dpi;
@@ -1856,13 +1838,15 @@
       const frameText = new TextUI({
         value: ""
       }).addToLayer(this.stage.defaultLayer);
-      const ticker = this.$ticker;
-      ticker.addFrameListener((frame) => {
-        frameText.props.value = `${frame.deltaTime.toFixed(2)}ms \u5E73\u5747\uFF1A${((Date.now() - ticker.startTime) / frame.frameCount).toFixed(2)}ms  \u7ED8\u5236\u5C3A\u5BF8\uFF1A${this.stage.stageCanvas.width}*${this.stage.stageCanvas.height}px dpi\uFF1A${this.stage.stageInfo.dpi}`;
+      this.$ticker.addFrameListener((frame) => {
+        frameText.props.value = `${frame.deltaTime.toFixed(2)}ms \u5E73\u5747\uFF1A${((Date.now() - this.$ticker.startTime) / frame.frameCount).toFixed(2)}ms  \u7ED8\u5236\u5C3A\u5BF8\uFF1A${this.stage.stageCanvas.width}*${this.stage.stageCanvas.height}px dpi\uFF1A${this.stage.stageInfo.dpi}`;
         this.render();
-      }).start(60);
+      });
+      startTicker(this.$ticker, 60);
+      setTimeout(() => {
+        stopTicker(this.$ticker);
+      }, 1e4);
       this.render();
-      this.eventListener();
     }
     // 舞台事件监听
     eventListener() {
