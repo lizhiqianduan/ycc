@@ -6,10 +6,10 @@
  * @requires TouchLifeTracer
  */
 
-import { YccMathDot, YccMathVector } from './YccMath'
-import YccTicker from './YccTicker'
+import { YccMathDot, YccMathVector } from '../math/index'
+import YccTicker from '../ticker/index'
 import TouchLifeTracer, { TouchLife, YccTouchEvent } from './YccTouchLife'
-import { isMobile, isNum } from './YccUtils'
+import { isMobile, isNum } from '../utils'
 
 /**
  * 手势触发时的事件

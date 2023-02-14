@@ -3,8 +3,8 @@
  * 舞台包含多个图层`Layer`
  */
 
-import { YccMathDot } from './tools/YccMath'
-import { createCanvas } from './tools/YccPolyfill'
+import { YccMathDot } from './tools/math/index'
+import { createCanvas } from './tools/polyfill/index'
 import Ycc, { YccLayer } from './Ycc'
 import { createLayer, getAllLayer } from './YccLayer'
 

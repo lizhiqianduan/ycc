@@ -3,8 +3,8 @@
  * 方法名全部小写
  */
 
-import Ycc from '../Ycc'
-import { YccGlobal } from './YccGlobalCache'
+import Ycc from '../../Ycc'
+import { YccGlobal } from '../global-cache/index'
 
 /**
  * 创建canvas

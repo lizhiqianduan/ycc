@@ -1,7 +1,7 @@
 // import PolygonUI from '@datagetter.cn/ycc/ui/PolygonUI'
 import TextUI from '@datagetter.cn/ycc/ui/TextUI'
 import Ycc from '@datagetter.cn/ycc/Ycc'
-import { YccMathDot, YccMathRect } from '@datagetter.cn/ycc/tools/YccMath'
+import { YccMathDot, YccMathRect } from '@datagetter.cn/ycc/tools/math/index'
 import ImageUI from '@datagetter.cn/ycc/ui/ImageUI'
 import LineUI from '@datagetter.cn/ycc/ui/LineUI'
 import PolygonUI from '@datagetter.cn/ycc/ui/PolygonUI'

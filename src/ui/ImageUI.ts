@@ -1,4 +1,4 @@
-import { YccMathRect } from '../tools/YccMath'
+import { YccMathRect } from '../tools/math/index'
 import YccLayer from '../YccLayer'
 import YccUI, { getYccUICommonProps, YccUICommonProps } from './YccUI'
 

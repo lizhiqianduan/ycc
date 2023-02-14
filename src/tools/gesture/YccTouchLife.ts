@@ -1,5 +1,5 @@
-import { YccMathDot, YccMathVector } from './YccMath'
-import YccTicker, { Frame } from './YccTicker'
+import { YccMathDot, YccMathVector } from '../math/index'
+import YccTicker, { Frame } from '../ticker/index'
 
 export type Mutable<T> = {
   -readonly [K in keyof T]: T[K]

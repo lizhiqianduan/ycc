@@ -1,6 +1,6 @@
-import YccGesture from './tools/YccGesture'
-import { LoaderResult } from './tools/YccLoader'
-import YccTicker from './tools/YccTicker'
+import YccGesture from './tools/gesture/index'
+import { LoaderResult } from './tools/loader/index'
+import YccTicker from './tools/ticker/index'
 import YccLayer from './YccLayer'
 import YccStage from './YccStage'
 

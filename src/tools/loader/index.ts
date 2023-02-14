@@ -1,5 +1,5 @@
-import Ycc from '../Ycc'
-import { createImage } from './YccPolyfill'
+import Ycc from '../../Ycc'
+import { createImage } from '../polyfill/index'
 
 export interface Resource {
   /**

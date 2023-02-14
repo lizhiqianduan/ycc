@@ -1,4 +1,4 @@
-import { YccMathDot } from './tools/YccMath'
+import { YccMathDot } from './tools/math/index'
 import { YccStage } from './Ycc'
 import YccUI from './ui/YccUI'
 

@@ -14,11 +14,14 @@ let GLOBAL_CACHE: GlobalCache = {}
 GLOBAL_CACHE = JSON.parse(localStorage.getItem('ycc_global') ?? '{}')
 
 /**
- * 获取全局的配置
+ * 获取/设置全局的配置
  * @param key
  * @returns
  */
-export function YccGlobal (key: keyof GlobalCache) {
+export function YccGlobal <K extends keyof GlobalCache> (key: K, value?: GlobalCache[K]) {
+  GLOBAL_CACHE[key] = value
+  localStorage.setItem('ycc_global', JSON.stringify(GLOBAL_CACHE))
+
   return GLOBAL_CACHE[key]
 }
 

@@ -20,11 +20,13 @@
   };
   var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
 
-  // src/tools/YccGlobalCache.ts
+  // src/tools/global-cache/index.ts
   var GLOBAL_CACHE = {};
   var _a;
   GLOBAL_CACHE = JSON.parse((_a = localStorage.getItem("ycc_global")) != null ? _a : "{}");
-  function YccGlobal(key) {
+  function YccGlobal(key, value) {
+    GLOBAL_CACHE[key] = value;
+    localStorage.setItem("ycc_global", JSON.stringify(GLOBAL_CACHE));
     return GLOBAL_CACHE[key];
   }
   function SetGlobal(key, value) {
@@ -32,7 +34,7 @@
     localStorage.setItem("ycc_global", JSON.stringify(GLOBAL_CACHE));
   }
 
-  // src/tools/YccPolyfill.ts
+  // src/tools/polyfill/index.ts
   function createCanvas(options) {
     var _a2;
     const canvas = document.createElement("canvas");
@@ -55,7 +57,7 @@
     return img;
   }
 
-  // src/tools/YccLoader.ts
+  // src/tools/loader/index.ts
   var ParallelLoader = class {
     constructor(ycc, resArr) {
       this.bind = (ycc) => {
@@ -165,7 +167,7 @@
     };
   }
 
-  // src/tools/YccMath.ts
+  // src/tools/math/index.ts
   var YccMathDot = class {
     constructor(x, y) {
       this.x = x != null ? x : 0;
@@ -705,7 +707,7 @@
     }
   };
 
-  // src/tools/YccTouchLife.ts
+  // src/tools/gesture/YccTouchLife.ts
   function syncTouches(touches) {
     const copedList = [];
     for (let index = 0; index < touches.length; index++) {
@@ -931,7 +933,7 @@
     }
   };
 
-  // src/tools/YccUtils.ts
+  // src/tools/utils.ts
   var isNum = function(str) {
     return typeof str === "number";
   };
@@ -958,7 +960,7 @@
     return flag;
   };
 
-  // src/tools/YccGesture.ts
+  // src/tools/gesture/index.ts
   var YccGesture = class {
     constructor(option) {
       /**
@@ -1243,7 +1245,7 @@
     }
   };
 
-  // src/tools/YccTicker.ts
+  // src/tools/ticker/index.ts
   var Frame = class {
     constructor(ticker) {
       this.createTime = Date.now();

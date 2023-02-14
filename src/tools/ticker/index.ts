@@ -1,5 +1,5 @@
-import Ycc from '../Ycc'
-import { isFn } from './YccUtils'
+import Ycc from '../../Ycc'
+import { isFn } from '../utils'
 
 /**
  * 帧 私有类

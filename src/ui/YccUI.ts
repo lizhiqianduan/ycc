@@ -3,7 +3,7 @@
  */
 
 import YccLayer from '../YccLayer'
-import { YccMathDot, YccMathRect } from '../tools/YccMath'
+import { YccMathDot, YccMathRect } from '../tools/math/index'
 
 /**
   * UI的公用属性
