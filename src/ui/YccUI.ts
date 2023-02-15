@@ -2,7 +2,7 @@
  * UI模块的基类，默认是个多边形
  */
 
-import YccLayer from '../YccLayer'
+import YccLayer, { addUI } from '../YccLayer'
 import { YccMathDot, YccMathRect } from '../tools/math/index'
 
 /**
@@ -149,7 +149,8 @@ export default abstract class YccUI<YccUIProps extends YccUICommonProps = YccUIC
     * @param layer
     */
   addToLayer (layer: YccLayer) {
-    layer.addUI(this)
+    // layer.addUI(this)
+    addUI(this)(layer)
     this.created(layer)
     return this
   }

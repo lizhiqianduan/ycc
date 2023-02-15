@@ -1,34 +1,25 @@
 import { YccMathDot } from './tools/math/index'
 import { YccStage } from './Ycc'
 import YccUI from './ui/YccUI'
+import { PipeOperation } from './tools/common/pipe'
 
 /**
  * 图层的外部属性
  */
-interface LayerOpt {
-  /**
-   * 图层的名称
-   */
-  name: string
-  /**
-   * 图层的类型，默认为'ui'
-   */
-  type?: 'ui' | 'debug'
+type LayerOpt = Partial<Pick<YccLayer, 'name' | 'show' | 'position' | 'type' | 'ghost'>>
 
-  /**
-   * 是否允许帧动画事件的监听
-   */
-  enableFrameEvent: boolean
-}
-
-export default class YccLayer {
+export default interface YccLayer {
   /**
    * 相对于舞台的位置，以左上角为准
    * @attention 此坐标为实际的物理像素
    */
-  position = new YccMathDot()
+  position: YccMathDot
 
   uiList: YccUI[]
+  /**
+       * 当前图层的绘图环境
+       * @type {CanvasRenderingContext2D}
+       */
   ctx: CanvasRenderingContext2D
   id: number
   type: 'ui' | 'debug'
@@ -36,83 +27,7 @@ export default class YccLayer {
 
   show: boolean
   ghost: boolean
-  enableEventManager: boolean
-  enableFrameEvent: boolean
-  onFrameComing: () => void
   stage: YccStage
-
-  constructor (stage: YccStage, option?: LayerOpt) {
-    /**
-     * 图层所属的舞台
-     */
-    this.stage = stage
-
-    /**
-     * 存储图层中的所有UI。UI的顺序，即为图层中的渲染顺序。
-     */
-    this.uiList = []
-
-    /**
-     * 当前图层的绘图环境
-     * @type {CanvasRenderingContext2D}
-     */
-    this.ctx = stage.createCanvasByStage().getContext('2d')!
-
-    /**
-     * 图层id
-     */
-    this.id = layerIndex++
-
-    /**
-     * 图层类型。
-     * `ui`表示用于绘图的图层。`tool`表示辅助的工具图层。`text`表示文字图层。
-     * 默认为`ui`。
-     */
-    this.type = 'ui'
-
-    /**
-     * 图层名称
-     * @type {string}
-     */
-    this.name = ((option?.name) != null) ? option?.name : ('图层_' + this.type + '_' + this.id.toString())
-
-    /**
-     * 图层是否显示
-     */
-    this.show = true
-
-    /**
-     * 图层是否幽灵，幽灵状态的图层，getUIFromPointer 会直接跳过整个图层
-     * @type {boolean}
-     */
-    this.ghost = false
-
-    /**
-     * 是否监听舞台的事件。用于控制舞台事件是否广播至图层。默认关闭
-     * @type {boolean}
-     */
-    this.enableEventManager = false
-
-    /**
-     * 是否接收每帧更新的通知。默认为false
-     * @type {boolean}
-     */
-    this.enableFrameEvent = false
-
-    /**
-     * 若接收通知，此函数为接收通知的回调函数。当且仅当enableFrameEvent为true时生效
-     * @type {function}
-     */
-    this.onFrameComing = function () { }
-  }
-
-  /**
- * 添加一个UI图形至图层
- */
-  addUI (ui: YccUI) {
-    this.uiList.push(ui)
-    return ui
-  }
 }
 
 // 图层的自增id
@@ -121,14 +36,79 @@ let layerIndex = 0
 const layerList: YccLayer[] = []
 
 /**
+ * 添加一个UI
+ * @param ui UI
+ * @returns
+ */
+export const addUI = function (ui: YccUI): PipeOperation<YccLayer, YccUI> {
+  return function (layer: YccLayer) {
+    layer.uiList.push(ui)
+    return ui
+  }
+}
+
+/**
  * 创建一个图层
  * @param {YccStage} stage 舞台
- * @param opt
+ * @param option
  */
-export function createLayer (stage: YccStage, opt?: LayerOpt) {
-  const layer = new YccLayer(stage, opt)
-  layerList.push(layer)
-  return layer
+export function createLayer (option?: LayerOpt) {
+  return (stage: YccStage) => {
+    const layer: YccLayer = {
+      /**
+       * 图层的位置
+       */
+      position: option?.position ?? new YccMathDot(0, 0),
+
+      /**
+       * 图层所属的舞台
+       */
+      stage,
+
+      /**
+       * 存储图层中的所有UI。UI的顺序，即为图层中的渲染顺序。
+       */
+      uiList: [],
+
+      /**
+       * 当前图层的绘图环境
+       * @type {CanvasRenderingContext2D}
+       */
+      ctx: stage.createCanvasByStage().getContext('2d')!,
+
+      /**
+       * 图层id
+       */
+      id: layerIndex++,
+
+      /**
+       * 图层类型。
+       * `ui`表示用于绘图的图层。`tool`表示辅助的工具图层。`text`表示文字图层。
+       * 默认为`ui`。
+       */
+      type: option?.type ?? 'ui',
+
+      /**
+       * 图层名称
+       * @type {string}
+       */
+      name: option?.name ?? ('图层_' + 'ui' + '_' + layerIndex.toString()),
+
+      /**
+       * 图层是否显示
+       */
+      show: option?.show ?? true,
+
+      /**
+       * 图层是否幽灵，幽灵状态的图层，getElementFromPointer 会直接跳过整个图层
+       * @type {boolean}
+       */
+      ghost: option?.show ?? true
+
+    }
+    layerList.push(layer)
+    return layer
+  }
 }
 
 /**
@@ -140,12 +120,7 @@ export function releaseLayer (layer: YccLayer) {
   layer.uiList = []
 
   layer.show = false
-
-  layer.enableEventManager = false
-
-  layer.enableFrameEvent = false
-
-  layer.onFrameComing = () => { }
+  layer.ghost = true
 }
 
 /**

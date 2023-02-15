@@ -369,6 +369,69 @@
     }
   };
 
+  // src/YccLayer.ts
+  var layerIndex = 0;
+  var layerList = [];
+  var addUI = function(ui) {
+    return function(layer) {
+      layer.uiList.push(ui);
+      return ui;
+    };
+  };
+  function createLayer(option) {
+    return (stage) => {
+      var _a2, _b, _c, _d, _e;
+      const layer = {
+        /**
+         * 图层的位置
+         */
+        position: (_a2 = option == null ? void 0 : option.position) != null ? _a2 : new YccMathDot(0, 0),
+        /**
+         * 图层所属的舞台
+         */
+        stage,
+        /**
+         * 存储图层中的所有UI。UI的顺序，即为图层中的渲染顺序。
+         */
+        uiList: [],
+        /**
+         * 当前图层的绘图环境
+         * @type {CanvasRenderingContext2D}
+         */
+        ctx: stage.createCanvasByStage().getContext("2d"),
+        /**
+         * 图层id
+         */
+        id: layerIndex++,
+        /**
+         * 图层类型。
+         * `ui`表示用于绘图的图层。`tool`表示辅助的工具图层。`text`表示文字图层。
+         * 默认为`ui`。
+         */
+        type: (_b = option == null ? void 0 : option.type) != null ? _b : "ui",
+        /**
+         * 图层名称
+         * @type {string}
+         */
+        name: (_c = option == null ? void 0 : option.name) != null ? _c : "\u56FE\u5C42_ui_" + layerIndex.toString(),
+        /**
+         * 图层是否显示
+         */
+        show: (_d = option == null ? void 0 : option.show) != null ? _d : true,
+        /**
+         * 图层是否幽灵，幽灵状态的图层，getElementFromPointer 会直接跳过整个图层
+         * @type {boolean}
+         */
+        ghost: (_e = option == null ? void 0 : option.show) != null ? _e : true
+      };
+      layerList.push(layer);
+      return layer;
+    };
+  }
+  function getAllLayer() {
+    return layerList;
+  }
+
   // src/ui/YccUI.ts
   var YccUI = class {
     /**
@@ -399,7 +462,7 @@
       * @param layer
       */
     addToLayer(layer) {
-      layer.addUI(this);
+      addUI(this)(layer);
       this.created(layer);
       return this;
     }
@@ -1328,46 +1391,6 @@
     }
   };
 
-  // src/YccLayer.ts
-  var YccLayer = class {
-    constructor(stage, option) {
-      /**
-       * 相对于舞台的位置，以左上角为准
-       * @attention 此坐标为实际的物理像素
-       */
-      this.position = new YccMathDot();
-      this.stage = stage;
-      this.uiList = [];
-      this.ctx = stage.createCanvasByStage().getContext("2d");
-      this.id = layerIndex++;
-      this.type = "ui";
-      this.name = (option == null ? void 0 : option.name) != null ? option == null ? void 0 : option.name : "\u56FE\u5C42_" + this.type + "_" + this.id.toString();
-      this.show = true;
-      this.ghost = false;
-      this.enableEventManager = false;
-      this.enableFrameEvent = false;
-      this.onFrameComing = function() {
-      };
-    }
-    /**
-    * 添加一个UI图形至图层
-    */
-    addUI(ui) {
-      this.uiList.push(ui);
-      return ui;
-    }
-  };
-  var layerIndex = 0;
-  var layerList = [];
-  function createLayer(stage, opt) {
-    const layer = new YccLayer(stage, opt);
-    layerList.push(layer);
-    return layer;
-  }
-  function getAllLayer() {
-    return layerList;
-  }
-
   // src/YccStage.ts
   var YccStage = class {
     constructor(ycc) {
@@ -1378,7 +1401,7 @@
       this.yccInstance = ycc;
       this.stageCanvas = this.createCanvasByStage();
       this.stageCanvasCtx = this.stageCanvas.getContext("2d");
-      this.defaultLayer = createLayer(this, { name: "\u821E\u53F0\u9ED8\u8BA4\u56FE\u5C42", enableFrameEvent: true });
+      this.defaultLayer = createLayer({ name: "\u821E\u53F0\u9ED8\u8BA4\u56FE\u5C42" })(this);
     }
     /**
      * 清空舞台
@@ -1782,8 +1805,8 @@
     constructor() {
       super(...arguments);
       this.layer = {
-        test1: createLayer(this.stage, { name: "t1", enableFrameEvent: true }),
-        test2: createLayer(this.stage, { name: "t2", enableFrameEvent: true })
+        test1: createLayer({ name: "t1" })(this.stage),
+        test2: createLayer({ name: "t2" })(this.stage)
       };
     }
     created() {

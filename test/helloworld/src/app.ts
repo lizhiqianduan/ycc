@@ -16,8 +16,8 @@ import pipeline from '@datagetter.cn/ycc/tools/common/pipe'
  */
 export default class App extends Ycc {
   layer = {
-    test1: createLayer(this.stage, { name: 't1', enableFrameEvent: true }),
-    test2: createLayer(this.stage, { name: 't2', enableFrameEvent: true })
+    test1: createLayer({ name: 't1' })(this.stage),
+    test2: createLayer({ name: 't2' })(this.stage)
   }
 
   created () {

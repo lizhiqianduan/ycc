@@ -5,8 +5,8 @@
 
 import { YccMathDot } from './tools/math/index'
 import { createCanvas } from './tools/polyfill/index'
-import Ycc, { YccLayer } from './Ycc'
-import { createLayer, getAllLayer } from './YccLayer'
+import Ycc from './Ycc'
+import YccLayer, { createLayer, getAllLayer } from './YccLayer'
 
 export default class YccStage {
   /**
@@ -38,7 +38,7 @@ export default class YccStage {
     this.stageCanvasCtx = this.stageCanvas.getContext('2d')!
 
     // 初始化默认图层
-    this.defaultLayer = createLayer(this, { name: '舞台默认图层', enableFrameEvent: true })
+    this.defaultLayer = createLayer({ name: '舞台默认图层' })(this)
   }
 
   /**

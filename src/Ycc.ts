@@ -1,11 +1,9 @@
 import YccGesture from './tools/gesture/index'
 import { LoaderResult } from './tools/loader/index'
 import { createTicker, YccTicker } from './tools/ticker/index'
-import YccLayer from './YccLayer'
 import YccStage from './YccStage'
 
 export {
-  YccLayer,
   YccStage
 }
 
