@@ -24,9 +24,7 @@
   var GLOBAL_CACHE = {};
   var _a;
   GLOBAL_CACHE = JSON.parse((_a = localStorage.getItem("ycc_global")) != null ? _a : "{}");
-  function YccGlobal(key, value) {
-    GLOBAL_CACHE[key] = value;
-    localStorage.setItem("ycc_global", JSON.stringify(GLOBAL_CACHE));
+  function GetGlobal(key) {
     return GLOBAL_CACHE[key];
   }
   function SetGlobal(key, value) {
@@ -46,7 +44,7 @@
     return canvas;
   }
   function createImage(ycc) {
-    if (YccGlobal("env") === "wxapp") {
+    if (GetGlobal("env") === "wxapp") {
       if (!ycc) {
         console.error("ycc\u5B9E\u4F8B\u5FC5\u4F20");
         return new HTMLImageElement();

@@ -4,7 +4,7 @@
  */
 
 import Ycc from '../../Ycc'
-import { YccGlobal } from '../global-cache/index'
+import { GetGlobal } from '../global-cache/index'
 
 /**
  * 创建canvas
@@ -36,7 +36,7 @@ export function createCanvas (options: { width: number, height: number, dpi?: nu
  * @returns
  */
 export function createImage (ycc: Ycc): HTMLImageElement {
-  if (YccGlobal('env') === 'wxapp') {
+  if (GetGlobal('env') === 'wxapp') {
     if (!ycc) { console.error('ycc实例必传'); return new HTMLImageElement() }
     return ycc.stage.stageCanvas.createImage()
   }

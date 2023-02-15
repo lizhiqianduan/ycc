@@ -18,10 +18,7 @@ GLOBAL_CACHE = JSON.parse(localStorage.getItem('ycc_global') ?? '{}')
  * @param key
  * @returns
  */
-export function YccGlobal <K extends keyof GlobalCache> (key: K, value?: GlobalCache[K]) {
-  GLOBAL_CACHE[key] = value
-  localStorage.setItem('ycc_global', JSON.stringify(GLOBAL_CACHE))
-
+export function GetGlobal <K extends keyof GlobalCache> (key: K) {
   return GLOBAL_CACHE[key]
 }
 
