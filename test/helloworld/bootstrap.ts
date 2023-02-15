@@ -2,7 +2,6 @@
  * bootstrap启动文件
  * 一些异步操作、资源加载等，都可以在此文件进行
  */
-import result from '@datagetter.cn/ycc/tools/common/pipe'
 import { SetGlobal } from '@datagetter.cn/ycc/tools/global-cache/index'
 import { ParallelLoader, Resource } from '@datagetter.cn/ycc/tools/loader/index'
 import App from './src/app'
@@ -33,5 +32,3 @@ new ParallelLoader(app, resources).load((result) => {
   // console.log(map?.test)
   app.bootstrap(result)
 })
-
-console.log(result)

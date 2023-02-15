@@ -20,13 +20,6 @@
   };
   var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
 
-  // src/tools/common/pipe.ts
-  function pipeline(initialValue, ...operations) {
-    const result = operations.reduce((pre, cur) => cur(pre), initialValue);
-    return result;
-  }
-  var pipe_default = pipeline;
-
   // src/tools/global-cache/index.ts
   var GLOBAL_CACHE = {};
   var _a;
@@ -1289,31 +1282,16 @@
       frameAllCount: 0,
       isRunning: false,
       timerTickCount: 0,
-      timerId: -1,
-      addFrameListener,
-      removeFrameListener
+      timerId: -1
     };
     return ticker;
-    function addFrameListener(listener) {
+  }
+  var addFrameListener = function(listener) {
+    return function(ticker) {
       ticker.frameListenerList.push(listener);
       return ticker;
-    }
-    function removeFrameListener(listener) {
-      const index = ticker.frameListenerList.indexOf(listener);
-      if (index !== -1) {
-        ticker.frameListenerList.splice(index, 1);
-      }
-      return ticker;
-    }
-  }
-  function stopTicker(ticker) {
-    let stop = ticker.ycc.stage.stageCanvas.cancelAnimationFrame ? ticker.ycc.stage.stageCanvas.cancelAnimationFrame : cancelAnimationFrame || window.webkitCancelAnimationFrame || window.mozCancelAnimationFrame || window.oCancelAnimationFrame;
-    stop || (stop = function(id) {
-      clearTimeout(id);
-    });
-    stop(ticker.timerId);
-    ticker.isRunning = false;
-  }
+    };
+  };
   function startTicker(ticker, frameRate = 60) {
     const self = ticker;
     if (self.isRunning)
@@ -1328,6 +1306,7 @@
     });
     ticker.timerId = timer(cb);
     self.isRunning = true;
+    return ticker;
     function cb(curTime) {
       var _a2, _b, _c, _d;
       self.timerTickCount++;
@@ -1793,6 +1772,13 @@
     }
   };
 
+  // src/tools/common/pipe.ts
+  function pipeline(initialValue, ...operations) {
+    const result = operations.reduce((pre, cur) => cur(pre), initialValue);
+    return result;
+  }
+  var pipe_default = pipeline;
+
   // test/helloworld/src/app.ts
   var App = class extends Ycc {
     constructor() {
@@ -1844,14 +1830,14 @@
       const frameText = new TextUI({
         value: ""
       }).addToLayer(this.stage.defaultLayer);
-      this.$ticker.addFrameListener((frame) => {
-        frameText.props.value = `${frame.deltaTime.toFixed(2)}ms \u5E73\u5747\uFF1A${((Date.now() - this.$ticker.startTime) / frame.frameCount).toFixed(2)}ms  \u7ED8\u5236\u5C3A\u5BF8\uFF1A${this.stage.stageCanvas.width}*${this.stage.stageCanvas.height}px dpi\uFF1A${this.stage.stageInfo.dpi}`;
-        this.render();
-      });
-      startTicker(this.$ticker, 60);
-      setTimeout(() => {
-        stopTicker(this.$ticker);
-      }, 1e4);
+      pipe_default(
+        this.$ticker,
+        addFrameListener((frame) => {
+          frameText.props.value = `${frame.deltaTime.toFixed(2)}ms \u5E73\u5747\uFF1A${((Date.now() - this.$ticker.startTime) / frame.frameCount).toFixed(2)}ms  \u7ED8\u5236\u5C3A\u5BF8\uFF1A${this.stage.stageCanvas.width}*${this.stage.stageCanvas.height}px dpi\uFF1A${this.stage.stageInfo.dpi}`;
+          this.render();
+        }),
+        startTicker
+      );
       this.render();
     }
     // 舞台事件监听
@@ -1900,6 +1886,5 @@
     console.log("\u8D44\u6E90\u52A0\u8F7D\u7ED3\u675F", resources, result);
     app.bootstrap(result);
   });
-  console.log(pipe_default);
 })();
 //# sourceMappingURL=index.js.map

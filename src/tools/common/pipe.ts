@@ -1,7 +1,7 @@
 /**
  * 管道操作的定义
  */
-type PipeOperation<Input=any, Output=any> = (x: Input, ...otherArgs: any[]) => Output
+export type PipeOperation<Input=any, Output=any> = (x: Input, ...otherArgs: any[]) => Output
 
 /**
  * 管道的重载

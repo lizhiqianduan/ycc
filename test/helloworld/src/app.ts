@@ -6,7 +6,8 @@ import ImageUI from '@datagetter.cn/ycc/ui/ImageUI'
 import LineUI from '@datagetter.cn/ycc/ui/LineUI'
 import PolygonUI from '@datagetter.cn/ycc/ui/PolygonUI'
 import { createLayer } from '@datagetter.cn/ycc/YccLayer'
-import { startTicker, stopTicker } from '@datagetter.cn/ycc/tools/ticker/index'
+import { addFrameListener, startTicker } from '@datagetter.cn/ycc/tools/ticker/index'
+import pipeline from '@datagetter.cn/ycc/tools/common/pipe'
 // import LineUI from '@datagetter.cn/ycc/ui/LineUI'
 // import ImageUI from '@datagetter.cn/ycc/ui/ImageUI'
 
@@ -69,15 +70,13 @@ export default class App extends Ycc {
     }).addToLayer(this.stage.defaultLayer)
 
     // 加入定时器
-    this.$ticker.addFrameListener(frame => {
-      frameText.props.value = `${frame.deltaTime.toFixed(2)}ms 平均：${((Date.now() - this.$ticker.startTime) / frame.frameCount).toFixed(2)}ms  绘制尺寸：${this.stage.stageCanvas.width}*${this.stage.stageCanvas.height}px dpi：${this.stage.stageInfo.dpi}`
-      this.render()
-    })
-    startTicker(this.$ticker, 60)
-
-    setTimeout(() => {
-      stopTicker(this.$ticker)
-    }, 10000)
+    pipeline(this.$ticker,
+      addFrameListener(frame => {
+        frameText.props.value = `${frame.deltaTime.toFixed(2)}ms 平均：${((Date.now() - this.$ticker.startTime) / frame.frameCount).toFixed(2)}ms  绘制尺寸：${this.stage.stageCanvas.width}*${this.stage.stageCanvas.height}px dpi：${this.stage.stageInfo.dpi}`
+        this.render()
+      }),
+      startTicker
+    )
 
     this.render()
     // this.eventListener()

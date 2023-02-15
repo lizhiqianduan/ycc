@@ -1,4 +1,5 @@
 import Ycc from '../../Ycc'
+import { PipeOperation } from '../common/pipe'
 import { isFn } from '../common/utils'
 import { createFrame, YccFrame } from './frame'
 
@@ -328,10 +329,6 @@ export interface YccTicker {
    */
   timerId: number
 
-  addFrameListener: (listener: (frame: YccFrame) => void) => YccTicker
-
-  removeFrameListener: (listener: (frame: YccFrame) => void) => YccTicker
-
 }
 
 /**
@@ -348,39 +345,18 @@ export function createTicker (ycc: Ycc) {
     frameAllCount: 0,
     isRunning: false,
     timerTickCount: 0,
-    timerId: -1,
-    addFrameListener,
-    removeFrameListener
+    timerId: -1
   }
 
   //   ticker.do()
 
   return ticker
-
-  /**
-     * 给每帧添加自定义的监听函数
-     * @param listener
-     */
-  function addFrameListener (listener: (frame: YccFrame) => void) {
-    ticker.frameListenerList.push(listener)
-    return ticker
-  }
-
-  /**
-     * 移除某个监听函数
-     * @param listener
-     */
-  function removeFrameListener (listener: (frame: YccFrame) => void) {
-    const index = ticker.frameListenerList.indexOf(listener)
-    if (index !== -1) { ticker.frameListenerList.splice(index, 1) }
-    return ticker
-  }
 }
 
 /**
-     * 停止心跳
-     */
-export function stopTicker (ticker: YccTicker) {
+ * 停止心跳
+ */
+export const stopTicker: PipeOperation<YccTicker, YccTicker> = function (ticker: YccTicker) {
   // 兼容wxapp处理
   let stop = ticker.ycc.stage.stageCanvas.cancelAnimationFrame ? ticker.ycc.stage.stageCanvas.cancelAnimationFrame : (cancelAnimationFrame || window.webkitCancelAnimationFrame || window.mozCancelAnimationFrame || window.oCancelAnimationFrame)
   stop || (stop = function (id: number) {
@@ -388,8 +364,39 @@ export function stopTicker (ticker: YccTicker) {
   })
   stop(ticker.timerId)
   ticker.isRunning = false
+  return ticker
 }
 
+/**
+ * 添加帧的监听函数
+ * @param listener
+ * @returns
+ */
+export const addFrameListener = function (listener: (frame: YccFrame) => void): PipeOperation<YccTicker, YccTicker> {
+  return function (ticker: YccTicker) {
+    ticker.frameListenerList.push(listener)
+    return ticker
+  }
+}
+/**
+ * 移除帧的监听函数
+ * @param listener
+ * @returns
+ */
+export const removeFrameListener = function (listener: (frame: YccFrame) => void): PipeOperation<YccTicker, YccTicker> {
+  return function (ticker: YccTicker) {
+    const index = ticker.frameListenerList.indexOf(listener)
+    if (index !== -1) { ticker.frameListenerList.splice(index, 1) }
+    return ticker
+  }
+}
+
+/**
+ * 启动心跳
+ * @param ticker
+ * @param frameRate
+ * @returns
+ */
 export function startTicker (ticker: YccTicker, frameRate: number = 60) {
   const self = ticker
   if (self.isRunning) return self
@@ -415,6 +422,7 @@ export function startTicker (ticker: YccTicker, frameRate: number = 60) {
   // 启动心跳
   ticker.timerId = timer(cb)
   self.isRunning = true
+  return ticker
 
   // 心跳回调函数。约60fps
   function cb (curTime: number) {
