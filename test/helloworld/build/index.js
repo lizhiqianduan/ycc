@@ -20,6 +20,13 @@
   };
   var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
 
+  // src/tools/common/pipe.ts
+  function pipeline(initialValue, ...operations) {
+    const result = operations.reduce((pre, cur) => cur(pre), initialValue);
+    return result;
+  }
+  var pipe_default = pipeline;
+
   // src/tools/global-cache/index.ts
   var GLOBAL_CACHE = {};
   var _a;
@@ -933,7 +940,7 @@
     }
   };
 
-  // src/tools/utils.ts
+  // src/tools/common/utils.ts
   var isNum = function(str) {
     return typeof str === "number";
   };
@@ -1332,7 +1339,6 @@
         self.currentFrame.frameCount = self.frameAllCount;
         self.currentFrame.tickerCount = self.timerTickCount;
         _broadcastFrameEvent(self.currentFrame);
-        console.log(self);
         self.lastFrame = self.currentFrame;
       }
       ticker.timerId = timer(cb);
@@ -1894,5 +1900,6 @@
     console.log("\u8D44\u6E90\u52A0\u8F7D\u7ED3\u675F", resources, result);
     app.bootstrap(result);
   });
+  console.log(pipe_default);
 })();
 //# sourceMappingURL=index.js.map

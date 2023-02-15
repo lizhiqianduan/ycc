@@ -8,7 +8,7 @@
 
 import { YccMathDot, YccMathVector } from '../math/index'
 import TouchLifeTracer, { TouchLife, YccTouchEvent } from './YccTouchLife'
-import { isMobile, isNum } from '../utils'
+import { isMobile, isNum } from '../common/utils'
 import { YccTicker } from '../ticker/index'
 
 /**

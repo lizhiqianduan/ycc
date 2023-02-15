@@ -1,5 +1,5 @@
 import Ycc from '../../Ycc'
-import { isFn } from '../utils'
+import { isFn } from '../common/utils'
 import { createFrame, YccFrame } from './frame'
 
 /**
@@ -440,7 +440,7 @@ export function startTicker (ticker: YccTicker, frameRate: number = 60) {
 
       // 执行所有自定义的帧监听函数
       _broadcastFrameEvent(self.currentFrame)
-      console.log(self)
+      // console.log(self)
 
       //  上一帧赋值
       self.lastFrame = self.currentFrame
