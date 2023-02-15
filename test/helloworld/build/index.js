@@ -369,6 +369,110 @@
     }
   };
 
+  // src/tools/common/utils.ts
+  var isNum = function(str) {
+    return typeof str === "number";
+  };
+  var isFn = function(str) {
+    return typeof str === "function";
+  };
+  var isMobile = function() {
+    const userAgentInfo = navigator.userAgent;
+    const Agents = [
+      "Android",
+      "iPhone",
+      "SymbianOS",
+      "Windows Phone",
+      "iPad",
+      "iPod"
+    ];
+    let flag = false;
+    for (let v = 0; v < Agents.length; v++) {
+      if (userAgentInfo.indexOf(Agents[v]) > 0) {
+        flag = true;
+        break;
+      }
+    }
+    return flag;
+  };
+  var getSystemInfo = () => {
+    var _a2;
+    const dpi = (_a2 = window.devicePixelRatio) != null ? _a2 : 1;
+    return {
+      width: window.innerWidth,
+      height: window.innerHeight,
+      dpi,
+      renderWidth: window.innerWidth * dpi,
+      renderHeight: window.innerWidth * dpi
+    };
+  };
+
+  // src/YccStage.ts
+  var createStage = (ycc) => {
+    const stageInfo = getSystemInfo();
+    const stageCanvas = createCanvasByStage(stageInfo);
+    const stageCanvasCtx = stageCanvas.getContext("2d");
+    const stage = {
+      yccInstance: ycc,
+      stageCanvas,
+      stageCanvasCtx,
+      stageInfo,
+      defaultLayer: createLayer({ name: "\u821E\u53F0\u9ED8\u8BA4\u56FE\u5C42" })(stageInfo)
+    };
+    ycc.stage = stage;
+    return ycc;
+  };
+  var createCanvasByStage = (stageInfo) => {
+    return createCanvas(__spreadValues({}, stageInfo));
+  };
+  var getElementByPointer = (dot) => {
+    const layers = getAllLayer();
+    for (let index = layers.length - 1; index >= 0; index--) {
+      const layer = layers[index];
+      const uiList = layer.uiList;
+      for (let i = uiList.length - 1; i >= 0; i--) {
+        const ui = uiList[i];
+        if (ui.isContainDot(dot.dpi(ui.getDpi())))
+          return ui;
+      }
+    }
+  };
+  var getElementByName = function(name) {
+    const layers = getAllLayer();
+    for (let index = 0; index < layers.length; index++) {
+      const layer = layers[index];
+      const uiList = layer.uiList;
+      for (let i = 0; i < uiList.length; i++) {
+        const ui = uiList[i];
+        if (ui.props.name === name)
+          return ui;
+      }
+    }
+  };
+  var clearStage = (withLayerCanvas = true) => {
+    return (stage) => {
+      const dpi = stage.stageInfo.dpi;
+      stage.stageCanvasCtx.clearRect(0, 0, stage.stageInfo.width * dpi, stage.stageInfo.height * dpi);
+      if (withLayerCanvas) {
+        getAllLayer().forEach((layer) => {
+          layer.ctx.clearRect(0, 0, stage.stageInfo.width * dpi, stage.stageInfo.height * dpi);
+        });
+      }
+      return stage.yccInstance;
+    };
+  };
+  var renderAll = (stage) => {
+    const { dpi } = stage.stageInfo;
+    getAllLayer().forEach((layer) => {
+      layer.uiList.forEach((ui) => {
+        ui.renderBg();
+        ui.render();
+        ui.renderAnchor();
+      });
+      stage.stageCanvasCtx.drawImage(layer.ctx.canvas, 0, 0, stage.stageInfo.width * dpi, stage.stageInfo.height * dpi, 0, 0, stage.stageInfo.width * dpi, stage.stageInfo.height * dpi);
+    });
+  };
+
   // src/YccLayer.ts
   var layerIndex = 0;
   var layerList = [];
@@ -379,49 +483,45 @@
     };
   };
   function createLayer(option) {
-    return (stage) => {
+    return (stageInfo) => {
       var _a2, _b, _c, _d, _e;
       const layer = {
         /**
-         * 图层的位置
-         */
+           * 图层的位置
+           */
         position: (_a2 = option == null ? void 0 : option.position) != null ? _a2 : new YccMathDot(0, 0),
         /**
-         * 图层所属的舞台
-         */
-        stage,
-        /**
-         * 存储图层中的所有UI。UI的顺序，即为图层中的渲染顺序。
-         */
+           * 存储图层中的所有UI。UI的顺序，即为图层中的渲染顺序。
+           */
         uiList: [],
         /**
-         * 当前图层的绘图环境
-         * @type {CanvasRenderingContext2D}
-         */
-        ctx: stage.createCanvasByStage().getContext("2d"),
+           * 当前图层的绘图环境
+           * @type {CanvasRenderingContext2D}
+           */
+        ctx: createCanvasByStage(stageInfo).getContext("2d"),
         /**
-         * 图层id
-         */
+           * 图层id
+           */
         id: layerIndex++,
         /**
-         * 图层类型。
-         * `ui`表示用于绘图的图层。`tool`表示辅助的工具图层。`text`表示文字图层。
-         * 默认为`ui`。
-         */
+           * 图层类型。
+           * `ui`表示用于绘图的图层。`tool`表示辅助的工具图层。`text`表示文字图层。
+           * 默认为`ui`。
+           */
         type: (_b = option == null ? void 0 : option.type) != null ? _b : "ui",
         /**
-         * 图层名称
-         * @type {string}
-         */
+           * 图层名称
+           * @type {string}
+           */
         name: (_c = option == null ? void 0 : option.name) != null ? _c : "\u56FE\u5C42_ui_" + layerIndex.toString(),
         /**
-         * 图层是否显示
-         */
+           * 图层是否显示
+           */
         show: (_d = option == null ? void 0 : option.show) != null ? _d : true,
         /**
-         * 图层是否幽灵，幽灵状态的图层，getElementFromPointer 会直接跳过整个图层
-         * @type {boolean}
-         */
+           * 图层是否幽灵，幽灵状态的图层，getElementFromPointer 会直接跳过整个图层
+           * @type {boolean}
+           */
         ghost: (_e = option == null ? void 0 : option.show) != null ? _e : true
       };
       layerList.push(layer);
@@ -458,12 +558,13 @@
       this.props.belongTo = layer;
     }
     /**
-      * 将此UI添加至图层
+      * 将此UI添加至舞台的某个图层
       * @param layer
       */
-    addToLayer(layer) {
-      addUI(this)(layer);
+    addToStage(stage, layer) {
       this.created(layer);
+      this.props.$stage = stage;
+      addUI(this)(layer);
       return this;
     }
     /**
@@ -476,7 +577,7 @@
         console.log("\u8BE5UI\u672A\u52A0\u5165\u56FE\u5C42");
         return false;
       }
-      if (!this.props.belongTo.stage.yccInstance) {
+      if (!this.props.$stage.yccInstance) {
         console.log("\u56FE\u5C42\u8FD8\u672A\u52A0\u5165\u821E\u53F0");
         return false;
       }
@@ -495,7 +596,7 @@
      * 适配dpi
      */
     dpiAdaptation() {
-      const { dpi } = this.props.belongTo.stage.getSystemInfo();
+      const { dpi } = getSystemInfo();
       console.log(dpi);
     }
     /**
@@ -656,16 +757,14 @@
      * @returns
      */
     getDpi() {
-      var _a2, _b;
-      return (_b = (_a2 = this.props.belongTo) == null ? void 0 : _a2.stage.getSystemInfo().dpi) != null ? _b : 1;
+      return getSystemInfo().dpi;
     }
     /**
      * 获取当前实例
      * @returns
      */
     getYcc() {
-      var _a2;
-      return (_a2 = this.props.belongTo) == null ? void 0 : _a2.stage.yccInstance;
+      return this.props.$stage.yccInstance;
     }
     /**
      * 绘制ui的背景，多用于调试
@@ -766,33 +865,6 @@
       ctx.fillText(this.props.value, transformed.worldAnchor.x, transformed.worldAnchor.y);
       ctx.restore();
     }
-  };
-
-  // src/tools/common/utils.ts
-  var isNum = function(str) {
-    return typeof str === "number";
-  };
-  var isFn = function(str) {
-    return typeof str === "function";
-  };
-  var isMobile = function() {
-    const userAgentInfo = navigator.userAgent;
-    const Agents = [
-      "Android",
-      "iPhone",
-      "SymbianOS",
-      "Windows Phone",
-      "iPad",
-      "iPod"
-    ];
-    let flag = false;
-    for (let v = 0; v < Agents.length; v++) {
-      if (userAgentInfo.indexOf(Agents[v]) > 0) {
-        flag = true;
-        break;
-      }
-    }
-    return flag;
   };
 
   // src/tools/ticker/frame.ts
@@ -1391,121 +1463,6 @@
     }
   };
 
-  // src/YccStage.ts
-  var YccStage = class {
-    constructor(ycc) {
-      /**
-       * 舞台的终端设备信息
-       */
-      this.stageInfo = this.getSystemInfo();
-      this.yccInstance = ycc;
-      this.stageCanvas = this.createCanvasByStage();
-      this.stageCanvasCtx = this.stageCanvas.getContext("2d");
-      this.defaultLayer = createLayer({ name: "\u821E\u53F0\u9ED8\u8BA4\u56FE\u5C42" })(this);
-    }
-    /**
-     * 清空舞台
-     * @param withLayerCanvas 是否连带图层的canvas一起清空
-     */
-    clearStage(withLayerCanvas = true) {
-      const dpi = this.stageInfo.dpi;
-      this.stageCanvasCtx.clearRect(0, 0, this.stageInfo.width * dpi, this.stageInfo.height * dpi);
-      if (withLayerCanvas) {
-        getAllLayer().forEach((layer) => {
-          layer.ctx.clearRect(0, 0, this.stageInfo.width * dpi, this.stageInfo.height * dpi);
-        });
-      }
-    }
-    /**
-     * 根据舞台信息，创建一个覆盖全舞台的canvas
-     */
-    createCanvasByStage() {
-      return createCanvas(__spreadValues({}, this.stageInfo));
-    }
-    /**
-     * 根据ui的位置获取舞台上的ui
-     * @param dot
-     */
-    getElementByPointer(dot) {
-      const layers = getAllLayer();
-      for (let index = layers.length - 1; index >= 0; index--) {
-        const layer = layers[index];
-        const uiList = layer.uiList;
-        for (let i = uiList.length - 1; i >= 0; i--) {
-          const ui = uiList[i];
-          if (ui.isContainDot(dot.dpi(ui.getDpi())))
-            return ui;
-        }
-      }
-    }
-    /**
-     * 根据ui的名称获取舞台上的ui
-     * @param name
-     * @returns
-     */
-    getElementByName(name) {
-      const layers = getAllLayer();
-      for (let index = 0; index < layers.length; index++) {
-        const layer = layers[index];
-        const uiList = layer.uiList;
-        for (let i = 0; i < uiList.length; i++) {
-          const ui = uiList[i];
-          if (ui.props.name === name)
-            return ui;
-        }
-      }
-    }
-    /**
-     *
-     * @param dot
-     * @param uiIsShow
-     * @returns
-     */
-    // getUIFromPointer (dot: YccMathDot, uiIsShow: boolean) {
-    //   const self = this.ycc
-    //   uiIsShow = isBoolean(uiIsShow) ? uiIsShow : true
-    //   // 从最末一个图层开始寻找
-    //   for (let j = self.layerList.length - 1; j >= 0; j--) {
-    //     const layer = self.layerList[j]
-    //     // 幽灵图层，直接跳过
-    //     if (layer.ghost) continue
-    //     if (uiIsShow && !layer.show) continue
-    //     const ui = layer.getUIFromPointer(dot, uiIsShow)
-    //     if (ui) { return ui }
-    //   }
-    //   return null
-    // }
-    /**
-     * 获取系统信息：dpi、高、宽，等
-     * @returns
-     */
-    getSystemInfo() {
-      var _a2;
-      const dpi = (_a2 = window.devicePixelRatio) != null ? _a2 : 1;
-      return {
-        width: window.innerWidth,
-        height: window.innerHeight,
-        dpi,
-        renderWidth: window.innerWidth * dpi,
-        renderHeight: window.innerWidth * dpi
-      };
-    }
-    /**
-     * 绘制所有图层的所有元素
-     */
-    renderAll() {
-      const { dpi } = this.stageInfo;
-      getAllLayer().forEach((layer) => {
-        layer.uiList.forEach((ui) => {
-          ui.renderBg();
-          ui.render();
-          ui.renderAnchor();
-        });
-        this.stageCanvasCtx.drawImage(layer.ctx.canvas, 0, 0, this.stageInfo.width * dpi, this.stageInfo.height * dpi, 0, 0, this.stageInfo.width * dpi, this.stageInfo.height * dpi);
-      });
-    }
-  };
-
   // src/Ycc.ts
   var Ycc = class {
     constructor(config) {
@@ -1514,7 +1471,7 @@
         debugDrawContainer: false
       };
       this.$config = Object.assign(defaultConfig, config);
-      this.stage = new YccStage(this);
+      this.stage = createStage(this).stage;
       this.$ticker = createTicker(this);
       this.$gesture = new YccGesture({ target: this.stage.stageCanvas, frameTickerSync: this.$ticker });
     }
@@ -1805,8 +1762,8 @@
     constructor() {
       super(...arguments);
       this.layer = {
-        test1: createLayer({ name: "t1" })(this.stage),
-        test2: createLayer({ name: "t2" })(this.stage)
+        test1: createLayer({ name: "t1" })(this.stage.stageInfo),
+        test2: createLayer({ name: "t2" })(this.stage.stageInfo)
       };
     }
     created() {
@@ -1819,7 +1776,7 @@
           new YccMathDot(10, 10),
           new YccMathDot(100, 100)
         ]
-      }).addToLayer(this.stage.defaultLayer);
+      }).addToStage(this.stage, this.stage.defaultLayer);
       new PolygonUI({
         name: "TestPolygon",
         anchor: new YccMathDot(200, 200),
@@ -1829,7 +1786,7 @@
           new YccMathDot(0, 200),
           new YccMathDot(0, 0)
         ]
-      }).addToLayer(this.layer.test1);
+      }).addToStage(this.stage, this.layer.test1);
       new TextUI({
         value: "sfsdfsdf",
         anchor: new YccMathDot(200, 10),
@@ -1837,7 +1794,7 @@
           fontSize: 16,
           color: "red"
         }
-      }).addToLayer(this.layer.test2);
+      }).addToStage(this.stage, this.layer.test2);
       new ImageUI({
         name: "TestImage",
         anchor: new YccMathDot(50, 50),
@@ -1847,10 +1804,10 @@
         fillMode: "scale9Grid",
         scale9GridRect: new YccMathRect(30, 30, 256 / dpi - 30 * 2, 256 / dpi - 30 * 2),
         rect: new YccMathRect(-10, -30, 180, 180)
-      }).addToLayer(this.stage.defaultLayer);
+      }).addToStage(this.stage, this.stage.defaultLayer);
       const frameText = new TextUI({
         value: ""
-      }).addToLayer(this.stage.defaultLayer);
+      }).addToStage(this.stage, this.stage.defaultLayer);
       pipe_default(
         this.$ticker,
         addFrameListener((frame) => {
@@ -1865,24 +1822,24 @@
     // 舞台事件监听
     eventListener() {
       this.$gesture.events.tap = (e) => {
-        const ui = this.stage.getElementByPointer(e.data.position);
+        const ui = getElementByPointer(e.data.position);
         console.log("\u70B9\u51FBui\uFF1A", ui);
       };
       this.$gesture.events.dragend = (e) => {
         console.log("dragend\uFF1A", e);
       };
       this.$gesture.events.dragging = (e) => {
-        this.stage.getElementByName("line01").props.dots = e.data.life.moveTouchEventList.map((item) => new YccMathDot(item.triggerTouch.pageX, item.triggerTouch.pageY));
+        getElementByName("line01").props.dots = e.data.life.moveTouchEventList.map((item) => new YccMathDot(item.triggerTouch.pageX, item.triggerTouch.pageY));
       };
       this.$gesture.events.dragstart = (e) => {
         console.log("dragstart\uFF1A", e);
       };
     }
     render() {
-      this.stage.clearStage();
-      const TestImage = this.stage.getElementByName("TestImage");
+      clearStage()(this.stage);
+      const TestImage = getElementByName("TestImage");
       TestImage.props.rotation++;
-      this.stage.renderAll();
+      renderAll(this.stage);
     }
   };
 

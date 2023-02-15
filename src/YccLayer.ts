@@ -1,7 +1,8 @@
 import { YccMathDot } from './tools/math/index'
-import { YccStage } from './Ycc'
 import YccUI from './ui/YccUI'
 import { PipeOperation } from './tools/common/pipe'
+import { createCanvasByStage } from './YccStage'
+import { getSystemInfo } from './tools/common/utils'
 
 /**
  * 图层的外部属性
@@ -27,7 +28,6 @@ export default interface YccLayer {
 
   show: boolean
   ghost: boolean
-  stage: YccStage
 }
 
 // 图层的自增id
@@ -53,56 +53,51 @@ export const addUI = function (ui: YccUI): PipeOperation<YccLayer, YccUI> {
  * @param option
  */
 export function createLayer (option?: LayerOpt) {
-  return (stage: YccStage) => {
+  return (stageInfo: ReturnType<typeof getSystemInfo>) => {
     const layer: YccLayer = {
       /**
-       * 图层的位置
-       */
+         * 图层的位置
+         */
       position: option?.position ?? new YccMathDot(0, 0),
 
       /**
-       * 图层所属的舞台
-       */
-      stage,
-
-      /**
-       * 存储图层中的所有UI。UI的顺序，即为图层中的渲染顺序。
-       */
+         * 存储图层中的所有UI。UI的顺序，即为图层中的渲染顺序。
+         */
       uiList: [],
 
       /**
-       * 当前图层的绘图环境
-       * @type {CanvasRenderingContext2D}
-       */
-      ctx: stage.createCanvasByStage().getContext('2d')!,
+         * 当前图层的绘图环境
+         * @type {CanvasRenderingContext2D}
+         */
+      ctx: createCanvasByStage(stageInfo).getContext('2d')!,
 
       /**
-       * 图层id
-       */
+         * 图层id
+         */
       id: layerIndex++,
 
       /**
-       * 图层类型。
-       * `ui`表示用于绘图的图层。`tool`表示辅助的工具图层。`text`表示文字图层。
-       * 默认为`ui`。
-       */
+         * 图层类型。
+         * `ui`表示用于绘图的图层。`tool`表示辅助的工具图层。`text`表示文字图层。
+         * 默认为`ui`。
+         */
       type: option?.type ?? 'ui',
 
       /**
-       * 图层名称
-       * @type {string}
-       */
+         * 图层名称
+         * @type {string}
+         */
       name: option?.name ?? ('图层_' + 'ui' + '_' + layerIndex.toString()),
 
       /**
-       * 图层是否显示
-       */
+         * 图层是否显示
+         */
       show: option?.show ?? true,
 
       /**
-       * 图层是否幽灵，幽灵状态的图层，getElementFromPointer 会直接跳过整个图层
-       * @type {boolean}
-       */
+         * 图层是否幽灵，幽灵状态的图层，getElementFromPointer 会直接跳过整个图层
+         * @type {boolean}
+         */
       ghost: option?.show ?? true
 
     }

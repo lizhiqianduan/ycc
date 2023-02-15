@@ -4,6 +4,8 @@
 
 import YccLayer, { addUI } from '../YccLayer'
 import { YccMathDot, YccMathRect } from '../tools/math/index'
+import { getSystemInfo } from '../tools/common/utils'
+import YccStage from '../YccStage'
 
 /**
   * UI的公用属性
@@ -15,8 +17,13 @@ export interface YccUICommonProps {
   name?: string
   /**
      * UI所属的图层，若UI为加入图层，所有与绘制相关的方法将抛错
+     * 在调用`addToStage`之前此值为空
      */
   belongTo?: YccLayer
+  /**
+   * UI所属的舞台 在调用`addToStage`之前此值为空
+   */
+  $stage?: YccStage
 
   /**
          * 用户自定义的数据
@@ -145,13 +152,13 @@ export default abstract class YccUI<YccUIProps extends YccUICommonProps = YccUIC
   }
 
   /**
-    * 将此UI添加至图层
+    * 将此UI添加至舞台的某个图层
     * @param layer
     */
-  addToLayer (layer: YccLayer) {
-    // layer.addUI(this)
-    addUI(this)(layer)
+  addToStage (stage: YccStage, layer: YccLayer) {
     this.created(layer)
+    this.props.$stage = stage
+    addUI(this)(layer)
     return this
   }
 
@@ -162,7 +169,7 @@ export default abstract class YccUI<YccUIProps extends YccUICommonProps = YccUIC
     */
   isDrawable () {
     if (!this.props.belongTo) { console.log('该UI未加入图层'); return false }
-    if (!this.props.belongTo.stage.yccInstance) { console.log('图层还未加入舞台'); return false }
+    if (!this.props.$stage!.yccInstance) { console.log('图层还未加入舞台'); return false }
     if (this.props.coordinates.length === 0) { console.log('该UI未设置坐标'); return false }
     if (this.props.coordinates.length < 2) { console.log('该UI坐标未正确设置'); return false }
     return true
@@ -173,7 +180,7 @@ export default abstract class YccUI<YccUIProps extends YccUICommonProps = YccUIC
    * 适配dpi
    */
   dpiAdaptation () {
-    const { dpi } = this.props.belongTo!.stage.getSystemInfo()!
+    const { dpi } = getSystemInfo()!
     console.log(dpi)
   }
 
@@ -360,7 +367,7 @@ export default abstract class YccUI<YccUIProps extends YccUICommonProps = YccUIC
    * @returns
    */
   getDpi () {
-    return this.props.belongTo?.stage.getSystemInfo().dpi ?? 1
+    return getSystemInfo().dpi
   }
 
   /**
@@ -368,7 +375,7 @@ export default abstract class YccUI<YccUIProps extends YccUICommonProps = YccUIC
    * @returns
    */
   getYcc () {
-    return this.props.belongTo?.stage.yccInstance
+    return this.props.$stage!.yccInstance
   }
 
   /**

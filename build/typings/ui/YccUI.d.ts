@@ -107,7 +107,7 @@ export default abstract class YccUI<YccUIProps extends YccUICommonProps = YccUIC
       * 将此UI添加至图层
       * @param layer
       */
-    addToLayer(layer: YccLayer): this;
+    addToStage(layer: YccLayer): this;
     /**
       * 判断UI是否可绘制
       * 存在`belongTo`且存在`coordinates`则认为此UI可绘制

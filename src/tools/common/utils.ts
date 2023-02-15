@@ -73,3 +73,18 @@ export const isMobile = function () {
   }
   return flag
 }
+
+/**
+ * 获取系统的dpi、高宽等尺寸
+ * @returns
+ */
+export const getSystemInfo = () => {
+  const dpi = window.devicePixelRatio ?? 1
+  return {
+    width: window.innerWidth,
+    height: window.innerHeight,
+    dpi,
+    renderWidth: window.innerWidth * dpi,
+    renderHeight: window.innerWidth * dpi
+  }
+}

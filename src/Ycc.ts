@@ -1,7 +1,7 @@
 import YccGesture from './tools/gesture/index'
 import { LoaderResult } from './tools/loader/index'
 import { createTicker, YccTicker } from './tools/ticker/index'
-import YccStage from './YccStage'
+import YccStage, { createStage } from './YccStage'
 
 export {
   YccStage
@@ -60,7 +60,7 @@ export default class Ycc {
     this.$config = Object.assign(defaultConfig, config)
 
     // 舞台初始化
-    this.stage = new YccStage(this)
+    this.stage = createStage(this).stage
 
     this.$ticker = createTicker(this)
     // 手势库的支持

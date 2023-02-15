@@ -8,6 +8,7 @@ import PolygonUI from '@datagetter.cn/ycc/ui/PolygonUI'
 import { createLayer } from '@datagetter.cn/ycc/YccLayer'
 import { addFrameListener, startTicker } from '@datagetter.cn/ycc/tools/ticker/index'
 import pipeline from '@datagetter.cn/ycc/tools/common/pipe'
+import { clearStage, getElementByName, getElementByPointer, renderAll } from '@datagetter.cn/ycc/YccStage'
 // import LineUI from '@datagetter.cn/ycc/ui/LineUI'
 // import ImageUI from '@datagetter.cn/ycc/ui/ImageUI'
 
@@ -16,8 +17,8 @@ import pipeline from '@datagetter.cn/ycc/tools/common/pipe'
  */
 export default class App extends Ycc {
   layer = {
-    test1: createLayer({ name: 't1' })(this.stage),
-    test2: createLayer({ name: 't2' })(this.stage)
+    test1: createLayer({ name: 't1' })(this.stage.stageInfo),
+    test2: createLayer({ name: 't2' })(this.stage.stageInfo)
   }
 
   created () {
@@ -30,7 +31,7 @@ export default class App extends Ycc {
         new YccMathDot(10, 10),
         new YccMathDot(100, 100)
       ]
-    }).addToLayer(this.stage.defaultLayer)
+    }).addToStage(this.stage, this.stage.defaultLayer)
 
     // 新建一个UI
     new PolygonUI({
@@ -42,7 +43,7 @@ export default class App extends Ycc {
         new YccMathDot(0, 200),
         new YccMathDot(0, 0)
       ]
-    }).addToLayer(this.layer.test1)
+    }).addToStage(this.stage, this.layer.test1)
 
     // 新建一个文本
     new TextUI({
@@ -52,7 +53,7 @@ export default class App extends Ycc {
         fontSize: 16,
         color: 'red'
       }
-    }).addToLayer(this.layer.test2)
+    }).addToStage(this.stage, this.layer.test2)
 
     new ImageUI({
       name: 'TestImage',
@@ -63,11 +64,11 @@ export default class App extends Ycc {
       fillMode: 'scale9Grid',
       scale9GridRect: new YccMathRect(30, 30, 256 / dpi - 30 * 2, 256 / dpi - 30 * 2),
       rect: new YccMathRect(-10, -30, 180, 180)
-    }).addToLayer(this.stage.defaultLayer)
+    }).addToStage(this.stage, this.stage.defaultLayer)
 
     const frameText = new TextUI({
       value: ''
-    }).addToLayer(this.stage.defaultLayer)
+    }).addToStage(this.stage, this.stage.defaultLayer)
 
     // 加入定时器
     pipeline(this.$ticker,
@@ -85,7 +86,7 @@ export default class App extends Ycc {
   // 舞台事件监听
   eventListener () {
     this.$gesture.events.tap = e => {
-      const ui = this.stage.getElementByPointer(e.data.position)
+      const ui = getElementByPointer(e.data.position)
       console.log('点击ui：', ui)
     }
 
@@ -94,7 +95,7 @@ export default class App extends Ycc {
     }
     this.$gesture.events.dragging = e => {
       // console.log('dragging：', e)
-      (this.stage.getElementByName('line01')! as LineUI).props.dots = e.data.life.moveTouchEventList.map(item => new YccMathDot(item.triggerTouch.pageX, item.triggerTouch.pageY))
+      (getElementByName('line01')! as LineUI).props.dots = e.data.life.moveTouchEventList.map(item => new YccMathDot(item.triggerTouch.pageX, item.triggerTouch.pageY))
     }
     this.$gesture.events.dragstart = e => {
       console.log('dragstart：', e)
@@ -104,15 +105,15 @@ export default class App extends Ycc {
   render () {
     // 先全部清空舞台
     // 注：条件允许的情况，可以只部分清空
-    this.stage.clearStage()
+    clearStage()(this.stage)
 
     // 这里可以做点动画
     // 比如，改变一下UI的位置
-    const TestImage = this.stage.getElementByName('TestImage')
-    TestImage!.props.rotation++
+    const TestImage = getElementByName('TestImage')!
+    TestImage.props.rotation++
 
     // 渲染函数，直接调用`renderAll`
     // 注：条件允许的情况，可以只部分render
-    this.stage.renderAll()
+    renderAll(this.stage)
   }
 }
