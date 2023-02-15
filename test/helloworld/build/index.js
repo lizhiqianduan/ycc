@@ -707,6 +707,118 @@
     }
   };
 
+  // src/tools/common/utils.ts
+  var isNum = function(str) {
+    return typeof str === "number";
+  };
+  var isFn = function(str) {
+    return typeof str === "function";
+  };
+  var isMobile = function() {
+    const userAgentInfo = navigator.userAgent;
+    const Agents = [
+      "Android",
+      "iPhone",
+      "SymbianOS",
+      "Windows Phone",
+      "iPad",
+      "iPod"
+    ];
+    let flag = false;
+    for (let v = 0; v < Agents.length; v++) {
+      if (userAgentInfo.indexOf(Agents[v]) > 0) {
+        flag = true;
+        break;
+      }
+    }
+    return flag;
+  };
+
+  // src/tools/ticker/frame.ts
+  function createFrame(lastFrame) {
+    const now = performance.now();
+    if (lastFrame) {
+      const deltaTime = now - lastFrame.createTime;
+      const fps = parseInt(`${1e3 / deltaTime}`);
+      const frameCount = lastFrame.frameCount + 1;
+      return {
+        createTime: now,
+        isRendered: false,
+        tickerCount: 0,
+        deltaTime,
+        frameCount,
+        fps
+      };
+    } else {
+      return {
+        createTime: now,
+        isRendered: false,
+        deltaTime: 0,
+        tickerCount: 0,
+        frameCount: 1,
+        fps: 60
+      };
+    }
+  }
+
+  // src/tools/ticker/index.ts
+  function createTicker(ycc) {
+    const startTime = Date.now();
+    const ticker = {
+      ycc,
+      startTime,
+      frameListenerList: [],
+      frameAllCount: 0,
+      isRunning: false,
+      timerTickCount: 0,
+      timerId: -1
+    };
+    return ticker;
+  }
+  var addFrameListener = function(listener) {
+    return function(ticker) {
+      ticker.frameListenerList.push(listener);
+      return ticker;
+    };
+  };
+  function startTicker(ticker, frameRate = 60) {
+    const self = ticker;
+    if (self.isRunning)
+      return self;
+    const tickerSpace = parseInt(`${60 / frameRate}`) || 1;
+    let timer = ticker.ycc.stage.stageCanvas.requestAnimationFrame ? ticker.ycc.stage.stageCanvas.requestAnimationFrame : requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame || window.oRequestAnimationFrame || window.msRequestAnimationFrame;
+    self.startTime = Date.now();
+    timer || (timer = function(callback) {
+      return setTimeout(function() {
+        callback(Date.now());
+      }, 1e3 / 60);
+    });
+    ticker.timerId = timer(cb);
+    self.isRunning = true;
+    return ticker;
+    function cb(curTime) {
+      var _a2, _b, _c, _d;
+      self.timerTickCount++;
+      if (self.timerTickCount - ((_b = (_a2 = self.lastFrame) == null ? void 0 : _a2.tickerCount) != null ? _b : 0) === tickerSpace) {
+        self.frameAllCount++;
+        self.currentFrame = createFrame(self.lastFrame);
+        self.currentFrame.deltaTime = curTime - ((_d = (_c = self.lastFrame) == null ? void 0 : _c.createTime) != null ? _d : 0);
+        self.currentFrame.fps = frameRate;
+        self.currentFrame.frameCount = self.frameAllCount;
+        self.currentFrame.tickerCount = self.timerTickCount;
+        _broadcastFrameEvent(self.currentFrame);
+        self.lastFrame = self.currentFrame;
+      }
+      ticker.timerId = timer(cb);
+    }
+    function _broadcastFrameEvent(frame) {
+      for (let i = 0; i < self.frameListenerList.length; i++) {
+        const listener = self.frameListenerList[i];
+        isFn(listener) && listener(frame);
+      }
+    }
+  }
+
   // src/tools/gesture/YccTouchLife.ts
   function syncTouches(touches) {
     const copedList = [];
@@ -797,12 +909,12 @@
       this.target.addEventListener("touchstart", this.touchstart.bind(this));
       this.target.addEventListener("touchend", this.touchend.bind(this));
       if (this.frameTickerSync) {
-        this.frameTickerSync.addFrameListener((frame) => {
+        addFrameListener((frame) => {
           if (TouchLifeTracer.touchmoveEventCache) {
             this.touchmoveTrigger(TouchLifeTracer.touchmoveEventCache, frame);
             TouchLifeTracer.touchmoveEventCache = void 0;
           }
-        });
+        })(this.frameTickerSync);
         this.target.addEventListener("touchmove", this.touchmoveSync.bind(this));
       }
     }
@@ -931,33 +1043,6 @@
       if (self.onlifeend)
         self.onlifeend(life);
     }
-  };
-
-  // src/tools/common/utils.ts
-  var isNum = function(str) {
-    return typeof str === "number";
-  };
-  var isFn = function(str) {
-    return typeof str === "function";
-  };
-  var isMobile = function() {
-    const userAgentInfo = navigator.userAgent;
-    const Agents = [
-      "Android",
-      "iPhone",
-      "SymbianOS",
-      "Windows Phone",
-      "iPad",
-      "iPod"
-    ];
-    let flag = false;
-    for (let v = 0; v < Agents.length; v++) {
-      if (userAgentInfo.indexOf(Agents[v]) > 0) {
-        flag = true;
-        break;
-      }
-    }
-    return flag;
   };
 
   // src/tools/gesture/index.ts
@@ -1244,91 +1329,6 @@
       };
     }
   };
-
-  // src/tools/ticker/frame.ts
-  function createFrame(lastFrame) {
-    const now = performance.now();
-    if (lastFrame) {
-      const deltaTime = now - lastFrame.createTime;
-      const fps = parseInt(`${1e3 / deltaTime}`);
-      const frameCount = lastFrame.frameCount + 1;
-      return {
-        createTime: now,
-        isRendered: false,
-        tickerCount: 0,
-        deltaTime,
-        frameCount,
-        fps
-      };
-    } else {
-      return {
-        createTime: now,
-        isRendered: false,
-        deltaTime: 0,
-        tickerCount: 0,
-        frameCount: 1,
-        fps: 60
-      };
-    }
-  }
-
-  // src/tools/ticker/index.ts
-  function createTicker(ycc) {
-    const startTime = Date.now();
-    const ticker = {
-      ycc,
-      startTime,
-      frameListenerList: [],
-      frameAllCount: 0,
-      isRunning: false,
-      timerTickCount: 0,
-      timerId: -1
-    };
-    return ticker;
-  }
-  var addFrameListener = function(listener) {
-    return function(ticker) {
-      ticker.frameListenerList.push(listener);
-      return ticker;
-    };
-  };
-  function startTicker(ticker, frameRate = 60) {
-    const self = ticker;
-    if (self.isRunning)
-      return self;
-    const tickerSpace = parseInt(`${60 / frameRate}`) || 1;
-    let timer = ticker.ycc.stage.stageCanvas.requestAnimationFrame ? ticker.ycc.stage.stageCanvas.requestAnimationFrame : requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame || window.oRequestAnimationFrame || window.msRequestAnimationFrame;
-    self.startTime = Date.now();
-    timer || (timer = function(callback) {
-      return setTimeout(function() {
-        callback(Date.now());
-      }, 1e3 / 60);
-    });
-    ticker.timerId = timer(cb);
-    self.isRunning = true;
-    return ticker;
-    function cb(curTime) {
-      var _a2, _b, _c, _d;
-      self.timerTickCount++;
-      if (self.timerTickCount - ((_b = (_a2 = self.lastFrame) == null ? void 0 : _a2.tickerCount) != null ? _b : 0) === tickerSpace) {
-        self.frameAllCount++;
-        self.currentFrame = createFrame(self.lastFrame);
-        self.currentFrame.deltaTime = curTime - ((_d = (_c = self.lastFrame) == null ? void 0 : _c.createTime) != null ? _d : 0);
-        self.currentFrame.fps = frameRate;
-        self.currentFrame.frameCount = self.frameAllCount;
-        self.currentFrame.tickerCount = self.timerTickCount;
-        _broadcastFrameEvent(self.currentFrame);
-        self.lastFrame = self.currentFrame;
-      }
-      ticker.timerId = timer(cb);
-    }
-    function _broadcastFrameEvent(frame) {
-      for (let i = 0; i < self.frameListenerList.length; i++) {
-        const listener = self.frameListenerList[i];
-        isFn(listener) && listener(frame);
-      }
-    }
-  }
 
   // src/YccLayer.ts
   var YccLayer = class {
@@ -1839,6 +1839,7 @@
         startTicker
       );
       this.render();
+      this.eventListener();
     }
     // 舞台事件监听
     eventListener() {

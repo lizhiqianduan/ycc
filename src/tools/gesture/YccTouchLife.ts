@@ -1,6 +1,6 @@
 import { YccMathDot, YccMathVector } from '../math/index'
 import { YccFrame } from '../ticker/frame'
-import { YccTicker } from '../ticker/index'
+import { addFrameListener, YccTicker } from '../ticker/index'
 
 export type Mutable<T> = {
   -readonly [K in keyof T]: T[K]
@@ -213,12 +213,12 @@ export default class TouchLifeTracer {
     this.target.addEventListener('touchend', this.touchend.bind(this))
 
     if (this.frameTickerSync) {
-      this.frameTickerSync.addFrameListener(frame => {
+      addFrameListener(frame => {
         if (TouchLifeTracer.touchmoveEventCache) {
           this.touchmoveTrigger(TouchLifeTracer.touchmoveEventCache, frame)
           TouchLifeTracer.touchmoveEventCache = undefined // 重置
         }
-      })
+      })(this.frameTickerSync)
       this.target.addEventListener('touchmove', this.touchmoveSync.bind(this))
     }
   }

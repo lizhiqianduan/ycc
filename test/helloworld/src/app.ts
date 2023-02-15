@@ -79,7 +79,7 @@ export default class App extends Ycc {
     )
 
     this.render()
-    // this.eventListener()
+    this.eventListener()
   }
 
   // 舞台事件监听
