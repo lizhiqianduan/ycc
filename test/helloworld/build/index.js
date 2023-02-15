@@ -24,145 +24,9 @@
   var GLOBAL_CACHE = {};
   var _a;
   GLOBAL_CACHE = JSON.parse((_a = localStorage.getItem("ycc_global")) != null ? _a : "{}");
-  function GetGlobal(key) {
-    return GLOBAL_CACHE[key];
-  }
   function SetGlobal(key, value) {
     GLOBAL_CACHE[key] = value;
     localStorage.setItem("ycc_global", JSON.stringify(GLOBAL_CACHE));
-  }
-
-  // src/tools/polyfill/index.ts
-  function createCanvas(options) {
-    var _a2;
-    const canvas = document.createElement("canvas");
-    const dpi = (_a2 = options.dpi) != null ? _a2 : 2;
-    canvas.width = options.width * dpi;
-    canvas.height = options.height * dpi;
-    canvas.style.width = options.width.toString() + "px";
-    canvas.style.display = "block";
-    return canvas;
-  }
-  function createImage(ycc) {
-    if (GetGlobal("env") === "wxapp") {
-      if (!ycc) {
-        console.error("ycc\u5B9E\u4F8B\u5FC5\u4F20");
-        return new HTMLImageElement();
-      }
-      return ycc.stage.stageCanvas.createImage();
-    }
-    const img = new Image();
-    return img;
-  }
-
-  // src/tools/loader/index.ts
-  var ParallelLoader = class {
-    constructor(ycc, resArr) {
-      this.bind = (ycc) => {
-        this.ycc = ycc;
-        return this;
-      };
-      this.load = (endCb, progressCb) => {
-        const { ycc, resArr } = this;
-        this.endCb = endCb;
-        this.progressCb = progressCb;
-        const endResArr = [];
-        const endResMap = {};
-        let endLen = 0;
-        let successCnt = 0;
-        for (let i = 0; i < resArr.length; i++) {
-          const curRes = resArr[i];
-          if (curRes.type === "image") {
-            curRes.element = createImage(ycc);
-          }
-          if (curRes.type === "audio") {
-            curRes.element = new Audio();
-          }
-          console.log(curRes.type);
-          loadResource(curRes, (res) => {
-            if (progressCb)
-              progressCb(res, i);
-            endResArr.push(res);
-            endResMap[res.name] = res;
-            endLen++;
-            if (res.success)
-              successCnt++;
-            if (endLen === resArr.length) {
-              if (endCb) {
-                endCb({
-                  totalCnt: resArr.length,
-                  successCnt,
-                  resArr: endResArr,
-                  resMap: endResMap
-                });
-              }
-            }
-          });
-        }
-        return this;
-      };
-      this.end = (endCb) => {
-        this.endCb = endCb;
-        return this;
-      };
-      this.progress = (progressCb) => {
-        this.progressCb = progressCb;
-        return this;
-      };
-      this.ycc = ycc;
-      this.resArr = resArr;
-    }
-  };
-  function loadResource(res, endCb) {
-    if (res.element instanceof HTMLImageElement) {
-      loadImage(res, endCb);
-    }
-    if (res.element instanceof Audio) {
-      loadAudio(res, endCb);
-    }
-  }
-  function loadImage(res, endCb) {
-    var _a2;
-    res.success = false;
-    if (!(res.element instanceof HTMLImageElement)) {
-      endCb(res);
-      return;
-    }
-    res.type = "image";
-    if (res.element.setAttribute != null) {
-      res.element.setAttribute("src", res.url);
-      res.element.setAttribute("crossOrigin", (_a2 = res.crossOrigin) != null ? _a2 : "");
-    }
-    res.element.onload = (e) => {
-      res.success = true;
-      endCb(res);
-    };
-    res.element.onerror = (e) => {
-      res.errorMsg = e.toString();
-      endCb(res);
-    };
-  }
-  function loadAudio(res, endCb) {
-    var _a2;
-    res.success = false;
-    if (!(res.element instanceof Audio)) {
-      endCb(res);
-      return;
-    }
-    res.type = "audio";
-    if (res.element.setAttribute != null) {
-      res.element.setAttribute("src", res.url);
-      res.element.setAttribute("crossOrigin", (_a2 = res.crossOrigin) != null ? _a2 : "");
-      res.element.setAttribute("preload", "load");
-    }
-    res.element.onloadedmetadata = (e) => {
-      res.success = true;
-      endCb(res);
-    };
-    res.element.onerror = (e) => {
-      res.errorMsg = e.toString();
-      endCb(res);
-    };
   }
 
   // src/tools/math/index.ts
@@ -407,20 +271,38 @@
     };
   };
 
+  // src/tools/polyfill/index.ts
+  function createCanvas(options) {
+    var _a2;
+    const canvas = document.createElement("canvas");
+    const dpi = (_a2 = options.dpi) != null ? _a2 : 2;
+    canvas.width = options.width * dpi;
+    canvas.height = options.height * dpi;
+    canvas.style.width = options.width.toString() + "px";
+    canvas.style.display = "block";
+    return canvas;
+  }
+  function createImage() {
+    const img = new Image();
+    return img;
+  }
+
   // src/YccStage.ts
-  var createStage = (ycc) => {
+  var createStage = () => {
     const stageInfo = getSystemInfo();
     const stageCanvas = createCanvasByStage(stageInfo);
     const stageCanvasCtx = stageCanvas.getContext("2d");
     const stage = {
-      yccInstance: ycc,
       stageCanvas,
       stageCanvasCtx,
       stageInfo,
       defaultLayer: createLayer({ name: "\u821E\u53F0\u9ED8\u8BA4\u56FE\u5C42" })(stageInfo)
     };
-    ycc.stage = stage;
-    return ycc;
+    return { stage, bindYcc };
+    function bindYcc(ycc) {
+      ycc.stage = stage;
+      stage.yccInstance = ycc;
+    }
   };
   var createCanvasByStage = (stageInfo) => {
     return createCanvas(__spreadValues({}, stageInfo));
@@ -895,10 +777,9 @@
   }
 
   // src/tools/ticker/index.ts
-  function createTicker(ycc) {
+  function createTicker() {
     const startTime = Date.now();
     const ticker = {
-      ycc,
       startTime,
       frameListenerList: [],
       frameAllCount: 0,
@@ -906,7 +787,11 @@
       timerTickCount: 0,
       timerId: -1
     };
-    return ticker;
+    return { ticker, bindYcc };
+    function bindYcc(ycc) {
+      ycc.$ticker = ticker;
+      ticker.ycc = ycc;
+    }
   }
   var addFrameListener = function(listener) {
     return function(ticker) {
@@ -1464,47 +1349,19 @@
   };
 
   // src/Ycc.ts
-  var Ycc = class {
-    constructor(config) {
-      const defaultConfig = {
-        appenv: "h5",
-        debugDrawContainer: false
-      };
-      this.$config = Object.assign(defaultConfig, config);
-      this.stage = createStage(this).stage;
-      this.$ticker = createTicker(this);
-      this.$gesture = new YccGesture({ target: this.stage.stageCanvas, frameTickerSync: this.$ticker });
-    }
-    /**
-     * 启动
-     * @param {Resource[]} resources 已加载完成的资源
-     */
-    bootstrap(resources2) {
-      this.$resouces = resources2;
-      this.created();
-      return this;
-    }
-    /**
-     * 根据资源名称获取资源
-     * @param resName
-     */
-    getRes(resName) {
-      var _a2;
-      const res = (_a2 = this.$resouces) == null ? void 0 : _a2.resMap[resName];
-      return res;
-    }
-    /**
-     * 应用的入口
-     * @overwrite
-     */
-    created() {
-    }
-    /**
-     * 渲染函数
-     * @overwrite
-     */
-    render() {
-    }
+  var createApp = (resources) => {
+    const stageCreator = createStage();
+    const tickerCreateor = createTicker();
+    const ycc = {
+      stage: stageCreator.stage,
+      $ticker: tickerCreateor.ticker,
+      $gesture: new YccGesture({ target: stageCreator.stage.stageCanvas, frameTickerSync: tickerCreateor.ticker }),
+      appenv: "h5",
+      $resouces: resources
+    };
+    stageCreator.bindYcc(ycc);
+    tickerCreateor.bindYcc(ycc);
+    return ycc;
   };
 
   // src/ui/ImageUI.ts
@@ -1750,120 +1607,223 @@
     }
   };
 
-  // src/tools/common/pipe.ts
-  function pipeline(initialValue, ...operations) {
-    const result = operations.reduce((pre, cur) => cur(pre), initialValue);
-    return result;
-  }
-  var pipe_default = pipeline;
-
-  // test/helloworld/src/app.ts
-  var App = class extends Ycc {
-    constructor() {
-      super(...arguments);
-      this.layer = {
-        test1: createLayer({ name: "t1" })(this.stage.stageInfo),
-        test2: createLayer({ name: "t2" })(this.stage.stageInfo)
-      };
-    }
-    created() {
-      var _a2;
-      const dpi = this.stage.stageInfo.dpi;
-      (_a2 = document.getElementById("canvas")) == null ? void 0 : _a2.appendChild(this.stage.stageCanvas);
-      new LineUI({
-        name: "line01",
-        dots: [
-          new YccMathDot(10, 10),
-          new YccMathDot(100, 100)
-        ]
-      }).addToStage(this.stage, this.stage.defaultLayer);
-      new PolygonUI({
-        name: "TestPolygon",
-        anchor: new YccMathDot(200, 200),
-        coordinates: [
-          new YccMathDot(0, 0),
-          new YccMathDot(200, 0),
-          new YccMathDot(0, 200),
-          new YccMathDot(0, 0)
-        ]
-      }).addToStage(this.stage, this.layer.test1);
-      new TextUI({
-        value: "sfsdfsdf",
-        anchor: new YccMathDot(200, 10),
-        style: {
-          fontSize: 16,
-          color: "red"
+  // src/tools/loader/index.ts
+  var ParallelLoader = class {
+    constructor(resArr) {
+      this.load = (endCb, progressCb) => {
+        const { resArr } = this;
+        this.endCb = endCb;
+        this.progressCb = progressCb;
+        const endResArr = [];
+        const endResMap = {};
+        let endLen = 0;
+        let successCnt = 0;
+        for (let i = 0; i < resArr.length; i++) {
+          const curRes = resArr[i];
+          if (curRes.type === "image") {
+            curRes.element = createImage();
+          }
+          if (curRes.type === "audio") {
+            curRes.element = new Audio();
+          }
+          console.log(curRes.type);
+          loadResource(curRes, (res) => {
+            if (progressCb)
+              progressCb(res, i);
+            endResArr.push(res);
+            endResMap[res.name] = res;
+            endLen++;
+            if (res.success)
+              successCnt++;
+            if (endLen === resArr.length) {
+              if (endCb) {
+                endCb({
+                  totalCnt: resArr.length,
+                  successCnt,
+                  resArr: endResArr,
+                  resMap: endResMap
+                });
+              }
+            }
+          });
         }
-      }).addToStage(this.stage, this.layer.test2);
-      new ImageUI({
-        name: "TestImage",
-        anchor: new YccMathDot(50, 50),
-        // rotation: 30,
-        mirror: 1,
-        resName: "radius",
-        fillMode: "scale9Grid",
-        scale9GridRect: new YccMathRect(30, 30, 256 / dpi - 30 * 2, 256 / dpi - 30 * 2),
-        rect: new YccMathRect(-10, -30, 180, 180)
-      }).addToStage(this.stage, this.stage.defaultLayer);
-      const frameText = new TextUI({
-        value: ""
-      }).addToStage(this.stage, this.stage.defaultLayer);
-      pipe_default(
-        this.$ticker,
-        addFrameListener((frame) => {
-          frameText.props.value = `${frame.deltaTime.toFixed(2)}ms \u5E73\u5747\uFF1A${((Date.now() - this.$ticker.startTime) / frame.frameCount).toFixed(2)}ms  \u7ED8\u5236\u5C3A\u5BF8\uFF1A${this.stage.stageCanvas.width}*${this.stage.stageCanvas.height}px dpi\uFF1A${this.stage.stageInfo.dpi}`;
-          this.render();
-        }),
-        startTicker
-      );
-      this.render();
-      this.eventListener();
-    }
-    // 舞台事件监听
-    eventListener() {
-      this.$gesture.events.tap = (e) => {
-        const ui = getElementByPointer(e.data.position);
-        console.log("\u70B9\u51FBui\uFF1A", ui);
+        return this;
       };
-      this.$gesture.events.dragend = (e) => {
-        console.log("dragend\uFF1A", e);
+      this.end = (endCb) => {
+        this.endCb = endCb;
+        return this;
       };
-      this.$gesture.events.dragging = (e) => {
-        getElementByName("line01").props.dots = e.data.life.moveTouchEventList.map((item) => new YccMathDot(item.triggerTouch.pageX, item.triggerTouch.pageY));
+      this.progress = (progressCb) => {
+        this.progressCb = progressCb;
+        return this;
       };
-      this.$gesture.events.dragstart = (e) => {
-        console.log("dragstart\uFF1A", e);
-      };
-    }
-    render() {
-      clearStage()(this.stage);
-      const TestImage = getElementByName("TestImage");
-      TestImage.props.rotation++;
-      renderAll(this.stage);
+      this.resArr = resArr;
     }
   };
+  function loadResource(res, endCb) {
+    if (res.element instanceof HTMLImageElement) {
+      loadImage(res, endCb);
+    }
+    if (res.element instanceof Audio) {
+      loadAudio(res, endCb);
+    }
+  }
+  function loadImage(res, endCb) {
+    var _a2;
+    res.success = false;
+    if (!(res.element instanceof HTMLImageElement)) {
+      endCb(res);
+      return;
+    }
+    res.type = "image";
+    if (res.element.setAttribute != null) {
+      res.element.setAttribute("src", res.url);
+      res.element.setAttribute("crossOrigin", (_a2 = res.crossOrigin) != null ? _a2 : "");
+    }
+    res.element.onload = (e) => {
+      res.success = true;
+      endCb(res);
+    };
+    res.element.onerror = (e) => {
+      res.errorMsg = e.toString();
+      endCb(res);
+    };
+  }
+  function loadAudio(res, endCb) {
+    var _a2;
+    res.success = false;
+    if (!(res.element instanceof Audio)) {
+      endCb(res);
+      return;
+    }
+    res.type = "audio";
+    if (res.element.setAttribute != null) {
+      res.element.setAttribute("src", res.url);
+      res.element.setAttribute("crossOrigin", (_a2 = res.crossOrigin) != null ? _a2 : "");
+      res.element.setAttribute("preload", "load");
+    }
+    res.element.onloadedmetadata = (e) => {
+      res.success = true;
+      endCb(res);
+    };
+    res.element.onerror = (e) => {
+      res.errorMsg = e.toString();
+      endCb(res);
+    };
+  }
+
+  // test/helloworld/src/app.ts
+  function setup(resources) {
+    const ycc = createApp(resources);
+    initUI(ycc);
+    eventListener(ycc);
+    tickerRender(ycc);
+  }
+  function loadResources(cb) {
+    const resources = [
+      {
+        name: "test",
+        type: "image",
+        url: "https://smartedu.jnei.cn/upload/files/upload/ce155375-3dc3-479e-b4d4-8690cc906d40_WechatIMG15%402x.a69e9004.png",
+        crossOrigin: "*"
+      },
+      {
+        name: "radius",
+        type: "image",
+        url: "https://bpic.588ku.com/element_origin_min_pic/01/01/71/9556f3fa9fc2b12.jpg",
+        crossOrigin: "*"
+      }
+    ];
+    new ParallelLoader(resources).load((result) => {
+      console.log("\u8D44\u6E90\u52A0\u8F7D\u7ED3\u675F", resources, result);
+      cb(result);
+    });
+  }
+  function tickerRender(ycc) {
+    addFrameListener((frame) => {
+      render(frame);
+    })(ycc.$ticker);
+    startTicker(ycc.$ticker, 30);
+    function render(frame) {
+      clearStage()(ycc.stage);
+      const TestImage = getElementByName("TestImage");
+      TestImage.props.rotation++;
+      const DebugUI = getElementByName("debug");
+      DebugUI.props.value = `\u5E27\u95F4\u9694\uFF1A${frame.deltaTime.toFixed(2)}ms \u5E73\u5747\uFF1A${((Date.now() - ycc.$ticker.startTime) / ycc.$ticker.frameAllCount).toFixed(2)} \u5FC3\u8DF3\u6570\uFF1A${ycc.$ticker.timerTickCount} \u5E27\u6570\uFF1A${ycc.$ticker.frameAllCount}`;
+      renderAll(ycc.stage);
+    }
+  }
+  function eventListener(ycc) {
+    ycc.$gesture.events.tap = (e) => {
+      const ui = getElementByPointer(e.data.position);
+      console.log("\u70B9\u51FBui\uFF1A", ui);
+    };
+    ycc.$gesture.events.dragend = (e) => {
+      console.log("dragend\uFF1A", e);
+    };
+    ycc.$gesture.events.dragging = (e) => {
+      getElementByName("line01").props.dots = e.data.life.moveTouchEventList.map((item) => new YccMathDot(item.triggerTouch.pageX, item.triggerTouch.pageY));
+    };
+    ycc.$gesture.events.dragstart = (e) => {
+      console.log("dragstart\uFF1A", e);
+    };
+  }
+  function initUI(ycc) {
+    var _a2;
+    const stage = ycc.stage;
+    (_a2 = document.getElementById("canvas")) == null ? void 0 : _a2.appendChild(stage.stageCanvas);
+    const dpi = stage.stageInfo.dpi;
+    const layer = {
+      test1: createLayer({ name: "t1" })(stage.stageInfo),
+      test2: createLayer({ name: "t2" })(stage.stageInfo)
+    };
+    new LineUI({
+      name: "line01",
+      dots: [
+        new YccMathDot(10, 10),
+        new YccMathDot(100, 100)
+      ]
+    }).addToStage(stage, stage.defaultLayer);
+    new PolygonUI({
+      name: "TestPolygon",
+      anchor: new YccMathDot(200, 200),
+      coordinates: [
+        new YccMathDot(0, 0),
+        new YccMathDot(200, 0),
+        new YccMathDot(0, 200),
+        new YccMathDot(0, 0)
+      ]
+    }).addToStage(stage, layer.test1);
+    new TextUI({
+      value: "sfsdfsdf",
+      anchor: new YccMathDot(200, 10),
+      style: {
+        fontSize: 16,
+        color: "red"
+      }
+    }).addToStage(stage, layer.test2);
+    new ImageUI({
+      name: "TestImage",
+      anchor: new YccMathDot(50, 50),
+      // rotation: 30,
+      mirror: 1,
+      resName: "radius",
+      fillMode: "scale9Grid",
+      scale9GridRect: new YccMathRect(30, 30, 256 / dpi - 30 * 2, 256 / dpi - 30 * 2),
+      rect: new YccMathRect(-10, -30, 180, 180)
+    }).addToStage(stage, stage.defaultLayer);
+    new TextUI({
+      name: "debug",
+      value: "",
+      style: {
+        fontSize: 12
+      }
+    }).addToStage(stage, stage.defaultLayer);
+  }
 
   // test/helloworld/bootstrap.ts
   SetGlobal("env", "h5");
   SetGlobal("frameRate", 60);
-  var app = new App();
-  var resources = [
-    {
-      name: "test",
-      type: "image",
-      url: "https://smartedu.jnei.cn/upload/files/upload/ce155375-3dc3-479e-b4d4-8690cc906d40_WechatIMG15%402x.a69e9004.png",
-      crossOrigin: "*"
-    },
-    {
-      name: "radius",
-      type: "image",
-      url: "https://bpic.588ku.com/element_origin_min_pic/01/01/71/9556f3fa9fc2b12.jpg",
-      crossOrigin: "*"
-    }
-  ];
-  new ParallelLoader(app, resources).load((result) => {
-    console.log("\u8D44\u6E90\u52A0\u8F7D\u7ED3\u675F", resources, result);
-    app.bootstrap(result);
-  });
+  loadResources(setup);
 })();
 //# sourceMappingURL=index.js.map

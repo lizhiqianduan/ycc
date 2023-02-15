@@ -1,4 +1,3 @@
-import Ycc from '../../Ycc'
 import { createImage } from '../polyfill/index'
 
 export interface Resource {
@@ -71,21 +70,14 @@ type EndCb = (result: LoaderResult) => void
  */
 export class ParallelLoader {
   resArr: Resource[]
-  ycc: Ycc
   endCb?: EndCb
   progressCb?: ProgressCb
-  constructor (ycc: Ycc, resArr: Resource[]) {
-    this.ycc = ycc
+  constructor (resArr: Resource[]) {
     this.resArr = resArr
   }
 
-  bind: (ycc: Ycc) => ParallelLoader = (ycc) => {
-    this.ycc = ycc
-    return this
-  }
-
   load: (endCb: EndCb, progressCb?: ProgressCb) => ParallelLoader = (endCb, progressCb) => {
-    const { ycc, resArr } = this
+    const { resArr } = this
     this.endCb = endCb
     this.progressCb = progressCb
     // 加载完成后的数组
@@ -98,7 +90,7 @@ export class ParallelLoader {
     for (let i = 0; i < resArr.length; i++) {
       const curRes = resArr[i]
       // 新建资源
-      if (curRes.type === 'image') { curRes.element = createImage(ycc) }
+      if (curRes.type === 'image') { curRes.element = createImage() }
       if (curRes.type === 'audio') { curRes.element = new Audio() }
       console.log(curRes.type)
 

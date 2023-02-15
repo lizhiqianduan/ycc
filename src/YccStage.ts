@@ -13,7 +13,7 @@ export default interface YccStage {
   /**
    * Ycc的引用
    */
-  yccInstance: Ycc
+  yccInstance?: Ycc
 
   /**
    * 舞台的绘图容器Canvas
@@ -41,21 +41,24 @@ export default interface YccStage {
  * @param ycc
  * @returns
  */
-export const createStage = (ycc: Ycc) => {
+export const createStage = () => {
   const stageInfo = getSystemInfo()
   // 舞台初始化
   const stageCanvas = createCanvasByStage(stageInfo)
   const stageCanvasCtx = stageCanvas.getContext('2d')!
 
   const stage: YccStage = {
-    yccInstance: ycc,
     stageCanvas,
     stageCanvasCtx,
     stageInfo,
     defaultLayer: createLayer({ name: '舞台默认图层' })(stageInfo)
   }
-  ycc.stage = stage
-  return ycc
+  return { stage, bindYcc }
+
+  function bindYcc (ycc: Ycc) {
+    ycc.stage = stage
+    stage.yccInstance = ycc
+  }
 }
 
 /**
