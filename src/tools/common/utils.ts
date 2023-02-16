@@ -88,3 +88,11 @@ export const getSystemInfo = () => {
     renderHeight: window.innerWidth * dpi
   }
 }
+
+/**
+ * 获取系统的dpi
+ * @returns
+ */
+export const getDpi = () => {
+  return getSystemInfo().dpi
+}

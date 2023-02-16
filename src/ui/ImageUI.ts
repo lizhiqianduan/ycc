@@ -1,3 +1,4 @@
+import { getDpi } from '../tools/common/utils'
 import { YccMathRect } from '../tools/math/index'
 import YccLayer from '../YccLayer'
 import YccUI, { getYccUICommonProps, YccUICommonProps } from './YccUI'
@@ -119,7 +120,7 @@ export default class ImageUI extends YccUI<YccUIImageProps> {
   render (): void {
     if (!this.isDrawable() || !this.props.show) return
     const ctx = this.getContext()!
-    const dpi = this.getDpi()
+    const dpi = getDpi()
     // 初始化位置
     this.props.coordinates = this.props.rect.getCoordinates()
 
@@ -179,7 +180,7 @@ export default class ImageUI extends YccUI<YccUIImageProps> {
       const rect = this.props.rect
       const centerRect = this.props.scale9GridRect
       const grid: Array<{ src?: YccMathRect, dest?: YccMathRect }> = []
-      const dpi = this.getDpi()
+      const dpi = getDpi()
       let src, dest
 
       // 第1块

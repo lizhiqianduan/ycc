@@ -3,7 +3,7 @@
  * 舞台包含多个图层`Layer`
  */
 
-import { getSystemInfo } from './tools/common/utils'
+import { getDpi, getSystemInfo } from './tools/common/utils'
 import { YccMathDot } from './tools/math/index'
 import { createCanvas } from './tools/polyfill/index'
 import Ycc from './Ycc'
@@ -82,7 +82,7 @@ export const getElementByPointer = (dot: YccMathDot) => {
     for (let i = uiList.length - 1; i >= 0; i--) {
       const ui = uiList[i]
 
-      if (ui.isContainDot(dot.dpi(ui.getDpi()))) return ui
+      if (ui.isContainDot(dot.dpi(getDpi()))) return ui
     }
   }
 }

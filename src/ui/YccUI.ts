@@ -4,7 +4,7 @@
 
 import YccLayer, { addUI } from '../YccLayer'
 import { YccMathDot, YccMathRect } from '../tools/math/index'
-import { getSystemInfo } from '../tools/common/utils'
+import { getDpi } from '../tools/common/utils'
 import YccStage from '../YccStage'
 
 /**
@@ -176,15 +176,6 @@ export default abstract class YccUI<YccUIProps extends YccUICommonProps = YccUIC
   }
 
   /**
-   * 将
-   * 适配dpi
-   */
-  dpiAdaptation () {
-    const { dpi } = getSystemInfo()!
-    console.log(dpi)
-  }
-
-  /**
     * 根据coordinates绘制路径
     * 只绘制路径，不填充、不描边
     * 此过程只会发生在图层的离屏canvas中
@@ -217,7 +208,7 @@ export default abstract class YccUI<YccUIProps extends YccUICommonProps = YccUIC
   getWorldContainer (rect?: YccMathRect) {
     if (!this.props.belongTo) { console.log('该UI未加入图层'); return }
     // 图层的位置
-    const dpi = this.getDpi()
+    const dpi = getDpi()
 
     // dpi处理
     const dpiPosition = this.props.belongTo.position.dpi(dpi)
@@ -360,14 +351,6 @@ export default abstract class YccUI<YccUIProps extends YccUICommonProps = YccUIC
    */
   getContext () {
     return this.props.belongTo?.ctx
-  }
-
-  /**
-   * 获取dpi
-   * @returns
-   */
-  getDpi () {
-    return getSystemInfo().dpi
   }
 
   /**

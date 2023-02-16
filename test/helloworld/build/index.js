@@ -29,6 +29,47 @@
     localStorage.setItem("ycc_global", JSON.stringify(GLOBAL_CACHE));
   }
 
+  // src/tools/common/utils.ts
+  var isNum = function(str) {
+    return typeof str === "number";
+  };
+  var isFn = function(str) {
+    return typeof str === "function";
+  };
+  var isMobile = function() {
+    const userAgentInfo = navigator.userAgent;
+    const Agents = [
+      "Android",
+      "iPhone",
+      "SymbianOS",
+      "Windows Phone",
+      "iPad",
+      "iPod"
+    ];
+    let flag = false;
+    for (let v = 0; v < Agents.length; v++) {
+      if (userAgentInfo.indexOf(Agents[v]) > 0) {
+        flag = true;
+        break;
+      }
+    }
+    return flag;
+  };
+  var getSystemInfo = () => {
+    var _a2;
+    const dpi = (_a2 = window.devicePixelRatio) != null ? _a2 : 1;
+    return {
+      width: window.innerWidth,
+      height: window.innerHeight,
+      dpi,
+      renderWidth: window.innerWidth * dpi,
+      renderHeight: window.innerWidth * dpi
+    };
+  };
+  var getDpi = () => {
+    return getSystemInfo().dpi;
+  };
+
   // src/tools/math/index.ts
   var YccMathDot = class {
     constructor(x, y) {
@@ -233,44 +274,6 @@
     }
   };
 
-  // src/tools/common/utils.ts
-  var isNum = function(str) {
-    return typeof str === "number";
-  };
-  var isFn = function(str) {
-    return typeof str === "function";
-  };
-  var isMobile = function() {
-    const userAgentInfo = navigator.userAgent;
-    const Agents = [
-      "Android",
-      "iPhone",
-      "SymbianOS",
-      "Windows Phone",
-      "iPad",
-      "iPod"
-    ];
-    let flag = false;
-    for (let v = 0; v < Agents.length; v++) {
-      if (userAgentInfo.indexOf(Agents[v]) > 0) {
-        flag = true;
-        break;
-      }
-    }
-    return flag;
-  };
-  var getSystemInfo = () => {
-    var _a2;
-    const dpi = (_a2 = window.devicePixelRatio) != null ? _a2 : 1;
-    return {
-      width: window.innerWidth,
-      height: window.innerHeight,
-      dpi,
-      renderWidth: window.innerWidth * dpi,
-      renderHeight: window.innerWidth * dpi
-    };
-  };
-
   // src/tools/polyfill/index.ts
   function createCanvas(options) {
     var _a2;
@@ -314,7 +317,7 @@
       const uiList = layer.uiList;
       for (let i = uiList.length - 1; i >= 0; i--) {
         const ui = uiList[i];
-        if (ui.isContainDot(dot.dpi(ui.getDpi())))
+        if (ui.isContainDot(dot.dpi(getDpi())))
           return ui;
       }
     }
@@ -474,14 +477,6 @@
       return true;
     }
     /**
-     * 将
-     * 适配dpi
-     */
-    dpiAdaptation() {
-      const { dpi } = getSystemInfo();
-      console.log(dpi);
-    }
-    /**
       * 根据coordinates绘制路径
       * 只绘制路径，不填充、不描边
       * 此过程只会发生在图层的离屏canvas中
@@ -510,7 +505,7 @@
         console.log("\u8BE5UI\u672A\u52A0\u5165\u56FE\u5C42");
         return;
       }
-      const dpi = this.getDpi();
+      const dpi = getDpi();
       const dpiPosition = this.props.belongTo.position.dpi(dpi);
       const dpiAnchor = this.props.anchor.dpi(dpi);
       const dpiCoordinates = this.props.coordinates.map((item) => item.dpi(dpi));
@@ -635,13 +630,6 @@
       return (_a2 = this.props.belongTo) == null ? void 0 : _a2.ctx;
     }
     /**
-     * 获取dpi
-     * @returns
-     */
-    getDpi() {
-      return getSystemInfo().dpi;
-    }
-    /**
      * 获取当前实例
      * @returns
      */
@@ -736,7 +724,7 @@
       if (!this.isDrawable() || !this.props.show)
         return;
       const ctx = this.getContext();
-      const dpi = this.getDpi();
+      const dpi = getDpi();
       const fontSize = (_a2 = this.props.style.fontSize) != null ? _a2 : 16;
       ctx.save();
       ctx.fillStyle = (_c = (_b = this.props.style) == null ? void 0 : _b.color) != null ? _c : this.props.fillStyle;
@@ -1432,7 +1420,7 @@
       if (!this.isDrawable() || !this.props.show)
         return;
       const ctx = this.getContext();
-      const dpi = this.getDpi();
+      const dpi = getDpi();
       this.props.coordinates = this.props.rect.getCoordinates();
       const img = this.getRes();
       if (!img)
@@ -1489,7 +1477,7 @@
         const rect2 = this.props.rect;
         const centerRect = this.props.scale9GridRect;
         const grid = [];
-        const dpi2 = this.getDpi();
+        const dpi2 = getDpi();
         let src, dest;
         grid[0] = {};
         grid[0].src = new YccMathRect(0, 0, centerRect.x, centerRect.y);
@@ -1569,7 +1557,7 @@
       if (this.props.dots.length < 2)
         return;
       const ctx = this.getContext();
-      const dpi = this.getDpi();
+      const dpi = getDpi();
       ctx.save();
       ctx.beginPath();
       ctx.strokeStyle = (_b = (_a2 = this.props.style) == null ? void 0 : _a2.color) != null ? _b : this.props.strokeStyle;

@@ -1,3 +1,4 @@
+import { getDpi } from '../tools/common/utils'
 import { YccMathDot } from '../tools/math/index'
 import YccUI, { getYccUICommonProps, YccUICommonProps } from './YccUI'
 
@@ -43,7 +44,7 @@ export default class LineUI extends YccUI<YccUILineProps> {
     if (!this.isDrawable() || !this.props.show) return
     if (this.props.dots.length < 2) return
     const ctx = this.getContext()!
-    const dpi = this.getDpi()!
+    const dpi = getDpi()!
 
     ctx.save()
     ctx.beginPath()

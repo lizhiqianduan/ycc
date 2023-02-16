@@ -1,3 +1,4 @@
+import { getDpi } from '../tools/common/utils'
 import { YccMathDot, YccMathRect } from '../tools/math/index'
 import YccUI, { getYccUICommonProps, YccUICommonProps } from './YccUI'
 
@@ -43,7 +44,7 @@ export default class TextUI extends YccUI<YccUITextProps> {
   render (): void {
     if (!this.isDrawable() || !this.props.show) return
     const ctx = this.getContext()!
-    const dpi = this.getDpi()
+    const dpi = getDpi()
     const fontSize = this.props.style.fontSize ?? 16
 
     ctx.save()
